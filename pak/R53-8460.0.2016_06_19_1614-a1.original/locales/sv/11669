@@ -1,0 +1,1 @@
+Profilen verkar användas av en annan Chromium-process ($1) på en annan dator ($2). Profilen har låsts så att den inte används på otillåtet sätt. Om du är säker på att profilen inte används i några andra processer låser du upp profilen och startar om Chromium.

@@ -1,0 +1,1 @@
+Maakt gebruik van een secundaire thread voor het maken van webpagina's (compositing). Dit maakt vloeiend schuiven mogelijk, zelfs als de hoofdthread niet reageert.

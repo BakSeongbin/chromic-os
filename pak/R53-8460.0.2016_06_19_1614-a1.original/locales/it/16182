@@ -1,0 +1,1 @@
+Se una pagina non ha impostato un criterio di referrer esplicito, l'impostazione di questo flag riduce la quantità di informazioni incluse nell'intestazione "referrer" per richieste multiorigine.

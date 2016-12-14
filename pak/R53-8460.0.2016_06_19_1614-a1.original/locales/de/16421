@@ -1,0 +1,1 @@
+Verhindert Abrufe parserblockierender Skripts von Drittanbietern, die per document.write in den Hauptframe eingefügt werden.

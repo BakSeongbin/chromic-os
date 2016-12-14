@@ -1,0 +1,1 @@
+Je probeert <strong>$1</strong> te bereiken, maar de server heeft een certificaat geretourneerd met een zwakke sleutel. Een hacker kan de persoonlijke sleutel hebben aangepast en het is mogelijk dat de server zelf een imitatie is (wellicht een server die je schade probeert te berokkenen).

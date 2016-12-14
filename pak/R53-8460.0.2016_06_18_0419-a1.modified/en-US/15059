@@ -1,0 +1,2 @@
+{NUM_DOWNLOAD, plural,
+       =1 {Download in progress} other {Downloads in progress}}

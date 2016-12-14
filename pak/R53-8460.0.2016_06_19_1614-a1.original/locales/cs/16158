@@ -1,0 +1,1 @@
+Povolí experimentální podporu rozhraní Pointer Events API. Tento příznak je určen pouze pro webové vývojáře k testování. Způsobí, že některé weby budou fungovat nepatrně chybně.

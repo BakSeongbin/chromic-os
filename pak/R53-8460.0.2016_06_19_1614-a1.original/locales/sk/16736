@@ -1,0 +1,1 @@
+{COUNT,plural, =0{žiadne}=1{1 aplikácia ($1)}=2{2 aplikácie ($1, $2)}few{# aplikácie ($1, $2, $3)}many{# aplikácie ($1, $2, $3)}other{# aplikácií ($1, $2, $3)}}

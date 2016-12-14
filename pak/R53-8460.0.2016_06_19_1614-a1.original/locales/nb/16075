@@ -1,0 +1,1 @@
+Når dette alternativet er slått på, inkluderes et programvarebasert enkoder-/dekoderpar for H.264-video. Hvis det også finnes en maskinvarebasert dekoder tilgjengelig, kan den brukes i stedet for denne enkoderen/dekoderen.

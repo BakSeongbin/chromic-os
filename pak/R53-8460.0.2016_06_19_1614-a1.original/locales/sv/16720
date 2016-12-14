@@ -1,0 +1,1 @@
+{COUNT,plural, =0{inga}=1{1 objekt}other{# objekt}}

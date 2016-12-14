@@ -1,0 +1,1 @@
+Un fallback TLS 1.0 è riuscito a eseguire l'handshake con il server, ma i fallback TLS 1.0 non sono più accettati. Il server deve essere aggiornato per implementare correttamente la negoziazione della versione e supportare preferibilmente TLS 1.2.

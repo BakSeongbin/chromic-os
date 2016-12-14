@@ -1,0 +1,1 @@
+Forceert dat 'omlaag trekken om te vernieuwen' zorgt dat de pagina opnieuw wordt geladen zonder validatie (hoewel dit vaak een gewone laadactie met cachevalidatie betekent wanneer de markering is uitgeschakeld).

@@ -1,0 +1,1 @@
+Pomija kontrole zaangażowania użytkownika dotyczące wyświetlania banerów aplikacji, na przykład wymaganie, by użytkownik odwiedził już wcześniej witrynę oraz by baner nie był ostatnio pokazywany. Pozwala to deweloperom sprawdzać, czy spełniane są inne wymagania wyświetlania banerów aplikacji, na przykład posiadanie przez nie manifestu.

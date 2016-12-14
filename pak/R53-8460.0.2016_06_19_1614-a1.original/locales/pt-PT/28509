@@ -1,0 +1,2 @@
+Foram recebidos vários cabeçalhos de Localização distintos. Isto não é permitido como proteção
+    contra ataques de divisão de resposta HTTP.

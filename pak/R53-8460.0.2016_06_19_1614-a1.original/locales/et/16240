@@ -1,0 +1,1 @@
+Lubatakse direktiivi „Cache-Control: stale-while-revalidate” katseline juurutamine. See lubab serveritel määrata osade ressursside taustal uuesti valideerimise, et parandada latentsust.

@@ -1,0 +1,1 @@
+Isa itong lubos na pang-eksperimentong performance mode kung saan magkaiba ang prosesong ginagamit ng mga cross-site na iframe at ng nangungunang dokumento. Sa mode na ito, ang mga iframe mula sa iba't ibang third-party na site ay papayagan na magsabay sa iisang proseso.

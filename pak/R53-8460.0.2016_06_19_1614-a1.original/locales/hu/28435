@@ -1,0 +1,1 @@
+A(z) <span jscontent="originalUrlForDisplay"></span> egy <a jsvalues="href:urlCorrection;.jstdata:$this" onmousedown="linkClicked(this.jstdata)">tárolt változatának</a> megtekintése

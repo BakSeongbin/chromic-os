@@ -1,0 +1,1 @@
+Aktiviert die Nutzung von Anzeigelisten zur Aufzeichnung von 2D-Canvas-Befehlen. Dadurch kann eine 2D-Canvas-Rasterung in einem separaten Thread durchgeführt werden.

@@ -1,0 +1,1 @@
+Egy TLS 1.0-tartalék fel tudta venni a kapcsolatot a szerverrel, de már nem fogadjuk el a TLS 1.0-tartalékokat. A szervert frissíteni kell, hogy megfelelően hajthassa végre a verzió egyeztetést és ideális esetben a TLS 1.2 verziót támogassa

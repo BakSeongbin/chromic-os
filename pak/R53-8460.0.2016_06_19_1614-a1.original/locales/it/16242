@@ -1,0 +1,2 @@
+Questo flag deve essere utilizzato insieme al flag trace-upload-url.
+        AVVISO. Quando questa opzione è attiva, Chrome registra dati sulle prestazioni relativi a ogni sessione di navigazione e li carica sull'URL specificato nel flag trace-upload-url. La traccia potrebbe includere informazioni personali quali i titoli e gli URL dei siti web visitati.

@@ -1,0 +1,1 @@
+Spracovávanie udalostí vstupu súvisiacich s posúvaním vo vláknach. Zakázanie vynúti, aby sa všetky takéto udalosti spracovávali v hlavnom vlákne. Upozorňujeme, že toto nastavenie môže výrazne poškodiť výkonnosť posúvania na väčšine webových stránok a je určené iba na účely testovania.

@@ -1,0 +1,1 @@
+Begränsa Native Client-programmets GDB-baserade felsökning efter webbadressen till manifestfilen. Native Clients GDB-baserade felsökning måste vara aktiverad för att det här alternativet ska fungera.

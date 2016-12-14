@@ -1,0 +1,1 @@
+Modalità di rendimento altamente sperimentale in cui gli iframe tra siti vengono tenuti in un processo separato da quello del documento principale. In questa modalità, gli iframe di diversi siti di terze parti potranno avere uno stesso processo.

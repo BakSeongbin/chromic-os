@@ -1,0 +1,1 @@
+Háttérmód engedélyezése a Push API számára. Ez lehetővé teszi a Chrome számára, hogy az utolsó ablak bezárása után is fusson, illetve, hogy elinduljon az operációs rendszer indulásakor, ha a Push API ezt igényli.

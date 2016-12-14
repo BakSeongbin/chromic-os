@@ -1,0 +1,1 @@
+Ați încercat să accesați <strong>$1</strong>, dar serverul a furnizat un certificat semnat utilizând un algoritm de semnare slab. Aceasta însemnă că este posibil ca acreditările de securitate furnizate de server să fie falsificate, iar serverul să nu fie cel așteptat (este posibil să comunicați cu un atacator).

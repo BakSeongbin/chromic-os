@@ -1,0 +1,2 @@
+Deve ser usado em conjunto com o sinalizador enable-navigation-tracing.
+        Selecione o marcador que melhor descreve os rastreamentos gravados. Isso selecionará o destino para o qual os rastreamentos são enviados. Se não tiver certeza, selecione outro. Se deixado em branco, nenhum rastreamento será carregado.

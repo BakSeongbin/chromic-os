@@ -1,0 +1,1 @@
+Nitna obdelava vhodnih dogodkov, povezanih z drsenjem. Če to onemogočite, vsili obdelavo vseh takih dogodkov, povezanih z drsenjem, v glavni niti. To lahko zelo poslabša učinkovitost delovanja drsenja na večini spletnih mest in je namenjeno samo preskušanju.

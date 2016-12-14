@@ -1,0 +1,1 @@
+Zeigt App-Fenster nach der Erstverwendung an. Bei umfangreichen Apps, deren Ressourcen gleichzeitig geladen werden, werden Fenster erst wesentlich später angezeigt. Bei Apps, deren Ressourcen in der Regel nicht gleichzeitig geladen werden, ist diese Verzögerung jedoch unerheblich.

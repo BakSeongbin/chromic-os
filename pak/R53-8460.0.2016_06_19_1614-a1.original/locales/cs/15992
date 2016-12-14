@@ -1,0 +1,1 @@
+Obchází kontroly interakce uživatelů pro zobrazování bannerů aplikací, jako je například požadavek, že uživatelé web již  museli navštívit a banner v poslední době nesměl být zobrazen. Umožňuje to vývojářům otestovat, zda jsou splněny jiné požadavky na způsobilost, jako je například přítomnost manifestu.

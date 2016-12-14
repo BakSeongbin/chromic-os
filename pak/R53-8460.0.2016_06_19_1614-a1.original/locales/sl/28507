@@ -1,0 +1,2 @@
+Prejetih je bilo več glav z različnimi polji Content-Length. To je zaradi
+    zaščite pred napadi z delitvijo odzivov HTTP prepovedano.

@@ -1,0 +1,1 @@
+Úgy tűnik, a profilt egy másik Chromium-folyamat ($1) használja egy másik számítógépen ($2). A Chromium zárolta a profilt, hogy az ne sérülhessen. Ha biztos benne, hogy nem használja másik folyamat a profilt, feloldhatja azt, és újraindíthatja a Chromiumot.

@@ -1,0 +1,1 @@
+Vynechajú sa kontroly interakcie používateľov na zobrazenie bannerov aplikácie, ako napríklad požiadavka, že používatelia museli navštíviť web už v minulosti a že banner nebol v poslednom čase zobrazený. To umožňuje vývojárom testovať splnenie ďalších požiadaviek na zobrazovanie bannerov aplikácie, ako je napríklad prítomnosť manifestu.

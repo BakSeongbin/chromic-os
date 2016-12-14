@@ -1,0 +1,1 @@
+Otevřete <a jsvalues="href:urlCorrection;.jstdata:$this" onmousedown="linkClicked(this.jstdata)">archivovanou kopii</a> stránky <span jscontent="originalUrlForDisplay"></span>

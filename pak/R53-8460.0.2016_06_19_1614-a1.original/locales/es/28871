@@ -1,0 +1,1 @@
+Has intentado acceder a <strong>$1</strong>, pero el servidor ha presentado un certificado firmado con un algoritmo de firma no seguro. Una posible causa de este problema es que se hayan falsificado las credenciales de seguridad presentadas por el servidor y que hayas accedido a la página de un atacante en lugar de establecer conexión con el servidor en cuestión.

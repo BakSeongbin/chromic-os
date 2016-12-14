@@ -1,0 +1,1 @@
+Włącza kilka funkcji zabezpieczeń, które prawdopodobnie spowodują problemy na stronach otwieranych na co dzień. Na przykład ścisłe sprawdzanie występowania mieszanej zawartości czy udostępnianie zaawansowanych funkcji tylko w bezpiecznych kontekstach. To ustawienie zwykle irytuje użytkowników.

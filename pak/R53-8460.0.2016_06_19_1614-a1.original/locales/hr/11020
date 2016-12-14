@@ -1,0 +1,1 @@
+{HOURS,plural, =1{Prije 1 sat}one{Prije # sat}few{Prije # sata}other{Prije # sati}}

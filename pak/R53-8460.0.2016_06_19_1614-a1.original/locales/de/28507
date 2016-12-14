@@ -1,0 +1,2 @@
+Es wurden mehrere unterschiedliche "Content-Length"-Header empfangen. Dies ist
+    zum Schutz vor HTTP Response Splitting-Angriffen unzulässig.

@@ -1,0 +1,1 @@
+Allows requests to localhost over HTTPS even when an invalid certificate is presented.

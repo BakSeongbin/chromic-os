@@ -1,0 +1,1 @@
+Um substituto de TLS 1.0 pôde fazer um handshake com o servidor, mas nós não aceitamos mais substitutos de TLS 1.0. O servidor precisa ser atualizado para implementar corretamente a negociação de versão e ser compatível, preferivelmente, com o TLS 1.2.

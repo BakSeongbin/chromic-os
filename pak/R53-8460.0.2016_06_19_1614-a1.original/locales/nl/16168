@@ -1,0 +1,1 @@
+Geef de infobalk niet weer wanneer een extensie wordt gekoppeld aan een pagina via de API chrome.debugger. Dit is vereist om foutopsporing voor achtergrondpagina's voor extensies uit te voeren.

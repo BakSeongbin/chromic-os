@@ -1,0 +1,1 @@
+See märgis muudab Chrome'i ebaturvaliseks. Kasutage seda ainult siis, kui mõistate, mida see teeb. Pange tähele, et märgis võidakse ette teatamata eemaldada. Kui see on lubatud, saavad https-päritolu raamid kasutada ebaturvalise URL-iga (ws://) WebSocketeid.

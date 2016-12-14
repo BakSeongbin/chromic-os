@@ -1,0 +1,1 @@
+Preklop na TLS 1.0 je omogočil začetek povezave s strežnikom, vendar preklopa na TLS 1.0 ne podpiramo več. Strežnik je treba posodobiti, da bo pravilno izvedel pogajanja glede različice in podpiral TLS 1.2, če je mogoče.

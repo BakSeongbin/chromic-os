@@ -1,0 +1,1 @@
+Agrega un parámetro de consulta en la URL para actualizar la página de forma automática: chrome://network/?refresh=<sec>.

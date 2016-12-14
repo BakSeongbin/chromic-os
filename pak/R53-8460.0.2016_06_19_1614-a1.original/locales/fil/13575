@@ -1,0 +1,18 @@
+<h3>Mga Feature ng Pagde-debug</h3>
+    <br>
+    Maaari mong i-enable ang mga feature ng pagde-debug sa iyong Chrome OS Device upang ma-install at masubukan ang custom na code sa iyong device.  Magbibigay-daan ito sa iyo na:<br>
+    <ul>
+      <li>Alisin ang pag-verify ng mga rootf upang mabago mo ang mga OS file
+      <li>I-enable ang SSH access sa device gamit ang mga karaniwang pansubok na key upang makakagamit ka ng mga tool gaya ng <span style="color:grey;font-family:monospace">'cros flash'</span> upang i-access ang device
+      <li>I-enable ang pagbu-boot mula sa USB upang makapag-install ka ng larawan ng OS mula sa isang USB drive
+      <li>Parehong itakda ang dev at ang password ng pag-login sa system root sa isang custom na value upang manu-mano kang makakapag-SSH sa device
+    </ul>
+    <br>
+    Kapag naka-enable, mananatiling naka-enable ang karamihan ng mga feature ng pagde-debug kahit na pagkatapos magsagawa ng powerwash o pagwa-wipe ng data sa isang device na pinamamahalaan ng enterprise.  Upang ganap na ma-disable ang lahat ng feature ng pagde-debug, kumpletuhin ang proseso ng pag-recover ng Chrome OS (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Para sa higit pang impormasyon tungkol sa mga feature ng pagde-debug, tingnan ang:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Tandaan:</b>  Mare-reboot ang system sa panahon ng proseso.

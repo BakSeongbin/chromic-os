@@ -1,0 +1,1 @@
+Wymusza, by podczas odświeżania stron jednym ruchem palca następowało ponowne załadowanie strony bez sprawdzenia poprawności (gdy flaga jest wyłączona, zazwyczaj oznacza to, że przy ponownym ładowaniu zawsze sprawdzana jest poprawność zawartości pamięci podręcznej).

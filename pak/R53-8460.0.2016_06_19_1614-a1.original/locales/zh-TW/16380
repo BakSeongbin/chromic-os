@@ -1,0 +1,1 @@
+啟用跨裝置同步處理 WiFi 網路設定。啟用後，系統會透過 Chrome Sync 註冊 WiFi 憑證資料類型，並依使用者偏好設定同步處理 WiFi 憑證 (請一併查看 chrome://settings/syncSetup)。

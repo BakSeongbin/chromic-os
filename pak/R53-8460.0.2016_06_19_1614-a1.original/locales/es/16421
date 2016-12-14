@@ -1,0 +1,1 @@
+No permite la recuperación de secuencias de comandos de terceros que bloquean el analizador y que se insertan en el marco principal a través de document.write.

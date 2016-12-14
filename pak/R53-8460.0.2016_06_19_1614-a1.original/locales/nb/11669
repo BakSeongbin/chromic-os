@@ -1,0 +1,1 @@
+Profilen ser ut til å være i bruk av en annen Chromium-prosess ($1) på en annen datamaskin ($2). Chromium har låst profilen slik at den ikke blir infisert. Hvis du er sikker på at ingen andre prosesser bruker profilen, kan du låse opp profilen og starte Chromium på nytt.

@@ -1,0 +1,1 @@
+Prikaže okna aplikacij po prvem upodabljanju. Pri velikih aplikacijah s sinhronim nalaganjem sredstev se bodo okna prikazala veliko pozneje, medtem ko pri aplikacijah, ki naložijo večino sredstev asinhrono, ne bo velike razlike.

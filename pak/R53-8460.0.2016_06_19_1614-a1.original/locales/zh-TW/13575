@@ -1,0 +1,18 @@
+<h3>偵錯功能</h3>
+    <br>
+    您只要啟用 Chrome 作業系統裝置的偵錯功能，即可在裝置上安裝並測試自訂程式碼。這項功能可讓您：<br>
+    <ul>
+      <li>移除 rootfs 驗證，以便修改作業系統檔案
+      <li>使用標準測試金鑰啟用裝置的 SSH 存取權，以便使用 <span style="color:grey;font-family:monospace">'cros flash'</span> 這類工具存取裝置
+      <li>啟用從 USB 啟動功能，以便從 USB 磁碟機安裝作業系統映像檔
+      <li>將開發人員和系統根目錄登入密碼設為自訂值，以便您使用人工方式透過 SSH 存取裝置
+    </ul>
+    <br>
+    啟用後，即使在企業管理的裝置上執行 Powerwash 或清除資料，大多數的偵錯功能仍會維持啟用狀態。如要全面停用所有偵錯功能，請完成 Chrome 作業系統還原程序 (https://support.google.com/chromebook/answer/1080595)。
+    <br>
+    <br>
+    如要進一步瞭解偵錯功能，請參閱：<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>注意：</b>系統會在過程中重新啟動。

@@ -1,0 +1,1 @@
+Mycket experimentellt läge där iframe från olika webbplatser hålls åtskilda från moderdokumentet i en separat process. I det här läget tillåts iframe från olika tredjepartswebbplatser att dela process.

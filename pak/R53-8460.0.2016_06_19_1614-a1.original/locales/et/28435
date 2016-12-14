@@ -1,0 +1,1 @@
+Hankige juurdepääs aadressi <span jscontent="originalUrlForDisplay"></span> <a jsvalues="href:urlCorrection;.jstdata:$this" onmousedown="linkClicked(this.jstdata)">vahemällu salvestatud koopiale</a>

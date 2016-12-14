@@ -1,0 +1,1 @@
+Interdit la récupération de scripts de blocage d'analyseur tiers insérés dans le cadre principal via document.write.

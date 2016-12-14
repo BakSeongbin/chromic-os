@@ -1,0 +1,18 @@
+<h3>Funcțiile de remediere a erorilor</h3>
+    <br>
+    Pentru a instala și a testa cod personalizat pe dispozitiv, poți activa funcțiile de remediere a erorilor pe dispozitivul cu sistem de operare Chrome. Astfel, vei putea:<br>
+    <ul>
+      <li>să elimini verificarea sistemului rootfs, pentru a putea modifica fișierele sistemului de operare;
+      <li>să activezi accesul SSH la dispozitiv folosind cheile de testare standard, pentru a putea folosi instrumente ca <span style="color:grey;font-family:monospace">„cros flash”</span> pentru a accesa dispozitivul;
+      <li>să activezi pornirea de pe USB, pentru a putea instala imaginea unui sistem de operare de pe o unitate USB;
+      <li>să setezi parola de conectare, atât pentru dezvoltator, cât și pentru rădăcina sistemului, la o valoare personalizată, pentru a putea instala manual SSH pe dispozitiv.
+    </ul>
+    <br>
+    După activare, majoritatea funcțiilor de remediere a erorilor vor rămâne activate, chiar după efectuarea unui powerwash sau ștergerea datelor pe un dispozitiv gestionat de companie. Pentru a dezactiva complet toate funcțiile de remediere a erorilor, finalizează procesul de recuperare a sistemului de operare Chrome (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Pentru mai multe informații despre funcțiile de remediere a erorilor, consultă:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Notă:</b>  sistemul va reporni în cadrul acestui proces.

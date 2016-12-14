@@ -1,0 +1,18 @@
+<h3>Hibaelhárítási funkciók</h3>
+    <br>
+    Ha bekapcsolja a hibaelhárítási funkciókat a Chrome OS rendszert használó eszközén, akkor egyéni kódokat telepíthet eszközére, majd tesztelheti őket.  A következőkre nyílik lehetősége:<br>
+    <ul>
+      <li>Eltávolíthatja a rootfs ellenőrzését, és módosíthatja az operációs rendszer fájljait.
+      <li>Engedélyezheti az SSH-hozzáférést eszközéhez a normál tesztkulcsok használatával annak érdekében, hogy a <span style="color:grey;font-family:monospace">„cros flash”</span> eszközzel és hasonló eszközökkel férhessen hozzá az eszközhöz.
+      <li>Engedélyezheti az USB-ről való rendszerbetöltést, és ezáltal operációsrendszer-képet telepíthet USB-meghajtóról.
+      <li>Egyéni értéket adhat meg mind a fejlesztői, mind a rendszergazdai jelszónál, és így manuálisan is bejelentkezhet az eszközre SSH protokoll használatával.
+    </ul>
+    <br>
+    A hibaelhárítási funkciók nagy része az engedélyezését követően még akkor is bekapcsolva marad, ha Powerwash műveletet hajt végre, vagy törli az adatokat egy felügyelt vállalati eszközről. A hibaelhárító funkciók teljes körű letiltásához végezze el a Chrome OS helyreállítási folyamatot (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Ha további információt szeretne a hibaelhárító funkciókról, látogasson el a következő webhelyre:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Megjegyzés:</b> a rendszer újraindul a folyamat során.

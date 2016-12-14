@@ -1,0 +1,2 @@
+Tính năng này phải được sử dụng kết hợp với cờ trace-upload-url.
+        CẢNH BÁO: Khi được bật, Chrome sẽ ghi lại dữ liệu hoạt động cho mọi điều hướng và tải dữ liệu đó lên URL được cờ trace-upload-url chỉ định. Dữ liệu theo dõi này có thể bao gồm thông tin nhận dạng cá nhân (PII) chẳng hạn như tiêu đề và URL của những trang web bạn truy cập.

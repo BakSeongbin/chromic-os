@@ -1,0 +1,18 @@
+<h3>Debugging Features</h3>
+    <br>
+    You can enable the debugging features on your Chrome OS Device in order to install and test customised code on your device. This will allow you to:<br>
+    <ul>
+      <li>Remove rootfs verification so that you can modify OS files
+      <li>Enable SSH access to the device using the standard test keys so you can use tools such as <span style="color:grey;font-family:monospace">'cros flash'</span> to access the device
+      <li>Enable booting from USB so you can install an OS image from a USB drive
+      <li>Set both the dev and the system root log-in password to a customised value so that you can manually SSH into the device
+    </ul>
+    <br>
+    Once enabled, most of the debugging features will remain enabled even after performing a powerwash or wiping the data on an enterprise-managed device. To fully disable all debugging features, complete the Chrome OS recovery process (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    For more information about the debugging features see:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Note:</b>  The system will reboot during the process.

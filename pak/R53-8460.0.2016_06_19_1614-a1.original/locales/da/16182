@@ -1,0 +1,1 @@
+Hvis en side ikke har angivet en specifik gendannelsespolitik, vil indstillingen af dette flag reducere mængden af oplysninger i headere for "gendannelse" for anmodninger fra alle destinationer.

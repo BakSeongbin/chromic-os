@@ -1,0 +1,1 @@
+Threaded na pangangasiwa ng mga pag-input na nauugnay sa pag-scroll. Kapag na-disable ito, pupuwersahin ang lahat ng nasabing pag-scroll na mapangasiwaan sa pangunahing thread. Tandaan, maaari itong magkaroon ng negatibong epekto sa pag-i-scroll ng karamihan sa mga website, at para lang ito sa pagsubok.

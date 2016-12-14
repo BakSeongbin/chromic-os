@@ -1,0 +1,1 @@
+{NUM_DOWNLOAD,plural, =1{Um download está em andamento. Deseja cancelar o download e sair do Chromium?}one{# downloads estão em andamento. Deseja cancelar os downloads e sair do Chromium?}other{# downloads estão em andamento. Deseja cancelar os downloads e sair do Chromium?}}

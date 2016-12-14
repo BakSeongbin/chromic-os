@@ -1,0 +1,1 @@
+Trådet håndtering af rullerelaterede indtastninger. Deaktivering tvinger alle sådanne rullebevægelser til at blive håndteret i hovedtråden. Bemærk, at dette kan forringe rulleevnen kraftigt på de fleste websites, og det er kun beregnet til testformål.

@@ -1,0 +1,2 @@
+À utiliser avec le drapeau "trace-upload-url".
+        AVERTISSEMENT : En cas d'activation, Chrome enregistre les données de performances de chaque session de navigation et les transfère vers l'URL spécifiée par le drapeau "trace-upload-url". La trace peut inclure des informations personnelles, telles que les titres et les URL des sites Web que vous consultez.

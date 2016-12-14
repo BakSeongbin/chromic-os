@@ -1,0 +1,1 @@
+Consente di attivare lo stub di debug GDB. Verrà interrotta un'applicazione Native Client all'avvio e si attenderà nacl-gdb (dall'SDK NaCl) per aggiungerlo.

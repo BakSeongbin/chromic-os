@@ -1,0 +1,1 @@
+Mostrar janelas de aplicações após a primeira execução. Serão apresentadas janelas bastante tempo depois para aplicações exigentes que carreguem recursos sincronicamente, mas não será significativo para aplicações que carreguem a maior parte dos seus recursos de forma assíncrona.

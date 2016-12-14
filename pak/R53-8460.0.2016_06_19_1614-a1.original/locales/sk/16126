@@ -1,0 +1,1 @@
+Niektoré webové stránky používajú staré alebo neštandardné rozšírenia JavaScriptu, ktoré môžu byť v konflikte s najnovšími funkciami JavaScriptu. Tento príznak umožňuje vypnutie podpory týchto funkcií s cieľom zaistiť kompatibilitu s takýmito stránkami.

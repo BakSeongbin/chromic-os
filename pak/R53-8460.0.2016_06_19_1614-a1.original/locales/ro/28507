@@ -1,0 +1,2 @@
+S-au primit mai multe anteturi Content-Length distincte. Acest lucru nu este permis,
+    ca măsură de protecție împotriva atacurilor prin divizarea răspunsului HTTP.

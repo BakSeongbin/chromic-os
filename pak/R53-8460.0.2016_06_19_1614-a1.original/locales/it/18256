@@ -1,0 +1,1 @@
+La cache semplice per HTTP è una nuova cache che si basa sul filesystem per l'allocazione dello spazio su disco.

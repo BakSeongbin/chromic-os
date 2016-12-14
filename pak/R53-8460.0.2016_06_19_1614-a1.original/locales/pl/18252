@@ -1,0 +1,1 @@
+Jeśli serwer proxy został skonfigurowany, zazwyczaj uniemożliwia on autoryzację na różnych portalach przechwytujących. Ta flaga otwiera osobne okno autoryzacji portalu przechwytującego, w którym nie obowiązują ustawienia serwera proxy.

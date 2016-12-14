@@ -1,0 +1,1 @@
+Hızlı sekme/pencere kapatmayı etkinleştirir - bir sekmenin "onunload" js işleyicisini GUI'den bağımsız olarak çalıştırır.

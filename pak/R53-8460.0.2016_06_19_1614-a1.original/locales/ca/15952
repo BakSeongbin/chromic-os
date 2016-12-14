@@ -1,0 +1,1 @@
+Activeu el resguard de la depuració basada en GDB. Això aturarà qualsevol aplicació Native Client en iniciar i esperarà fins que nacl-gdb (de NaCl SDK) s'hi adjunti.

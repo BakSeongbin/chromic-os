@@ -1,0 +1,1 @@
+Activa el mode en segon pla per a l'API de tramesa automàtica. D'aquesta manera, Chrome pot continuar executant-se un cop tancada l'última finestra i, si l'API de tramesa automàtica ho requereix, es pot iniciar en arrancar el sistema operatiu.

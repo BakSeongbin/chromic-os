@@ -1,0 +1,8 @@
+Gå til
+        Chromium-menyen >
+        <span jscontent="settingsTitle"></span>
+        >
+        <span jscontent="advancedTitle"></span>
+        og fjern avmerkingen for «<span jscontent="noNetworkPredictionTitle"></span>».
+        Hvis dette ikke løser problemet, bør du aktivere dette alternativet
+        på nytt for bedre ytelse.

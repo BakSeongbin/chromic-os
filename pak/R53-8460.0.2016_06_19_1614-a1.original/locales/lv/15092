@@ -1,0 +1,1 @@
+{NUM_FILES,plural, =1{Piekļuve vienam datorā saglabātajam failam}zero{Piekļuve # datorā saglabātajiem failiem}one{Piekļuve # datorā saglabātajam failam}other{Piekļuve # datorā saglabātajiem failiem}}

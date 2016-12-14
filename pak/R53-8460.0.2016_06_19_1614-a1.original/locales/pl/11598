@@ -1,0 +1,1 @@
+{NUM_DOWNLOAD,plural, =1{Trwa pobieranie pliku. Czy chcesz je anulować i wyjść z Chromium?}few{Trwa pobieranie # plików. Czy chcesz je anulować i wyjść z Chromium?}many{Trwa pobieranie # plików. Czy chcesz je anulować i wyjść z Chromium?}other{Trwa pobieranie # pliku. Czy chcesz je anulować i wyjść z Chromium?}}

@@ -1,0 +1,1 @@
+Hvis du sletter et certifikat med certificeringsautoritet (CA), vil din browser ikke længere have tillid til certifikater, der er udstedt af denne CA.

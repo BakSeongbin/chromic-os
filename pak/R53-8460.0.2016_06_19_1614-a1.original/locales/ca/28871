@@ -1,0 +1,1 @@
+Heu provat d'accedir a <strong>$1</strong>, però el servidor ha presentat un certificat signat mitjançant un algoritme de signatura dèbil. Això indica que les credencials de seguretat que ha presentat el servidor podrien haver estat falsificades i que és possible que el servidor no sigui el que esperàveu (és possible que us estigueu comunicant amb un atacant).

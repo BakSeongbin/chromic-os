@@ -1,0 +1,18 @@
+<h3>Feilsøkingsfunksjoner</h3>
+    <br>
+    Du kan slå på feilsøkingsfunksjonene på Chrome OS-enheten din slik at du kan installere og teste spesialtipasset kode på den. Dette gjør det mulig<br>
+    <ul>
+      <li>å fjerne rootfs-verifiseringen, slik at du kan modifisere OS-filene
+      <li>å slå på SSH-tilgang til enheten ved hjelp av standard testetaster, slik at du kan bruke verktøy som <span style="color:grey;font-family:monospace">«Cros Flash»</span> for å få tilgang til enheten
+      <li>å slå på oppstart fra USB, slik at du kan installere en OS-avbildning fra en USB-enhet
+      <li>å angi et egendefinert påloggingspassord på rotnivå for både enheten og systemet, slik at du kan bruke SSH manuelt for å få tilgang til enheten
+    </ul>
+    <br>
+    Når feilsøkingsfunksjonene er slått på, forblir de fleste av dem aktivert selv etter at du utfører en powerwash eller sletter dataene på en organisasjonsadministrert enhet. Hvis du vil slå av alle feilsøkingsfunksjonene fullstendig, må du utføre gjenopprettingsprosessen for Chrome OS (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Du finner mer informasjon om feilsøkingsfunksjonene på:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Merk:</b> Systemet startes på nytt i løpet av prosessen.

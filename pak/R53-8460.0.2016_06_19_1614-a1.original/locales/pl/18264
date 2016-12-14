@@ -1,0 +1,1 @@
+Bardzo eksperymentalny tryb pracy, w którym elementy iframe z innych witryn są obsługiwane przez inny proces niż dokument bazowy. W tym trybie elementy iframe z różnych witryn zewnętrznych mogą być obsługiwane przez jeden proces.

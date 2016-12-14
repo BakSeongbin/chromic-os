@@ -1,0 +1,2 @@
+Multiple distinct Content-Length headers received. This is disallowed so as 
+    to protect against HTTP response splitting attacks.

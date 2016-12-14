@@ -1,0 +1,1 @@
+Permite o uso de listas de exibição para gravar comandos de temas em 2D. Isso permite que a rasterização de tema em 2D seja realizada em um thread separado.

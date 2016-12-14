@@ -1,0 +1,1 @@
+Als een pagina geen expliciet beleid voor verwijzende URL's heeft ingesteld, wordt met het instellen van deze markering de hoeveelheid informatie beperkt in de 'referer'-header voor cross-origin-verzoeken.

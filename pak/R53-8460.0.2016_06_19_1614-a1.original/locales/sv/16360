@@ -1,0 +1,1 @@
+Rullningsrelaterade indatahändelser hanteras med trådar. Om detta inaktiveras måste alla rullningshändelser hanteras i huvudtråden. Observera att detta kan påverka rullningen avsevärt på de flesta webbplatser och bara är avsett att användas i testsyfte.

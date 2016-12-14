@@ -1,0 +1,1 @@
+Aktivací této možnosti povolíte vykreslování prvků s pevným umístěním do samostatných překryvných vrstev. Aby tento způsob vykreslování fungoval, musejí tyto prvky vytvořit také kontexty vrstev.

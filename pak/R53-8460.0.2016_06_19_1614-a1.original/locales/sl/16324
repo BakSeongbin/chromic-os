@@ -1,0 +1,1 @@
+Ob vsakem vnovičnem zagonu ponastavi namestitveno stanje zaganjalnika aplikacij. Dokler je nastavljena ta zastavica, bo Chrome ob vsakem zagonu pozabil, da je bil zaganjalnik že nameščen. S tem se preskuša potek namestitve zaganjalnika aplikacij.

@@ -1,0 +1,1 @@
+Omogućuje eksperimentalnu implementaciju upravljanja predmemorijom (Cache-Control): direktiva za davanje odgovora iz neaktivne predmemorije tijekom ponovne potvrde. Njome se dopušta poslužiteljima da odrede resurse koji se mogu ponovo potvrditi u pozadini radi poboljšanja latencije.

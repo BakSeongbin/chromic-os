@@ -1,0 +1,1 @@
+{0,select, single{L'aplicació "{1}" sol·licita accés a un dels vostres dispositius.}multiple{L'aplicació "{1}" sol·licita accés a almenys un dels vostres dispositius.}other{UNUSED}}

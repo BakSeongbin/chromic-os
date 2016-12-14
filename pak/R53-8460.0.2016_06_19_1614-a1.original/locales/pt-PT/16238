@@ -1,0 +1,1 @@
+Ativar o modo em segundo plano para a API Push. Isto permite ao Chrome continuar em execução depois de a última janela ser fechada e iniciar no arranque do SO, se a API Push necessitar dele.

@@ -1,0 +1,1 @@
+Compatibilitat molt experimental amb la renderització d'iframes entre llocs en processos separats. En aquest mode, els documents només comparteixen un procés de renderització si són del mateix lloc web.

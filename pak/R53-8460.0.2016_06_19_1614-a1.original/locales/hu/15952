@@ -1,0 +1,1 @@
+Engedélyezze a GDB hibakereső csonkot. Ezzel indításkor megállítja a Natív kliens alkalmazást, és megvárja, amíg a nacl-gdb (a NaCl SDK-ból) csatlakozik hozzá.

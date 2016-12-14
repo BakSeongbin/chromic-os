@@ -1,0 +1,1 @@
+Control por subprocesos de los eventos de entrada relacionados con el desplazamiento. Al inhabilitar esta opción, estos eventos de desplazamiento se tendrán que controlar en el proceso principal, lo que puede afectar considerablemente al rendimiento del desplazamiento de la mayoría de los sitios web. Esta opción solo está destinada a la realización de pruebas.

@@ -1,0 +1,1 @@
+Use um thread secundário para fazer a varredura de conteúdo da Web da GPU. A varredura da GPU precisa estar ativada.

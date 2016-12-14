@@ -1,0 +1,1 @@
+Záloha TLS 1.0 byla schopna komunikovat se serverem pomocí metody handshake, avšak zálohy TLS 1.0 již nepodporujeme. Server je nutné aktualizovat, aby v něm byla správně implementována komunikace podle verzí a aby pokud možno podporoval protokol TLS 1.2.

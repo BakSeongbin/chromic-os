@@ -1,0 +1,1 @@
+Resetuj stan instalacji Menu z aplikacjami przy każdym ponownym uruchomieniu. Jeśli jest ustawiona ta flaga, Chrome po żadnym uruchomieniu nie będzie tej instalacji pamiętać. To ustawienie służy do testowania procesu instalacji Menu z aplikacjami.

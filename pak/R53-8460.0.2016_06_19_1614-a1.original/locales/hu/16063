@@ -1,0 +1,1 @@
+A beállítás engedélyezésével lehetővé teszi, hogy a webalkalmazások hozzáférjenek a kísérleti WebGL 2.0 funkcióhoz. Ez a beállítás csak alkalmazásfejlesztéshez használható, és nem alkalmazható tetszőleges webhelyek böngészésekor.

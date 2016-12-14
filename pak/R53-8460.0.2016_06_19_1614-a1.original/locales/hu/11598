@@ -1,0 +1,1 @@
+{NUM_DOWNLOAD,plural, =1{Letöltés van folyamatban. Megszakítja a letöltést, és kilép a Chromiumból?}other{# letöltés van folyamatban. Megszakítja a letöltéseket, és kilép a Chromiumból?}}

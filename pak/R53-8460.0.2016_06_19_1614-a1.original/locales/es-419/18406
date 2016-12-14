@@ -1,0 +1,1 @@
+Se envía una solicitud previa de resultados de la búsqueda para la consulta que se ingresó en el cuadro multifunción y se reutiliza la página de búsqueda base preprocesada para confirmar cualquier consulta de búsqueda y no solo aquellas con solicitud previa.

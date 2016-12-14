@@ -1,0 +1,1 @@
+Pinupuwersa ang pull-to-refresh trigger non-validating na pag-reload (bagamat karaniwang nangangahulugan ito ng regular at cache-validating na pag-reload kapag naka-disable ang flag).

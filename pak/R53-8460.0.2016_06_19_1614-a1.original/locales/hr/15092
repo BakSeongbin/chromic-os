@@ -1,0 +1,1 @@
+{NUM_FILES,plural, =1{Pristup datoteci spremljenoj na računalu}one{Pristup do # datoteke spremljene na računalu}few{Pristup do # datoteke spremljene na računalu}other{Pristup do # datoteka spremljenih na računalu}}

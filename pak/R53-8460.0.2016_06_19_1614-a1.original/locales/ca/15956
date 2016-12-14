@@ -1,0 +1,1 @@
+Restringeix la depuració basada en GDB de l'aplicació de Native Client per URL o fitxer de manifest. La depuració basada en GDB de Native Client ha d'estar activada perquè aquesta opció funcioni.

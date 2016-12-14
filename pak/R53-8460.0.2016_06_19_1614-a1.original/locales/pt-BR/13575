@@ -1,0 +1,18 @@
+<h3>Recursos de depuração</h3>
+    <br>
+    Você pode ativar os recursos de depuração no dispositivo Chrome OS para instalar e testar código personalizado no dispositivo. Isso permite:<br>
+    <ul>
+      <li>Remover a verificação de rootfs para que você possa modificar arquivos do sistema operacional
+      <li>Ativar o acesso SSH ao dispositivo usando as chaves de teste padrão a fim de usar ferramentas como <span style="color:grey;font-family:monospace">'cros flash'</span> para acessar o dispositivo
+      <li>Ativar a inicialização a partir do USB para instalar uma imagem do sistema operacional a partir de uma unidade USB
+      <li>Estabelecer um valor personalizado para a senha de dev e de login da raiz do sistema para acessar SSH manualmente no dispositivo
+    </ul>
+    <br>
+    Uma vez ativados, a maior parte dos recursos de depuração permanecem ativos mesmo após a execução de um powerwash ou depois que os dados de um dispositivo gerenciado pela empresa são apagados. Para desativar totalmente todos os recursos de depuração, execute o processo de recuperação do Chrome OS (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Para ver mais informações sobre os recursos de depuração, consulte:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Observação:</b>  o sistema será reinicializado durante o processo.

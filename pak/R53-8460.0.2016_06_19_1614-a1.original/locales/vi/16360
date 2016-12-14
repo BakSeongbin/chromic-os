@@ -1,0 +1,1 @@
+Xử lý theo chuỗi các sự kiện nhập liên quan đến cuộn. Tắt tính năng này sẽ buộc tất cả sự kiện cuộn đó được xử lý trên chuỗi chính. Lưu ý rằng điều này có thể ảnh hưởng đáng kể đến hiệu suất cuộn của hầu hết các trang web và chỉ dành cho mục đích thử nghiệm.

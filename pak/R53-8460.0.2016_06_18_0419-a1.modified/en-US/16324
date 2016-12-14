@@ -1,0 +1,1 @@
+Reset the App Launcher install state on every restart. While this flag is set, Chromic will forget the launcher has been installed each time it starts. This is used for testing the App Launcher install flow.

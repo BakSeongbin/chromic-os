@@ -1,0 +1,2 @@
+Dies ist für die Verwendung zusammen mit dem Attribut "enable-navigation-tracing" vorgesehen.
+        Wählen Sie das Label aus, das die gespeicherten Traces am besten beschreibt. Damit wird das Trace-Ziel festgelegt. Wenn Sie sich nicht sicher sind, wählen Sie das Label für sonstige aus. Wird das Label leer gelassen, werden keine Traces hochgeladen.

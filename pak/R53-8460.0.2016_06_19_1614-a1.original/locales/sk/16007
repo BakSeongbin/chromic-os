@@ -1,0 +1,1 @@
+Experiment, v ktorom všetky rozhrania API budú odzrkadlovať oblasť zobrazenia rozloženia. Vlastnosti window.scroll sa tak stanú relatívnymi k oblasti zobrazenia rozloženia.

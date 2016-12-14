@@ -1,0 +1,1 @@
+Activează modul fundal pentru API-ul Push. Astfel, Chrome rulează în continuare după ce ultima fereastră este închisă și se lansează la pornirea sistemului de operare, dacă API-ul Push o solicită.

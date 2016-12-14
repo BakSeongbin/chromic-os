@@ -1,0 +1,1 @@
+Impedisce il recupero da parte di script per il blocco degli analizzatori sintattici di terze parti inseriti nel frame principale tramite document.write.

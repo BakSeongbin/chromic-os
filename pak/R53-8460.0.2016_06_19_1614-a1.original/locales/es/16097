@@ -1,0 +1,1 @@
+Fuerza los procesadores de eventos touchstart, touchmove, mousewheel y wheel (que no hayan solicitado ninguna otra cosa) para que se consideren pasivos. Se desactivará el comportamiento touch/wheel en algunos sitios web, pero resulta útil para demostrar las posibles ventajas en el rendimiento de adoptar procesadores de eventos pasivos.

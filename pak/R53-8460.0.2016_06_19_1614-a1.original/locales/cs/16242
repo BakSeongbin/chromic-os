@@ -1,0 +1,2 @@
+Tento příznak se bude používat ve spojení s příznakem trace-upload-url.
+UPOZORNĚNÍ: Když toto pravidlo povolíte, Chrome bude zaznamenávat data o výkonu prohlížení internetu a nahrávat je na adresu URL zadanou příznakem trace-upload-url. Tyto záznamy mohou obsahovat údaje umožňující zjištění totožnosti, například názvy a adresy webů, které navštěvujete.

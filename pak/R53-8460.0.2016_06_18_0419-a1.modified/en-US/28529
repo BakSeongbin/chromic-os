@@ -1,0 +1,1 @@
+A TLS 1.0 fallback was able to handshake with the server, but we no longer accept TLS 1.0 fallbacks. The server needs to be updated to correctly implement version negotiation and preferably support TLS 1.2.

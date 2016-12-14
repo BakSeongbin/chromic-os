@@ -1,0 +1,3 @@
+{0, select,
+       single {Select a HID device} multiple {Select HID devices}
+       other {UNUSED}}

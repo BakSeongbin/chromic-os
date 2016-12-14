@@ -1,0 +1,1 @@
+{DAYS,plural, =1{Před 1 dnem}few{Před # dny}many{Před # dne}other{Před # dny}}

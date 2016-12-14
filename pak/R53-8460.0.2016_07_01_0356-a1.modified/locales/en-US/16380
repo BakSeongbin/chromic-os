@@ -1,0 +1,1 @@
+Enables synchronizing WiFi network settings across devices. When enabled, the WiFi credential datatype is registered with Chromic Sync, and WiFi credentials are synchronized subject to user preferences. (See also, chrome://settings/syncSetup.)

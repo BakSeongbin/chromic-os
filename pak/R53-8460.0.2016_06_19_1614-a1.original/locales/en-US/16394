@@ -1,0 +1,1 @@
+Causes audio output streams to check if channel layouts other than the default hardware layout are available.

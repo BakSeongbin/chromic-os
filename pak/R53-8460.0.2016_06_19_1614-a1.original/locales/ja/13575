@@ -1,0 +1,18 @@
+<h3>デバッグ機能</h3>
+    <br>
+    Chrome OS デバイスでは、カスタムコードをインストールしてテストするためにデバッグ機能を有効にできます。この設定により次のことが可能になります。<br>
+    <ul>
+      <li>オペレーティング システムのファイルを修正するために rootfs の確認を削除できます。
+      <li>標準のテストキーを使ってデバイスへの SSH アクセスを有効化できます。これにより、<span style="color:grey;font-family:monospace">'cros flash'</span> のようなツールを使ってデバイスにアクセスできるようになります。
+      <li>USB ドライブから OS イメージをインストールできるように、USB からの起動を有効化できます。
+      <li>デバイスに SSH で手動アクセスできるように、dev とシステム ルート ログイン パスワードの両方をカスタム値に設定できます。
+    </ul>
+    <br>
+    デバッグ機能を有効にすると、企業の管理対象デバイスで Powerwash やデータ消去を実行した場合でもほとんどのデバッグ機能は有効なまま維持されます。すべてのデバッグ機能を完全に無効にするには、Chrome OS の復元処理を行ってください（https://support.google.com/chromebook/answer/1080595 をご覧ください）。
+    <br>
+    <br>
+    デバッグ機能について詳しくは以下をご覧ください。<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>注:</b> この処理中、システムは再起動されます。

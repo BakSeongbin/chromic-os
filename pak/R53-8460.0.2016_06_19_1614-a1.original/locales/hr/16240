@@ -1,0 +1,1 @@
+Omogućuje eksperimentalnu implementaciju upute "Cache-Control: stale-while-revalidate". Njome se poslužiteljima dopušta da odrede resurse koji se mogu ponovo provjeriti u pozadini radi poboljšanja latencije.

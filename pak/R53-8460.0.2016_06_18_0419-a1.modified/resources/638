@@ -1,0 +1,2677 @@
+<!doctype html>
+<html i18n-values="dir:textdirection;lang:language;highlight:highlightStrength">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="chrome://resources/css/bubble.css">
+<link rel="stylesheet" href="chrome://resources/css/bubble_button.css">
+<link rel="stylesheet" href="chrome://resources/css/chrome_shared.css">
+<link rel="stylesheet" href="chrome://resources/css/controlled_indicator.css">
+<link rel="stylesheet" href="chrome://resources/css/list.css">
+<link rel="stylesheet" href="chrome://resources/css/overlay.css">
+<link rel="stylesheet" href="chrome://resources/css/tree.css">
+<link rel="stylesheet" href="chrome://resources/css/widgets.css">
+<style>/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+body {
+  position: relative;
+}
+
+#main-content {
+  bottom: 0;
+  display: -webkit-box;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+#mainview {
+  -webkit-box-align: stretch;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1;
+}
+
+#mainview-content {
+  min-height: 100%;
+  position: relative;
+}
+
+#page-container {
+  box-sizing: border-box;
+  max-width: 888px;
+  min-width: 600px;
+}
+
+body #searchBox {
+  position: fixed;
+  z-index: 4;
+}
+
+div.disabled {
+  color: #999;
+}
+
+.settings-row {
+  display: block;
+  margin: 0.65em 0;
+}
+
+.hbox {
+  -webkit-box-orient: horizontal;
+  display: -webkit-box;
+}
+
+.vbox {
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+}
+
+.box-align-center {
+  -webkit-box-align: center;
+}
+
+.stretch {
+  -webkit-box-flex: 1;
+}
+
+.raw-button,
+.raw-button:hover,
+.raw-button:active {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  border: none;
+  box-shadow: none;
+  min-width: 0;
+  padding: 1px 6px;
+}
+
+.bottom-strip {
+  border-top: none;
+  bottom: 0;
+  padding: 12px;
+  position: absolute;
+  right: 0;
+}
+
+/* Omit top padding (currently only on #settings) whenever the search page is
+ * showing.
+ */
+#searchPage:not([hidden]) + #settings {
+  padding-top: 0;
+}
+
+.page list {
+  /* Min height is a multiple of the list item height (32) */
+  min-height: 192px;
+}
+
+.option {
+  margin-top: 0;
+}
+
+.touch-slider {
+  -webkit-appearance: slider-horizontal;
+}
+
+.settings-list,
+.settings-list-empty {
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+}
+
+.settings-list-empty {
+  background-color: #f4f4f4;
+  box-sizing: border-box;
+  min-height: 125px;
+  padding-left: 20px;
+  padding-top: 20px;
+}
+
+
+/* Editable text field properties */
+.editable-text-field > * {
+  -webkit-box-align: center;
+  -webkit-transition: 150ms background-color;
+  border: none;
+  box-sizing: border-box;
+  display: -webkit-box;
+  height: 20px;
+  margin: 0;
+}
+
+.editable-text-field > .spacer {
+  /* The above height rule should not apply to spacers. */
+  height: 0;
+}
+
+.editable-text-field .editable-text {
+  padding: 2px 3px;
+}
+
+.editable-text-field .static-text {
+  height: 24px;
+  overflow: hidden;
+  padding: 3px 4px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editable-text-field:not([editable]) > [displaymode='edit'] {
+  display: none;
+}
+
+.editable-text-field[editable] > [displaymode='static'] {
+  display: none;
+}
+
+.editable-text-field[empty] > input[type='text'] {
+  color: #ccc;
+  font-style: italic;
+}
+
+.editable-text-field[disabled] {
+  opacity: 0.6;
+}
+
+/* Editable List properties */
+list > * {
+  -webkit-box-align: center;
+  -webkit-transition: 150ms background-color;
+  border: none;
+  border-radius: 0;  /* TODO(dbeam): Is this necessary? */
+  box-sizing: border-box;
+  display: -webkit-box;
+  height: 32px;
+  margin: 0;
+}
+
+list > .spacer {
+  /* The above height rule should not apply to spacers. When redraw is called
+     on the list they will be given an explicit element height but this ensures
+     they have 0 height to begin with. */
+  height: 0;
+}
+
+list:not([disabled]) > :hover {
+  background-color: rgb(228, 236, 247);
+}
+
+/* Note: If this becomes the list style for other WebUI pages these rules can be
+ * simplified (since they wont need to override other rules). */
+
+list:not([has-element-focus]) > [selected],
+list:not([has-element-focus]) > [lead][selected] {
+  background-color: #d0d0d0;
+  background-image: none;
+}
+
+list[has-element-focus] > [selected],
+list[has-element-focus] > [lead][selected],
+list:not([has-element-focus]) > [selected]:hover,
+list:not([has-element-focus]) > [selected][lead]:hover {
+  background-color: rgb(187, 206, 233);
+  background-image: none;
+}
+
+.settings-list[has-element-focus] > [lead],
+.settings-list[has-element-focus] > [lead][selected] {
+  border-bottom: 1px solid rgb(120, 146, 180);
+  border-top: 1px solid rgb(120, 146, 180);
+}
+
+.settings-list[has-element-focus] > [lead]:nth-child(2),
+.settings-list[has-element-focus] > [lead][selected]:nth-child(2) {
+  border-top: 1px solid transparent;
+}
+
+.settings-list[has-element-focus] > [lead]:nth-last-child(2),
+.settings-list[has-element-focus] > [lead][selected]:nth-last-child(2) {
+  border-bottom: 1px solid transparent;
+}
+
+.settings-list[disabled] > [lead][selected],
+.settings-list[disabled]:focus > [lead][selected] {
+  border: none;
+}
+
+list[disabled] {
+  opacity: 0.6;
+}
+
+list > .heading {
+  color: #666;
+}
+
+list > .heading:hover {
+  background-color: transparent;
+  border-color: transparent;
+}
+
+list .deletable-item {
+  -webkit-box-align: center;
+  outline: none;
+}
+
+list .deletable-item > :first-child {
+  -webkit-box-align: center;
+  -webkit-box-flex: 1;
+  -webkit-padding-end: 5px;
+  display: -webkit-box;
+}
+
+list .row-delete-button {
+  -webkit-transition: 150ms opacity;
+  background-color: transparent;
+  background-image: -webkit-image-set(
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAiElEQVR42r2RsQrDMAxEBRdl8SDcX8lQPGg1GBI6lvz/h7QyRRXV0qUULwfvwZ1tenw5PxToRPWMC52eA9+WDnlh3HFQ/xBQl86NFYJqeGflkiogrOvVlIFhqURFVho3x1moGAa3deMs+LS30CAhBN5nNxeT5hbJ1zwmji2k+aF6NENIPf/hs54f0sZFUVAMigAAAABJRU5ErkJggg==) 1x,
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAA9UlEQVR4Xu3UsWrCUByH0fMEouiuhrg4xohToJVGH0CHLBncEwfx/VvIFHLJBWmHDvKbv7PcP9f3L/fXwBsApZSRpUpEgbOnxwiReng6x4AvjdrNXRLkibubWqMcB9Yujk7qjhjmtZOji/U4wELuoBwQXa50kFsQA5jK+kQ/l5kSA4ZEK5Fo+3kcCIlGM8ijQEhUqkEeBUKiUPTyl4C5vZ1cbmdv/iqwclXY6aZwtXoFSLQqhVwmkytUWglxAMG7T0yCu4gD0v7ZBKeVxoEwFxIxYBPmIWEzDnyEeUj4HAfYdvmMcGYdsSUGsOzlIbHEv/uV38APrreiBRBIs3QAAAAASUVORK5CYII=) 2x);
+  border: none;
+  display: block;
+  height: 16px;
+  opacity: 1;
+  width: 16px;
+}
+
+list > *:not(:hover):not([selected]):not([lead]) .row-delete-button,
+list:not([has-element-focus]) > *:not(:hover):not([selected])
+    .row-delete-button,
+list[disabled] .row-delete-button,
+list .row-delete-button[disabled] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* HostedApp entries use the disabled closing button to display the App's
+ * favicon, as an indicator that instead of deleting the permission here
+ * the user has to remove the hosted app.*/
+list div[role='listitem'][managedby='HostedApp'] .row-delete-button {
+  opacity: 1;
+}
+
+list .row-delete-button:hover {
+  background-image: -webkit-image-set(
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAqUlEQVR4XqWRMQqEMBBF/1E8Ra6x6V3FRnS9QbCxtJg6Z7CzE9lTiIXXyUb3C8EULixDIMM8Zt4kcDfxM5A45U+cgeXnC1tREgkzAgob3hiq3CUHvGLG4FTQoSgxQGDrzN8WTLBGnx2IVDksen9GH7Z9hA5E6uxABMJyCHDMCEGHzugLQPPlBCBNGq+5YtpnGw1Bv+te15ypljTpVzdak5Opy+z+qf//zQ+Lg+07ay5KsgAAAABJRU5ErkJggg==) 1x,
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAB4UlEQVR42u2VsWoCQRBAh+MUFP0C1V9QD4NEOxs9xBQHQVCwSJFWVBAtBNXCxk6wTkBJYUTwEwQLC61E8QP0NzZzt5g5726DkC7EYWHZ8T3WndkV2C/jLwn4hwVYBIdLn9vkLp79QcBCTDMiy3w2gQ9XeTYkEHA8vqj2rworXu3HF1YFfSWgp5QFnKVLvYvzDEKEZ5hW70oXOCtcEbQLIkx7+IQtfMBSOjU6XEF4oyOdYInZbXyOuajjDlpNeQgleIUJKUz4BDMledhqOu/AzVSmzZ49CUjCC0yvim98iqtJT2L2jKsqczsdok9XrHNexaww415lnTNwn6CM/KxJIR8bnUZHPhLO6yMoIyk2pNjLewFuE5AiY1KMMQx8Q7hQYFek4AkjxXFe1rsF84I/BTFQMGL+1Lxwl4DwdtM1gjwKohgxyLtG7SYpxALqugOMcfOKN+bFXeBsLB1uulNcRqq7/tt36k41zoL6QlxGjtd6lrahiqCi1iOFYyvXuxY8yzK33VnvUivbLlOlj/jktm0s3YnXrNIXXufHNxuOGasi8S68zkwrlnV8ZcJJsTIUxbLgQcFZWE8N0gau2p40VVcM0gYeFpSRK6445UhBuKiRgiyKw+34rLt59nb1/7+RwReVkaFtqvNBuwAAAABJRU5ErkJggg==) 2x);
+}
+
+list .row-delete-button:active {
+  background-image: -webkit-image-set(
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAQklEQVR4AWP4TwBSTQGDHcMZIIYAKA9VwRkwtINJgyCaCTAlCBaKAoQ+hFmoCqBKENKkK8C0gpAjCXuTyICiQ2QBAPSwyG3ByZlCAAAAAElFTkSuQmCC)
+          1x,
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAA/ElEQVR4Xu3UsWrCUBiG4efGlIBoIMFbcnYolYJ3pg4iKGrGYFTRwaUFhYAekiDt0EG++X2W83N8/3J/DbwBMJJSsdQItcDY1VlCOImzq3Ed8OmicHASB3ns5KBw8VUNpDJrW7uAiJ3sbK1l0mqArpmFTUlQ5jYWZrrUAUSmT0SZm4qoA56JvVhs/5g3A7RLolA85A1ASOTye65NMxASK6syfxGITMzvMxG9CvRkliWwlOm9AsSOcitzU1NzK7mjuBkQvHtLK7iLBiB5PhttJSGpB8I8vM6kDuiHeUjoVwMfYR4SRtUAw1veIZzOjRhSBzCoyKFjgH/3K7+BHzg+Cgw0eSW3AAAAAElFTkSuQmCC)
+          2x);
+}
+
+list .static-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+list[type='text'][inlineeditable] input {
+  box-sizing: border-box;
+  margin: 0;
+  width: 100%;
+}
+
+list > :not([editing]) [displaymode='edit'] {
+  display: none;
+}
+
+list > [editing] [displaymode='static'] {
+  /* Don't use display:none or visibility:hidden because we need to keep an
+   * element focusable.
+   * We shrink only height.  We don't shrink width to avoid to change the size
+   * of containing boxes.
+   */
+  border-bottom: 0 !important;
+  border-top: 0 !important;
+  height: 0 !important;
+  margin-bottom: 0 !important;
+  margin-top: 0 !important;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+list > [editing] input:invalid {
+  background-color: pink;
+}
+
+.list-inline-button {
+  -webkit-appearance: none;
+  -webkit-transition: opacity 150ms;
+  background: rgb(138, 170, 237);
+  border: none;
+  border-radius: 2px;
+  color: white;
+  font-weight: bold;
+  opacity: 0.7;
+}
+
+.list-inline-button:hover {
+  opacity: 1;
+}
+
+.option-name {
+  -webkit-padding-end: 5px;
+}
+
+.favicon-cell {
+  -webkit-padding-start: 20px;
+  background-position: left;
+  background-repeat: no-repeat;
+  background-size: 16px;
+}
+
+input[type='url'].favicon-cell {
+  -webkit-padding-start: 22px;
+  background-position-x: 4px;
+}
+
+html[dir=rtl] input.favicon-cell,
+input[dir=rtl].favicon-cell {
+  background-position-x: -webkit-calc(100% - 4px);
+}
+
+list .favicon-cell {
+  -webkit-margin-start: 7px;
+  -webkit-padding-start: 26px;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html[dir=rtl] list .favicon-cell {
+  background-position: right;
+}
+
+html[enable-background-mode=false] #background-mode-section {
+ display: none;
+}
+
+/* UI Controls */
+
+/* LIST */
+.settings-list[has-element-focus] {
+outline: 1px solid rgba(0, 128, 256, 0.5);
+  outline-offset: -2px;
+
+}
+
+.suboption {
+  -webkit-margin-start: 23px;
+}
+
+list.autocomplete-suggestions {
+  background-color: white;
+  border: 1px solid #aaa;
+  border-radius: 2px;
+  min-height: 0;
+  opacity: 0.9;
+  position: fixed;
+  z-index: 3;
+}
+
+list.autocomplete-suggestions > div {
+  height: auto;
+}
+
+list.autocomplete-suggestions:not([has-element-focus]) > [selected],
+list.autocomplete-suggestions:not([has-element-focus]) > [lead][selected] {
+  background-color: rgb(187, 206, 233);
+}
+
+html:not(.focus-outline-visible)
+:enabled:focus:-webkit-any(input[type='checkbox'], input[type='radio']) {
+  /* Cancel border-color for :focus specified in widgets.css. */
+  border-color: rgba(0, 0, 0, 0.25);
+}
+
+html:not([hasFlashPlugin]) .flash-plugin-area,
+/* If the Flash plug-in supports the NPP_ClearSiteData API, we don't need to
+ * show the link to the Flash storage settings manager:
+ */
+html[flashPluginSupportsClearSiteData] .flash-plugin-area,
+html:not([flashPluginSupportsClearSiteData]) .clear-plugin-lso-data-enabled,
+html[flashPluginSupportsClearSiteData] .clear-plugin-lso-data-disabled,
+html:not([enablePepperFlashSettings]) .pepper-flash-settings {
+  display: none;
+}
+
+.standalone-action-link {
+  padding: 0;
+}
+
+:-webkit-any(.checkbox, .radio) label ~ a {
+  display: inline-block;
+  /* Matches padding of -webkit-any(.checkbox, .radio) */
+  padding-bottom: 7px;
+  vertical-align: bottom;
+}
+</style>
+<style>/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+#certificateManagerPage {
+  min-width: 700px;
+}
+
+#certificateRestoreOverlay h1 {
+  /* Leave enough space for the close-button. */
+  /* TODO(KGR): make dialogs to use flex-boxes instead of relying on padding. */
+  padding-right: 35px;
+}
+
+/* Force tab strip to extend to the left and right edges of the window. */
+#certificate-manager-content-area {
+  padding: 6px 0 6px 0;
+}
+
+#certificate-manager-content-area .subpages-tab-contents {
+  padding-left: 28px;
+  padding-right: 14px;
+}
+
+.certificate-tree-table {
+  width: 100%;
+}
+
+.certificate-tree {
+  /* TODO(mattm): BLAH.  Make this not statically sized. */
+  height: 300px;
+}
+</style>
+<style>/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+#alertOverlayMessage {
+  width: 400px;
+}
+</style>
+<style>/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+span.cert-untrusted {
+  background-color: pink;
+  border: 1px solid red;
+  border-radius: 3px;
+  margin-right: 3px;
+  padding-left: 1px;
+  padding-right: 1px;
+}
+
+span.cert-policy {
+  margin-left: 3px;
+  vertical-align: middle;
+}
+</style>
+<style>/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+.subpages-nav-tabs .tab {
+  padding: 4px 8px;
+  position: relative;
+}
+
+.subpages-nav-tabs .active-tab {
+  background: white;
+  border: 1px solid #ddd;
+  border-bottom: 2px solid white;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  box-shadow: 8px -8px 12px -6px rgb(240, 240, 240);
+  position: relative;
+}
+
+/* To avoid tabs changing size when they are clicked and their labels become
+ * bold, we actually put two labels inside each tab: an inactive label and an
+ * active label. Only one is visible at a time, but the bold label is used to
+ * size the tab even when it's not visible. This keeps the tab size constant.
+ */
+.subpages-nav-tabs .active-tab-label,
+.subpages-nav-tabs .tab-label:hover {
+  font-weight: bold;
+}
+
+.subpages-nav-tabs .tab-label {
+  left: 9px;
+  position: absolute;
+  top: 5px;
+}
+
+html[dir=rtl] .subpages-nav-tabs .tab-label {
+  right: 9px;
+}
+
+.subpages-nav-tabs .active-tab-label,
+.subpages-nav-tabs .active-tab .tab-label {
+  visibility: hidden;
+}
+
+/* .tab is not removed when .active-tab is added, so we must
+ * override the hidden visibility above in the active tab case.
+ */
+.subpages-nav-tabs .active-tab .active-tab-label {
+  visibility: visible;
+}
+
+.subpages-nav-tabs {
+  background-image: linear-gradient(
+                        to bottom,
+                        rgb(255,255,255),
+                        rgb(255,255,255) 60%,
+                        rgb(250, 250, 250) 80%,
+                        rgb(242,242,242)
+  );
+  border-bottom: 1px solid #ddd;
+  padding: 4px 20px;
+}
+
+.subpages-tab-contents {
+   -webkit-padding-start: 10px;
+  display: none;
+  padding-top: 15px;
+}
+
+.active-tab-contents {
+  display: block;
+}
+</style>
+<script src="chrome://resources/js/cr.js"></script>
+<script src="chrome://resources/js/event_tracker.js"></script>
+<script src="chrome://resources/js/cr/event_target.js"></script>
+<script src="chrome://resources/js/cr/ui.js"></script>
+<script src="chrome://resources/js/cr/ui/focus_manager.js"></script>
+<script src="chrome://resources/js/cr/ui/focus_outline_manager.js"></script>
+<script src="chrome://resources/js/cr/ui/touch_handler.js"></script>
+<script src="chrome://resources/js/cr/ui/array_data_model.js"></script>
+<script src="chrome://resources/js/cr/ui/bubble.js"></script>
+<script src="chrome://resources/js/cr/ui/bubble_button.js"></script>
+<script src="chrome://resources/js/cr/ui/controlled_indicator.js"></script>
+<script src="chrome://resources/js/cr/ui/list_selection_model.js"></script>
+<script src="chrome://resources/js/cr/ui/list_selection_controller.js"></script>
+<script src="chrome://resources/js/cr/ui/list_single_selection_model.js"></script>
+<script src="chrome://resources/js/cr/ui/list_item.js"></script>
+<script src="chrome://resources/js/cr/ui/list.js"></script>
+<script src="chrome://resources/js/cr/ui/overlay.js"></script>
+<script src="chrome://resources/js/cr/ui/page_manager/page_manager.js"></script>
+<script src="chrome://resources/js/cr/ui/page_manager/page.js"></script>
+<script src="chrome://resources/js/cr/ui/tree.js"></script>
+<script src="chrome://resources/js/load_time_data.js"></script>
+<script src="chrome://resources/js/util.js"></script>
+
+<script>// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('options', function() {
+  /** @const */ var FocusOutlineManager = cr.ui.FocusOutlineManager;
+
+  var OptionsPage = {
+    /**
+     * This is the absolute difference maintained between standard and
+     * fixed-width font sizes. Refer http://crbug.com/91922.
+     * @const
+     */
+    SIZE_DIFFERENCE_FIXED_STANDARD: 3,
+
+    /**
+     * Initializes the complete options page. This will cause all C++ handlers
+     * to be invoked to do final setup.
+     */
+    initialize: function() {
+      chrome.send('coreOptionsInitialize');
+    },
+
+    /**
+     * Shows the tab contents for the given navigation tab.
+     * @param {Node} tab The tab that the user clicked.
+     */
+    showTab: function(tab) {
+      // Search parents until we find a tab, or the nav bar itself. This allows
+      // tabs to have child nodes, e.g. labels in separately-styled spans.
+      while (tab && tab.classList &&
+             !tab.classList.contains('subpages-nav-tabs') &&
+             !tab.classList.contains('tab')) {
+        tab = tab.parentNode;
+      }
+      if (!tab || !tab.classList || !tab.classList.contains('tab'))
+        return;
+
+      // Find tab bar of the tab.
+      var tabBar = tab;
+      while (tabBar && tabBar.classList &&
+             !tabBar.classList.contains('subpages-nav-tabs')) {
+        tabBar = tabBar.parentNode;
+      }
+      if (!tabBar || !tabBar.classList)
+        return;
+
+      if (tabBar.activeNavTab != null) {
+        tabBar.activeNavTab.classList.remove('active-tab');
+        $(tabBar.activeNavTab.getAttribute('tab-contents')).classList.
+            remove('active-tab-contents');
+      }
+
+      tab.classList.add('active-tab');
+      $(tab.getAttribute('tab-contents')).classList.add('active-tab-contents');
+      tabBar.activeNavTab = tab;
+    },
+
+    /**
+     * Shows or hides options for clearing Flash LSOs.
+     * @param {boolean} enabled Whether plugin data can be cleared.
+     */
+    setClearPluginLSODataEnabled: function(enabled) {
+      if (enabled) {
+        document.documentElement.setAttribute(
+            'flashPluginSupportsClearSiteData', '');
+      } else {
+        document.documentElement.removeAttribute(
+            'flashPluginSupportsClearSiteData');
+      }
+      if (navigator.plugins['Shockwave Flash'])
+        document.documentElement.setAttribute('hasFlashPlugin', '');
+    },
+
+    /**
+     * Shows or hides Pepper Flash settings.
+     * @param {boolean} enabled Whether Pepper Flash settings should be enabled.
+     */
+    setPepperFlashSettingsEnabled: function(enabled) {
+      if (enabled) {
+        document.documentElement.setAttribute(
+            'enablePepperFlashSettings', '');
+      } else {
+        document.documentElement.removeAttribute(
+            'enablePepperFlashSettings');
+      }
+    },
+
+    /**
+     * Sets whether Settings is shown as a standalone page in a window for the
+     * app launcher settings "app".
+     * @param {boolean} isSettingsApp Whether this page is shown standalone.
+     */
+    setIsSettingsApp: function(isSettingsApp) {
+      document.documentElement.classList.toggle('settings-app', isSettingsApp);
+    },
+
+    /**
+     * Returns true if Settings is shown as an "app" (in a window by itself)
+     * for the app launcher settings "app".
+     * @return {boolean} Whether this page is shown standalone.
+     */
+    isSettingsApp: function() {
+      return document.documentElement.classList.contains('settings-app');
+    },
+  };
+
+  // Export
+  return {
+    OptionsPage: OptionsPage
+  };
+});
+</script>
+<script>// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('options', function() {
+  var Page = cr.ui.pageManager.Page;
+  var PageManager = cr.ui.pageManager.PageManager;
+
+  /**
+   * AlertOverlay class
+   * Encapsulated handling of a generic alert.
+   * @constructor
+   * @extends {cr.ui.pageManager.Page}
+   */
+  function AlertOverlay() {
+    Page.call(this, 'alertOverlay', '', 'alertOverlay');
+  }
+
+  cr.addSingletonGetter(AlertOverlay);
+
+  AlertOverlay.prototype = {
+    // Inherit AlertOverlay from Page.
+    __proto__: Page.prototype,
+
+    /**
+     * Whether the page can be shown. Used to make sure the page is only
+     * shown via AlertOverlay.Show(), and not via the address bar.
+     * @private
+     */
+    canShow_: false,
+
+    /** @override */
+    initializePage: function() {
+      Page.prototype.initializePage.call(this);
+
+      // AlertOverlay is special in that it is not tied to one page or overlay.
+      this.alwaysOnTop = true;
+
+      var self = this;
+      $('alertOverlayOk').onclick = function(event) {
+        self.handleOK_();
+      };
+
+      $('alertOverlayCancel').onclick = function(event) {
+        self.handleCancel_();
+      };
+    },
+
+    /**
+     * Handle the 'ok' button.  Clear the overlay and call the ok callback if
+     * available.
+     * @private
+     */
+    handleOK_: function() {
+      PageManager.closeOverlay();
+      if (this.okCallback != undefined) {
+        this.okCallback.call();
+      }
+    },
+
+    /**
+     * Handle the 'cancel' button.  Clear the overlay and call the cancel
+     * callback if available.
+     * @private
+     */
+    handleCancel_: function() {
+      PageManager.closeOverlay();
+      if (this.cancelCallback != undefined) {
+        this.cancelCallback.call();
+      }
+    },
+
+    /**
+     * The page is getting hidden. Don't let it be shown again.
+     * @override
+     */
+    willHidePage: function() {
+      this.canShow_ = false;
+    },
+
+    /** @override */
+    canShowPage: function() {
+      return this.canShow_;
+    },
+  };
+
+  /**
+   * Show an alert overlay with the given message, button titles, and
+   * callbacks.
+   * @param {string} title The alert title to display to the user.
+   * @param {string} message The alert message to display to the user.
+   * @param {string} okTitle The title of the OK button. If undefined or empty,
+   *     no button is shown.
+   * @param {string} cancelTitle The title of the cancel button. If undefined or
+   *     empty, no button is shown.
+   * @param {function()} okCallback A function to be called when the user
+   *     presses the ok button.  The alert window will be closed automatically.
+   *     Can be undefined.
+   * @param {function()} cancelCallback A function to be called when the user
+   *     presses the cancel button.  The alert window will be closed
+   *     automatically.  Can be undefined.
+   */
+  AlertOverlay.show = function(
+      title, message, okTitle, cancelTitle, okCallback, cancelCallback) {
+    if (title != undefined) {
+      $('alertOverlayTitle').textContent = title;
+      $('alertOverlayTitle').style.display = 'block';
+    } else {
+      $('alertOverlayTitle').style.display = 'none';
+    }
+
+    if (message != undefined) {
+      $('alertOverlayMessage').textContent = message;
+      $('alertOverlayMessage').style.display = 'block';
+    } else {
+      $('alertOverlayMessage').style.display = 'none';
+    }
+
+    if (okTitle != undefined && okTitle != '') {
+      $('alertOverlayOk').textContent = okTitle;
+      $('alertOverlayOk').style.display = 'block';
+    } else {
+      $('alertOverlayOk').style.display = 'none';
+    }
+
+    if (cancelTitle != undefined && cancelTitle != '') {
+      $('alertOverlayCancel').textContent = cancelTitle;
+      $('alertOverlayCancel').style.display = 'inline';
+    } else {
+      $('alertOverlayCancel').style.display = 'none';
+    }
+
+    var alertOverlay = AlertOverlay.getInstance();
+    alertOverlay.okCallback = okCallback;
+    alertOverlay.cancelCallback = cancelCallback;
+    alertOverlay.canShow_ = true;
+
+    // Intentionally don't show the URL in the location bar as we don't want
+    // people trying to navigate here by hand.
+    PageManager.showPageByName('alertOverlay', false);
+  };
+
+  // Export
+  return {
+    AlertOverlay: AlertOverlay
+  };
+});
+</script>
+<script>// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('options', function() {
+  /** @const */ var Preferences = options.Preferences;
+
+  /**
+   * A controlled setting indicator that can be placed on a setting as an
+   * indicator that the value is controlled by some external entity such as
+   * policy or an extension.
+   * @constructor
+   * @extends {cr.ui.ControlledIndicator}
+   */
+  var ControlledSettingIndicator = cr.ui.define('span');
+
+  ControlledSettingIndicator.prototype = {
+    __proto__: cr.ui.ControlledIndicator.prototype,
+
+    /**
+     * Decorates the base element to show the proper icon.
+     */
+    decorate: function() {
+      cr.ui.ControlledIndicator.prototype.decorate.call(this);
+
+      // If there is a pref, track its controlledBy and recommendedValue
+      // properties in order to be able to bring up the correct bubble.
+      if (this.pref) {
+        Preferences.getInstance().addEventListener(
+            this.pref, this.handlePrefChange.bind(this));
+        this.resetHandler = this.clearAssociatedPref_;
+      }
+    },
+
+    /**
+     * The given handler will be called when the user clicks on the 'reset to
+     * recommended value' link shown in the indicator bubble. The |this| object
+     * will be the indicator itself.
+     * @param {function()} handler The handler to be called.
+     */
+    set resetHandler(handler) {
+      this.resetHandler_ = handler;
+    },
+
+    /**
+     * Clears the preference associated with this indicator.
+     * @private
+     */
+    clearAssociatedPref_: function() {
+      Preferences.clearPref(this.pref, !this.dialogPref);
+    },
+
+    /**
+     * Handle changes to the associated pref by hiding any currently visible
+     * bubble and updating the controlledBy property.
+     * @param {Event} event Pref change event.
+     * @suppress {checkTypes}
+     * TODO(vitalyp): remove the suppression. |controlledBy| property is defined
+     * by cr.defineProperty(). Currently null can't be assigned to such
+     * properties due to implementation of ChromePass.java. See this discussion
+     * to change nulls to empty string below:
+     * https://chromiumcodereview.appspot.com/11066015/
+     */
+    handlePrefChange: function(event) {
+      PageManager.hideBubble();
+      if (event.value.controlledBy) {
+        if (!this.value || String(event.value.value) == this.value) {
+          this.controlledBy = event.value.controlledBy;
+          if (event.value.extension) {
+            this.extensionId = event.value.extension.id;
+            this.extensionIcon = event.value.extension.icon;
+            this.extensionName = event.value.extension.name;
+          }
+        } else {
+          this.controlledBy = null;
+        }
+      } else if (event.value.recommendedValue != undefined) {
+        this.controlledBy =
+            !this.value || String(event.value.recommendedValue) == this.value ?
+            'hasRecommendation' : null;
+      } else {
+        this.controlledBy = null;
+      }
+    },
+
+    /**
+     * Uses the page's PageManager to display an informational bubble.
+     * @override
+     */
+    showBubble: function(content) {
+      PageManager.showBubble(content, this.image, this, this.location);
+    },
+
+    /**
+     * Uses the page's PageManager to hide the currently visible bubble, if
+     * any.
+     * @override
+     */
+    hideBubble: function() {
+      PageManager.hideBubble();
+    },
+
+    /**
+     * Queries the |loadTimeData| singleton for the default bubble text strings.
+     * @override
+     */
+    getDefaultStrings: function() {
+      // Construct the bubble text.
+      if (this.hasAttribute('plural')) {
+        var defaultStrings = {
+          'policy': loadTimeData.getString('controlledSettingsPolicy'),
+          'extension': loadTimeData.getString('controlledSettingsExtension'),
+          'extensionWithName':
+              loadTimeData.getString('controlledSettingsExtensionWithName'),
+        };
+        if (cr.isChromeOS) {
+          defaultStrings.shared =
+              loadTimeData.getString('controlledSettingsShared');
+        }
+      } else {
+        var defaultStrings = {
+          'policy': loadTimeData.getString('controlledSettingPolicy'),
+          'extension': loadTimeData.getString('controlledSettingExtension'),
+          'extensionWithName':
+              loadTimeData.getString('controlledSettingExtensionWithName'),
+          'recommended': loadTimeData.getString('controlledSettingRecommended'),
+          'hasRecommendation':
+              loadTimeData.getString('controlledSettingHasRecommendation'),
+        };
+        if (cr.isChromeOS) {
+          defaultStrings.owner =
+              loadTimeData.getString('controlledSettingOwner');
+          defaultStrings.shared =
+              loadTimeData.getString('controlledSettingShared');
+        }
+      }
+      return defaultStrings;
+    },
+
+    /**
+     * Returns the DOM tree for a showing the message |text|.
+     * @param {string} text to be shown in the bubble.
+     * @override
+     */
+    createDomTree: function(text) {
+      var content = document.createElement('div');
+      content.classList.add('controlled-setting-bubble-header');
+      content.textContent = text;
+
+      if (this.controlledBy == 'hasRecommendation' && this.resetHandler_ &&
+          !this.readOnly) {
+        var container = document.createElement('div');
+        var action = new ActionLink;
+        action.classList.add('controlled-setting-bubble-action');
+        action.textContent =
+            loadTimeData.getString('controlledSettingFollowRecommendation');
+        action.addEventListener('click', this.resetHandler_.bind(this));
+        container.appendChild(action);
+        content.appendChild(container);
+      } else if (this.controlledBy == 'extension' && this.extensionName) {
+        var extensionContainer =
+            $('extension-controlled-settings-bubble-template').cloneNode(true);
+        // No need for an id anymore, and thus remove to avoid id collision.
+        extensionContainer.removeAttribute('id');
+        extensionContainer.hidden = false;
+
+        var extensionName = extensionContainer.querySelector(
+            '.controlled-setting-bubble-extension-name');
+        extensionName.textContent = this.extensionName;
+        extensionName.style.backgroundImage =
+            'url("' + this.extensionIcon + '")';
+
+        var manageLink = extensionContainer.querySelector(
+            '.controlled-setting-bubble-extension-manage-link');
+        var extensionId = this.extensionId;
+        manageLink.onclick = function() {
+          uber.invokeMethodOnWindow(
+              window.top, 'showPage',
+              {pageId: 'extensions', path: '?id=' + extensionId});
+        };
+
+        var disableButton = extensionContainer.querySelector(
+            '.controlled-setting-bubble-extension-disable-button');
+        disableButton.onclick =
+            function() { chrome.send('disableExtension', [extensionId]); };
+        content.appendChild(extensionContainer);
+      }
+      return content;
+    },
+  };
+
+  /**
+   * The name of the associated preference.
+   */
+  cr.defineProperty(ControlledSettingIndicator, 'pref', cr.PropertyKind.ATTR);
+
+  /**
+   * Whether this indicator is part of a dialog. If so, changes made to the
+   * associated preference take effect in the settings UI immediately but are
+   * only actually committed when the user confirms the dialog. If the user
+   * cancels the dialog instead, the changes are rolled back in the settings UI
+   * and never committed.
+   */
+  cr.defineProperty(ControlledSettingIndicator, 'dialogPref',
+                    cr.PropertyKind.BOOL_ATTR);
+
+  /**
+   * The value of the associated preference that the indicator represents. If
+   * this is not set, the indicator will be visible whenever any value is
+   * enforced or recommended. If it is set, the indicator will be visible only
+   * when the enforced or recommended value matches the value it represents.
+   * This allows multiple indicators to be created for a set of radio buttons,
+   * ensuring that only one of them is visible at a time.
+   */
+  cr.defineProperty(ControlledSettingIndicator, 'value',
+                    cr.PropertyKind.ATTR);
+
+  // Export.
+  return {
+    ControlledSettingIndicator: ControlledSettingIndicator
+  };
+});
+</script>
+<script>// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @typedef {{
+ *   id: string,
+ *   name: string,
+ *   subnodes: Array<{id: string, name: string, readonly: boolean,
+ *                     untrusted: boolean, extractable: boolean,
+ *                     policy: boolean}>
+ * }}
+ */
+var CertificateData;
+
+cr.define('options', function() {
+  /** @const */ var Tree = cr.ui.Tree;
+  /** @const */ var TreeItem = cr.ui.TreeItem;
+
+  /**
+   * Creates a new tree folder for certificate data.
+   * @param {Object=} data Data used to create a certificate tree folder.
+   * @constructor
+   * @extends {TreeItem}
+   */
+  function CertificateTreeFolder(data) {
+    data.isCert = false;
+    var treeFolder = new TreeItem({
+      label: data.name,
+      data: data
+    });
+    treeFolder.__proto__ = CertificateTreeFolder.prototype;
+
+    if (data.icon)
+      treeFolder.icon = data.icon;
+
+    return treeFolder;
+  }
+
+  CertificateTreeFolder.prototype = {
+    __proto__: TreeItem.prototype,
+
+    /**
+     * The tree path id/.
+     * @type {string}
+     */
+    get pathId() {
+      return this.data.id;
+    }
+  };
+
+  /**
+   * Creates a new tree item for certificate data.
+   * @param {Object=} data Data used to create a certificate tree item.
+   * @constructor
+   * @extends {TreeItem}
+   */
+  function CertificateTreeItem(data) {
+    data.isCert = true;
+    // TODO(mattm): other columns
+    var treeItem = new TreeItem({
+      label: data.name,
+      data: data
+    });
+    treeItem.__proto__ = CertificateTreeItem.prototype;
+
+    if (data.icon)
+      treeItem.icon = data.icon;
+
+    if (data.untrusted) {
+      var badge = document.createElement('span');
+      badge.classList.add('cert-untrusted');
+      badge.textContent = loadTimeData.getString('badgeCertUntrusted');
+      treeItem.labelElement.insertBefore(
+          badge, treeItem.labelElement.firstChild);
+    }
+
+    if (data.policy) {
+      var policyIndicator = new options.ControlledSettingIndicator();
+      policyIndicator.controlledBy = 'policy';
+      policyIndicator.setAttribute(
+          'textpolicy', loadTimeData.getString('certPolicyInstalled'));
+      policyIndicator.classList.add('cert-policy');
+      treeItem.labelElement.appendChild(policyIndicator);
+    }
+
+    return treeItem;
+  }
+
+  CertificateTreeItem.prototype = {
+    __proto__: TreeItem.prototype,
+
+    /**
+     * The tree path id/.
+     * @type {string}
+     */
+    get pathId() {
+      return this.parentItem.pathId + ',' + this.data.id;
+    }
+  };
+
+  /**
+   * Creates a new cookies tree.
+   * @param {Object=} opt_propertyBag Optional properties.
+   * @constructor
+   * @extends {Tree}
+   */
+  var CertificatesTree = cr.ui.define('tree');
+
+  CertificatesTree.prototype = {
+    __proto__: Tree.prototype,
+
+    /** @override */
+    decorate: function() {
+      Tree.prototype.decorate.call(this);
+      this.treeLookup_ = {};
+    },
+
+    /** @override */
+    addAt: function(child, index) {
+      Tree.prototype.addAt.call(this, child, index);
+      if (child.data && child.data.id)
+        this.treeLookup_[child.data.id] = child;
+    },
+
+    /**
+     * @param {!cr.ui.TreeItem=} child
+     * @override
+     */
+    remove: function(child) {
+      Tree.prototype.remove.call(this, child);
+      if (child.data && child.data.id)
+        delete this.treeLookup_[child.data.id];
+    },
+
+    /**
+     * Clears the tree.
+     */
+    clear: function() {
+      // Remove all fields without recreating the object since other code
+      // references it.
+      for (var id in this.treeLookup_)
+        delete this.treeLookup_[id];
+      this.textContent = '';
+    },
+
+    /**
+     * Populate the tree.
+     * @param {Array<CertificateData>} nodesData Nodes data array.
+     */
+    populate: function(nodesData) {
+      this.clear();
+
+      for (var i = 0; i < nodesData.length; ++i) {
+        var subnodes = nodesData[i].subnodes;
+        delete nodesData[i].subnodes;
+
+        var item = new CertificateTreeFolder(nodesData[i]);
+        this.addAt(item, i);
+
+        for (var j = 0; j < subnodes.length; ++j) {
+          var subitem = new CertificateTreeItem(subnodes[j]);
+          item.addAt(subitem, j);
+        }
+        // Make tree expanded by default.
+        item.expanded = true;
+      }
+
+      cr.dispatchSimpleEvent(this, 'change');
+    },
+  };
+
+  return {
+    CertificatesTree: CertificatesTree
+  };
+});
+
+</script>
+<script>// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('options', function() {
+  var OptionsPage = options.OptionsPage;
+  var Page = cr.ui.pageManager.Page;
+  var PageManager = cr.ui.pageManager.PageManager;
+
+  /////////////////////////////////////////////////////////////////////////////
+  // CertificateManagerTab class:
+
+  /**
+   * blah
+   * @param {!string} id The id of this tab.
+   * @param {boolean} isKiosk True if dialog is shown during CrOS kiosk launch.
+   * @constructor
+   */
+  function CertificateManagerTab(id, isKiosk) {
+    this.tree = $(id + '-tree');
+
+    options.CertificatesTree.decorate(this.tree);
+    this.tree.addEventListener('change',
+        this.handleCertificatesTreeChange_.bind(this));
+
+    var tree = this.tree;
+
+    this.viewButton = $(id + '-view');
+    this.viewButton.onclick = function(e) {
+      var selected = tree.selectedItem;
+      chrome.send('viewCertificate', [selected.data.id]);
+    };
+
+    this.editButton = $(id + '-edit');
+    if (this.editButton !== null) {
+      if (id == 'serverCertsTab') {
+        this.editButton.onclick = function(e) {
+          var selected = tree.selectedItem;
+          chrome.send('editServerCertificate', [selected.data.id]);
+        };
+      } else if (id == 'caCertsTab') {
+        this.editButton.onclick = function(e) {
+          var data = tree.selectedItem.data;
+          CertificateEditCaTrustOverlay.show(data.id, data.name);
+        };
+      }
+    }
+
+    this.backupButton = $(id + '-backup');
+    if (this.backupButton !== null) {
+      if (id == 'personalCertsTab' && isKiosk) {
+        this.backupButton.hidden = true;
+      } else {
+        this.backupButton.onclick = function(e) {
+          var selected = tree.selectedItem;
+          chrome.send('exportPersonalCertificate', [selected.data.id]);
+        };
+      }
+    }
+
+    this.backupAllButton = $(id + '-backup-all');
+    if (this.backupAllButton !== null) {
+      if (id == 'personalCertsTab' && isKiosk) {
+        this.backupAllButton.hidden = true;
+      } else {
+        this.backupAllButton.onclick = function(e) {
+          chrome.send('exportAllPersonalCertificates');
+        };
+      }
+    }
+
+    this.importButton = $(id + '-import');
+    if (this.importButton !== null) {
+      if (id == 'personalCertsTab') {
+        if (isKiosk) {
+          this.importButton.hidden = true;
+        } else {
+          this.importButton.onclick = function(e) {
+            chrome.send('importPersonalCertificate', [false]);
+          };
+        }
+      } else if (id == 'serverCertsTab') {
+        this.importButton.onclick = function(e) {
+          chrome.send('importServerCertificate');
+        };
+      } else if (id == 'caCertsTab') {
+        this.importButton.onclick = function(e) {
+          chrome.send('importCaCertificate');
+        };
+      }
+    }
+
+    this.importAndBindButton = $(id + '-import-and-bind');
+    if (this.importAndBindButton !== null) {
+      if (id == 'personalCertsTab') {
+        this.importAndBindButton.onclick = function(e) {
+          chrome.send('importPersonalCertificate', [true]);
+        };
+      }
+    }
+
+    this.exportButton = $(id + '-export');
+    if (this.exportButton !== null) {
+      if (id == 'personalCertsTab' && isKiosk) {
+        this.exportButton.hidden = true;
+      } else {
+        this.exportButton.onclick = function(e) {
+          var selected = tree.selectedItem;
+          chrome.send('exportCertificate', [selected.data.id]);
+        };
+      }
+    }
+
+    this.deleteButton = $(id + '-delete');
+    this.deleteButton.onclick = function(e) {
+      var data = tree.selectedItem.data;
+      AlertOverlay.show(
+          loadTimeData.getStringF(id + 'DeleteConfirm', data.name),
+          loadTimeData.getString(id + 'DeleteImpact'),
+          loadTimeData.getString('ok'),
+          loadTimeData.getString('cancel'),
+          function() {
+            tree.selectedItem = null;
+            chrome.send('deleteCertificate', [data.id]);
+          });
+    };
+  }
+
+  CertificateManagerTab.prototype = {
+    /**
+     * Update button state.
+     * @private
+     * @param {!Object} data The data of the selected item.
+     */
+    updateButtonState: function(data) {
+      var isCert = !!data && data.isCert;
+      var readOnly = !!data && data.readonly;
+      var extractable = !!data && data.extractable;
+      var hasChildren = this.tree.items.length > 0;
+      var isPolicy = !!data && data.policy;
+      this.viewButton.disabled = !isCert;
+      if (this.editButton !== null)
+        this.editButton.disabled = !isCert || isPolicy;
+      if (this.backupButton !== null)
+        this.backupButton.disabled = !isCert || !extractable;
+      if (this.backupAllButton !== null)
+        this.backupAllButton.disabled = !hasChildren;
+      if (this.exportButton !== null)
+        this.exportButton.disabled = !isCert;
+      this.deleteButton.disabled = !isCert || readOnly || isPolicy;
+    },
+
+    /**
+     * Handles certificate tree selection change.
+     * @private
+     * @param {!Event} e The change event object.
+     */
+    handleCertificatesTreeChange_: function(e) {
+      var data = null;
+      if (this.tree.selectedItem)
+        data = this.tree.selectedItem.data;
+
+      this.updateButtonState(data);
+    },
+  };
+
+  /////////////////////////////////////////////////////////////////////////////
+  // CertificateManager class:
+
+  /**
+   * Encapsulated handling of ChromeOS accounts options page.
+   * @constructor
+   * @extends {cr.ui.pageManager.Page}
+   */
+  function CertificateManager() {
+    Page.call(this, 'certificates',
+              loadTimeData.getString('certificateManagerPageTabTitle'),
+              'certificateManagerPage');
+  }
+
+  cr.addSingletonGetter(CertificateManager);
+
+  CertificateManager.prototype = {
+    __proto__: Page.prototype,
+
+    /** @private {boolean} */
+    isKiosk_: false,
+
+    /** @param {boolean} isKiosk */
+    setIsKiosk: function(isKiosk) {
+      this.isKiosk_ = isKiosk;
+    },
+
+    /** @override */
+    initializePage: function() {
+      Page.prototype.initializePage.call(this);
+
+      this.personalTab = new CertificateManagerTab('personalCertsTab',
+                                                   this.isKiosk_);
+      this.serverTab = new CertificateManagerTab('serverCertsTab',
+                                                 this.isKiosk_);
+      this.caTab = new CertificateManagerTab('caCertsTab', this.isKiosk_);
+      this.otherTab = new CertificateManagerTab('otherCertsTab', this.isKiosk_);
+
+      this.addEventListener('visibleChange', this.handleVisibleChange_);
+
+      $('certificate-confirm').onclick = function() {
+        PageManager.closeOverlay();
+      };
+    },
+
+    initalized_: false,
+
+    /**
+     * Handler for Page's visible property change event.
+     * @private
+     * @param {Event} e Property change event.
+     */
+    handleVisibleChange_: function(e) {
+      if (!this.initalized_ && this.visible) {
+        this.initalized_ = true;
+        OptionsPage.showTab($('personal-certs-nav-tab'));
+        chrome.send('populateCertificateManager');
+      }
+    }
+  };
+
+  // CertificateManagerHandler callbacks.
+  CertificateManager.onPopulateTree = function(args) {
+    $(args[0]).populate(args[1]);
+  };
+
+  CertificateManager.exportPersonalAskPassword = function(args) {
+    CertificateBackupOverlay.show();
+  };
+
+  CertificateManager.importPersonalAskPassword = function(args) {
+    CertificateRestoreOverlay.show();
+  };
+
+  CertificateManager.onModelReady = function(userDbAvailable,
+                                             tpmAvailable) {
+    if (!userDbAvailable)
+      return;
+    if (tpmAvailable)
+      $('personalCertsTab-import-and-bind').disabled = false;
+    $('personalCertsTab-import').disabled = false;
+    $('serverCertsTab-import').disabled = false;
+    $('caCertsTab-import').disabled = false;
+  };
+
+  // Export
+  return {
+    CertificateManagerTab: CertificateManagerTab,
+    CertificateManager: CertificateManager
+  };
+});
+</script>
+<script>// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('options', function() {
+  /** @const */ var Page = cr.ui.pageManager.Page;
+  /** @const */ var PageManager = cr.ui.pageManager.PageManager;
+
+  /**
+   * CertificateRestoreOverlay class
+   * Encapsulated handling of the 'enter restore password' overlay page.
+   * @class
+   */
+  function CertificateRestoreOverlay() {
+    Page.call(this, 'certificateRestore', '', 'certificateRestoreOverlay');
+  }
+
+  cr.addSingletonGetter(CertificateRestoreOverlay);
+
+  CertificateRestoreOverlay.prototype = {
+    __proto__: Page.prototype,
+
+    /** @override */
+    initializePage: function() {
+      Page.prototype.initializePage.call(this);
+
+      var self = this;
+      $('certificateRestoreCancelButton').onclick = function(event) {
+        self.cancelRestore_();
+      };
+      $('certificateRestoreOkButton').onclick = function(event) {
+        self.finishRestore_();
+      };
+
+      self.clearInputFields_();
+    },
+
+    /** @override */
+    didShowPage: function() {
+      $('certificateRestorePassword').focus();
+    },
+
+    /**
+     * Clears any uncommitted input, and dismisses the overlay.
+     * @private
+     */
+    dismissOverlay_: function() {
+      this.clearInputFields_();
+      PageManager.closeOverlay();
+    },
+
+    /**
+     * Attempt the restore operation.
+     * The overlay will be left up with inputs disabled until the backend
+     * finishes and dismisses it.
+     * @private
+     */
+    finishRestore_: function() {
+      chrome.send('importPersonalCertificatePasswordSelected',
+                  [$('certificateRestorePassword').value]);
+      $('certificateRestoreCancelButton').disabled = true;
+      $('certificateRestoreOkButton').disabled = true;
+    },
+
+    /**
+     * Cancel the restore operation.
+     * @private
+     */
+    cancelRestore_: function() {
+      chrome.send('cancelImportExportCertificate');
+      this.dismissOverlay_();
+    },
+
+    /**
+     * Clears the value of each input field.
+     * @private
+     */
+    clearInputFields_: function() {
+      $('certificateRestorePassword').value = '';
+      $('certificateRestoreCancelButton').disabled = false;
+      $('certificateRestoreOkButton').disabled = false;
+    },
+  };
+
+  CertificateRestoreOverlay.show = function() {
+    CertificateRestoreOverlay.getInstance().clearInputFields_();
+    PageManager.showPageByName('certificateRestore');
+  };
+
+  CertificateRestoreOverlay.dismiss = function() {
+    CertificateRestoreOverlay.getInstance().dismissOverlay_();
+  };
+
+  // Export
+  return {
+    CertificateRestoreOverlay: CertificateRestoreOverlay
+  };
+
+});
+</script>
+<script>// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('options', function() {
+  /** @const */ var Page = cr.ui.pageManager.Page;
+  /** @const */ var PageManager = cr.ui.pageManager.PageManager;
+
+  /**
+   * CertificateBackupOverlay class
+   * Encapsulated handling of the 'enter backup password' overlay page.
+   * @class
+   */
+  function CertificateBackupOverlay() {
+    Page.call(this, 'certificateBackupOverlay', '', 'certificateBackupOverlay');
+  }
+
+  cr.addSingletonGetter(CertificateBackupOverlay);
+
+  CertificateBackupOverlay.prototype = {
+    __proto__: Page.prototype,
+
+    /** @override */
+    initializePage: function() {
+      Page.prototype.initializePage.call(this);
+
+      var self = this;
+      $('certificateBackupCancelButton').onclick = function(event) {
+        self.cancelBackup_();
+      };
+      $('certificateBackupOkButton').onclick = function(event) {
+        self.finishBackup_();
+      };
+      var onBackupPasswordInput = function(event) {
+        self.comparePasswords_();
+      };
+      $('certificateBackupPassword').oninput = onBackupPasswordInput;
+      $('certificateBackupPassword2').oninput = onBackupPasswordInput;
+
+      self.clearInputFields_();
+    },
+
+    /**
+     * Clears any uncommitted input, and dismisses the overlay.
+     * @private
+     */
+    dismissOverlay_: function() {
+      this.clearInputFields_();
+      PageManager.closeOverlay();
+    },
+
+    /**
+     * Attempt the Backup operation.
+     * The overlay will be left up with inputs disabled until the backend
+     * finishes and dismisses it.
+     * @private
+     */
+    finishBackup_: function() {
+      chrome.send('exportPersonalCertificatePasswordSelected',
+                  [$('certificateBackupPassword').value]);
+      $('certificateBackupCancelButton').disabled = true;
+      $('certificateBackupOkButton').disabled = true;
+      $('certificateBackupPassword').disabled = true;
+      $('certificateBackupPassword2').disabled = true;
+    },
+
+    /**
+     * Cancel the Backup operation.
+     * @private
+     */
+    cancelBackup_: function() {
+      chrome.send('cancelImportExportCertificate');
+      this.dismissOverlay_();
+    },
+
+    /**
+     * Compares the password fields and sets the button state appropriately.
+     * @private
+     */
+    comparePasswords_: function() {
+      var password1 = $('certificateBackupPassword').value;
+      var password2 = $('certificateBackupPassword2').value;
+      $('certificateBackupOkButton').disabled =
+          !password1 || password1 != password2;
+    },
+
+    /**
+     * Clears the value of each input field.
+     * @private
+     */
+    clearInputFields_: function() {
+      $('certificateBackupPassword').value = '';
+      $('certificateBackupPassword2').value = '';
+      $('certificateBackupPassword').disabled = false;
+      $('certificateBackupPassword2').disabled = false;
+      $('certificateBackupCancelButton').disabled = false;
+      $('certificateBackupOkButton').disabled = true;
+    },
+  };
+
+  CertificateBackupOverlay.show = function() {
+    CertificateBackupOverlay.getInstance().clearInputFields_();
+    PageManager.showPageByName('certificateBackupOverlay');
+  };
+
+  CertificateBackupOverlay.dismiss = function() {
+    CertificateBackupOverlay.getInstance().dismissOverlay_();
+  };
+
+  // Export
+  return {
+    CertificateBackupOverlay: CertificateBackupOverlay
+  };
+});
+</script>
+<script>// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('options', function() {
+  /** @const */ var Page = cr.ui.pageManager.Page;
+  /** @const */ var PageManager = cr.ui.pageManager.PageManager;
+
+  /**
+   * CertificateEditCaTrustOverlay class
+   * Encapsulated handling of the 'edit ca trust' and 'import ca' overlay pages.
+   * @class
+   */
+  function CertificateEditCaTrustOverlay() {
+    Page.call(this, 'certificateEditCaTrustOverlay', '',
+              'certificateEditCaTrustOverlay');
+  }
+
+  cr.addSingletonGetter(CertificateEditCaTrustOverlay);
+
+  CertificateEditCaTrustOverlay.prototype = {
+    __proto__: Page.prototype,
+
+    /**
+     * Dismisses the overlay.
+     * @private
+     */
+    dismissOverlay_: function() {
+      PageManager.closeOverlay();
+    },
+
+    /**
+     * Enables or disables input fields.
+     * @private
+     */
+    enableInputs_: function(enabled) {
+      $('certificateCaTrustSSLCheckbox').disabled =
+      $('certificateCaTrustEmailCheckbox').disabled =
+      $('certificateCaTrustObjSignCheckbox').disabled =
+      $('certificateEditCaTrustCancelButton').disabled =
+      $('certificateEditCaTrustOkButton').disabled = !enabled;
+    },
+
+    /**
+     * Attempt the Edit operation.
+     * The overlay will be left up with inputs disabled until the backend
+     * finishes and dismisses it.
+     * @private
+     */
+    finishEdit_: function() {
+      // TODO(mattm): Send checked values as booleans.  For now send them as
+      // strings, since WebUIBindings::send does not support any other types :(
+      chrome.send('editCaCertificateTrust',
+                  [this.certId,
+                   $('certificateCaTrustSSLCheckbox').checked.toString(),
+                   $('certificateCaTrustEmailCheckbox').checked.toString(),
+                   $('certificateCaTrustObjSignCheckbox').checked.toString()]);
+      this.enableInputs_(false);
+    },
+
+    /**
+     * Cancel the Edit operation.
+     * @private
+     */
+    cancelEdit_: function() {
+      this.dismissOverlay_();
+    },
+
+    /**
+     * Attempt the Import operation.
+     * The overlay will be left up with inputs disabled until the backend
+     * finishes and dismisses it.
+     * @private
+     */
+    finishImport_: function() {
+      // TODO(mattm): Send checked values as booleans.  For now send them as
+      // strings, since WebUIBindings::send does not support any other types :(
+      chrome.send('importCaCertificateTrustSelected',
+                  [$('certificateCaTrustSSLCheckbox').checked.toString(),
+                   $('certificateCaTrustEmailCheckbox').checked.toString(),
+                   $('certificateCaTrustObjSignCheckbox').checked.toString()]);
+      this.enableInputs_(false);
+    },
+
+    /**
+     * Cancel the Import operation.
+     * @private
+     */
+    cancelImport_: function() {
+      chrome.send('cancelImportExportCertificate');
+      this.dismissOverlay_();
+    },
+  };
+
+  /**
+   * Callback from CertificateManagerHandler with the trust values.
+   * @param {boolean} trustSSL The initial value of SSL trust checkbox.
+   * @param {boolean} trustEmail The initial value of Email trust checkbox.
+   * @param {boolean} trustObjSign The initial value of Object Signing trust.
+   */
+  CertificateEditCaTrustOverlay.populateTrust = function(
+      trustSSL, trustEmail, trustObjSign) {
+    $('certificateCaTrustSSLCheckbox').checked = trustSSL;
+    $('certificateCaTrustEmailCheckbox').checked = trustEmail;
+    $('certificateCaTrustObjSignCheckbox').checked = trustObjSign;
+    CertificateEditCaTrustOverlay.getInstance().enableInputs_(true);
+  };
+
+  /**
+   * Show the Edit CA Trust overlay.
+   * @param {string} certId The id of the certificate to be passed to the
+   * certificate manager model.
+   * @param {string} certName The display name of the certificate.
+   * checkbox.
+   */
+  CertificateEditCaTrustOverlay.show = function(certId, certName) {
+    var self = CertificateEditCaTrustOverlay.getInstance();
+    self.certId = certId;
+    $('certificateEditCaTrustCancelButton').onclick = function(event) {
+      self.cancelEdit_();
+    };
+    $('certificateEditCaTrustOkButton').onclick = function(event) {
+      self.finishEdit_();
+    };
+    $('certificateEditCaTrustDescription').textContent =
+        loadTimeData.getStringF('certificateEditCaTrustDescriptionFormat',
+                                certName);
+    self.enableInputs_(false);
+    PageManager.showPageByName('certificateEditCaTrustOverlay');
+    chrome.send('getCaCertificateTrust', [certId]);
+  };
+
+  /**
+   * Show the Import CA overlay.
+   * @param {string} certName The display name of the certificate.
+   * checkbox.
+   */
+  CertificateEditCaTrustOverlay.showImport = function(certName) {
+    var self = CertificateEditCaTrustOverlay.getInstance();
+    // TODO(mattm): do we want a view certificate button here like firefox has?
+    $('certificateEditCaTrustCancelButton').onclick = function(event) {
+      self.cancelImport_();
+    };
+    $('certificateEditCaTrustOkButton').onclick = function(event) {
+      self.finishImport_();
+    };
+    $('certificateEditCaTrustDescription').textContent =
+        loadTimeData.getStringF('certificateImportCaDescriptionFormat',
+                                certName);
+    CertificateEditCaTrustOverlay.populateTrust(false, false, false);
+    PageManager.showPageByName('certificateEditCaTrustOverlay');
+  };
+
+  CertificateEditCaTrustOverlay.dismiss = function() {
+    CertificateEditCaTrustOverlay.getInstance().dismissOverlay_();
+  };
+
+  // Export
+  return {
+    CertificateEditCaTrustOverlay: CertificateEditCaTrustOverlay
+  };
+});
+</script>
+<script>// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('options', function() {
+  var Page = cr.ui.pageManager.Page;
+  var PageManager = cr.ui.pageManager.PageManager;
+
+  /**
+   * CertificateImportErrorOverlay class
+   * Displays a list of certificates and errors.
+   * @class
+   */
+  function CertificateImportErrorOverlay() {
+    Page.call(this, 'certificateImportErrorOverlay', '',
+              'certificateImportErrorOverlay');
+  }
+
+  cr.addSingletonGetter(CertificateImportErrorOverlay);
+
+  CertificateImportErrorOverlay.prototype = {
+    // Inherit CertificateImportErrorOverlay from Page.
+    __proto__: Page.prototype,
+
+    /** @override */
+    initializePage: function() {
+      Page.prototype.initializePage.call(this);
+
+      $('certificateImportErrorOverlayOk').onclick = function(event) {
+        PageManager.closeOverlay();
+      };
+    },
+  };
+
+  /**
+   * Show an alert overlay with the given message, button titles, and
+   * callbacks.
+   * @param {string} title The alert title to display to the user.
+   * @param {string} message The alert message to display to the user.
+   * @param {Array} certErrors The list of cert errors.  Each error should have
+   *                           a .name and .error attribute.
+   */
+  CertificateImportErrorOverlay.show = function(title, message, certErrors) {
+    $('certificateImportErrorOverlayTitle').textContent = title;
+    $('certificateImportErrorOverlayMessage').textContent = message;
+
+    var ul = $('certificateImportErrorOverlayCertErrors');
+    ul.innerHTML = '';
+    for (var i = 0; i < certErrors.length; ++i) {
+      var li = document.createElement('li');
+      li.textContent = loadTimeData.getStringF('certificateImportErrorFormat',
+                                               certErrors[i].name,
+                                               certErrors[i].error);
+      ul.appendChild(li);
+    }
+
+    PageManager.showPageByName('certificateImportErrorOverlay');
+  };
+
+  // Export
+  return {
+    CertificateImportErrorOverlay: CertificateImportErrorOverlay
+  };
+
+});
+</script>
+<script>// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * Namespace for keyboard utility functions.
+ */
+var keyboard = {};
+
+/**
+ * Swallows keypress and keyup events of arrow keys.
+ * @param {Event} event Raised event.
+ * @private
+ */
+keyboard.onKeyIgnore_ = function(event) {
+  event = /** @type {KeyboardEvent} */(event);
+
+  if (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)
+    return;
+
+  if (event.keyIdentifier == 'Left' ||
+      event.keyIdentifier == 'Right' ||
+      event.keyIdentifier == 'Up' ||
+      event.keyIdentifier == 'Down') {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+};
+
+/**
+ * Converts arrow keys into tab/shift-tab key events.
+ * @param {Event} event Raised event.
+ * @private
+ */
+keyboard.onKeyDown_ = function(event) {
+  event = /** @type {KeyboardEvent} */(event);
+
+  if (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)
+    return;
+
+  // This file also gets embedded inside of the CfM/hotrod enrollment webview.
+  // Events will bubble down into the webview, which means that the event
+  // handler from the webui will steal the events meant for the webview. So we
+  // have to disable the webui handler if the active element is the webview.
+  //
+  // $ is defined differently depending on how this file gets executed; we have
+  // to use document.getElementById to get consistent behavior.
+  //
+  // See crbug.com/543865.
+  if (document.activeElement ===
+      document.getElementById('oauth-enroll-auth-view'))
+    return;
+
+  var needsUpDownKeys = event.target.classList.contains('needs-up-down-keys');
+
+  if (event.keyIdentifier == 'Left' ||
+      (!needsUpDownKeys && event.keyIdentifier == 'Up')) {
+    keyboard.raiseKeyFocusPrevious(document.activeElement);
+    event.stopPropagation();
+    event.preventDefault();
+  } else if (event.keyIdentifier == 'Right' ||
+             (!needsUpDownKeys && event.keyIdentifier == 'Down')) {
+    keyboard.raiseKeyFocusNext(document.activeElement);
+    event.stopPropagation();
+    event.preventDefault();
+  }
+};
+
+/**
+ * Raises tab/shift-tab keyboard events.
+ * @param {HTMLElement} element Element that should receive the event.
+ * @param {string} eventType Keyboard event type.
+ * @param {boolean} shift True if shift should be on.
+ * @private
+ */
+keyboard.raiseTabKeyEvent_ = function(element, eventType, shift) {
+  var event = document.createEvent('KeyboardEvent');
+  event.initKeyboardEvent(
+      eventType,
+      true,  // canBubble
+      true,  // cancelable
+      window,
+      'U+0009',
+      0,  // keyLocation
+      false,  // ctrl
+      false,  // alt
+      shift,  // shift
+      false);  // meta
+  element.dispatchEvent(event);
+};
+
+/**
+ * Raises shift+tab keyboard events to focus previous element.
+ * @param {HTMLElement} element Element that should receive the event.
+ */
+keyboard.raiseKeyFocusPrevious = function(element) {
+  keyboard.raiseTabKeyEvent_(element, 'keydown', true);
+  keyboard.raiseTabKeyEvent_(element, 'keypress', true);
+  keyboard.raiseTabKeyEvent_(element, 'keyup', true);
+};
+
+/**
+ * Raises tab keyboard events to focus next element.
+ * @param {HTMLElement} element Element that should receive the event.
+ */
+keyboard.raiseKeyFocusNext = function(element) {
+  keyboard.raiseTabKeyEvent_(element, 'keydown', false);
+  keyboard.raiseTabKeyEvent_(element, 'keypress', false);
+  keyboard.raiseTabKeyEvent_(element, 'keyup', false);
+};
+
+/**
+ * Initializes event handling for arrow keys driven focus flow.
+ */
+keyboard.initializeKeyboardFlow = function() {
+  document.addEventListener('keydown',
+      keyboard.onKeyDown_, true);
+  document.addEventListener('keypress',
+      keyboard.onKeyIgnore_, true);
+  document.addEventListener('keyup',
+      keyboard.onKeyIgnore_, true);
+};
+</script>
+<script>// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview A collection of utility methods for UberPage and its contained
+ *     pages.
+ */
+
+cr.define('uber', function() {
+  /**
+   * Fixed position header elements on the page to be shifted by handleScroll.
+   * @type {NodeList}
+   */
+  var headerElements;
+
+  /**
+   * This should be called by uber content pages when DOM content has loaded.
+   */
+  function onContentFrameLoaded() {
+    headerElements = document.getElementsByTagName('header');
+    document.addEventListener('scroll', handleScroll);
+    document.addEventListener('mousedown', handleMouseDownInFrame, true);
+
+    invokeMethodOnParent('ready');
+
+    // Prevent the navigation from being stuck in a disabled state when a
+    // content page is reloaded while an overlay is visible (crbug.com/246939).
+    invokeMethodOnParent('stopInterceptingEvents');
+
+    // Trigger the scroll handler to tell the navigation if our page started
+    // with some scroll (happens when you use tab restore).
+    handleScroll();
+
+    window.addEventListener('message', handleWindowMessage);
+  }
+
+  /**
+   * Handles scroll events on the document. This adjusts the position of all
+   * headers and updates the parent frame when the page is scrolled.
+   */
+  function handleScroll() {
+    var scrollLeft = scrollLeftForDocument(document);
+    var offset = scrollLeft * -1;
+    for (var i = 0; i < headerElements.length; i++) {
+      // As a workaround for http://crbug.com/231830, set the transform to
+      // 'none' rather than 0px.
+      headerElements[i].style.webkitTransform = offset ?
+          'translateX(' + offset + 'px)' : 'none';
+    }
+
+    invokeMethodOnParent('adjustToScroll', scrollLeft);
+  }
+
+  /**
+   * Tells the parent to focus the current frame if the mouse goes down in the
+   * current frame (and it doesn't already have focus).
+   * @param {Event} e A mousedown event.
+   */
+  function handleMouseDownInFrame(e) {
+    if (!e.isSynthetic && !document.hasFocus())
+      window.focus();
+  }
+
+  /**
+   * Handles 'message' events on window.
+   * @param {Event} e The message event.
+   */
+  function handleWindowMessage(e) {
+    e = /** @type {!MessageEvent<!{method: string, params: *}>} */(e);
+    if (e.data.method === 'frameSelected') {
+      handleFrameSelected();
+    } else if (e.data.method === 'mouseWheel') {
+      handleMouseWheel(
+          /** @type {{deltaX: number, deltaY: number}} */(e.data.params));
+    } else if (e.data.method === 'mouseDown') {
+      handleMouseDown();
+    } else if (e.data.method === 'popState') {
+      handlePopState(e.data.params.state, e.data.params.path);
+    }
+  }
+
+  /**
+   * This is called when a user selects this frame via the navigation bar
+   * frame (and is triggered via postMessage() from the uber page).
+   */
+  function handleFrameSelected() {
+    setScrollTopForDocument(document, 0);
+  }
+
+  /**
+   * Called when a user mouse wheels (or trackpad scrolls) over the nav frame.
+   * The wheel event is forwarded here and we scroll the body.
+   * There's no way to figure out the actual scroll amount for a given delta.
+   * It differs for every platform and even initWebKitWheelEvent takes a
+   * pixel amount instead of a wheel delta. So we just choose something
+   * reasonable and hope no one notices the difference.
+   * @param {{deltaX: number, deltaY: number}} params A structure that holds
+   *     wheel deltas in X and Y.
+   */
+  function handleMouseWheel(params) {
+    window.scrollBy(-params.deltaX * 49 / 120, -params.deltaY * 49 / 120);
+  }
+
+  /**
+   * Fire a synthetic mousedown on the body to dismiss transient things like
+   * bubbles or menus that listen for mouse presses outside of their UI. We
+   * dispatch a fake mousedown rather than a 'mousepressedinnavframe' so that
+   * settings/history/extensions don't need to know about their embedder.
+   */
+  function handleMouseDown() {
+    var mouseEvent = new MouseEvent('mousedown');
+    mouseEvent.isSynthetic = true;
+    document.dispatchEvent(mouseEvent);
+  }
+
+  /**
+   * Called when the parent window restores some state saved by uber.pushState
+   * or uber.replaceState. Simulates a popstate event.
+   * @param {PopStateEvent} state A state object for replaceState and pushState.
+   * @param {string} path The path the page navigated to.
+   * @suppress {checkTypes}
+   */
+  function handlePopState(state, path) {
+    window.history.replaceState(state, '', path);
+    window.dispatchEvent(new PopStateEvent('popstate', {state: state}));
+  }
+
+  /**
+   * @return {boolean} Whether this frame has a parent.
+   */
+  function hasParent() {
+    return window != window.parent;
+  }
+
+  /**
+   * Invokes a method on the parent window (UberPage). This is a convenience
+   * method for API calls into the uber page.
+   * @param {string} method The name of the method to invoke.
+   * @param {?=} opt_params Optional property bag of parameters to pass to the
+   *     invoked method.
+   */
+  function invokeMethodOnParent(method, opt_params) {
+    if (!hasParent())
+      return;
+
+    invokeMethodOnWindow(window.parent, method, opt_params, 'chrome://chrome');
+  }
+
+  /**
+   * Invokes a method on the target window.
+   * @param {string} method The name of the method to invoke.
+   * @param {?=} opt_params Optional property bag of parameters to pass to the
+   *     invoked method.
+   * @param {string=} opt_url The origin of the target window.
+   */
+  function invokeMethodOnWindow(targetWindow, method, opt_params, opt_url) {
+    var data = {method: method, params: opt_params};
+    targetWindow.postMessage(data, opt_url ? opt_url : '*');
+  }
+
+  /**
+   * Updates the page's history state. If the page is embedded in a child,
+   * forward the information to the parent for it to manage history for us. This
+   * is a replacement of history.replaceState and history.pushState.
+   * @param {Object} state A state object for replaceState and pushState.
+   * @param {string} path The path the page navigated to.
+   * @param {boolean} replace If true, navigate with replacement.
+   */
+  function updateHistory(state, path, replace) {
+    var historyFunction = replace ?
+        window.history.replaceState :
+        window.history.pushState;
+
+    if (hasParent()) {
+      // If there's a parent, always replaceState. The parent will do the actual
+      // pushState.
+      historyFunction = window.history.replaceState;
+      invokeMethodOnParent('updateHistory', {
+        state: state, path: path, replace: replace});
+    }
+    historyFunction.call(window.history, state, '', '/' + path);
+  }
+
+  /**
+   * Sets the current title for the page. If the page is embedded in a child,
+   * forward the information to the parent. This is a replacement for setting
+   * document.title.
+   * @param {string} title The new title for the page.
+   */
+  function setTitle(title) {
+    document.title = title;
+    invokeMethodOnParent('setTitle', {title: title});
+  }
+
+  /**
+   * Pushes new history state for the page. If the page is embedded in a child,
+   * forward the information to the parent; when embedded, all history entries
+   * are attached to the parent. This is a replacement of history.pushState.
+   * @param {Object} state A state object for replaceState and pushState.
+   * @param {string} path The path the page navigated to.
+   */
+  function pushState(state, path) {
+    updateHistory(state, path, false);
+  }
+
+  /**
+   * Replaces the page's history state. If the page is embedded in a child,
+   * forward the information to the parent; when embedded, all history entries
+   * are attached to the parent. This is a replacement of history.replaceState.
+   * @param {Object} state A state object for replaceState and pushState.
+   * @param {string} path The path the page navigated to.
+   */
+  function replaceState(state, path) {
+    updateHistory(state, path, true);
+  }
+
+  return {
+    invokeMethodOnParent: invokeMethodOnParent,
+    invokeMethodOnWindow: invokeMethodOnWindow,
+    onContentFrameLoaded: onContentFrameLoaded,
+    pushState: pushState,
+    replaceState: replaceState,
+    setTitle: setTitle,
+  };
+});
+</script>
+<script>// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+var AlertOverlay = options.AlertOverlay;
+var OptionsPage = options.OptionsPage;
+var PageManager = cr.ui.pageManager.PageManager;
+var CertificateManager = options.CertificateManager;
+var CertificateRestoreOverlay = options.CertificateRestoreOverlay;
+var CertificateBackupOverlay = options.CertificateBackupOverlay;
+var CertificateEditCaTrustOverlay = options.CertificateEditCaTrustOverlay;
+var CertificateImportErrorOverlay = options.CertificateImportErrorOverlay;
+
+/**
+ * DOMContentLoaded handler, sets up the page.
+ */
+function load() {
+  if (cr.isChromeOS)
+    document.documentElement.setAttribute('os', 'chromeos');
+
+  // Setup tab change handers.
+  var subpagesNavTabs = document.querySelectorAll('.subpages-nav-tabs');
+  for (var i = 0; i < subpagesNavTabs.length; i++) {
+    subpagesNavTabs[i].onclick = function(event) {
+      OptionsPage.showTab(event.srcElement);
+    };
+  }
+
+  // Shake the dialog if the user clicks outside the dialog bounds.
+  var containers = [$('overlay-container-2')];
+  for (var i = 0; i < containers.length; i++) {
+    var overlay = containers[i];
+    cr.ui.overlay.setupOverlay(overlay);
+    overlay.addEventListener('cancelOverlay',
+                             PageManager.cancelOverlay.bind(PageManager));
+  }
+
+  // Hide elements that should not be part of the dialog.
+  $('certificate-confirm').hidden = true;
+  $('cert-manager-header').hidden = true;
+
+  PageManager.isDialog = true;
+  CertificateManager.getInstance().setIsKiosk(true);
+  CertificateManager.getInstance().initializePage();
+  PageManager.registerOverlay(AlertOverlay.getInstance(),
+      CertificateManager.getInstance());
+  PageManager.registerOverlay(CertificateBackupOverlay.getInstance(),
+      CertificateManager.getInstance());
+  PageManager.registerOverlay(CertificateEditCaTrustOverlay.getInstance(),
+      CertificateManager.getInstance());
+  PageManager.registerOverlay(CertificateImportErrorOverlay.getInstance(),
+      CertificateManager.getInstance());
+  PageManager.registerOverlay(CertificateManager.getInstance());
+  PageManager.registerOverlay(CertificateRestoreOverlay.getInstance(),
+      CertificateManager.getInstance());
+
+  PageManager.showPageByName('certificates', false);
+}
+
+disableTextSelectAndDrag(function(e) {
+  var src = e.target;
+  return src instanceof HTMLTextAreaElement ||
+         src instanceof HTMLInputElement &&
+         /text|url/.test(src.type);
+});
+
+document.addEventListener('DOMContentLoaded', load);
+</script>
+<script src="chrome://certificate-manager/strings.js"></script>
+</head>
+
+<body>
+  <div id="certificateManagerPage" class="page" hidden>
+  <div class="close-button"></div>
+  <h1 id='cert-manager-header' i18n-content="certificateManagerPage"></h1>
+  <div id="certificate-manager-content-area" class="content-area">
+    <!-- Navigation tabs -->
+    <div class="subpages-nav-tabs">
+      <span id="personal-certs-nav-tab" class="tab"
+          tab-contents="personalCertsTab">
+        <span class="tab-label" i18n-content="personalCertsTabTitle"></span>
+        <span class="active-tab-label" i18n-content="personalCertsTabTitle">
+        </span>
+      </span>
+      <span id="server-certs-nav-tab" class="tab" tab-contents="serverCertsTab">
+        <span class="tab-label" i18n-content="serverCertsTabTitle"></span>
+        <span class="active-tab-label" i18n-content="serverCertsTabTitle">
+        </span>
+      </span>
+      <span id="ca-certs-nav-tab" class="tab" tab-contents="caCertsTab">
+        <span class="tab-label" i18n-content="caCertsTabTitle"></span>
+        <span class="active-tab-label" i18n-content="caCertsTabTitle"></span>
+      </span>
+      <span id="other-certs-nav-tab" class="tab" tab-contents="otherCertsTab">
+        <span class="tab-label" i18n-content="otherCertsTabTitle"></span>
+        <span class="active-tab-label" i18n-content="otherCertsTabTitle">
+        </span>
+      </span>
+    </div>
+    <!-- TODO(mattm): get rid of use of tables -->
+    <!-- Tab contents -->
+    <div id="personalCertsTab" class="subpages-tab-contents">
+      <table class="certificate-tree-table">
+        <tr><td>
+          <span i18n-content="personalCertsTabDescription"></span>
+        </td></tr>
+        <tr><td>
+          <tree id="personalCertsTab-tree" class="certificate-tree"
+              icon-visibility="parent">
+          </tree>
+        </td></tr>
+        <tr><td>
+          <button id="personalCertsTab-view" i18n-content="view_certificate"
+              disabled>
+          </button>
+          <button id="personalCertsTab-import"
+              i18n-content="import_certificate" disabled>
+          </button>
+<button id="personalCertsTab-import-and-bind"
+              i18n-content="importAndBindCertificate" disabled>
+          </button>
+          <button id="personalCertsTab-backup" i18n-content="export_certificate"
+              disabled>
+          </button>
+          <button id="personalCertsTab-delete" i18n-content="delete_certificate"
+              disabled>
+          </button>
+        </td></tr>
+      </table>
+    </div>
+    <div id="serverCertsTab" class="subpages-tab-contents">
+      <table class="certificate-tree-table">
+        <tr><td>
+          <span i18n-content="serverCertsTabDescription"></span>
+        </td></tr>
+        <tr><td>
+          <tree id="serverCertsTab-tree" class="certificate-tree"
+              icon-visibility="parent">
+          </tree>
+        </td></tr>
+        <tr><td>
+          <button id="serverCertsTab-view" i18n-content="view_certificate"
+              disabled>
+          </button>
+          <button id="serverCertsTab-import" i18n-content="import_certificate"
+              disabled>
+          </button>
+          <button id="serverCertsTab-export" i18n-content="export_certificate"
+              disabled>
+          </button>
+          <button id="serverCertsTab-delete" i18n-content="delete_certificate"
+              disabled>
+          </button>
+        </td></tr>
+      </table>
+    </div>
+    <div id="caCertsTab" class="subpages-tab-contents">
+      <table class="certificate-tree-table">
+        <tr><td>
+          <span i18n-content="caCertsTabDescription"></span>
+        </td></tr>
+        <tr><td>
+          <tree id="caCertsTab-tree" class="certificate-tree"
+              icon-visibility="parent">
+          </tree>
+        </td></tr>
+        <tr><td>
+          <button id="caCertsTab-view" i18n-content="view_certificate"
+              disabled>
+          </button>
+          <button id="caCertsTab-edit" i18n-content="edit_certificate"
+              disabled>
+          </button>
+          <button id="caCertsTab-import" i18n-content="import_certificate"
+              disabled></button>
+          <button id="caCertsTab-export" i18n-content="export_certificate"
+              disabled>
+          </button>
+          <button id="caCertsTab-delete" i18n-content="delete_certificate"
+              disabled>
+          </button>
+        </td></tr>
+      </table>
+    </div>
+    <div id="otherCertsTab" class="subpages-tab-contents">
+      <table class="certificate-tree-table">
+        <tr><td>
+          <span i18n-content="otherCertsTabDescription"></span>
+        </td></tr>
+        <tr><td>
+          <tree id="otherCertsTab-tree" class="certificate-tree"
+              icon-visibility="parent"></tree>
+        </td></tr>
+        <tr><td>
+          <button id="otherCertsTab-view" i18n-content="view_certificate"
+              disabled>
+          </button>
+          <button id="otherCertsTab-export" i18n-content="export_certificate"
+              disabled>
+          </button>
+          <button id="otherCertsTab-delete" i18n-content="delete_certificate"
+              disabled>
+          </button>
+        </td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="action-area">
+    <div class="button-strip">
+      <button id="certificate-confirm" class="default-button"
+          i18n-content="done">
+      </button>
+    </div>
+  </div>
+</div>
+
+  <div id="overlay-container-2" class="overlay transparent" hidden>
+    <div id="alertOverlay" class="page" hidden>
+  <div class="close-button"></div>
+  <h1 id="alertOverlayTitle"></h1>
+  <div class="content-area">
+    <div id="alertOverlayMessage"></div>
+  </div>
+  <div class="action-area">
+    <div class="button-strip">
+      <button id="alertOverlayCancel" type="reset"></button>
+      <button id="alertOverlayOk" class="default-button" type="submit"></button>
+    </div>
+  </div>
+</div>
+
+    <div id="certificateRestoreOverlay" class="page" hidden>
+  <div class="close-button"></div>
+  <h1 i18n-content="certificateRestorePasswordDescription"></h1>
+  <div class="content-area">
+    <label id="certificateRestorePasswordLabel">
+      <span i18n-content="certificatePasswordLabel"></span>
+      <input id="certificateRestorePassword" type="password">
+    </label>
+  </div>
+  <div class="action-area">
+    <div class="button-strip">
+      <button id="certificateRestoreCancelButton" type="reset"
+          i18n-content="cancel"></button>
+      <button id="certificateRestoreOkButton" class="default-button"
+          type="submit" i18n-content="ok">
+      </button>
+    </div>
+  </div>
+</div>
+
+    <div id="certificateBackupOverlay" class="page" hidden>
+  <div class="close-button"></div>
+  <h1 i18n-content="certificateExportPasswordDescription"></h1>
+  <div class="content-area">
+    <table>
+      <tr>
+        <td id="certificate-backup-password-label"
+            i18n-content="certificatePasswordLabel"></td>
+        <td>
+          <input id="certificateBackupPassword" type="password"
+              aria-labelledby="certificate-backup-password-label">
+        </td>
+      </tr>
+      <tr>
+        <td id="certificate-backup-password-2-label"
+            i18n-content="certificateConfirmPasswordLabel"></td>
+        <td>
+          <input id="certificateBackupPassword2" type="password"
+              aria-labelledby="certificate-backup-password-2-label">
+        </td>
+      </tr>
+    </table>
+    <p>
+      <span i18n-content="certificateExportPasswordHelp"></span>
+    </p>
+  </div>
+  <div class="action-area">
+    <div class="button-strip">
+      <button id="certificateBackupCancelButton" type="reset"
+          i18n-content="cancel"></button>
+      <button id="certificateBackupOkButton" class="default-button"
+          type="submit" i18n-content="ok" disabled>
+      </button>
+    </div>
+  </div>
+</div>
+
+    <div id="certificateEditCaTrustOverlay" class="page" hidden>
+  <h1><span i18n-content="certificateEditCaTitle"></span></h1>
+  <div class="close-button"></div>
+  <div class="content-area">
+    <div>
+      <span id="certificateEditCaTrustDescription"></span>
+    </div>
+    <section>
+      <h3><span i18n-content="certificateEditTrustLabel"></span></h3>
+      <div class="checkbox">
+        <label id="certificateCaTrustSSLLabel">
+          <input id="certificateCaTrustSSLCheckbox" type="checkbox">
+          <span i18n-content="certificateCaTrustSSLLabel"></span>
+        </label>
+      </div>
+      <div class="checkbox">
+        <label id="certificateCaTrustEmailLabel">
+          <input id="certificateCaTrustEmailCheckbox" type="checkbox">
+          <span i18n-content="certificateCaTrustEmailLabel"></span>
+        </label>
+      </div>
+      <div class="checkbox">
+        <label id="certificateCaTrustObjSignLabel">
+          <input id="certificateCaTrustObjSignCheckbox" type="checkbox">
+          <span i18n-content="certificateCaTrustObjSignLabel"></span>
+        </label>
+      </div>
+    </section>
+  </div>
+  <div class="action-area">
+    <div class="button-strip">
+      <button id="certificateEditCaTrustCancelButton" type="reset"
+          i18n-content="cancel"></button>
+      <button id="certificateEditCaTrustOkButton" class="default-button"
+          type="submit" i18n-content="ok">
+      </button>
+    </div>
+  </div>
+</div>
+
+    <div id="certificateImportErrorOverlay" class="page" hidden>
+  <div class="close-button"></div>
+  <h1 id="certificateImportErrorOverlayTitle"></h1>
+  <div class="content-area">
+    <div id="certificateImportErrorOverlayMessage"></div>
+    <ul id="certificateImportErrorOverlayCertErrors"></ul>
+  </div>
+  <div class="action-area">
+    <div class="button-strip">
+      <button id="certificateImportErrorOverlayOk" class="default-button"
+          type="submit" i18n-content="done">
+      </button>
+    </div>
+  </div>
+</div>
+
+  </div>
+  <div id="page-container" hidden></div>
+<script src="chrome://resources/js/i18n_template.js"></script>
+</body>
+</html>

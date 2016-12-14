@@ -1,0 +1,4 @@
+Ak používate server proxy, skontrolujte jeho nastavenia alebo
+    kontaktujte správcu siete a uistite sa, že server funguje.
+    Ak sa domnievate, že by ste server proxy používať
+    nemali, upravte svoje $1nastavenia servera proxy$2.

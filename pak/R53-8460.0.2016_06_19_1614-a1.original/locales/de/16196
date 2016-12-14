@@ -1,0 +1,1 @@
+Ermöglicht es Nutzern, die Tablet-Website anzufordern. Webinhalte werden oft für Tablet-Geräte optimiert. Wenn diese Option aktiviert ist, wird der String für den User-Agent geändert, um ein Tablet-Gerät anzugeben. Anschließend werden auf dem aktuellen Tab für Tablets optimierte Webinhalte dargestellt.

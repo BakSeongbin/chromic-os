@@ -1,0 +1,3 @@
+Da biste izvenmrežno spremili datoteku "$1", morate osloboditi još $2 prostora:<br>
+    <ul><li>otkvačite datoteke kojima više ne morate izvanmrežno pristupati</li>
+    <li>izbrišite datoteke iz mape Preuzimanja.</li></ul>

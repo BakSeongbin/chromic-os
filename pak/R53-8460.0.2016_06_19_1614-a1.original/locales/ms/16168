@@ -1,0 +1,1 @@
+Jangan paparkan bar maklumat apabila sambungan dilampirkan ke halaman melalui API chrome.debugger. Bendera ini diperlukan untuk menyahpepijat halaman latar sambungan.

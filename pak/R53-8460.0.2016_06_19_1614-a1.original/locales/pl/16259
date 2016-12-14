@@ -1,0 +1,1 @@
+Włącz eksperymentalną implementację dyrektywy stale-while-revalidate funkcji Cache-Control. Pozwala to serwerom na określenie, że w tle może być przeprowadzane przywracanie ważności w przypadku niektórych zasobów, by zmniejszyć czas oczekiwania.

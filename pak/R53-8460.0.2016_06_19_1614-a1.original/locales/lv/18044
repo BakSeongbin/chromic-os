@@ -1,0 +1,3 @@
+<p>Lietojot pārlūkprogrammu $1 atbalstītā darbvirsmas vidē, tiks izmantoti sistēmas starpniekservera iestatījumi. Tomēr vai nu sistēma netiek atbalstīta, vai arī radās problēma ar sistēmas konfigurācijas palaišanu.</p>
+
+          <p>Konfigurēšanai joprojām varat izmantot komandrindu. Plašāku informāciju par karogiem un vides mainīgajiem, lūdzu, skatiet pārlūkprogrammā <code>man $2</code>.</p>

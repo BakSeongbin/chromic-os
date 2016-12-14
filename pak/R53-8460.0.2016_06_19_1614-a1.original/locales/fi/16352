@@ -1,0 +1,1 @@
+Näytä sovellusikkunat, kun ne on piirretty kokonaan. Windows näytetään huomattavasti myöhemmin, jos raskaat sovellukset lataavat resursseja yhtä aikaa. Näin ei käy sovelluksille, jotka lataavat suurimman osan resursseistaan eri aikoihin.

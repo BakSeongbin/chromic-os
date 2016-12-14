@@ -1,0 +1,1 @@
+Įgalinkite GDB derinimo pakaitą. Tai sustabdys „Native Client“ programą ją paleidus ir bus laukiama, kol „nacl-gdb“ (iš „NaCl“ SDK) bus pridėtas prie jos.

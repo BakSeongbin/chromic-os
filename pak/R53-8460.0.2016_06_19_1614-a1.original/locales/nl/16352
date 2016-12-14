@@ -1,0 +1,1 @@
+Vensters van apps weergeven na de eerste rendering. Vensters worden significant later weergegeven voor zware apps die bronnen synchroon laden, maar dit is niet significant voor apps die de meeste bronnen asynchroon laden.

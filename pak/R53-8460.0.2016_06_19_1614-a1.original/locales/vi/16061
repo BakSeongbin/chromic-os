@@ -1,0 +1,1 @@
+Cho phép tiện ích tạo cửa sổ bảng điều khiển mở bên ngoài khung trình duyệt. Nếu chưa được bật, các lần mở bảng điều khiển sẽ mở cửa sổ bật lên thay vào đó. Thao tác mặc định nhằm chỉ cho phép các tiện ích được liệt kê trong danh sách cho phép. Thao tác bật nhằm cho phép tất cả các tiện ích. Thao tác tắt nhằm không cho phép bảng điều khiển đối với bất kỳ tiện ích nào.

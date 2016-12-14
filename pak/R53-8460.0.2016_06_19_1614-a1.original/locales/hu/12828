@@ -1,0 +1,3 @@
+A(z) „$1” offline mentéséhez fel kell szabadítania további $2 helyet:<br>
+        <ul><li>szüntesse meg azoknak a fájloknak a rögzítését, amelyek offline elérésére már nincs szüksége</li>
+        <li>töröljön fájlokat a Letöltések mappából</li></ul>

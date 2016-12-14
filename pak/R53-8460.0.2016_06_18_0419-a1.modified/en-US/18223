@@ -1,0 +1,1 @@
+Pages that fail to load while the browser is offline will only be auto-reloaded if their tab is visible.

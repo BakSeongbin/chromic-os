@@ -1,0 +1,1 @@
+Consente di reimpostare lo stato di installazione di Avvio applicazioni a ogni riavvio. Quando questo flag è impostato, a ogni avvio Chrome non ricorda che Avvio applicazioni è stato installato. Questa opzione viene utilizzata per testare il flusso di installazione di Avvio applicazioni.

@@ -1,0 +1,1 @@
+{0,select, single{The application "{1}" is requesting access to one of your devices.}multiple{The application "{1}" is requesting access to one or more of your devices.}other{UNUSED}}

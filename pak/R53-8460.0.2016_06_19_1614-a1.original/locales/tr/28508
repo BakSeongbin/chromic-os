@@ -1,0 +1,2 @@
+Birden fazla farklı Content-Disposition (İçerik Yetki Devri) üst bilgisi alındı. HTTP yanıtını
+    bölme saldırılarına karşı koruma sağlamak için buna izin verilmiyor.

@@ -1,0 +1,2 @@
+Destina-se a ser utilizado em conjunto com o sinalizador enable-navigation-tracing.
+        Selecione a etiqueta que melhor descreve os rastreios registados. Desta forma, escolhe o destino para o qual os rastreios são carregados. Se não tiver a certeza da opção correta, selecione outro. Se deixar em branco, não são carregados rastreios.

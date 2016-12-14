@@ -1,0 +1,1 @@
+Forces reload UIs trigger non-validating reload (while it usually means regular, cache-validating reload when the flag is disabled).

@@ -1,0 +1,1 @@
+{DAYS,plural, =1{1 jour et  }one{# jour et  }other{# jours et  }}

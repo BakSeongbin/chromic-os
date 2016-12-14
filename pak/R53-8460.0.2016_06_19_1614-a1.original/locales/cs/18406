@@ -1,0 +1,1 @@
+Předběžně načítat výsledky vyhledávání pro dotaz zadaný do omniboxu a znovu použít předem vykreslenou základní stránku vyhledávání k odeslání všech vyhledávacích dotazů (nikoli pouze dotazu předběžného načtení).

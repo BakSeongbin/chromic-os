@@ -1,0 +1,1 @@
+Ohittaa käyttäjän sitouttamistarkistukset sovellusbannerien näyttämiseksi, kuten edellytyksen että käyttäjä on käynyt sivustossa aiemmin ja että banneria ei ole näytetty äskettäin. Tämän avulla kehittäjät voivat testata, että muut kelpoisuusvaatimukset sovellusbannerien näyttämiseen täyttyvät. Vaatimuksia ovat esimerkiksi olemassa oleva luettelo.

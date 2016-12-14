@@ -1,0 +1,1 @@
+{COUNT,plural, =0{nincsen}=1{1 elem}other{# elem}}

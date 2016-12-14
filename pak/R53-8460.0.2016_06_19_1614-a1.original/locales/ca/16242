@@ -1,0 +1,2 @@
+S'ha d'utilitzar amb la marca trace-upload-url.
+        ADVERTIMENT: si s'activa, Chrome registrarà les dades de rendiment de totes les activitats de navegació i les penjarà a l'URL especificat amb la marca trace-upload-url. Les dades de seguiment poden incloure informació d'identificació personal (IIP), com ara els títols i els URL de llocs web que visiteu.

@@ -1,0 +1,9 @@
+Un usuari supervisat pot explorar el web sota la vostra supervisió. Com a gestor d'un usuari supervisat a Chrome, podeu fer el següent:
+
+ • Permetre o prohibir determinats llocs web.
+ • Consultar els llocs web visitats per l'usuari supervisat.
+ • Gestionar altres opcions de configuració.
+
+La creació d'un usuari supervisat no crea automàticament un compte de Google, i les adreces d'interès, l'historial de navegació i altres preferències no se sincronitzaran en altres dispositius amb la Sincronització de Chrome. Quan hàgiu creat un usuari supervisat, podeu gestionar-ne la configuració en qualsevol moment i des de qualsevol dispositiu a <a target="_blank" href="$1">$2</a>.
+
+Per obtenir més informació sobre els usuaris supervisats, consulteu el <a target="_blank" href="https://support.google.com/chrome/?p=ui_supervised_users&hl=ca">Centre d'ajuda</a>.

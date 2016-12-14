@@ -1,0 +1,1 @@
+Aktivera GDB-baserad felsökning. Detta avslutar en Native Client-app vid start och väntar på nacl-gdb (från NaCl SDK) för att ansluta.

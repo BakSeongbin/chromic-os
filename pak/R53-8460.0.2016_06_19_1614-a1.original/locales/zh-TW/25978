@@ -1,0 +1,1 @@
+{0,select, single{「{1}」應用程式要求存取您的其中一個裝置。}multiple{「{1}」應用程式要求存取您的一或多個裝置。}other{UNUSED}}

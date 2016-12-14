@@ -1,0 +1,1 @@
+Výsledky vyhľadávania sa budú predbežne načítavať pre dopyt zadaný do všeobecného poľa a vopred vykreslená základná stránka vyhľadávania sa znova použije na odosielanie všetkých vyhľadávacích dopytov (nielen dopytov predbežného načítania).

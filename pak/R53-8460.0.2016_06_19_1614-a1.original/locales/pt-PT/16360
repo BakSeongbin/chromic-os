@@ -1,0 +1,1 @@
+Processamento de threads dos eventos de entrada relacionados com deslocamento. A desativação desta opção força todos os eventos de deslocamento a serem processados no thread principal. Tenha em atenção que esta ação pode afetar significativamente o desempenho de deslocamento da maioria dos Websites e destina-se apenas a fins de teste.

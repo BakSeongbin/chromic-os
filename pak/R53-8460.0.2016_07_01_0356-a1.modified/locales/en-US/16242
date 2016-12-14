@@ -1,0 +1,2 @@
+This is to be used in conjunction with the trace-upload-url flag.
+        WARNING: When enabled, Chromic will record performance data for every navigation and upload it to the URL specified by the trace-upload-url flag. The trace may include personally identifiable information (PII) such as the titles and URLs of websites you visit.

@@ -1,0 +1,1 @@
+Siteler arası iframe'lerin en üst belgeden ayrı bir işlemde tutulduğu, performansa yönelik oldukça deneysel bir mod. Bu modda, farklı üçüncü taraf sitelerinden alınan iframe'lerin bir işlemi paylaşmasına izin verilir.

@@ -1,0 +1,1 @@
+{DAYS,plural, =1{1 день }one{# день }few{# дня }many{# дней }other{# дня }}

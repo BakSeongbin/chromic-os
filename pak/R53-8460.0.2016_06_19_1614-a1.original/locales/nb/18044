@@ -1,0 +1,3 @@
+<p>Når $1 kjører i et støttet skrivebordsmiljø, brukes systemets mellomtjenerinnstillinger. Men enten støttes ikke systemet, eller så oppsto det et problem under oppstart av systemkonfigurasjonen.</p>
+
+        <p>Du kan likevel konfigurere via kommandolinjen. Les mer om flagg og miljøvariabler i <code>man $2</code>.</p>

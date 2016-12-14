@@ -1,0 +1,1 @@
+Pokud stránka nenastavila explicitní zásady pro referrery, nastavením tohoto příznaku omezíte množství informací, které se budou odesílat v záhlaví Referer pro mezidoménové požadavky.

@@ -1,0 +1,1 @@
+{NUM_FILES,plural, =1{Ima trajni dostop do ene datoteke.}one{Ima trajni dostop do # datoteke.}two{Ima trajni dostop do # datotek.}few{Ima trajni dostop do # datotek.}other{Ima trajni dostop do # datotek.}}

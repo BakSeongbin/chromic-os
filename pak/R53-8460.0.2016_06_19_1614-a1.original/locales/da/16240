@@ -1,0 +1,1 @@
+Aktivér den eksperimentelle implementering af "Cache-Control: stale-while-revalidate"-anvisningen. På den måde kan serverne angive, at nogle ressourcer kan valideres igen i baggrunden for at minimere forsinkelser.

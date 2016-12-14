@@ -1,0 +1,1 @@
+Algses katsejärgus olev tugi saitidevaheliste iframe'ide renderdamiseks eraldi protsessides. Selles režiimis jagavad dokumendid renderdaja protsessi ainult siis, kui need pärinevad samalt veebisaidilt.

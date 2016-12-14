@@ -1,0 +1,1 @@
+Nem sikerült teljesen ellenőrizni a szerver azonosságát, amelyhez kapcsolódik. Egy olyan névvel kapcsolódik a szerverhez, amelynek tulajdonjogát egy külső tanúsítványkibocsátó nem ellenőrizheti. Mivel egyes tanúsítványkibocsátók figyelmen kívül hagyják ezeket a neveket, így semmi nem biztosítja, hogy a kívánt webhelyhez kapcsolódik, és nem egy támadó webhelyhez.

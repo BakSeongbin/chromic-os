@@ -1,0 +1,1 @@
+I-reset ang estado sa pag-install ng App Launcher sa bawat pag-restart. Habang nakatakda ang flag na ito, kakalimutan ng Chrome na na-install na ang launcher sa bawat pagkakataong magsisimula ito. Ginagamit ito para subukan ang daloy ng pag-install ng App Launcher.

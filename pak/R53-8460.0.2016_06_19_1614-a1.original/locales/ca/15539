@@ -1,0 +1,1 @@
+{NUM_DEVICES,plural, =1{Es comunica amb un dispositiu USB}other{Es comunica amb # dispositius USB}}

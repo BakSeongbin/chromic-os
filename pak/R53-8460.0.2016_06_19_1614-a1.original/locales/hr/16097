@@ -1,0 +1,1 @@
+Nameće da se slušatelji događaja pokretanja dodirom, pomicanja dodirom, kotačića miša i kotačića (koji nisu zatražili suprotno) tretiraju kao pasivni. Na nekim web-lokacijama to će poremetiti ponašanje dodira/kotačića, ali je korisno za demonstraciju potencijalnih prednosti usvajanja pasivnih slušatelja događaja što se tiče performansi.

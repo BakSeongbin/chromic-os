@@ -1,0 +1,1 @@
+Tvinger bruk av ikke-validerende ny innlasting når «trekk for å laste inn på nytt» brukes. (Vanligvis brukes vanlig buffer-validerende ny innlasting når flagget er slått av).

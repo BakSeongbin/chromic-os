@@ -1,0 +1,1 @@
+Ative a implementação experimental de cache-control: diretiva "stale-while-revalidate". Esta ação permite que os servidores especifiquem que alguns recursos podem ser revalidados em segundo plano para melhorar a latência.

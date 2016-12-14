@@ -1,0 +1,1 @@
+A segmentação com base no retângulo utiliza uma heurística para determinar o destino mais provável de um gesto, em que a região de toque é representada por um retângulo.

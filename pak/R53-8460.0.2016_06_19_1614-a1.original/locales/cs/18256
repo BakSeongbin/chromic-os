@@ -1,0 +1,1 @@
+Modul Simple Cache pro protokol HTTP je nová mezipaměť. Při alokaci místa na disku spoléhá na systém souborů.

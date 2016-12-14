@@ -1,0 +1,1 @@
+Pinupuwersang maituring na passive ang mga listener ng kaganapan na touchstart, touchmove, mousewheel at wheel (na hindi humiling nito). Pipigilan nito ang pagkilos ng touch/wheel sa ilang website ngunit kapaki-pakinabang ito para sa pagpapakita ng mga potensyal na benepisyo sa performance ng paggamit ng mga passive na listener ng kaganapan.

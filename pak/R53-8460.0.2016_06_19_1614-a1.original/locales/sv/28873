@@ -1,0 +1,1 @@
+Du försökte öppna <strong>$1</strong>, men servern visade ett certifikat som signerats med en svag nyckel. Det innebär att den privata nyckeln som servern visar kan vara en förfalskning och att servern kanske inte är den server du tror (du kanske kommunicerar med en skadlig server).

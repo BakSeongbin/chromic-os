@@ -1,0 +1,1 @@
+Hvis en side ikke har angitt bestemte retningslinjer for henvisningsadresse, kan dette flagget angis for å redusere informasjonsmengden i «referer»-toppteksten for forespørsler som henter ressurser fra flere steder.

@@ -1,0 +1,1 @@
+Svært eksperimentell støtte for gjengivelse av iframes med koblinger til andre nettsteder i separate prosesser. I denne modusen blir gjengivelsesprosesser bare delt mellom dokumenter fra samme nettsted.

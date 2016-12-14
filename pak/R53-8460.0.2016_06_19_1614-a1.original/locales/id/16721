@@ -1,0 +1,1 @@
+{COUNT,plural, =0{minimal 1 item pada perangkat yang disinkronkan}=1{1 item (dan beberapa di perangkat yang disinkronkan)}other{# item (dan beberapa di perangkat yang disinkronkan)}}

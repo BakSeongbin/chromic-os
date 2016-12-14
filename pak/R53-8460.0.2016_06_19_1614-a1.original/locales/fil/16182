@@ -1,0 +1,1 @@
+Kung hindi nagtakda ang isang page ng malinaw na patakaran sa referrer, mababawasan ang impormasyon sa header ng 'referer' para sa mga cross-origin na kahilingan kapag itinakda ang flag na ito.

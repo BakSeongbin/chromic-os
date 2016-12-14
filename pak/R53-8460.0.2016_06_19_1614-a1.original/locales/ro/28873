@@ -1,0 +1,1 @@
+Ați încercat să accesați <strong>$1</strong>, dar serverul a furnizat un certificat care conține o cheie slabă. Un atacator ar fi putut sparge cheia privată și este posibil ca serverul să nu fie cel așteptat de dvs. (este posibil să comunicați cu un atacator).

@@ -1,0 +1,7 @@
+Chromium メニュー >
+          <span jscontent="settingsTitle"></span>
+          >
+          <span jscontent="advancedTitle"></span>
+          の順に移動して、[<span jscontent="noNetworkPredictionTitle"></span>] をオフにします。
+          上記を行っても問題が解決しない場合は、パフォーマンス向上のため
+          このオプションを再びオンにすることをおすすめします。

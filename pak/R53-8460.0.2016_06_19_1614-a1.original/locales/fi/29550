@@ -1,0 +1,8 @@
+Avaa
+        Chromium-valikko >
+       <span jscontent="settingsTitle"></span>
+        >
+       <span jscontent="advancedTitle"></span>
+        ja poista valinta kohdasta <span jscontent="noNetworkPredictionTitle"></span>.
+        Jos ongelma ei ratkea, valitse tämä vaihtoehto
+        uudelleen suorituskyvyn parantamiseksi.

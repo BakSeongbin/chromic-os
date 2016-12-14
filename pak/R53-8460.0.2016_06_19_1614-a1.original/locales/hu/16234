@@ -1,0 +1,1 @@
+Hogyan szabályozza a jelszókezelő a szinkronizálási hitelesítő adatoknak a kizárólag a tranzakció-újrahitelesítő oldalak esetében történő automatikus kitöltését.

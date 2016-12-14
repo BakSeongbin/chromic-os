@@ -1,0 +1,1 @@
+Een TLS 1.0 fallback kan communiceren met de server, maar we accepteren geen TLS 1.0 fallbacks meer. De server moet worden geüpdatet zodat de versieonderhandeling correct wordt geïmplementeerd en bij voorkeur TLS 1.2 wordt ondersteund.

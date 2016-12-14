@@ -1,0 +1,2 @@
+Ciri ini digunakan bersama dengan bendera trace-upload-url.
+        AMARAN: Apabila didayakan, Chrome akan merekodkan data prestasi untuk setiap navigasi dan memuat naiknya ke URL yang ditentukan oleh bendera trace-upload-url. Jejak tersebut boleh merangkumi maklumat peribadi yang boleh dikenal pasti (PII) seperti tajuk dan URL tapak web yang anda lawati.

@@ -1,0 +1,1 @@
+Se mostrarán ventanas de aplicaciones tras el primer trazo. Las ventanas de las aplicaciones grandes cuyos recursos se carguen de forma síncrona tardarán bastante más en aparecer que las de las aplicaciones que carguen la mayoría de sus recursos de forma asíncrona, que apenas tardarán en mostrarse.

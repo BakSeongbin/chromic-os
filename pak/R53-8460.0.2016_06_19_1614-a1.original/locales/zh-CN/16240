@@ -1,0 +1,1 @@
+启用实验性“Cache-Control: stale-while-revalidate”指令实施功能。此操作可让服务器指定部分资源可在后台进行重新验证以改善延迟现象。

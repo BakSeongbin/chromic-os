@@ -1,0 +1,1 @@
+Ermöglicht GDB-Debugging mit Stub-Datei. Dadurch wird eine Native Client-App beim Start gestoppt, bis nacl-gdb aus dem NaCl-SDK anhängt wird.

@@ -1,0 +1,4 @@
+<p>Wanneer je $1 uitvoert in een ondersteunde desktopomgeving, worden de proxyinstellingen van het systeem gebruikt. Je systeem wordt echter niet ondersteund of er is een probleem opgetreden met het lanceren van je systeemconfiguratie.</p>
+
+
+        <p>Je kunt je instellingen configureren via de opdrachtprompt. Zie <code>man $2</code> voor meer informatie over markeringen en omgevingsvariabelen.</p>

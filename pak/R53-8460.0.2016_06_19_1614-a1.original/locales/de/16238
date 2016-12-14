@@ -1,0 +1,1 @@
+Aktivieren Sie für die Push API den Hintergrundmodus. Dadurch kann Chrome nach dem Schließen des letzten Fensters weiter ausgeführt und beim Hochfahren des Betriebssystems gestartet werden, sofern dies für die Push API erforderlich ist.

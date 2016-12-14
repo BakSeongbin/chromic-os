@@ -1,0 +1,1 @@
+Voeg een queryparameter toe aan de URL om de pagina automatisch te laten vernieuwen: chrome://network/?refresh=<sec>

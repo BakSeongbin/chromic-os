@@ -1,0 +1,2 @@
+Flera olika rubriker med "Content-Length" togs emot. Eftersom vi vill förhindra
+    attacker med delade HTTP-svar är detta inte tillåtet.

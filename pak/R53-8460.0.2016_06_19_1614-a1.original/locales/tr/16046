@@ -1,0 +1,1 @@
+Veri gönderiminin daha hızlı başlatılması için, daha önce bağlanmış bir istemciye yönelik ilk SYN paketinde ekstra kimlik doğrulama bilgileri gönderme seçeneğini etkinleştirin.

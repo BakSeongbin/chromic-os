@@ -1,0 +1,1 @@
+Zaobilazi ograničenja korisničkog angažmana za prikazivanje bannera aplikacija, na primjer, zahtjev da su korisnici već posjetili tu web-lokaciju i da se banner nije prikazivao u zadnje vrijeme. To omogućuje razvojnim programerima da testiraju jesu li ispunjeni drugi zahtjevi za prikazivanje bannera aplikacija, na primjer, posjedovanje manifesta.

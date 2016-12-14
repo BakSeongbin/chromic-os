@@ -1,0 +1,1 @@
+{SECONDS,plural, =1{Liko 1 sek.}one{Liko # sek.}few{Liko # sek.}many{Liko # sek.}other{Liko # sek.}}

@@ -1,0 +1,1 @@
+Accediu a una <a jsvalues="href:urlCorrection;.jstdata:$this" onmousedown="linkClicked(this.jstdata)">còpia emmagatzemada a la memòria cau</a> de la pàgina <span jscontent="originalUrlForDisplay"></span>.

@@ -1,0 +1,1 @@
+L'application dont le fichier manifeste comporte un attribut "kiosk_only" doit être installée en mode Kiosque pour Chrome OS.

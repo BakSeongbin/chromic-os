@@ -1,0 +1,1 @@
+{COUNT,plural, =0{ללא}=1{אחת}two{#}many{#}other{#}}

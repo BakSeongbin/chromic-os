@@ -1,0 +1,1 @@
+Erősen kísérleti mód, amelyben a különböző webhelyekről származó iframe-eket a felső dokumentumtól elkülönített folyamatban tárolja a rendszer. Ebben a módban a különböző webhelyekről származó iframe-ek számára engedélyezett a folyamatmegosztás.

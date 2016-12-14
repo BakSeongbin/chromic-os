@@ -1,0 +1,1 @@
+Proxy yapılandırıldıysa genellikle farklı giriş portallarında yetkilendirmeyi engeller. Bu, proxy ayarlarının yoksayılmasını ve giriş portalı yetkilendirme iletişim kutusunun ayrı bir pencerede açılabilmesini sağlar.

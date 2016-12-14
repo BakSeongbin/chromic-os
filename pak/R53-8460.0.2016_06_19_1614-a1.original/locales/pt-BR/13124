@@ -1,0 +1,2 @@
+A criação de um usuário supervisionado não cria uma Conta do Google, e as configurações
+    e dados desse usuário não o acompanham em outros dispositivos com o Sincronização do Google Chrome. Um usuário supervisionado se aplica somente a este dispositivo.

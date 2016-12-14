@@ -1,0 +1,1 @@
+Fonctionnalité hautement expérimentale de rendu des cadres iFrame inter-sites dans des processus distincts. Si ce mode est activé, seuls les documents venant d'un même site Web partageront le même processus du moteur de rendu.

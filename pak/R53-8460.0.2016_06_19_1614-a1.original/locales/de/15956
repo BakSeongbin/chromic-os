@@ -1,0 +1,1 @@
+Schränkt das GDB-basierte Debugging für Native Client-Apps nach der URL der Manifestdatei ein. Damit diese Option funktioniert, muss das GDB-basierte Debugging für Native Client-Apps aktiviert sein.

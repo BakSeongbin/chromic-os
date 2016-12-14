@@ -1,0 +1,1 @@
+Bardzo eksperymentalna obsługa renderowania elementów iframe z różnych witryn w osobnych procesach. W tym trybie jeden proces będzie renderować tylko dokumenty pochodzące z tej samej witryny.

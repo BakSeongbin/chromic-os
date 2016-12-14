@@ -1,0 +1,1 @@
+Consente di attivare V8 Proxy Resolver out-of-process. V8 Proxy Resolver viene eseguito nel processo di un'utility anziché all'interno del processo del browser.

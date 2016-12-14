@@ -1,0 +1,1 @@
+Force the use of PNaCl's fast Subzero translator for all pexe files.

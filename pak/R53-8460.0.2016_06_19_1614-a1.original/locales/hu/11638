@@ -1,0 +1,1 @@
+Felügyelt fiókkal jelentkezik be, és annak adminisztrátora számára hozzáférést biztosít Chromium-profiljához. Chromium-adatait – például alkalmazásait, könyvjelzőit, előzményeit, jelszavait és más beállításait – a rendszer véglegesen társítja a(z) $1 fiókhoz. Ezen adatokat a Google-fiók Irányítópultján törölheti, ám más fiókhoz nem társíthatja őket.

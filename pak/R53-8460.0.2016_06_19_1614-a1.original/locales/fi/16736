@@ -1,0 +1,1 @@
+{COUNT,plural, =0{ei yhtään}=1{1 sovellus ($1)}=2{2 sovellusta ($1, $2)}other{# sovellusta ($1, $2 ja $3)}}

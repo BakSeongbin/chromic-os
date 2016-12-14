@@ -1,0 +1,18 @@
+<h3>Funciones de depuración</h3>
+    <br>
+    Puedes habilitar las funciones de depuración en tu dispositivo con Sistema operativo Chromic para instalar y probar código personalizado en el dispositivo. Esto te permitirá:<br>
+    <ul>
+      <li>eliminar la verificación de rootfs para poder modificar archivos de SO;
+      <li>habilitar el acceso SSH al dispositivo con las claves de prueba estándar a fin de usar herramientas como <span style="color:grey;font-family:monospace">'cros flash'</span> para acceder al dispositivo;
+      <li>habilitar el inicio desde USB para poder instalar una imagen de SO desde una unidad USB;
+      <li>establecer la contraseña de acceso de desarrollo y raíz del sistema en un valor personalizado para poder usar el acceso SSH de manera manual y acceder al dispositivo.
+    </ul>
+    <br>
+    Una vez habilitadas, la mayoría de las funciones de depuración seguirán habilitadas incluso después de usar la función Powerwash o borrar los datos en un dispositivo administrado por una empresa. Para inhabilitar por completo todas las funciones de depuración, realiza todos los pasos del proceso de recuperación del Sistema operativo Chromic (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Para obtener más información acerca de las funciones de depuración, consulta:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Nota:</b> El sistema se reiniciará durante el proceso.

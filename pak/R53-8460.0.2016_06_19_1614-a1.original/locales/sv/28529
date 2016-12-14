@@ -1,0 +1,1 @@
+Ett alternativ för TLS 1.0 kunde utföra en handskakning med servern, men vi godkänner inte längre alternativ för TLS 1.0. Servern måste uppdateras så att den korrekt implementerar versionsförhandling och helst har stöd för TLS 1.2.

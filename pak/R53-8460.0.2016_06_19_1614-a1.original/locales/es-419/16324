@@ -1,0 +1,1 @@
+Restablece el estado de instalación del Selector de aplicaciones con cada reinicio. Si se activa esta opción, cada vez que se inicie, Chrome dejará de recordar que el Selector está instalado. Esto se utiliza para probar el flujo de instalación del Selector de aplicaciones.

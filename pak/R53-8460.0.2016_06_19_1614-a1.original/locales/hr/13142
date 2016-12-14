@@ -1,0 +1,4 @@
+Da biste odredili koje web-lokacije nadzirani korisnik može gledati, možete
+    konfigurirati ograničenja i postavke tako što ćete posjetiti $1.
+    Ako ne promijenite zadane postavke, $2
+    može pregledavati sve web-lokacije na webu.

@@ -1,0 +1,1 @@
+Ativa stub de depuração GDB. Isso interromperá um aplicativo do Cliente nativo na inicialização e aguardará que NaCl-gdb (de NaCl SDK) se anexe a ele.

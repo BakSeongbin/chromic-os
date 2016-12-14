@@ -1,0 +1,1 @@
+Aktiviert die Option zum Senden zusätzlicher Authentifizierungsinformationen im ersten SYN-Paket für Clients, zu denen bereits eine Verbindung bestand. Dadurch beginnt das Senden der Daten schneller.

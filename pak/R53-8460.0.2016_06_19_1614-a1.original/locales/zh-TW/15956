@@ -1,0 +1,1 @@
+根據資訊清單網址檔案，限制 Native Client 應用程式 GDB 偵錯。您必須啟用 Native Client GDB 偵錯，才能使用這個選項。

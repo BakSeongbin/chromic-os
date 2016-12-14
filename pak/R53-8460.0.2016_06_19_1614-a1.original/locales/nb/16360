@@ -1,0 +1,1 @@
+Trådbasert behandling av inndataaktiviteter relatert til rulling. Hvis dette alternativet slås av, tvinges alle rulleaktiviteter til å håndteres på hovedtråden. Vær oppmerksom på at dette kan gi dramatisk nedsatt rulleytelse på de fleste nettsteder, og det er bare ment å brukes til testformål.

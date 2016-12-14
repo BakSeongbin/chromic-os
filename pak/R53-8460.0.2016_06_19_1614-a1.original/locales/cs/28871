@@ -1,0 +1,1 @@
+Pokusili jste se přejít na web <strong>$1</strong>, server však předložil certifikát podepsaný slabým algoritmem. To znamená, že bezpečnostní pověření předložená serverem mohou být falešná a může se jednat o úplně jiný server, než předpokládáte (můžete komunikovat s útočníkem).

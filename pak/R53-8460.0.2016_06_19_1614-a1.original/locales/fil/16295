@@ -1,0 +1,1 @@
+Ang mga raster thread ay direktang nagra-write sa GPU memory na nauugnay sa mga tile.

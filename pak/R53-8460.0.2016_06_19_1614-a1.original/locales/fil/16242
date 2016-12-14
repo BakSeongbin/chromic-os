@@ -1,0 +1,2 @@
+Gagamitin ito kaugnay ng flag na trace-upload-url.
+        BABALA: Kapag naka-enable, itatala ng Chrome ang data ng pagganap para sa bawat navigation at ia-upload ito sa URL na tinukoy ng flag na trace-upload-url. Maaaring magsama ang pag-trace ng personally identifiable information (PII) gaya ng mga pamagat at URL ng mga website na binibisita mo.

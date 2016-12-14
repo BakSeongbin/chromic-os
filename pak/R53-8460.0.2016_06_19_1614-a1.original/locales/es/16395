@@ -1,0 +1,1 @@
+Hace que los flujos de salida de audio comprueben si hay disponibles superposiciones del canal distintas a la superposición de hardware predeterminada. Al activar esta opción, el sistema operativo podrá expandirse de sonido estéreo a envolvente, si se admite esta función. Pueden producirse errores de controladores externos, por lo que se debe usar con precaución.

@@ -1,0 +1,1 @@
+Zpracování událostí vstupu souvisejících s posouváním ve vláknu. Deaktivace tohoto příznaku vynutí, aby všechny takové události posunutí byly zpracovány v hlavním vláknu. Upozorňujeme, že toto nastavení může výrazně zhoršit funkci posouvání na většině webových stránek a je určeno pouze pro účely testování.

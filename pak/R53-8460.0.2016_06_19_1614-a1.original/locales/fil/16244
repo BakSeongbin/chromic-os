@@ -1,0 +1,1 @@
+Pinupuwersa ang pag-reload ng mga UI na mag-trigger ng hindi nagpapatunay na pag-reload (bagama't ang karaniwang ibig sabihin nito ay ang regular na nagpapatunay sa cache na pag-reload kapag naka-disable ang flag).

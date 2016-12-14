@@ -1,0 +1,1 @@
+Włączenie tej opcji powoduje, że elementy o stałych pozycjach mają własne skomponowane warstwy. Pamiętaj, że aby tak się działo, elementy te muszą tworzyć konteksty stosów.

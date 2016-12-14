@@ -1,0 +1,1 @@
+启用跨设备同步 WiFi 网络设置的功能。此功能启用后，WiFi 凭据的数据类型会注册到 Chrome 同步功能，并且 WiFi 凭据会根据用户偏好设置进行同步（另请访问 chrome://settings/syncSetup）。

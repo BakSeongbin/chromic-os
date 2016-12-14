@@ -1,0 +1,1 @@
+Verwendet kein Softwarerendering, sondern aktiviert die Nutzung des GPU zur Berechnung von 2D-Canvasrendering.

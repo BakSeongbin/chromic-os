@@ -1,0 +1,1 @@
+{SECONDS,plural, =1{Chromium wird in 1 Sekunde neu starten.}other{Chromium wird in # Sekunden neu starten.}}

@@ -1,0 +1,1 @@
+Uma alternativa de TLS 1.0 conseguiu estabelecer um handshake com o servidor, mas já não aceitamos alternativas de TLS 1.0. É necessário atualizar o servidor para implementar corretamente a negociação da versão e, preferencialmente, suportar TLS 1.2.

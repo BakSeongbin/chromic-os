@@ -1,0 +1,1 @@
+매니페스트 파일의 URL별로 Native Client GDB 기반 디버깅을 제한합니다. 이 옵션이 작동하려면 Native Client GDB 기반 디버깅을 사용하도록 설정해야 합니다.

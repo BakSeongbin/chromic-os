@@ -1,0 +1,18 @@
+<h3>Fejlfindingsfunktioner</h3>
+    <br>
+    Du kan aktivere fejlfindingsfunktionerne på din Chrome OS-enhed for at installere og teste tilpasset kode på din enhed. Dette vil give dig mulighed for at:<br>
+    <ul>
+      <li>Fjerne rootfs-bekræftelse, så du kan ændre OS-filer
+      <li>Aktivere SSH-adgang til enheden ved hjælp af standardtestnøgler, så du kan bruge værktøjer, som f.eks. <span style="color:grey;font-family:monospace">'cros flash'</span> til at få adgang til enheden
+      <li>Aktivere systemgenstart fra USB, så du kan installere en afbildning af operativsystemet fra et USB-drev
+      <li>Konfigurere både adgangskoderoden til login for udviklere og for systemet til en tilpasset værdi, så du manuelt kan konfigurere SSH på enheden
+    </ul>
+    <br>
+    Når fejlfindingsfuntionerne er oprettet, vil de fleste af dem forblive aktiveret, selv efter powerwash eller datasletning på en virksomhedsadministreret enhed. For at deaktivere alle fejlfindingsfunktioner skal du gennemgå en gendannelsesproces for Chrome-operativsystemet (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Få flere oplysninger om fejlfindingsfunktionerne på:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Bemærk</b>! Systemet vil genstarte under processen.

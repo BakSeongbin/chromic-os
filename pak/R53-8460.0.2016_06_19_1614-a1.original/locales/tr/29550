@@ -1,0 +1,6 @@
+Chromium menüsü >
+          <span jscontent="settingsTitle"></span>
+          >
+          <span jscontent="advancedTitle"></span> öğesine gidin
+          ve "<span jscontent="noNetworkPredictionTitle"></span>" seçeneğinin işaretini kaldırın.
+          Bu işlem sorunu çözmezse performansın iyileşmesi için bu seçeneği tekrar işaretlemenizi öneririz.

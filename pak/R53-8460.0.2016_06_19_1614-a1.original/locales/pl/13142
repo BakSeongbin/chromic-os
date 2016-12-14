@@ -1,0 +1,4 @@
+Aby określić, jakie strony będzie mógł przeglądać użytkownik nadzorowany,
+    skonfiguruj ograniczenia i ustawienia na $1.
+    Jeśli nie zmienisz ustawień domyślnych, użytkownik $2
+    będzie mieć dostęp do wszystkich stron w internecie.

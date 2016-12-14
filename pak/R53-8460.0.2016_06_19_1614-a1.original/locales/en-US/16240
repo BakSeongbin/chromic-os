@@ -1,0 +1,1 @@
+Enable the experimental implementation of the "Cache-Control: stale-while-revalidate" directive. This permits servers to specify that some resources may be revalidated in the background to improve latency.

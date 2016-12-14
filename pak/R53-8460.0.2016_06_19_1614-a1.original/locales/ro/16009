@@ -1,0 +1,1 @@
+Utilizează un fir de execuție secundar pentru a efectua compunerea paginilor web. Aceasta va permite o derulare lină, chiar și atunci când firul de execuție principal nu răspunde.

@@ -1,0 +1,1 @@
+Nagawa ng isang TLS 1.0 fallback na mag-handshake sa server, ngunit hindi na kami tumatanggap ng mga TLS 1.0 fallback. Dapat ma-update ang server upang wastong maipatupad ang negosasyon ng bersyon at mas mabuti kung sinusuportahan ang TLS 1.2.

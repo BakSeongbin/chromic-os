@@ -1,0 +1,1 @@
+{SECONDS,plural, =1{Chromium uruchomi się ponownie za sekundę.}few{Chromium uruchomi się ponownie za # sekundy.}many{Chromium uruchomi się ponownie za # sekund.}other{Chromium uruchomi się ponownie za # sekundy.}}

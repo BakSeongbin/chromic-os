@@ -1,0 +1,1 @@
+Öppna en <a jsvalues="href:urlCorrection;.jstdata:$this" onmousedown="linkClicked(this.jstdata)">cachad kopia</a> av <span jscontent="originalUrlForDisplay"></span>

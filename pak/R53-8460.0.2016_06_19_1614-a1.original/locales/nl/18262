@@ -1,0 +1,1 @@
+Zeer experimentele ondersteuning voor het weergeven van iframes op verschillende sites in afzonderlijke processen. In deze modus delen documenten alleen een proces van het weergaveprogramma als ze afkomstig zijn van dezelfde website.

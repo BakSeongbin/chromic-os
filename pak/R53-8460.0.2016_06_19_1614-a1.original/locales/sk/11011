@@ -1,0 +1,1 @@
+{DAYS,plural, =1{1 deň a }few{# dni a }many{# dňa a }other{# dní a }}

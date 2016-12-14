@@ -1,0 +1,1 @@
+Supporto altamente sperimentale del rendering di iframe tra siti in processi separati. In questa modalità, i documenti avranno uno stesso processo di rendering soltanto se deriveranno dallo stesso sito web.

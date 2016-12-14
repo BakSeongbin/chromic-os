@@ -1,0 +1,1 @@
+{COUNT,plural, =0{alespoň jedna položka v synchronizovaných zařízeních}=1{1 položka (a další v synchronizovaných zařízeních)}few{# položky (a další v synchronizovaných zařízeních)}many{# položky (a další v synchronizovaných zařízeních)}other{# položek (a další v synchronizovaných zařízeních)}}

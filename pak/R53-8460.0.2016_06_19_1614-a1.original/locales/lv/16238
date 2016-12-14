@@ -1,0 +1,1 @@
+Tiek iespējots Push API fona režīms. Tādējādi Chrome varēs turpināt darboties pēc pēdējā loga aizvēršanas un tiks palaists pēc operētājsistēmas startēšanas, ja Push API tas būs nepieciešams.

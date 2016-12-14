@@ -1,0 +1,1 @@
+Omite las verificaciones de participación del usuario para mostrar banners de aplicaciones; por ejemplo, no se requiere que los usuarios hayan visitado el sitio antes ni que el banner no haya aparecido recientemente. Esta marca permite a los programadores probar si se cumplieron otros requisitos de elegibilidad (como tener un manifiesto) para mostrar banners de aplicaciones.

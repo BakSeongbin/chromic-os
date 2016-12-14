@@ -1,0 +1,1 @@
+Hvis du sletter et CA-sertifikat (sertifiseringsinstans), vil nettleseren ikke lenger stole på noen sertifikater som er utstedt av denne sertifiseringsinstansen.

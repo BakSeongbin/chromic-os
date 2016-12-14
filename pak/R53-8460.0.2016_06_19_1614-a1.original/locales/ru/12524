@@ -1,0 +1,4 @@
+{TAB_COUNT, plural,
+   =1 {Are you sure you want to open # tab?}
+   other {Are you sure you want to open # tabs?}
+  }

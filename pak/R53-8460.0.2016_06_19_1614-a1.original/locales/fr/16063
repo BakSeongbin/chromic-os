@@ -1,0 +1,1 @@
+L'activation de cette option permet aux applications Web d'accéder à la fonctionnalité WebGL 2.0 expérimentale. Cette option ne doit être utilisée que pour le développement d'applications. Vous ne devez pas l'utiliser pour la navigation sur des sites Web arbitraires.

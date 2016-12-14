@@ -1,0 +1,1 @@
+Utiliza um subprocesso secundário para realizar a composição da página Web. Isto permite um deslocamento suave, mesmo quando o subprocesso principal não responde.

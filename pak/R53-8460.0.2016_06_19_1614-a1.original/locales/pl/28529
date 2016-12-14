@@ -1,0 +1,1 @@
+Udało się skontaktować z serwerem przy użyciu starszej wersji protokołu TLS (1.0), ale nie akceptujemy już połączeń z tą wersją. Serwer wymaga aktualizacji, by prawidłowo negocjował wersje i (optymalnie) obsługiwał TLS 1.2.

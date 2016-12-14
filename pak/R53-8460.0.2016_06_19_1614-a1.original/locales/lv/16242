@@ -1,0 +1,2 @@
+Tas ir jāizmanto kopā ar karodziņu “trace-upload-url”.
+        BRĪDINĀJUMS: ja opcija būs iespējota, Chrome reģistrēs veiktspējas datus par katru navigācijas darbību un augšupielādēs to karodziņā “trace-upload-url” norādītajā URL. Šajā trasējumā var būt ietverta personu identificējoša informācija (PII), piemēram, jūsu apmeklēto vietņu nosaukumi un vietrāži URL.

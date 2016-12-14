@@ -1,0 +1,1 @@
+Redefine o estado de instalação do Acesso rápido aos apps em cada reinicialização. Embora esse sinalizador esteja definido, sempre que for iniciado, o Google Chrome esquecerá que o Acesso rápido aos apps foi instalado. Isso é usado para testar o fluxo de instalação do Acesso rápido aos apps.

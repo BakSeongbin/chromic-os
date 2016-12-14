@@ -1,0 +1,1 @@
+Compatibilidad altamente experimental para representar marcos flotantes entre sitios en procesos distintos. En este modo, los documentos compartirán un proceso de renderización únicamente si pertenecen al mismo sitio web.

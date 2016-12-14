@@ -1,0 +1,1 @@
+Schakel de achtergrondmodus in voor de Push-API. Hierdoor kan Chrome actief blijven nadat het laatste venster is gesloten en worden gestart wanneer het besturingssysteem wordt opgestart in het geval dat de Push API dit nodig heeft.

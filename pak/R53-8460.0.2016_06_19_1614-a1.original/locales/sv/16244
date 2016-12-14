@@ -1,0 +1,1 @@
+Tvingar fram återinläsning utan validering (i stället för vanlig återinläsning med cachevalidering, som är det normala när flaggan är inaktiverad) när återinläsning aktiveras i användargränssnittet.

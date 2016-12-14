@@ -1,0 +1,1 @@
+Se eliminar um certificado de servidor, restaurará as verificações de segurança normais para esse servidor e será necessário que o servidor utilize um certificado válido.

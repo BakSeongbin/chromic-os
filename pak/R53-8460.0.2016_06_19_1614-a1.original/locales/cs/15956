@@ -1,0 +1,1 @@
+Omezuje ladění aplikace Native Client založené na technologii podle vzoru adresy URL souboru manifestu. Aby tato možnost fungovala, musí být aktivováno ladění aplikace Native Client založené na technologii GDB.

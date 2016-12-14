@@ -1,0 +1,1 @@
+Kai kuriuose tinklalapiuose naudojami pasenę arba nestandartiniai „JavaScript“ plėtiniai, kurie gali būti nesuderinami su naujausiomis „JavaScript“ funkcijomis. Naudojant šią žymą leidžiama nebepalaikyti tokių funkcijų, kad būtų galima suderinti jas su tokiais puslapiais.

@@ -1,0 +1,1 @@
+Eksperyment, w którym wszystkie interfejsy API odzwierciedlają widoczny obszar układu. Powoduje to, że właściwości window.scroll są zależne od widocznego obszaru układu.

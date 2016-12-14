@@ -1,0 +1,1 @@
+Fuerza los objetos de escucha de eventos de touchstart, touchmove, mousewheel y wheel (que no hayan solicitado lo contrario) para que se consideren pasivos. Esto bloqueará el comportamiento de touch/wheel en algunos sitios web, pero es útil para demostrar los beneficios de rendimiento potenciales al adoptar objetos de escucha de eventos pasivos.

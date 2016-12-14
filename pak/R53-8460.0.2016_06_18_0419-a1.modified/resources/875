@@ -1,0 +1,5632 @@
+<!doctype html>
+<html i18n-values="dir:textdirection;
+                   build:buildType;
+                   highlight:highlightStrength;
+                   lang:language">
+<head>
+<meta charset="utf-8">
+<meta name="google" value="notranslate">
+<title i18n-content="title"></title>
+<!--
+This file is included for OOBE, login, and the lock screen. Only files which are
+needed by all three scenarios should be included here. If a file should only be
+shared between OOBE and login, add it to login_non_lock_shared.html.
+
+Any additional include increases the lock screen initialization time.
+-->
+
+<link rel="stylesheet" href="chrome://resources/css/butter_bar.css">
+<link rel="stylesheet" href="chrome://resources/css/dialogs.css">
+<link rel="stylesheet" href="chrome://resources/css/list.css">
+<link rel="stylesheet" href="chrome://resources/css/menu_button.css">
+<link rel="stylesheet" href="chrome://resources/css/menu.css">
+<link rel="stylesheet" href="chrome://resources/css/spinner.css">
+<link rel="stylesheet" href="chrome://resources/css/throbber.css">
+<link rel="stylesheet" href="chrome://resources/css/widgets.css">
+
+<style>/* Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+.apps-menu-item {
+  -webkit-padding-start: 24px;
+  background: no-repeat 4px 50%;
+  background-size: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+</style>
+<style>/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ *
+ * Css based bubble.
+ */
+
+.bubble {
+  -webkit-transition: opacity 200ms ease-in-out;
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-size: 12px;
+  margin: 2px;
+  max-width: 250px;
+  padding: 16px;
+  position: absolute;
+}
+
+.bubble::before {
+  border-style: solid;
+  border-width: 8px;
+  content: '';
+  display: block;
+  position: absolute;
+}
+
+.bubble-top::before {
+  border-color: rgba(0, 0, 0, 0.25) transparent transparent transparent;
+  bottom: -16px;
+}
+
+html[dir=ltr] .bubble-top::before {
+  left: 17px;
+}
+
+html[dir=rtl] .bubble-top::before {
+  right: 17px;
+}
+
+html[dir=ltr] .bubble-right::before,
+html[dir=rtl] .bubble-left::before {
+  border-color: transparent rgba(0, 0, 0, 0.25) transparent transparent;
+  left: -16px;
+  top: 17px;
+}
+
+.bubble-bottom::before {
+  border-color: transparent transparent rgba(0, 0, 0, 0.25) transparent;
+  top: -16px;
+}
+
+html[dir=ltr] .bubble-bottom::before {
+  left: 17px;
+}
+
+html[dir=rtl] .bubble-bottom::before {
+  right: 17px;
+}
+
+html[dir=ltr] .bubble-left::before,
+html[dir=rtl] .bubble-right::before {
+  border-color: transparent transparent transparent rgba(0, 0, 0, 0.25);
+  right: -16px;
+  top: 17px;
+}
+
+.bubble::after {
+  border-style: solid;
+  border-width: 8px;
+  content: '';
+  display: block;
+  position: absolute;
+}
+
+.bubble-top::after {
+  border-color: white transparent transparent transparent;
+  bottom: -15px;
+}
+
+html[dir=ltr] .bubble-top::after {
+  left: 17px;
+}
+
+html[dir=rtl] .bubble-top::after {
+  right: 17px;
+}
+
+html[dir=ltr] .bubble-right::after,
+html[dir=rtl] .bubble-left::after {
+  border-color: transparent white transparent transparent;
+  left: -15px;
+  top: 17px;
+}
+
+.bubble-bottom::after {
+  border-color: transparent transparent white transparent;
+  top: -15px;
+}
+
+html[dir=ltr] .bubble-bottom::after {
+  left: 17px;
+}
+
+html[dir=rtl] .bubble-bottom::after {
+  right: 17px;
+}
+
+html[dir=ltr] .bubble-left::after,
+html[dir=rtl] .bubble-right::after {
+  border-color: transparent transparent transparent white;
+  right: -15px;
+  top: 17px;
+}
+
+.error-message-bubble {
+  -webkit-padding-start: 30px;
+  background: -webkit-image-set(url(chrome://theme/IDR_WARNING) 1x, url(chrome://theme/IDR_WARNING@2x) 2x) left top no-repeat;
+  background-size: 24px;
+}
+
+.error-message-bubble-padding {
+  margin-bottom: 10px;
+}
+
+html[dir=rtl] .error-message-bubble {
+  background-position: right top;
+}
+</style>
+<style>/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#login-header-bar {
+  -webkit-padding-start: 15px;
+  border-bottom: 3px solid black;
+  bottom: 0;
+  left: 0;
+  padding-bottom: 7px;
+  position: absolute;
+  right: 0;
+}
+
+#login-header-bar {
+  /* Using copy of Ash launcher background with 0.8 opacity applied to it.
+     Otherwise if opacity: 0.8 is set here it will affect button text as well.
+     Have to position background differently so that opacity is not applied
+     to child elements. */
+  background-image: -webkit-image-set(url(chrome://theme/IDR_LAUNCHER_BACKGROUND) 1x, url(chrome://theme/IDR_LAUNCHER_BACKGROUND@2x) 2x);
+  padding-top: 7px;
+}
+
+html[screen=lock] .login-header-bar-hidden,
+html[screen=oobe] .login-header-bar-hidden {
+  opacity: 0;
+}
+
+html[screen=lock] .login-header-bar-animate-fast,
+html[screen=oobe] .login-header-bar-animate-fast {
+  -webkit-transition: opacity 200ms ease-out;
+}
+
+html[screen=lock] .login-header-bar-animate-slow,
+html[screen=oobe] .login-header-bar-animate-slow {
+  -webkit-transition: opacity 2s ease-out;
+}
+
+#login-header-bar button,
+#login-header-bar button:active,
+#login-header-bar button:focus,
+#login-header-bar button:hover {
+  background: transparent none;
+  box-shadow: none;
+  cursor: pointer;
+  height: 34px;
+  margin: 0;
+  min-width: 0;
+  opacity: 0.6;
+  padding: 5px 8px;
+  vertical-align: middle;
+}
+
+#login-header-bar button:not(.button-restricted),
+#login-header-bar button:active:not(.button-restricted),
+#login-header-bar button:focus:not(.button-restricted),
+#login-header-bar button:hover:not(.button-restricted) {
+  color: white !important;
+  opacity: 1 !important;
+}
+
+.header-bar-item {
+  display: inline-block;
+  height: 34px;
+}
+
+.add-supervised-user-menu {
+  display: none;
+}
+
+#more-settings-header-bar-item.active button.add-supervised-user-menu {
+  background-color: white;
+  border: 1px solid lightgray;
+  border-radius: 2px;
+  bottom: 15px;
+  color: black !important;
+  display: block;
+  font-size: 13px;
+  height: auto;
+  left: 15px;
+  margin: 0 0 -10px -10px;
+  min-height: 34px;
+  position: absolute;
+  text-align: center;
+  width: 180px;
+}
+
+html[dir=rtl] #more-settings-header-bar-item.active
+                button.add-supervised-user-menu {
+  right: 0;
+}
+
+html[dir=rtl] .header-bar-item {
+  background-position: right center;
+}
+
+#login-header-bar #shutdown-button,
+#login-header-bar #restart-button,
+#login-header-bar #add-user-button,
+#login-header-bar #guest-user-button,
+#login-header-bar #more-settings-button,
+#login-header-bar #cancel-multiple-sign-in-button {
+  -webkit-padding-start: 24px;
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-size: 24px;
+}
+
+html[dir=rtl] #login-header-bar #shutdown-button,
+html[dir=rtl] #login-header-bar #restart-button,
+html[dir=rtl] #login-header-bar #add-user-button,
+html[dir=rtl] #login-header-bar #more-settings-button,
+html[dir=rtl] #login-header-bar #guest-user-button,
+html[dir=rtl] #login-header-bar #cancel-multiple-sign-in-button {
+  background-position: right center;
+}
+
+#login-header-bar #more-settings-header-bar-item {
+  position: relative;
+}
+
+#login-header-bar #shutdown-button {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_ICON_POWER_WHITE) 1x, url(chrome://theme/IDR_ICON_POWER_WHITE@2x) 2x);
+}
+
+#login-header-bar #restart-button {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_ICON_POWER_WHITE) 1x, url(chrome://theme/IDR_ICON_POWER_WHITE@2x) 2x);
+}
+
+#login-header-bar #add-user-button {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_ICON_ADD_USER_WHITE) 1x, url(chrome://theme/IDR_ICON_ADD_USER_WHITE@2x) 2x);
+}
+
+#login-header-bar #more-settings-button {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_ICON_MORE_VERT_WHITE) 1x, url(chrome://theme/IDR_ICON_MORE_VERT_WHITE@2x) 2x);
+}
+
+#login-header-bar #guest-user-button {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_ICON_GUEST_WHITE) 1x, url(chrome://theme/IDR_ICON_GUEST_WHITE@2x) 2x);
+}
+
+#login-header-bar #cancel-multiple-sign-in-button {
+  /* TODO(dzhioev): replace with appropriate image when possible. */
+  background-image: -webkit-image-set(url(chrome://theme/IDR_PANEL_CLOSE) 1x, url(chrome://theme/IDR_PANEL_CLOSE@2x) 2x);
+}
+
+.button-restricted {
+  border: 1px solid transparent;
+  color: white !important;
+  opacity: 0.4 !important;
+}
+</style>
+<style>/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ *
+ * This is the stylesheet used by the Out of the box experience (OOBE) flow,
+ * sign in and lock screens.
+ */
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background-color: transparent;
+  cursor: default;
+  font-size: 14px;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  position: fixed;
+  top: 0;
+}
+
+body.solid {
+  background-color: white;
+}
+
+button {
+  font-family: inherit;
+  outline: none;
+}
+
+/* Follow same focus coloring as in widgets.css */
+/* Do not apply this style to restricted button state. */
+button.custom-appearance:not(.button-restricted):not(.button-fancy):not(
+    [is="gaia-icon-button"]) {
+  -webkit-transition: border-color 200ms;
+  border: 1px solid transparent;
+  /* Don't grey out disabled buttons. */
+  color: buttontext !important;
+}
+
+/* ':focus' used three times to increase specificity. */
+button.custom-appearance:focus:focus:focus {
+  border-color: rgb(77, 144, 254);
+}
+
+button:not(.custom-appearance) {
+  min-width: 72px !important;
+}
+
+button.button-fancy {
+  min-width: 72px !important;
+}
+
+button.button-blue {
+  background-image: linear-gradient(rgb(93, 154, 255),
+                                    rgb(93, 154, 255) 38%,
+                                    rgb(88, 145, 240));
+  border: 1px solid rgba(45, 102, 195, 1);
+  border-radius: 2px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15), inset 0 1px 2px
+              rgba(255, 255, 255, 0.4);
+  color: #fff;
+  font-size: 14px;
+  margin: 0 1px 0 0;
+  min-height: 2em;
+  min-width: 4em;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+
+button.button-blue:hover {
+  background-image: linear-gradient(rgb(101, 158, 253),
+                                    rgb(101, 158, 253) 38%,
+                                    rgb(96, 151, 241));
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25), inset 0 1px 2px
+              rgba(255, 255, 255, 0.4);
+}
+
+button.button-blue:active {
+  background-image: linear-gradient(rgb(96, 149, 237),
+                                    rgb(96, 149, 237) 38%,
+                                    rgb(96, 149, 237));
+  border: 1px solid rgba(38, 84, 160, 1);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+button.button-red {
+  background-image: linear-gradient(rgb(221, 75, 57),
+                                    rgb(221, 75, 57) 38%,
+                                    rgb(197, 66, 49));
+  border: 1px solid rgba(167, 57, 44, 1);
+  border-radius: 2px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15), inset 0 1px 2px
+      rgba(255, 255, 255, 0.4);
+  color: #fff;
+  margin: 0 1px 0 0;
+  min-height: 2em;
+  min-width: 4em;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
+}
+
+button.button-red:hover {
+  background-image: linear-gradient(rgb(231, 78, 59),
+                                    rgb(231, 78, 59) 38%,
+                                    rgb(209, 70, 52));
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25), inset 0 1px 2px
+      rgba(255, 255, 255, 0.4);
+}
+
+button.button-red:active {
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.label,
+.flexible-label {
+  display: block;
+  margin: 5px 5px 5px 0;
+  padding: 5px 5px 5px 0;
+}
+
+.label {
+  width: 170px;
+}
+
+.flexible-label {
+  max-width: 250px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+#bubble {
+  -webkit-transition: 250ms opacity;
+}
+
+span.bold {
+  font-weight: bold;
+}
+
+#version-labels {
+  -webkit-transition: all 500ms linear;
+  color: #fff;
+  font-size: 11px;
+  margin: 10px;
+  text-align: end;
+  text-shadow:
+      0 0 4px rgba(0,0,0,.6),
+      0 1px 2px rgba(0,0,0,.8),
+      0 -1px 2px rgba(0,0,0,1);
+}
+
+#background {
+  -webkit-transition: 700ms opacity;
+  background-size: 100% 100%;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.background-initial {
+  opacity: 0;
+}
+
+.throbber {
+  -webkit-margin-end: 0.5em;
+  margin-top: 1px;
+}
+</style>
+<style>/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+.popup-overlay {
+  -webkit-transition: 250ms opacity;
+  align-items: center;
+  background: rgba(255, 255, 255, .75);
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  padding: 20px;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 5;
+}
+
+.oobe-popup {
+  background: white;
+  border: 1px solid rgb(188, 193, 208);
+  border-radius: 2px;
+  box-shadow: 0 5px 80px #505050;
+  min-height: 250px;
+  position: relative;
+  width: 460px;
+  z-index: 10;
+}
+
+.oobe-popup h1 {
+  -webkit-padding-end: 24px;
+  -webkit-user-select: none;
+  background: linear-gradient(white, #F8F8F8);
+  color: rgb(83, 99, 125);
+  font-size: 105%;
+  font-weight: bold;
+  margin: 0;
+  padding: 10px 15px 8px 15px;
+  text-shadow: white 0 1px 2px;
+}
+
+.popup-content-area {
+  padding: 20px 20px 60px 20px;
+}
+</style>
+<style>/* Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ *
+ * This contains common styling for all the OOBE screens.
+ */
+
+.step {
+  box-sizing: border-box;
+  position: absolute;
+}
+
+.step.animated:not(.faded) {
+  -webkit-transition: -webkit-transform 200ms ease-in-out,
+                      opacity 200ms ease-in-out,
+                      visibility 200ms ease-in-out;
+}
+
+.step.hidden {
+  visibility: hidden;
+}
+
+.faded,
+.left,
+.right {
+  opacity: 0;
+}
+
+.step.right {
+  -webkit-transform: translateX(50px);
+}
+
+.step.left {
+  -webkit-transform: translateX(-50px)
+}
+
+.step.fullscreen {
+  height: 100%;
+  left: 0;
+  right: 0;
+  top: 0;
+  width: 100%;
+}
+
+.step-controls {
+  bottom: 21px;
+  box-sizing: border-box;
+  display: flex;
+  height: 28px;
+  justify-content: flex-end;
+  padding-right: 34px;  /* Double the padding of .step */
+  position: absolute;
+  width: 100%;
+}
+
+html[dir=rtl] .step-controls {
+  /* Hack as -webkit-padding-end doesn't catch direction. crbug.com/363836 */
+  padding-left: 34px;
+}
+
+.animation .step-controls button {
+  /* Don't grey out disabled buttons during animation. */
+  color: buttontext !important;
+}
+
+.step.loading .step-contents,
+.step.loading .step-controls,
+.step.loading .step-extra-controls {
+  visibility: hidden;
+}
+
+.step:not(.loading) #user-images-loading {
+  visibility: hidden;
+}
+
+.step:not(.loading) #eula-busy {
+  visibility: hidden;
+}
+
+.step-loading {
+  align-items: center;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+/* Fixes perfomance problem caused by http://crbug.com/229405 . */
+.step.hidden .throbber,
+.step.hidden .spinner,
+.step.hidden .inline-spinner {
+  display: none;
+}
+
+#security-info a,
+#eula a,
+.step-extra-controls a {
+  color: rgb(49, 106, 197); /* same as 'Learn more' link */
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.step-extra-controls {
+  bottom: 26px;
+  left: 49px;
+  position: absolute;
+}
+
+/* EULA screen extra controls have 2 elements
+   so they require different alignment. */
+#eula-extra-controls {
+  bottom: 17px;
+}
+
+#security-info a:focus,
+#eula a:focus,
+.step-extra-controls a:focus {
+  -webkit-transition: outline-color 200ms;
+  /* Note: May use 1px solid here. */
+  outline-color: rgb(77, 144, 254);
+}
+
+.step-extra-controls > *:not(:first-child) {
+  margin-top: 7px;
+}
+
+html[dir=rtl] .step-extra-controls {
+  left: auto;
+  right: 49px;
+}
+
+#oobe.autolaunch #autolaunch-confirm-button,
+#oobe.autolaunch #autolaunch-cancel-button,
+#oobe.connect #continue-button,
+#oobe.eula #accept-button,
+#oobe.eula #back-button,
+#oobe.kiosk-enable #kiosk-cancel-button,
+#oobe.kiosk-enable #kiosk-enable-button,
+#oobe.user-image #ok-button {
+  display: block;
+}
+
+#autolaunch-confirm-button,
+#back-button,
+#kiosk-enable-button,
+#reset-button,
+#password-changed-back-button,
+#tos-back-button {
+  -webkit-margin-end: 8px;
+}
+
+.menu-area {
+  margin: 5px;
+}
+
+.menu-control {
+  color: #444;
+  font-family: inherit;
+  line-height: 20px;
+  position: relative;
+  width: 250px;
+}
+
+html[highlight=strong] #security-info a:focus,
+html[highlight=strong] #eula a:focus,
+html[highlight=strong] .step-extra-controls a:focus,
+html[highlight=strong] .menu-control:focus,
+html[highlight=strong] input[type='button']:focus,
+html[highlight=strong] button:focus {
+  box-shadow: 0 0 23px rgb(77, 144, 254) !important;
+}
+
+</style>
+
+<style>/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#outer-container {
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
+  -webkit-perspective: 1px; /* Workaround, see http://crbug.com/360567 */
+  bottom: 57px;  /* Leave space for the header bar */
+  display: -webkit-box;
+  left: 0;
+  min-height: 717px; /* This enables scrolling. Min resolution: 1024x768 */
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1;
+}
+
+.oobe-display #outer-container {
+  -webkit-perspective: 600px;
+}
+
+#pin-container {
+  opacity: 0; /* Opacity is set to 1 after the pin element is loaded. */
+  transition: opacity 200ms ease-in-out;
+}
+
+#scroll-container {
+  bottom: 0;        /* Allows content overlap with control bar. */
+  left: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+#scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+#inner-container {
+  border-radius: 2px;
+  padding: 0;
+  position: relative;
+}
+
+#inner-container.animation {
+  overflow: hidden;
+}
+
+#inner-container.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Screens that have a border and background. */
+#oobe.auto-enrollment-check #inner-container,
+#oobe.autolaunch #inner-container,
+#oobe.confirm-password #inner-container,
+#oobe.connect #inner-container,
+#oobe.debugging #inner-container,
+#oobe.enrollment #inner-container,
+#oobe.eula #inner-container,
+#oobe.fatal-error #inner-container,
+#oobe.gaia-signin #inner-container,
+#oobe.hid-detection #inner-container,
+#oobe.kiosk-enable #inner-container,
+#oobe.oauth-enrollment #inner-container,
+#oobe.password-changed #inner-container,
+#oobe.reset #inner-container,
+#oobe.supervised-user-creation #inner-container,
+#oobe.supervised-user-creation-dialog #inner-container,
+#oobe.terms-of-service #inner-container,
+#oobe.update #inner-container,
+#oobe.user-image #inner-container,
+#oobe.wrong-hwid #inner-container,
+#oobe.unrecoverable-cryptohome-error #inner-container {
+  background: white;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3),
+              0 4px 23px 5px rgba(0, 0, 0, 0.2),
+              0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+#oobe.error-message #inner-container,
+#oobe.tpm-error-message #inner-container {
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3),
+              0 4px 23px 5px rgba(0, 0, 0, 0.2),
+              0 2px 6px rgba(0, 0, 0, 0.15);
+
+}
+
+/* Only play this animation when 'down' class is removed. */
+.oobe-display #inner-container:not(.down) {
+  -webkit-transition: transform 200ms ease-in-out;
+}
+
+.oobe-display #inner-container.down {
+  transform: translateY(50px) rotateX(-2.5deg);
+}
+
+#step-logo {
+  -webkit-margin-start: 17px;
+  display: -webkit-box;
+  position: absolute;
+  top: 15px;
+}
+
+#progress-dots {
+  -webkit-box-pack: center;
+  -webkit-transition: opacity 200ms ease-in-out,
+                      visibility 200ms ease-in-out;
+  display: -webkit-box;
+  margin-top: 15px;
+}
+
+/* Hidden for the duration of initial transition. */
+.oobe-display #progress-dots.down {
+  visibility: hidden;
+}
+
+.progdot {
+  -webkit-margin-end: 12px;
+  background: white;
+  height: 10px;
+  opacity: 0.4;
+  width: 10px;
+}
+
+.progdot-active {
+  opacity: 0.5;
+}
+
+#account-picker-dot,
+#app-launch-splash-dot,
+#auto-enrollment-check-dot,
+#autolaunch-dot,
+#confirm-password-dot,
+#controller-pairing-dot,
+#debugging-dot,
+#device-disabled-dot,
+#enrollment-dot,
+#error-message-dot,
+#fatal-error-dot,
+#hid-detection-dot,
+#host-pairing-dot,
+#kiosk-enable-dot,
+#oauth-enrollment-dot,
+#password-changed-dot,
+#reset-dot,
+#supervised-user-creation-dialog-dot,
+#supervised-user-creation-dot,
+#terms-of-service-dot,
+#tpm-error-message-dot,
+#wrong-hwid-dot,
+#unrecoverable-cryptohome-error-dot {
+  display: none;
+}
+
+#oobe.connect #connect-dot,
+#oobe.enrollment #gaia-signin-dot,
+#oobe.enrollment #signin-dot,
+#oobe.eula #eula-dot,
+#oobe.gaia-signin #gaia-signin-dot,
+#oobe.oauth-enrollment #gaia-signin-dot,
+#oobe.oauth-enrollment #signin-dot,
+#oobe.signin #signin-dot,
+#oobe.update #update-dot,
+#oobe.user-image #user-image-dot {
+  opacity: 1;
+}
+
+#oobe.debugging #progress-dots,
+#oobe.reset #progress-dots,
+#oobe.host-pairing #progress-dots,
+#oobe.controller-pairing #progress-dots {
+  visibility: hidden;
+}
+
+body:not(.oobe-display) #inner-container {
+  height: 262px;
+  padding: 0;
+  width: 1100px;
+}
+
+body:not(.oobe-display) #progress-dots {
+  display: none;
+}
+
+#outer-container.fullscreen,
+#outer-container.fullscreen #oobe,
+#outer-container.fullscreen #oobe #inner-container {
+  height: 100%;
+  width: 100%;
+}
+
+html[build=chrome] #header-sections {
+  -webkit-margin-start: -48px;
+  margin-top: -1px;
+}
+
+html[build=chromium] #header-sections {
+  -webkit-margin-start: 5px;
+  margin-top: -1px;
+}
+
+.header-section {
+  color: rgb(119, 120, 123);  /* Should matching text color of the logo. */
+  display: none;
+  font-size: 23px;
+  line-height: 31px;
+  text-transform: lowercase;
+  width: 23em;
+}
+
+.header-section::before {
+  /* Divider in header between product name and title,
+   * like "[Product name] > [step header]". */
+  content: '\00A0\203A\00A0\00A0';
+}
+</style>
+<style>/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+.account-picker.flying-pods #account-picker {
+  -webkit-transition: width 180ms ease,
+                      height 180ms ease;
+}
+
+#bubble {
+  z-index: 1;
+}
+
+#signin-banner-container1 {
+  bottom: 100%;
+  margin-bottom: 10px;
+  position: absolute;
+  width: 100%;
+}
+
+#signin-banner-container2 {
+  display: inline-block;
+  position: relative;
+  right: -50%;
+}
+
+html[dir=rtl] #signin-banner-container2 {
+  left: -50%;
+  right: auto;
+}
+
+#signin-banner {
+  background-color: rgba(0, 0, 0, 0.75);
+  border-radius: 4px;
+  color: whitesmoke;
+  display: none;
+  font-size: 15px;
+  left: -50%;
+  padding: 20px;
+  position: relative;
+  text-align: center;
+  width: 722px;
+}
+
+html[dir=rtl] #signin-banner {
+  left: auto;
+  right: -50%;
+}
+
+html[screen=user-adding] #signin-banner {
+  display: inline-block;
+}
+
+html[screen=lock] #signin-banner {
+  display: inline-block;
+  opacity: 0;
+  visibility: hidden;
+}
+
+html[screen=lock] #signin-banner.message-set {
+  -webkit-transition: opacity 1s;
+  opacity: 1;
+  visibility: visible;
+}
+</style>
+<style>/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ *
+ * This is the stylesheet used by user pods row of account picker UI.
+ */
+
+podrow {
+  /* Temporarily disabled because animation interferes with updating screen's
+   size. */
+  height: 100%;
+  overflow: visible;
+  position: absolute;
+  width: 100%;
+}
+
+/* Hide the pod row while images are loading. */
+podrow.images-loading {
+  visibility: hidden;
+}
+
+.pod {
+  -webkit-tap-highlight-color: transparent;
+  background-color: white;
+  border-radius: 2px;
+  box-shadow: 0 4px 23px 5px rgba(0, 0, 0, 0.2),
+              0 2px 6px rgba(0, 0, 0, 0.15),
+              0 3px 0 rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  height: 213px;
+  outline: none;
+  position: absolute;
+  transform: scale3d(0.9, 0.9, 0.9);
+  width: 180px;
+  z-index: 0;
+}
+
+.account-picker.flying-pods .pod {
+  transition: all 180ms;
+}
+
+.pod.faded {
+  opacity: .75;
+}
+
+podrow[ncolumns='6'] .pod {
+  transform: scale3d(0.8, 0.8, 0.8);
+}
+
+.pod.focused {
+  /* Focused pod has the same size no matter how many pods. */
+  cursor: default;
+  transform: scale3d(1, 1, 1) !important;
+  z-index: 1;
+}
+
+.pod.focused[auth-type='userClick'] {
+  cursor: pointer;
+}
+
+.user-image-pane {
+  background-color: white;
+  height: 160px;
+  left: 10px;
+  position: absolute;
+  top: 10px;
+  width: 160px;
+  z-index: 3;
+}
+
+html[dir=rtl] .user-image-pane {
+  left: auto;
+  right: 10px;
+}
+
+.user-image-container {
+  align-items: center;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  width: 100%;
+}
+
+.pod .user-image {
+  flex: none;
+}
+
+/* TODO(noms): Refactor this out into a CrOS-specific file and simplify the
+ style rule once it is included on CrOS only. crbug.com/397638 */
+html:not([screen=login-add-user]) .pod .user-image {
+  max-height: 160px;
+  max-width: 160px;
+  opacity: 0.7;
+}
+
+html:not([screen=login-add-user]) .pod.focused .user-image {
+  opacity: 1;
+}
+
+.pod.multiprofiles-policy-applied .user-image {
+  -webkit-filter: grayscale(100%);
+}
+
+.signed-in-indicator {
+  display: none;
+}
+
+.pod.signed-in .signed-in-indicator {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  display: block;
+  font-size: small;
+  padding: 3px 0;
+  position: absolute;
+  text-align: center;
+  top: 0;
+  width: 100%;
+}
+
+.main-pane {
+  left: 10px;
+  position: absolute;
+  top: 10px;
+  z-index: 2;
+}
+
+html[dir=rtl] .main-pane {
+  left: auto;
+  right: 10px;
+}
+
+.name-container,
+.pod.focused:not(.multiprofiles-policy-applied) .auth-container {
+  background-color: white;
+  display: flex;
+  position: absolute;
+  top: 160px;
+  width: 160px;
+}
+
+.name-container {
+  transition: transform 180ms;
+}
+
+.pod.focused .name-container {
+  display: none;
+}
+
+.pod.focused.multiprofiles-policy-applied .name-container {
+  display: flex;
+}
+
+.name {
+  color: #565656;
+  /* This should be 15.6px - the equivalent of 14px at 90% scale. */
+  flex: auto;
+  font-size: 16px;
+  margin-top: 12px;
+  outline: none;
+  overflow: hidden;
+  padding: 0 6px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.learn-more-container,
+.auth-container,
+.password-entry-container,
+.reauth-hint-container {
+  display: none;
+}
+
+.pod[auth-type='offlinePassword'].focused .password-entry-container,
+.pod[auth-type='forceOfflinePassword'].focused .password-entry-container {
+  display: flex;
+  flex: auto;
+}
+
+.password-container {
+  flex: auto;
+}
+
+.pod input[type='password'] {
+  background-color: white;
+  border: none;
+  padding: 4px 6px;
+  position: relative;
+  top: 6px;
+  width: 100%;
+}
+
+.capslock-hint-container {
+  display: none;
+}
+
+.capslock-on .capslock-hint-container {
+  display: block;
+  flex: none;
+}
+
+.capslock-hint {
+  -webkit-margin-end: 6px;
+  -webkit-margin-start: -2px;
+  position: relative;
+  top: 11px;
+}
+
+.password-label,
+.signin-transition-container {
+  display: none;
+}
+
+.pod[auth-type='userClick']:not(.signing-in) .password-label,
+.pod[auth-type='userClick'].signing-in .signin-transition-container {
+  color: grey;
+  display: block;
+  flex: auto;
+  margin-top: 11px;
+  outline: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.custom-icon {
+  -webkit-margin-end: 0;
+  -webkit-margin-start: auto;
+  background-position: center;
+  background-repeat: no-repeat;
+  flex: none;
+  height: 27px;
+  width: 27px;
+}
+
+.custom-icon.faded {
+  -webkit-transition: opacity 200ms ease-in-out,
+                      visibility 200ms ease-in-out;
+}
+
+.custom-icon-hardlocked {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_HARDLOCKED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_HARDLOCKED@2x) 2x);
+}
+
+.custom-icon-hardlocked.icon-with-tooltip:hover {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_HARDLOCKED_HOVER) 1x, url(chrome://theme/IDR_EASY_UNLOCK_HARDLOCKED_HOVER@2x) 2x);
+}
+
+.custom-icon-hardlocked.interactive-custom-icon:active {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_HARDLOCKED_PRESSED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_HARDLOCKED_PRESSED@2x) 2x);
+}
+
+.custom-icon-locked {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED@2x) 2x);
+}
+
+.custom-icon-locked.icon-with-tooltip:hover {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_HOVER) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_HOVER@2x) 2x);
+}
+
+.custom-icon-locked.interactive-custom-icon:active {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_PRESSED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_PRESSED@2x) 2x);
+}
+
+.custom-icon-locked-to-be-activated {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED@2x) 2x);
+}
+
+.custom-icon-locked-to-be-activated.icon-with-tooltip:hover {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED_HOVER) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED_HOVER@2x) 2x);
+}
+
+.custom-icon-locked-to-be-activated.interactive-custom-icon:active {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED_PRESSED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED_PRESSED@2x) 2x);
+}
+
+.custom-icon-locked-with-proximity-hint {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT@2x) 2x);
+}
+
+.custom-icon-locked-with-proximity-hint.icon-with-tooltip:hover {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT_HOVER) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT_HOVER@2x) 2x);
+}
+
+.custom-icon-locked-with-proximity-hint.interactive-custom-icon:active {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT_PRESSED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT_PRESSED@2x) 2x);
+}
+
+.custom-icon-unlocked {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_UNLOCKED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_UNLOCKED@2x) 2x);
+}
+
+.custom-icon-unlocked.icon-with-tooltip:hover {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_UNLOCKED_HOVER) 1x, url(chrome://theme/IDR_EASY_UNLOCK_UNLOCKED_HOVER@2x) 2x);
+}
+
+.custom-icon-unlocked.interactive-custom-icon:active {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_UNLOCKED_PRESSED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_UNLOCKED_PRESSED@2x) 2x);
+}
+
+/**
+ * Preloads resources for custom icon. Without this, the resources will be
+ * loaded when CSS properties using them are first applied, which has visible
+ * delay and may cause a short white flash when the icon background changes.
+ */
+.custom-icon::after {
+  content: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_HARDLOCKED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_HARDLOCKED@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_HARDLOCKED_HOVER) 1x, url(chrome://theme/IDR_EASY_UNLOCK_HARDLOCKED_HOVER@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_HARDLOCKED_PRESSED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_HARDLOCKED_PRESSED@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_HOVER) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_HOVER@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_PRESSED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_PRESSED@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED_HOVER) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED_HOVER@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED_PRESSED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED_PRESSED@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT_HOVER) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT_HOVER@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT_PRESSED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT_PRESSED@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_UNLOCKED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_UNLOCKED@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_UNLOCKED_HOVER) 1x, url(chrome://theme/IDR_EASY_UNLOCK_UNLOCKED_HOVER@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_UNLOCKED_PRESSED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_UNLOCKED_PRESSED@2x) 2x);
+  display: none;
+}
+
+.custom-icon-spinner {
+  -webkit-animation: easy-unlock-spinner-animation 2s steps(45) infinite;
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_SPINNER) 1x, url(chrome://theme/IDR_EASY_UNLOCK_SPINNER@2x) 2x);
+}
+
+@-webkit-keyframes easy-unlock-spinner-animation {
+  from { background-position: 0 }
+  to { background-position: -1215px }
+}
+
+.interactive-custom-icon {
+  cursor: pointer;
+}
+
+.custom-icon-container {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  height: 40px;
+  justify-content: center;
+  width: 40px;
+}
+
+.launch-app-button-container {
+  display: block;
+  flex: auto;
+  text-align: center;
+}
+
+.launch-app-button {
+  display: inline;
+  margin-top: 6px !important;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pod[auth-type='onlineSignIn'] .reauth-hint-container {
+  display: flex;
+  margin-top: 8px;
+  width: 100%;
+  justify-content: center;
+}
+
+.reauth-hint-container .reauth-warning {
+  -webkit-mask-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0iIzYyNjI2MiI+CiAgICA8cGF0aCBkPSJNMCAwaDQ4djQ4SDB6IiBmaWxsPSJub25lIi8+CiAgICA8cGF0aCBkPSJNMiA0Mmg0NEwyNCA0IDIgNDJ6bTI0LTZoLTR2LTRoNHY0em0wLThoLTR2LThoNHY4eiIvPgo8L3N2Zz4K);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 20px;
+  background-color: #f4b400;
+  height: 24px;
+  width: 24px;
+}
+
+.reauth-hint-container .reauth-name-hint {
+  align-self: center;
+  color: #565656;
+  font-size: 16px;
+  outline: none;
+  overflow: hidden;
+  padding: 0 6px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.action-box-area,
+.user-type-icon-area {
+  background-color: white;
+  border-radius: 2px;
+  position: absolute;
+  top: 0;
+}
+
+.action-box-area {
+  opacity: 0;
+  outline: none;
+  right: 0;
+  transition: opacity 100ms;
+  z-index: 4;
+}
+
+html[dir=rtl] .action-box-area {
+  left: 0;
+  right: auto;
+}
+
+.action-box-area:focus,
+.action-box-area.hovered,
+.action-box-area.active,
+.action-box-area.forced {
+  opacity: 1;
+}
+
+.action-box-button {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_OOBE_ACTION_BOX_BUTTON_NORMAL) 1x, url(chrome://theme/IDR_OOBE_ACTION_BOX_BUTTON_NORMAL@2x) 2x);
+  height: 13px;
+  margin: 5px;
+  width: 13px;
+}
+
+.action-box-button:hover {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_OOBE_ACTION_BOX_BUTTON_HOVER) 1x, url(chrome://theme/IDR_OOBE_ACTION_BOX_BUTTON_HOVER@2x) 2x);
+}
+
+.action-box-area.active .action-box-button {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_OOBE_ACTION_BOX_BUTTON_PRESSED) 1x, url(chrome://theme/IDR_OOBE_ACTION_BOX_BUTTON_PRESSED@2x) 2x);
+}
+
+.action-box-area .action-box-icon {
+  /* overriden in chrome/browser/resources/md_user_manager/user_manager.css */
+  display: none;
+}
+
+.user-image-gradient-area {
+  /* overriden in chrome/browser/resources/md_user_manager/user_manager.css */
+  display: none;
+}
+
+.user-type-icon-area {
+  left: 0;
+  z-index: 5;
+}
+
+html[dir=rtl] .user-type-icon-area {
+  left: auto;
+  right: 0;
+}
+
+.user-type-icon-image {
+  height: 16px;
+  margin: 5px;
+  width: 16px;
+}
+
+.user-type-icon-area.legacySupervised .user-type-icon-image {
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0iIzYyNjI2MiI+CiAgICA8cGF0aCBkPSJNMCAwaDQ4djQ4SDB6IiBmaWxsPSJub25lIi8+CiAgICA8cGF0aCBkPSJNMzMgMjRjMi43NiAwIDQuOTgtMi4yNCA0Ljk4LTVzLTIuMjItNS00Ljk4LTVjLTIuNzYgMC01IDIuMjQtNSA1czIuMjQgNSA1IDV6bS0xNS0yYzMuMzEgMCA1Ljk4LTIuNjkgNS45OC02cy0yLjY3LTYtNS45OC02Yy0zLjMxIDAtNiAyLjY5LTYgNnMyLjY5IDYgNiA2em0xNSA2Yy0zLjY3IDAtMTEgMS44NC0xMSA1LjVWMzhoMjJ2LTQuNWMwLTMuNjYtNy4zMy01LjUtMTEtNS41em0tMTUtMmMtNC42NyAwLTE0IDIuMzQtMTQgN3Y1aDE0di00LjVjMC0xLjcuNjctNC42NyA0Ljc0LTYuOTRDMjEgMjYuMTkgMTkuMzEgMjYgMTggMjZ6Ii8+Cjwvc3ZnPgo=);
+  background-size: 18px;
+}
+
+.user-type-icon-area.child .user-type-icon-image {
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0iIzYyNjI2MiI+CiAgICA8cGF0aCBkPSJNMjQgNGMzLjMxIDAgNiAyLjY5IDYgNnMtMi42OSA2LTYgNi02LTIuNjktNi02IDIuNjktNiA2LTZ6Ii8+CiAgICA8cGF0aCBmaWxsPSJub25lIiBkPSJNMCAwaDQ4djQ4SDBWMHoiLz4KICAgIDxjaXJjbGUgZmlsbD0ibm9uZSIgY3g9IjI0IiBjeT0iMjYiIHI9IjQiLz4KICAgIDxwYXRoIGQ9Ik0yNCAxOGMtNi4xNiAwLTEzIDMuMTItMTMgNy4yM3YxMS41NGMwIDIuMzIgMi4xOSA0LjMzIDUuMiA1LjYzIDIuMzIgMSA1LjEyIDEuNTkgNy44IDEuNTkuNjYgMCAxLjMzLS4wNiAyLS4xNHYtNS4yYy0uNjcuMDgtMS4zNC4xNC0yIC4xNC0yLjYzIDAtNS4zOS0uNTctNy42OC0xLjU1LjY3LTIuMTIgNC4zNC0zLjY1IDcuNjgtMy42NS44NiAwIDEuNzUuMTEgMi42LjI5IDIuNzkuNjIgNS4yIDIuMTUgNS4yIDQuMDR2NC40N2MzLjAxLTEuMzEgNS4yLTMuMzEgNS4yLTUuNjNWMjUuMjNDMzcgMjEuMTIgMzAuMTYgMTggMjQgMTh6bTAgMTJjLTIuMjEgMC00LTEuNzktNC00czEuNzktNCA0LTQgNCAxLjc5IDQgNC0xLjc5IDQtNCA0eiIvPgo8L3N2Zz4K);
+  background-size: 18px;
+}
+
+.user-type-icon-area.policy .user-type-icon-image {
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0iIzYyNjI2MiI+CiAgICA8cGF0aCBkPSJNMCAwaDQ4djQ4SDB6IiBmaWxsPSJub25lIi8+CiAgICA8cGF0aCBkPSJNMjQgMTRWNkg0djM2aDQwVjE0SDI0ek0xMiAzOEg4di00aDR2NHptMC04SDh2LTRoNHY0em0wLThIOHYtNGg0djR6bTAtOEg4di00aDR2NHptOCAyNGgtNHYtNGg0djR6bTAtOGgtNHYtNGg0djR6bTAtOGgtNHYtNGg0djR6bTAtOGgtNHYtNGg0djR6bTIwIDI0SDI0di00aDR2LTRoLTR2LTRoNHYtNGgtNHYtNGgxNnYyMHptLTQtMTZoLTR2NGg0di00em0wIDhoLTR2NGg0di00eiIvPgo8L3N2Zz4K);
+  background-size: 18px;
+}
+
+.user-type-icon-area.app .user-type-icon-image {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_KIOSK_APP_USER_POD_ICON) 1x, url(chrome://theme/IDR_KIOSK_APP_USER_POD_ICON@2x) 2x);
+}
+
+.action-box-menu {
+  display: none;
+  z-index: 6;
+}
+
+.action-box-area.active ~ .action-box-menu {
+  background-color: white;
+  border: 1px solid lightgray;
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  position: absolute;
+  right: 5px;
+  width: 220px;
+}
+
+.action-box-area.active ~ .action-box-menu.left-edge-offset {
+  left: 0 !important;
+}
+
+.action-box-area.active ~ .action-box-menu.right-edge-offset {
+  right: 0 !important;
+}
+
+.action-box-area.active ~ .action-box-menu:not(.menu-moved-up) {
+  top: 18px;
+}
+
+.action-box-area.active ~ .action-box-menu.menu-moved-up {
+  bottom: 207px;
+}
+
+.action-box-area.menu-moved-up {
+  transform: rotate(180deg);
+}
+
+html[dir=rtl] .action-box-area.active ~ .action-box-menu {
+  left: 5px;
+  right: auto;
+}
+
+.action-box-menu-title {
+  color: #757575;
+  display: flex;
+  flex-direction: column;
+  padding: 7px 20px;
+}
+
+.action-box-menu-title:focus {
+  outline-style: none;
+}
+
+.action-box-menu-title-name,
+.action-box-menu-title-email {
+  flex: none;
+  height: 23px;
+  line-height: 19px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.action-box-menu-remove {
+  border-top: 1px solid lightgray;
+  line-height: 19px;
+  min-height: 24px;
+  outline: none;
+  padding: 12px 20px 7px;
+}
+
+.action-box-menu-remove:hover,
+.action-box-menu-remove:focus {
+  background-color: #f3f3f3;
+}
+
+.action-box-remove-user-warning {
+  border-top: 1px solid lightgray;
+  font-size: 12px;
+  line-height: 18px;
+  padding: 20px;
+}
+
+.action-box-remove-user-warning > div,
+.action-box-remove-user-warning > table {
+  padding-bottom: 20px;
+}
+
+.total-count {
+  font-weight: bold;
+}
+
+.action-box-remove-user-warning-table-nonsync {
+  border-spacing: 0;
+  width: 100%;
+}
+
+.action-box-remove-user-warning-table td {
+  padding: 0;
+}
+
+.action-box-remove-user-warning-table-numbers {
+  color: #757575;
+  text-align: end;
+}
+
+/* Hide dialog elements not in a correct category. Only combinations currently
+   in use are included here. */
+.pod.legacy-supervised .non-sync,
+.pod.legacy-supervised .action-box-remove-user-warning-text,
+.pod:not(.legacy-supervised)
+    .action-box-remove-legacy-supervised-user-warning-text,
+.pod.synced .non-sync,
+.pod.has-no-stats .has-stats {
+  display: none;
+}
+
+.user-type-bubble {
+  background-color: white;
+  border: 1px solid lightgray;
+  border-radius: 2px;
+  left: 5px;
+  opacity: 0;
+  padding: 17px;
+  position: absolute;
+  top: 20px;
+  transition: all 100ms;
+  visibility: hidden;
+  width: 200px;
+  z-index: 7;
+}
+
+html[dir=rtl] .user-type-bubble {
+  left: auto;
+  right: 5px;
+}
+
+.bubble-shown,
+.user-type-icon-area.policy:hover ~ .user-type-bubble {
+  opacity: 1;
+  visibility: visible;
+}
+
+.user-type-bubble-header {
+  font-weight: bold;
+  margin-bottom: 14px;
+}
+
+/**** Public account user pod rules *******************************************/
+
+.pod.public-account.expanded {
+  width: 500px;
+}
+
+.pod.public-account.expanded.advanced {
+  width: 610px;
+}
+
+.pod.public-account.focused .name-container {
+  display: flex;
+}
+
+.pod.public-account.expanded .name-container {
+  transform: translateY(-34px);
+}
+
+.pod.public-account .learn-more-container {
+  display: block;
+  flex: none;
+}
+
+.pod.public-account .learn-more {
+  top: 15px;
+}
+
+.expanded-pane {
+  display: none;
+}
+
+.pod.public-account.animating .expanded-pane,
+.pod.public-account.expanded .expanded-pane {
+  display: block;
+  font-size: 12px;
+  margin: 10px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.expanded-pane-contents {
+  display: flex;
+  flex-direction: column;
+  float: right;
+  height: 193px;
+  width: 490px;
+}
+
+.pod.public-account.transitioning-to-advanced .expanded-pane-contents {
+  transition: width 180ms;
+}
+
+.pod.public-account.expanded.advanced .expanded-pane-contents {
+  width: 600px;
+}
+
+html[dir=rtl] .expanded-pane-contents {
+  float: left;
+}
+
+.side-container {
+  -webkit-margin-start: 200px;
+  flex: auto;
+}
+
+.expanded-pane-name {
+  font-size: 19px;
+  margin-bottom: 11px;
+  margin-top: -2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reminder {
+  font-weight: bold;
+}
+
+.language-and-input-section {
+  display: none;
+}
+
+.pod.public-account.transitioning-to-advanced .language-and-input-section {
+  display: block;
+  opacity: 0;
+  transition: opacity 180ms ease 180ms;
+}
+
+.pod.public-account.expanded.advanced .language-and-input-section {
+  display: block;
+  opacity: 1;
+}
+
+.select-with-label {
+  display: flex;
+  margin-top: 20px;
+}
+
+.language-select-label,
+.keyboard-select-label {
+  flex: none;
+  margin-top: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 170px;
+}
+
+.select-container {
+  flex: auto;
+}
+
+.language-select,
+.keyboard-select {
+  width: 100%;
+}
+
+.bottom-container {
+  -webkit-margin-start: 10px;
+  display: flex;
+  flex: none;
+  font-size: 13px;
+}
+
+.expanded-pane-learn-more-container,
+.enter-button {
+  flex: none;
+}
+
+.expanded-pane-learn-more,
+.pod.public-account .learn-more {
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0iIzYyNjI2MiI+CiAgICA8cGF0aCBkPSJNMCAwaDQ4djQ4SDB6IiBmaWxsPSJub25lIi8+CiAgICA8cGF0aCBkPSJNMjQgMTRWNkg0djM2aDQwVjE0SDI0ek0xMiAzOEg4di00aDR2NHptMC04SDh2LTRoNHY0em0wLThIOHYtNGg0djR6bTAtOEg4di00aDR2NHptOCAyNGgtNHYtNGg0djR6bTAtOGgtNHYtNGg0djR6bTAtOGgtNHYtNGg0djR6bTAtOGgtNHYtNGg0djR6bTIwIDI0SDI0di00aDR2LTRoLTR2LTRoNHYtNGgtNHYtNGgxNnYyMHptLTQtMTZoLTR2NGg0di00em0wIDhoLTR2NGg0di00eiIvPgo8L3N2Zz4K);
+  background-size: 18px;
+  height: 18px;
+  position: relative;
+  width: 18px;
+}
+
+.expanded-pane-learn-more {
+  top: 5px;
+}
+
+.info {
+  flex: auto;
+  margin: 5px 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.language-and-input-container {
+  -webkit-margin-end: 25px;
+  flex: none;
+}
+
+.language-and-input {
+  color: rgb(49, 106, 197);
+  position: relative;
+  text-decoration: none;
+  top: 4px;
+}
+
+.pod.public-account.expanded.advanced .language-and-input-container {
+  display: none;
+}
+
+.enter-button {
+  font-size: 14px;
+}
+
+/* Animations for the animated ellipsis: */
+.animated-ellipsis-component0 {
+  -webkit-animation: ellipsis-component0 1.5s infinite;
+}
+
+@-webkit-keyframes ellipsis-component0 {
+  0% { opacity: 0; }
+  25% { opacity: 1; }
+  50% { opacity: 1; }
+  75% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.animated-ellipsis-component1 {
+  -webkit-animation: ellipsis-component1 1.5s infinite;
+}
+
+@-webkit-keyframes ellipsis-component1 {
+  0% { opacity: 0; }
+  25% { opacity: 0; }
+  50% { opacity: 1; }
+  75% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.animated-ellipsis-component2 {
+  -webkit-animation: ellipsis-component2 1.5s infinite;
+}
+
+@-webkit-keyframes ellipsis-component2 {
+  0% { opacity: 0; }
+  25% { opacity: 0; }
+  50% { opacity: 0; }
+  75% { opacity: 1; }
+  100% { opacity: 0; }
+}
+</style>
+
+<script src="chrome://resources/js/cr.js"></script>
+<script src="chrome://resources/js/event_tracker.js"></script>
+<script src="chrome://resources/js/cr/event_target.js"></script>
+<script src="chrome://resources/js/cr/ui.js"></script>
+<script src="chrome://resources/js/cr/ui/touch_handler.js"></script>
+<script src="chrome://resources/js/cr/ui/array_data_model.js"></script>
+<script src="chrome://resources/js/cr/ui/dialogs.js"></script>
+<script src="chrome://resources/js/cr/ui/list_selection_controller.js"></script>
+<script src="chrome://resources/js/cr/ui/list_selection_model.js"></script>
+<script src="chrome://resources/js/cr/ui/list_single_selection_model.js"></script>
+<script src="chrome://resources/js/cr/ui/list_item.js"></script>
+<script src="chrome://resources/js/cr/ui/list.js"></script>
+<script src="chrome://resources/js/cr/ui/grid.js"></script>
+<script src="chrome://resources/js/cr/ui/position_util.js"></script>
+<script src="chrome://resources/js/cr/ui/menu_item.js"></script>
+<script src="chrome://resources/js/cr/ui/menu.js"></script>
+<script src="chrome://resources/js/cr/ui/menu_button.js"></script>
+<script src="chrome://resources/js/load_time_data.js"></script>
+<script src="chrome://resources/js/util.js"></script>
+<script src="chrome://oobe/strings.js"></script>
+
+<!--
+This file is included for OOBE and login. If a file is also needed by the lock
+screen, it should be added to login_shared.html
+-->
+
+<style>/* Copyright 2015 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#api-keys-notice-container {
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  top: 10px;
+  width: 100%;
+}
+
+#api-keys-notice {
+  background-color: rgba(0, 0, 0, 0.75);
+  border-radius: 4px;
+  color: whitesmoke;
+  font-size: 15px;
+  padding: 20px;
+  text-align: center;
+  width: 722px; /* same as #signin-banner */
+}
+</style>
+<style>/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ *
+ * This is the stylesheet used by the network drop-down control.
+ */
+
+.dropdown-title {
+  -webkit-appearance: none;
+  -webkit-box-align: start;
+  -webkit-padding-end: 20px;
+  -webkit-padding-start: 1px;
+  -webkit-user-select: none;
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAAICAQAAACxSAwfAAAAUklEQVQY02P4z0AMRGZGMaShwCisyhITmb8huMzfEhOxKvuvsGAh208Ik+3ngoX/FbBbClcIUcSAw21QhXxfIIrwKAMpfNsEUYRXGVCEFc6CQwBqq4CCCtU4VgAAAABJRU5ErkJggg==),
+      linear-gradient(to bottom,
+                       rgb(237, 237, 237),
+                       rgb(237, 237, 237) 38%,
+                       rgb(222, 222, 222));
+  background-position: center right;
+  background-repeat: no-repeat;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 2px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08),
+      inset 0 1px 2px rgba(255, 255, 255, 0.75);
+  color: #444;
+  display: -webkit-box;
+  font-size: inherit;
+  height: 22px;
+  margin: 0;
+  overflow: hidden;
+  padding-bottom: 2px;
+  padding-top: 2px;
+  text-align: left;
+  text-indent: 4px;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 0 rgb(240, 240, 240);
+  white-space: nowrap;
+  z-index: 10;
+}
+
+html[dir=rtl] .dropdown-title {
+  background-position: center left;
+}
+
+.dropdown-title:enabled:hover {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAAICAQAAACxSAwfAAAAUklEQVQY02P4z0AMRGZGMaShwCisyhITmb8huMzfEhOxKvuvsGAh208Ik+3ngoX/FbBbClcIUcSAw21QhXxfIIrwKAMpfNsEUYRXGVCEFc6CQwBqq4CCCtU4VgAAAABJRU5ErkJggg==),
+      linear-gradient(to bottom,
+                       rgb(237, 237, 237),
+                       rgb(237, 237, 237) 38%,
+                       rgb(222, 222, 222));
+  border-color: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12),
+      inset 0 1px 2px rgba(255, 255, 255, 0.95);
+  color: black;
+}
+
+.dropdown-title:enabled:active {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAAICAQAAACxSAwfAAAAUklEQVQY02P4z0AMRGZGMaShwCisyhITmb8huMzfEhOxKvuvsGAh208Ik+3ngoX/FbBbClcIUcSAw21QhXxfIIrwKAMpfNsEUYRXGVCEFc6CQwBqq4CCCtU4VgAAAABJRU5ErkJggg==),
+      linear-gradient(to bottom,
+                       rgb(231, 231, 231),
+                       rgb(231, 231, 231) 38%,
+                       rgb(215, 215, 215));
+  box-shadow: none;
+  text-shadow: none;
+}
+
+.dropdown-title:focus {
+  -webkit-transition: border-color 200ms;
+  border-color: rgb(77, 144, 254);
+  outline: none;
+}
+
+html[highlight=strong] .dropdown-title:focus {
+  box-shadow: 0 0 23px rgb(77, 144, 254);
+}
+
+.dropdown-title img {
+  margin-top: -1px;
+}
+
+.dropdown-title div {
+  -webkit-box-flex: 1;
+  margin-top: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-container {
+  background: #f7f7f7;
+  border: 1px solid rgb(124, 145, 191);
+  max-height: 234px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-bottom: 2px;
+  padding-top: 2px;
+  position: absolute;
+  top: 100%;
+  width: 99.5%;
+  z-index: 10;
+}
+
+.dropdown-item-container {
+  -webkit-padding-start: 5px;
+  display: -webkit-box;
+  height: 24px;
+}
+
+.dropdown-item-container.hover {
+  background: rgb(220, 228, 250);
+}
+
+.dropdown-image {
+  width: 25px;
+}
+
+.dropdown-item {
+  -webkit-box-flex: 1;
+  color: #555;
+  cursor: default;
+  overflow: hidden;
+  padding-top: 4px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dropdown-divider {
+  height: 3px;
+}
+
+.dropdown-divider hr {
+  margin-bottom: 2px;
+  margin-top: 2px;
+}
+
+.dropdown-item.disabled-item {
+  color: graytext;
+}
+
+.dropdown-overlay {
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 5;
+}
+</style>
+
+<style>/* Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#debugging {
+  display: flex;
+  flex-flow: column;
+  font-size: 16px;
+  min-height: 423px;
+  text-align: center;
+  width: 722px;
+}
+
+#debugging .step-contents {
+  margin: 80px 100px;
+}
+
+#debugging.setup-view .step-contents {
+  margin-bottom: 40px;
+  margin-top: 40px;
+}
+
+#debugging.done-view .step-contents,
+#debugging.error-view .step-contents {
+  margin: 80px;
+}
+
+#debugging #debugging-controls {
+  height: auto;
+  justify-content: center;
+  margin-top: auto;
+  padding-bottom: 80px;
+  padding-right: 0;
+  position: static;
+}
+
+#debugging.setup-view #debugging-controls {
+  padding-bottom: 40px;
+}
+
+#debugging-controls button {
+  margin: 0 10px;
+}
+
+#enable-debugging-icon {
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%;
+}
+
+.remove-protection-view #enable-debugging-icon,
+.setup-view #enable-debugging-icon,
+.wait-view #enable-debugging-icon {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_RESET_WARNING) 1x, url(chrome://theme/IDR_RESET_WARNING@2x) 2x);
+  background-size: 39px 72px;
+  height: 72px;
+}
+
+.done-view #enable-debugging-icon {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_ENABLE_DEBUGGING_SUCCESS) 1x, url(chrome://theme/IDR_ENABLE_DEBUGGING_SUCCESS@2x) 2x);
+  background-size: 86px 66px;
+  height: 66px;
+}
+
+.error-view #enable-debugging-icon {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_ENABLE_DEBUGGING_FAILURE) 1x, url(chrome://theme/IDR_ENABLE_DEBUGGING_FAILURE@2x) 2x);
+  background-size: 66px;
+  height: 66px;
+}
+
+/** Preload icons */
+#enable-debugging-icon::after {
+  content: -webkit-image-set(url(chrome://theme/IDR_RESET_WARNING) 1x, url(chrome://theme/IDR_RESET_WARNING@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_ENABLE_DEBUGGING_SUCCESS) 1x, url(chrome://theme/IDR_ENABLE_DEBUGGING_SUCCESS@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_ENABLE_DEBUGGING_FAILURE) 1x, url(chrome://theme/IDR_ENABLE_DEBUGGING_FAILURE@2x) 2x);
+  display: none;
+}
+
+.enable-debugging-title {
+  color: #464646;
+  font-size: 24px;
+  font-weight: bold;
+  padding: 30px 45px;
+}
+
+.enable-debugging-text {
+  color: #606060;
+}
+
+#debugging #debugging-warning-details,
+#debugging #debugging-done-msg {
+  padding: 20px 40px 0;
+}
+
+#debugging #enable-debugging-wait-msg {
+  display: inline-block;
+  padding: 25px 0;
+  vertical-align: middle;
+}
+
+#enable-debugging-passwords {
+  font-style: italic;
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
+
+#enable-debugging-password-note {
+  color: #c6c6c6;
+  font-size: 12px;
+}
+
+.enable-debugging-password-input {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  margin: 10px 0;
+}
+
+.enable-debugging-password-input input[type=password] {
+  margin: 5px 0;
+  width: 300px;
+}
+
+.enable-debugging-password-input
+    input[type=password]::-webkit-input-placeholder {
+  font-size: 14px;
+  font-style: normal;
+}
+
+.done-specific,
+.error-specific,
+.remove-protection-specific,
+.setup-specific,
+.wait-specific {
+  display: none;
+}
+
+.error-view .error-specific,
+.done-view .done-specific,
+.remove-protection-view .remove-protection-specific,
+.setup-view .setup-specific,
+.wait-view .wait-specific {
+  display: block;
+}
+
+#debugging-remove-protection-button,
+#debugging-enable-button,
+#debugging-cancel-button,
+#debugging-ok-button {
+  display: none;
+}
+
+.remove-protection-view #debugging-remove-protection-button,
+.remove-protection-view #debugging-cancel-button,
+.setup-view #debugging-enable-button,
+.setup-view #debugging-cancel-button,
+.done-view #debugging-ok-button,
+.error-view #debugging-ok-button {
+  display: inline-block;
+}
+
+</style>
+<style>/* Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#eula {
+  min-height: 395px;
+  padding: 70px 17px 21px;
+}
+
+#cros-eula,
+#oem-eula {
+  border: 1px solid #d9d9d9;
+  height: 222px;
+}
+
+.eula-frame {
+  height: 222px;
+}
+
+#logging {
+  clear: both;
+  font-size: small;
+  margin-top: 20px;
+  width: 620px;
+}
+
+#logging div {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+#usage-stats {
+  -webkit-margin-end: 10px;
+}
+
+.eula-columns {
+  display: -webkit-box;
+  width: 630px;
+}
+
+.eula-frame {
+  border: none;
+  padding: 0 0 0 5px;
+}
+
+#cros-eula {
+  width: 314px;
+}
+
+#cros-eula-frame {
+  width: 309px;
+}
+
+#oem-eula {
+  border-left: none;
+  width: 313px;
+}
+
+#oem-eula-frame {
+  width: 308px;
+}
+
+#eulas.one-column #cros-eula {
+  width: 628px;
+}
+
+#eulas.one-column #cros-eula-frame {
+  width: 623px;
+}
+
+#eulas.one-column #oem-eula {
+  display: none;
+}
+
+#eula #stats-help-link {
+  color: rgb(49, 106, 197);
+}
+
+#eula .step-contents {
+  -webkit-margin-start: 32px;
+  margin-bottom: 30px;
+}
+
+#eula .credits {
+  clear: both;
+  font-size: small;
+}
+
+#cros-eula-loading {
+  -webkit-align-items: center;
+  -webkit-flex-direction: column;
+  -webkit-justify-content: center;
+  display: none;
+  height: 100%;
+  width: 100%;
+}
+
+.step.eula-loading #cros-eula-frame {
+  display: none;
+}
+
+.step.eula-loading #cros-eula-loading {
+  display: -webkit-flex;
+}
+</style>
+<style>/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+#tpm-busy {
+  text-align: center;
+}
+
+#tpm-password {
+  font-weight: bold;
+  text-align: center;
+}
+
+#installation-settings-popup button {
+  bottom: 20px;
+  position: absolute;
+  right: 20px;
+}</style>
+<style>/* Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#connect {
+  min-height: 395px;
+  padding: 70px 17px 21px;
+}
+
+#connect table {
+  margin: 7em auto;
+}
+
+.control-with-label {
+  -webkit-box-align: start;
+  display: -webkit-box;
+  margin: 10px 0;
+}
+
+#welcome-message {
+  color: #444;
+  font-size: 16px;
+  margin-bottom: 30px;
+}
+
+#connect .step-contents {
+  margin: 33px auto 82px;
+  width: 435px;
+}
+
+.connect-debugging-specific {
+  display: none;
+}
+
+.connect-debugging-view .connect-debugging-specific {
+  display: block;
+}
+
+html:not([highlight=strong]) #network-timezone-setting {
+  display: none;
+}
+</style>
+<style>/* Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#reset {
+  display: flex;
+  flex-flow: column;
+  font-size: 16px;
+  min-height: 423px;
+  padding: 40px 17px 80px;
+  text-align: center;
+  width: 722px;
+}
+
+#reset #reset-controls {
+  bottom: 40px;
+  justify-content: center;
+  margin-top: auto;
+}
+
+#reset-controls button {
+  margin: 0 10px;
+}
+
+#reset #reset-warning-icon {
+  height: 112px;
+}
+
+#reset #reset-warning-msg,
+#reset #powerwash-warning-msg,
+#reset #powerwash-and-rollback-warning-msg {
+  color: #606060;
+  font-size: 22px;
+  padding: 5px 45px 30px;
+}
+
+.reset-text {
+  color: #606060;
+}
+
+#reset #reset-warning-details,
+#reset #reset-revert-promise-msg {
+  padding: 20px 40px 0;
+}
+
+#reset #reset-warning-restart {
+  padding: 30px 40px 0;
+}
+
+#reset #rollback {
+  padding: 30px 40px 10px;
+}
+
+#reset #reset-revert-spinner-message {
+  display: inline-block;
+  padding: 25px 0;
+  vertical-align: middle;
+}
+
+#reset #reset-revert-spinner {
+  margin-top: 0;
+  vertical-align: middle;
+}
+
+.powerwash-proposal-specific,
+.rollback-proposal-specific,
+.revert-promise-specific,
+.restart-required-specific {
+  display: none;
+}
+
+.powerwash-proposal-view .powerwash-proposal-specific,
+.rollback-proposal-view .rollback-proposal-specific,
+.restart-required-view .restart-required-specific,
+.revert-promise-view .revert-promise-specific {
+  display: block;
+}
+
+#reset-restart-button,
+#reset-button,
+#reset-toconfirm-button,
+#reset-cancel-button,
+.revert-promise-view #reset-controls {
+  display: none;
+}
+
+.restart-required-view #reset-restart-button,
+.powerwash-proposal-view #reset-toconfirm-button,
+.rollback-proposal-view #reset-toconfirm-button,
+.restart-required-view #reset-cancel-button,
+.powerwash-proposal-view #reset-cancel-button,
+.rollback-proposal-view #reset-cancel-button {
+  display: inline-block;
+}
+
+</style>
+<style>/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+#reset-confirm-overlay {
+  font-size: 16px;
+  margin: auto;
+  min-height: 250px;
+  width: 400px;
+}
+
+#reset-confirm-overlay .button-strip {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 20px;
+}
+
+#reset-confirm-overlay .button-strip button {
+  /*-webkit-margin-start: 9px;*/
+  margin: 0 10px;
+}</style>
+<style>/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#hid-detection {
+  min-height: 395px;
+  padding: 70px 17px 21px;
+  width: 622px;
+}
+
+#hid-detection .step-contents {
+  margin: 33px auto 82px;
+  width: 475px;
+}
+
+#hid-detection #hid-invitation-text {
+  font-size: 16px;
+}
+
+#hid-detection #hid-prerequisite-msg {
+  padding: 10px 0 20px;
+}
+
+#hid-keyboard-block,
+#hid-mouse-block {
+  padding: 10px 0;
+}
+
+#hid-keyboard-block {
+  padding-bottom: 30px;
+}
+
+#hid-keyboard-icon,
+#hid-mouse-icon {
+  bottom: -15px;
+  height: 40px;
+  position: relative;
+  width: 40px;
+}
+
+#hid-mouse-icon-block,
+#hid-keyboard-icon-block {
+  display: inline;
+}
+
+#hid-mouse-label,
+#hid-keyboard-label {
+  -webkit-padding-start: 10px;
+  display: inline;
+}
+
+#hid-detection .label {
+  display: none;
+}
+
+#hid-keyboard-tick,
+#hid-mouse-tick {
+  -webkit-margin-start: -28px;
+  bottom: -20px;
+  position: relative;
+  visibility: hidden;
+}
+
+.searching {
+  opacity: 0.6
+}
+
+#hid-detection #hid-keyboard-pincode {
+  -webkit-padding-start: 60px;
+  padding-bottom: 15px;
+  padding-top: 15px;
+}
+
+.searching #hid-keyboard-label-searching,
+.searching #hid-mouse-label-searching,
+.usb #hid-keyboard-label-usb,
+.usb #hid-mouse-label-usb,
+.connected #hid-mouse-label-connected,
+.paired #hid-keyboard-label-paired,
+.paired #hid-mouse-label-paired,
+.pairing #hid-keyboard-label-pairing,
+.usb #hid-keyboard-tick,
+.usb #hid-mouse-tick,
+.connected #hid-mouse-tick,
+.paired #hid-keyboard-tick,
+.paired #hid-mouse-tick {
+  display: inline;
+}
+
+.usb #hid-keyboard-tick,
+.usb #hid-mouse-tick,
+.connected #hid-mouse-tick,
+.paired #hid-keyboard-tick,
+.paired #hid-mouse-tick {
+  visibility: visible;
+}
+
+</style>
+<style>/* Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#autolaunch {
+  min-height: 423px;
+  padding: 40px 17px 80px;
+  text-align: center;
+  width: 722px;
+}
+
+#autolaunch-controls {
+  bottom: 80px;
+  justify-content: center;
+}
+
+#autolaunch-warning-title {
+  color: #606060;
+  font-size: 22px;
+  padding: 5px 45px 30px;
+}
+
+#autolaunch-warning {
+  color: #606060;
+  font-size: 16px;
+  padding: 35px 40px 10px;
+}
+
+#autolaunch-app {
+  padding-bottom: 40px;
+}
+
+#autolaunch-app-container {
+  -webkit-align-items: center;
+  -webkit-justify-content: center;
+  display: -webkit-flex;
+}
+
+#autolaunch-app-name {
+  color: #404040;
+  font-size: 22px;
+  padding-left: 10px;
+}
+</style>
+<style>/* Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#kiosk-enable {
+  min-height: 423px;
+  padding: 40px 17px 80px;
+  text-align: center;
+  width: 722px;
+}
+
+#kiosk-enable-controls {
+  bottom: 80px;
+  justify-content: center;
+}
+
+#kiosk-enable-msg {
+  color: #606060;
+  font-size: 22px;
+  padding: 5px 45px 30px;
+}
+
+#kiosk-enable-details {
+  color: #606060;
+  font-size: 16px;
+  padding: 35px 40px 80px;
+}
+</style>
+<style>/* Copyright (c) 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#terms-of-service {
+  padding: 70px 17px 21px;
+}
+
+#tos-container {
+  border: 1px solid #d9d9d9;
+  height: 222px;
+}
+
+#terms-of-service .step-contents {
+  -webkit-margin-start: 32px;
+  margin-bottom: 49px;
+}
+
+#terms-of-service h1 {
+  font-size: 100%;
+  font-weight: normal;
+  margin: 0 0 8px 0;
+  width: 630px;
+}
+
+#tos-subheading {
+  color: rgb(100, 100, 100);
+  font-size: 11px;
+  margin: 0 0 27px 0;
+  width: 630px;
+}
+
+#tos-container {
+  -webkit-margin-end: -2px;
+  overflow: auto;
+  width: 630px;
+}
+
+#tos-content {
+  padding: 8px 13px;
+}
+
+#terms-of-service h2 {
+  font-size: 100%;
+  margin: 0 0 13px 0;
+}
+
+#tos-content-main {
+  white-space: pre-wrap;
+}
+
+#tos-loading,
+#tos-error {
+  -webkit-align-items: center;
+  -webkit-flex-direction: column;
+  -webkit-justify-content: center;
+  display: none;
+  height: 100%;
+  width: 100%;
+}
+
+#terms-of-service p {
+  color: rgb(100, 100, 100);
+  font-size: 12px;
+  margin: 0;
+  text-align: center;
+}
+
+#terms-of-service p + p {
+  margin-top: 4px;
+}
+
+.step.tos-loading #tos-content {
+  display: none;
+}
+
+.step.tos-loading #tos-loading {
+  display: -webkit-flex;
+}
+
+.step.error #tos-content,
+.step.error #tos-accept-button {
+  display: none;
+}
+
+.step.error #tos-error {
+  display: -webkit-flex;
+}
+
+#terms-of-service.error #tos-back-button {
+  -webkit-margin-end: 1px;
+}
+</style>
+<style>/* Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#update {
+  min-height: 423px;
+  padding: 70px 17px 69px;    /* Screen has no controls. */
+}
+
+#update #update-screen-curtain {
+  -webkit-box-align: start;
+  -webkit-box-pack: center;
+}
+
+#update #update-checking-progress {
+  -webkit-box-align: start;
+  -webkit-box-pack: center;
+  color: #9c9c9c;
+  display: -webkit-box;
+}
+
+#update #update-screen-curtain {
+  margin: 45px 35px;
+}
+
+#update-screen-main {
+  margin: 45px 35px;
+  min-height: 114px;
+  text-align: center;
+}
+
+#update #update-cancel-hint {
+  -webkit-margin-start: 45px;
+  color: rgb(170, 0, 0);
+  margin-top: 30px;
+  position: absolute;
+}
+
+#update #update-upper-label {
+  margin-bottom: 4px;
+}
+
+#update #checking-updates-label {
+  margin-bottom: 90px;
+}
+
+#update #update-bottom-label {
+  margin-bottom: 4px;
+  margin-top: 4px;
+  text-align: left;
+}
+
+#update progress {
+  border: solid 1px #bbb;
+  height: 15px;
+  margin-bottom: 4px;
+  margin-top: 34px;
+  padding: 1px;
+  width: 300px;
+}
+
+#update progress::-webkit-progress-bar {
+  background: white;
+}
+
+#update progress::-webkit-progress-value {
+  background: #bbb;
+}
+
+#update .progress-message {
+  color: #a3a3a3;
+  font-size: 13px;
+  margin-top: 4px;
+  text-align: center;
+}
+</style>
+<style>/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#auto-enrollment-check {
+  min-height: 395px;
+  padding: 70px 17px 21px;
+}
+
+#auto-enrollment-check #auto-enrollment-check-progress {
+  color: #9c9c9c;
+  display: flex;
+  justify-content: center;
+  margin-top: 130px;
+}
+</style>
+<style>/* Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#user-image {
+  min-height: 443px;
+  padding: 70px 17px 21px;
+  width: 702px;
+}
+
+#user-image.loading {
+  height: 528px; /* Should be the same as #gaia-signin height. */
+  padding: 0 0 0;
+  width: 448px; /* Should be the same as #gaia-signin width. */
+}
+
+#user-image-screen-curtain {
+  -webkit-margin-start: 8px;
+}
+
+#user-image-screen-description {
+  margin-top: 0;
+}
+
+#user-image-grid {
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  display: inline-block;
+  height: 264px;
+  margin: 0;
+  outline: none;
+  overflow: hidden;
+  padding: 0;
+  width: 400px;
+}
+
+#user-image-grid img {
+  background-color: white;
+  height: 50px;
+  vertical-align: middle;
+  width: 50px;
+}
+
+#user-image-grid > li {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  display: inline-block;
+  margin: 4px;
+  padding: 3px;
+}
+
+#user-image-grid [selected] {
+  border: 2px solid rgb(0, 102, 204);
+  padding: 2px;
+}
+
+/**
+ * #user-image-preview can have the following classes:
+ * .default-image: one of the default images is selected (including the grey
+ *                 silhouette);
+ * .profile-image: profile image is selected;
+ * .profile-image-loading: profile image is being loaded;
+ * .online: camera is streaming video;
+ * .camera: camera (live or photo) is selected;
+ * .live: camera is in live mode (no photo taken yet/last photo removed).
+ */
+#user-image-preview {
+  float: right;
+  margin: 4px;
+  max-width: 220px;
+  position: relative;
+}
+
+#profile-image {
+  position: relative;
+}
+
+/* White background for spinner styled like user image */
+#profile-image .spinner-bg {
+  background-color: white;
+  display: none;
+  height: 50px;
+  left: 3px;
+  position: absolute;
+  top: 3px;
+  width: 50px;
+}
+
+.profile-image-loading #profile-image .spinner-bg {
+  display: block;
+}
+
+#profile-image .spinner {
+  left: 14px;
+  position: absolute;
+  top: 14px;
+}
+
+.image-loading.user-image #step-logo {
+  display: none;
+}
+
+html[dir=rtl] #user-image-preview {
+  float: left;
+}
+
+#user-image-preview-img {
+  display: block;
+  max-height: 220px;
+  max-width: 220px;
+}
+
+#user-image-preview-img.animated-transform {
+  -webkit-transition: -webkit-transform 200ms linear;
+}
+
+.camera.live #user-image-preview-img {
+  display: none;
+}
+
+.camera.flip-x #user-image-preview-img {
+  -webkit-transform: rotateY(180deg);
+}
+
+.default-image #user-image-preview-img {
+  background: white;
+  border: solid 1px #cacaca;
+  border-radius: 4px;
+  padding: 2px;
+}
+
+.user-image-stream-area {
+  display: none;
+  padding: 0;
+  position: relative;
+}
+
+.camera.live .user-image-stream-area {
+  display: block;
+}
+
+#user-image-stream-crop {
+  -webkit-transition: -webkit-transform 200ms linear;
+  height: 220px;
+  overflow: hidden;
+  position: relative;
+  width: 220px;
+}
+
+.flip-x #user-image-stream-crop {
+  -webkit-transform: rotateY(180deg);
+}
+
+/* TODO(ivankr): specify dimensions from real capture size. */
+.user-image-stream {
+  border: solid 1px #cacaca;
+  height: 220px;
+  /* Center image for 4:3 aspect ratio. */
+  left: -16.6%;
+  position: absolute;
+  visibility: hidden;
+}
+
+.online .user-image-stream {
+  visibility: visible;
+}
+
+#user-image-preview-caption {
+  color: dimGray;
+  font-size: smaller;
+  margin: 8px 4px;
+}
+
+.camera #user-image-preview-caption {
+  display: none;
+}
+
+#flip-photo {
+  -webkit-transition: opacity 75ms linear;
+  background: -webkit-image-set(url(chrome://theme/IDR_MIRROR_FLIP) 1x, url(chrome://theme/IDR_MIRROR_FLIP@2x) 2x) no-repeat;
+  border: none;
+  bottom: 44px;  /* 8px + image bottom. */
+  display: block;
+  height: 32px;
+  opacity: 0;
+  position: absolute;
+  right: 8px;
+  width: 32px;
+  z-index: 1;
+}
+
+/* TODO(merkulova): remove when webkit crbug.com/126479 is fixed. */
+.flip-trick {
+  -webkit-transform: translateZ(1px);
+}
+
+html[dir=rtl] #flip-photo {
+  left: 8px;
+  right: auto;
+}
+
+/* "Flip photo" button is hidden during flip animation. */
+.camera.online:not(.animation) #flip-photo,
+.camera.phototaken:not(.animation) #flip-photo {
+  opacity: 0.75;
+}
+
+#discard-photo,
+#take-photo {
+  display: none;
+  height: 25px;
+  margin: 4px 1px;
+  padding: 0;
+  width: 220px;
+}
+
+.camera:not(.live) #discard-photo {
+  background: -webkit-image-set(url(chrome://theme/IDR_USER_IMAGE_RECYCLE) 1x, url(chrome://theme/IDR_USER_IMAGE_RECYCLE@2x) 2x)
+      no-repeat center center;
+  display: block;
+}
+
+.camera.live.online #take-photo {
+  background: -webkit-image-set(url(chrome://theme/IDR_USER_IMAGE_CAPTURE) 1x, url(chrome://theme/IDR_USER_IMAGE_CAPTURE@2x) 2x)
+      no-repeat center -1px;
+  display: block;
+}
+
+#user-image-preview .perspective-box {
+  -webkit-perspective: 600px;
+  border: solid 1px #cacaca;
+  border-radius: 4px;
+  padding: 2px;
+  width: 220px;
+}
+
+#user-image-attribution {
+  /* Turned off for now. */
+  display: none;
+}
+
+#user-image .step-contents {
+  -webkit-margin-start: 31px;
+  margin-bottom: 30px;
+}
+
+.user-image-stream-area .spinner {
+  display: none;
+  height: 44px;
+  left: 50%;
+  margin-left: -22px;
+  margin-top: -22px;
+  position: absolute;
+  top: 50%;
+  width: 44px;
+}
+
+.camera.live:not(.online) .user-image-stream-area .spinner {
+  display: block;
+}
+
+</style>
+
+<style>/* Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#app-launch-splash {
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
+  background: white;
+  display: -webkit-box;
+}
+
+#splash-content {
+  -webkit-box-align: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-pack: center;
+  display: -webkit-box;
+  position: relative;
+}
+
+#splash-header {
+  -webkit-padding-start: 108px;
+  background: left center no-repeat;
+  background-size: 96px;
+  color: #666;
+  display: -webkit-box;
+  font-size: 48px;
+  height: 96px;
+  line-height: 96px;
+}
+
+#splash-launch-text {
+  color: #666;
+  font-size: 18px;
+  padding-top: 50px;
+}
+
+#splash-spinner {
+  height: 32px;
+  width: 32px;
+}
+
+#splash-config-network-container {
+  -webkit-transition: 1s opacity;
+  height : 30px;
+  opacity: 1;
+  padding-bottom: 20px;
+}
+
+#splash-config-network-container.faded {
+  opacity: 0;
+}
+
+#splash-config-network {
+  font-size: 10px;
+  font-weight: bold;
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+}
+
+#splash-config-network:hover {
+  color: rgb(202, 67, 100)
+}
+
+#splash-shortcut-info {
+  bottom: 50px;
+  color: gray;
+  left: 0;
+  position: absolute;
+  right: 0;
+  text-align: center;
+}
+</style>
+<style>/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#gaia-signin {
+  height: 528px;
+  width: 448px;
+}
+
+#gaia-signin.full-width {
+  padding: 44px 0 0;
+  width: 562px;
+}
+
+.signin-link {
+  color: rgb(37, 79, 155);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.signin-link:focus {
+  -webkit-transition: outline-color 200ms;
+  /* Note: May use 1px solid here. */
+  outline-color: rgb(77, 144, 254);
+}
+
+#gaia-signin-form-container,
+#signin-frame {
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+
+.gaia-signin #step-logo {
+  display: none;
+}
+
+#signin-frame {
+  display: block;
+  opacity: 0;
+  overflow: hidden;
+  transition: opacity 500ms ease-in;
+}
+
+#signin-frame.show {
+  opacity: 1;
+  transition: opacity 500ms ease-out;
+}
+
+#gaia-signin .step-contents {
+  -webkit-box-pack: center;
+  display: -webkit-box;
+  height: 100%;
+}
+
+#saml-notice-container {
+  align-items: center;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.17);
+  display: flex;
+  height: 44px;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+#saml-notice-recording-indicator {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#saml-notice-message {
+  color: rgb(106, 106, 106);
+  font-size: 13px;
+}
+
+#gaia-whitelist-error {
+  bottom: 0;
+  display: block;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  visibility: hidden;
+}
+
+.whitelist-error #gaia-whitelist-error {
+  visibility: visible;
+}
+
+#gaia-signin.whitelist-error .step-contents {
+  visibility: hidden;
+}
+
+#gaia-signin.whitelist-error .step-loading {
+  visibility: hidden;
+}
+
+#gaia-navigation {
+  color: white;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1;
+}
+
+.loading #gaia-navigation,
+.full-width #gaia-navigation {
+  color: rgba(0, 0, 0, .54);
+}
+
+</style>
+<style>/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#error-message {
+  width: 650px;
+}
+
+.show-with-ui-state-update,
+.show-with-ui-state-signin,
+.show-with-ui-state-supervised,
+.show-with-ui-state-kiosk-mode,
+.show-with-ui-state-local-state-error,
+.show-with-ui-state-auto-enrollment-error,
+.show-with-ui-state-rollback-error,
+.show-with-error-state-portal,
+.show-with-error-state-offline,
+.show-with-error-state-proxy,
+.show-with-error-state-auth-ext-timeout,
+.show-with-error-state-kiosk-online,
+.guest-signin,
+.offline-login,
+.connecting-indicator {
+  display: none;
+}
+
+.ui-state-update .show-with-ui-state-update,
+.ui-state-signin .show-with-ui-state-signin,
+.ui-state-supervised .show-with-ui-state-supervised,
+.ui-state-kiosk-mode .show-with-ui-state-kiosk-mode,
+.ui-state-local-state-error .show-with-ui-state-local-state-error,
+.ui-state-auto-enrollment-error .show-with-ui-state-auto-enrollment-error,
+.ui-state-rollback-error .show-with-ui-state-rollback-error,
+.error-state-portal .show-with-error-state-portal,
+.error-state-offline .show-with-error-state-offline,
+.error-state-proxy .show-with-error-state-proxy,
+.error-state-auth-ext-timeout .show-with-error-state-auth-ext-timeout,
+.error-state-kiosk-online .show-with-error-state-kiosk-online,
+.allow-guest-signin .guest-signin,
+.allow-offline-login .offline-login,
+.show-connecting-indicator .connecting-indicator {
+  display: block;
+}
+
+#oobe.error-message #step-logo {
+  z-index: 1;
+}
+
+.error-header {
+  /* A hack used to prevent aliasing on High-DPI displays. */
+  -webkit-transform: scale3d(1,1,1);
+  background-clip: padding-box;
+  background-color: white;
+  border-bottom: 1px solid rgb(238,238,238);
+  padding: 71px 20px 50px;
+  text-align: center;
+}
+
+.error-icon {
+  height: 64px;
+  margin-bottom: 40px;
+}
+
+.error-title {
+  color: #606060;
+  font-size: 15px;
+}
+
+.error-body {
+  background-color: rgb(249,249,249);
+  padding: 20px 20px 20px;
+}
+
+.error-controls {
+  background-color: rgb(249,249,249);
+  padding: 20px 20px 20px;
+}
+
+.error-message-paragraph {
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.error-message-paragraph {
+  margin-top: 20px;
+}
+
+.error-message-paragraph a {
+  color: rgb(17,85,204);
+  text-decoration: none;
+}
+
+#offline-network-control {
+  -webkit-align-items: center;
+  display: -webkit-flex;
+}
+
+.offline-network-list-label {
+  -webkit-margin-end: 10px;
+}
+
+.button-spacer {
+  -webkit-box-flex: 1;
+}
+
+.ui-state-auto-enrollment-error .error-guest-signin {
+  display: none;
+}
+
+.ui-state-auto-enrollment-error.allow-guest-signin
+    .error-guest-signin-fix-network {
+  display: block;
+}
+
+@-webkit-keyframes connecting-indicator-ellipsis {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .8;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+#connecting-indicator-ellipsis-1 {
+  -webkit-animation: connecting-indicator-ellipsis 3s 0 infinite;
+}
+
+#connecting-indicator-ellipsis-2 {
+  -webkit-animation: connecting-indicator-ellipsis 3s 500ms infinite;
+}
+
+#connecting-indicator-ellipsis-3 {
+  -webkit-animation: connecting-indicator-ellipsis 3s 1s infinite;
+}
+
+#error-navigation {
+  color: rgba(0, 0, 0, .54);
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1;
+}
+</style>
+<style>/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#tpm-error-message {
+  min-width: 650px;
+}
+
+#oobe.tpm-error-message #step-logo {
+  z-index: 1;
+}
+
+#tpm-error-message-controls {
+  text-align: end;
+}
+
+</style>
+<style>/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#password-changed {
+  height: 528px; /* Should be the same as #gaia-signin. */
+  width: 448px; /* Should be the same as #gaia-signin. */
+}
+
+.password-changed #step-logo {
+  display: none;
+}
+
+#gaia-password-changed {
+  bottom: 0;
+  display: block;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+</style>
+<style>/* Copyright (c) 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ *
+ * This is the stylesheet used by the wrong HWID screen.
+ */
+
+#wrong-hwid {
+  padding: 40px 17px 30px;
+  text-align: center;
+  width: 722px;
+}
+
+#wrong-hwid #wrong-hwid-message-header {
+  color: #606060;
+  font-size: 22px;
+  padding: 5px 40px 30px;
+}
+
+#wrong-hwid #wrong-hwid-icon {
+  height: 112px;
+}
+
+#wrong-hwid #wrong-hwid-message-content {
+  color: #606060;
+  font-size: 16px;
+  padding: 20px 40px 40px;
+}
+
+#skip-hwid-warning {
+  justify-content: center;
+}
+
+#skip-hwid-warning-link {
+  color: #8c8c8c;
+  font-size: 18px;
+  text-decoration: none;
+}
+
+</style>
+<style>/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ *
+ * This is the stylesheet used by the Locally managed user creation flow screen.
+ */
+
+#supervised-user-creation {
+  height: 609px; /* Same size as GAIA sign in screen.*/
+  padding: 0 0;  /* Some screens have elements right next to borders. */
+  width: 722px;
+}
+
+#supervised-user-creation .step-contents {
+  height: 100%;
+}
+
+#supervised-user-creation .nofocus:focus {
+  outline: none;
+}
+
+#supervised-user-creation .step-controls {
+  -webkit-padding-end: 20px;
+  align-items: center;
+  bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+#supervised-user-creation .controls-links {
+  align-items: center;
+  display: flex;
+  justify-content: flex-start;
+}
+
+#supervised-user-creation .controls-buttons {
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+}
+
+#supervised-user-creation .logo-padded-text {
+  padding: 0 17px 0;
+}
+
+#supervised-user-creation .marketing {
+  background-color: green;
+  height: 344px;
+}
+
+#supervised-user-creation .below-marketing {
+  font-size: 12px;
+  line-height: 18px;
+  max-height: 184px;
+  overflow-x: auto;
+}
+
+#supervised-user-creation .button-link {
+  font-size: small;
+  padding: 0 20px;
+}
+
+.below-marketing::-webkit-scrollbar {
+  width: 8px;
+}
+
+.below-marketing::-webkit-scrollbar-track-piece {
+  background: #eee;
+}
+
+.below-marketing::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+#supervised-user-creation .page-no-marketing {
+  height: 470px;
+  padding: 70px 17px 0;
+}
+
+#supervised-user-creation .page-title {
+  color: #000;
+  font-size: 15px;
+  line-height: 24px;
+}
+
+.below-marketing strong {
+  color: #000;
+  font-weight: bold;
+}
+
+#supervised-user-creation .page-title-explanation {
+  color: rgb(150, 150, 150);
+  font-size: 12px;
+}
+
+#supervised-user-creation .page-title.inline {
+  -webkit-margin-end: 1ex;
+  display: inline-block;
+}
+
+#supervised-user-creation .page-title-explanation.inline {
+  display: inline;
+}
+
+#supervised-user-creation .page-title.centred {
+  text-align: center;
+}
+
+#supervised-user-creation .page-title-explanation.centred {
+  text-align: center;
+}
+
+#supervised-user-creation-intro-title {
+  font-size: x-large;
+  text-align: center;
+}
+
+#supervised-user-creation-intro-placeholder {
+  background-color: gray;
+  font-size: x-large;
+  height: 150px;
+  text-align: center;
+}
+
+#supervised-user-creation-intro .below-marketing {
+  margin: 20px 21px 2px 40px;
+}
+
+#supervised-user-creation-intro-alternate-text {
+  margin-bottom: 12px;
+  margin-top: 12px;
+}
+
+#supervised-user-creation-intro-text-3 {
+  margin-top: 12px;
+}
+
+#supervised-user-creation-created .below-marketing {
+  margin: 20px 40px 0;
+}
+
+#supervised-user-creation-created-text-1 {
+  max-width: 600px;
+  word-wrap: break-word;
+}
+
+#supervised-user-creation-created-text-2 {
+  margin-top: 20px;
+  max-width: 600px;
+  word-wrap: break-word;
+}
+
+#supervised-user-creation-created-text-3 {
+  margin-top: 20px;
+}
+
+#supervised-user-creation-password-block,
+#supervised-user-creation-password-title {
+  margin-top: 10px;
+}
+
+#supervised-user-creation-name-block {
+  margin-bottom: 20px;
+  margin-top: 10px;
+}
+
+input.supervised-user-creation-manager-password,
+#supervised-user-creation-name,
+#supervised-user-creation-password {
+  padding: 4px 6px;
+}
+#supervised-user-creation-password-confirm {
+  margin-top: 12px;
+  padding: 4px 6px;
+}
+
+#supervised-user-creation-name-error {
+  visibility: hidden;
+}
+
+#supervised-user-creation-name-error.error {
+  color: rgb(207, 93, 70);
+  padding-left: 28px;
+  visibility: visible;
+}
+
+#supervised-user-creation-managers-block {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+#supervised-user-creation-managers-pane {
+  border: 1px solid #c8c8c8;
+  height: 100%;
+  margin-top: 20px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* This class will be set for elements with hide-on-import class by JS when
+ * page is used in 'import' mode
+ */
+#supervised-user-creation .hidden-on-import {
+  display: none;
+}
+
+#supervised-user-creation-error {
+  padding: 175px 120px 0;
+  text-align: center;
+}
+
+#supervised-user-creation-error .error-icon {
+  margin-bottom: 50px;
+}
+
+#supervised-user-creation-error  .error-message-paragraph {
+  margin-bottom: 40px;
+  margin-top: 30px;
+}
+
+.screen-control-button {
+  margin-left: 10px !important;
+}
+
+.import-pod {
+  height: 32px;
+  opacity: 0.8;
+  padding: 20px;
+  width: 646px;
+}
+
+.import-pod .import-pod-name {
+  color: #000;
+  display: inline-block;
+  height: 32px;
+  max-height: 32px;
+  padding-top: 6px;
+  vertical-align: top;
+}
+
+.import-pod.imported .import-pod-name {
+  color: rgb(141, 141, 141);
+}
+
+.import-pod .import-pod-image {
+  border: 1px solid gray;
+  display: inline;
+  height: 30px;
+  width: 30px;
+}
+
+.manager-pod {
+  height: 32px;
+  opacity: 0.8;
+  padding: 20px;
+  width: 646px;
+}
+
+.manager-pod .supervised-user-creation-manager-info-block {
+  float: left;
+  min-height: 32px;
+}
+
+.manager-pod .supervised-user-creation-manager-image {
+  border: 1px solid gray;
+  display: inline-block;
+  height: 30px;
+  width: 30px;
+}
+
+.manager-pod .supervised-user-creation-manager-info {
+  display: inline-block;
+  margin: 0 8px;
+  min-height: 32px;
+}
+
+.manager-pod .supervised-user-creation-manager-info-text {
+  display: inline-block;
+  min-height: 32px;
+  vertical-align: top;
+}
+
+.manager-pod .password-block {
+  float: right;
+}
+
+.manager-pod .supervised-user-creation-manager-email {
+  color: #666;
+  font-size: small;
+  max-height: 16px;
+}
+
+.manager-pod .supervised-user-creation-manager-name {
+  color: #000;
+  font-size: small;
+  max-height: 16px;
+}
+
+#supervised-user-creation-status {
+  margin: 4px 10px;
+}
+
+#supervised-user-creation-status .error {
+  color: rgb(207, 93, 70);
+}
+
+#supervised-user-creation-status .spinner-wrapper {
+  -webkit-margin-start: 3px;
+  display: inline-flex;
+  margin-top: 3px;
+  vertical-align: top;
+}
+
+#supervised-user-creation-status .id-text {
+  display: inline-flex;
+  margin-top: 1px;
+  max-width: 480px;
+  vertical-align: baseline;
+}
+
+.manager-pod.focused {
+  background-color: rgb(66, 129, 244);
+  opacity: 1;
+}
+
+.import-pod.imported.focused {
+  background-color: rgb(238, 238, 238);
+  opacity: 1;
+}
+
+.import-pod.focused {
+  background-color: rgb(66, 129, 244);
+  opacity: 1;
+}
+
+.manager-pod.focused .supervised-user-creation-manager-email {
+  color: #fff;
+}
+
+.manager-pod.focused .supervised-user-creation-manager-name {
+  color: #fff;
+}
+
+#supervised-user-creation-import-pane {
+  border: 1px solid #c8c8c8;
+  height: 400px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+#supervised-user-creation-import .page-title-explanation {
+  padding-bottom: 10px;
+  padding-top: 6px;
+}
+
+.manager-pod .password-error,
+#supervised-user-creation .password-error,
+#supervised-user-creation .duplicate-name {
+  border: 1px solid red !important;
+}
+
+#supervised-user-creation-image-picker {
+  margin-top: 16px;
+}
+
+#supervised-user-creation-image-grid {
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  display: inline-block;
+  height: 264px;
+  margin: 0;
+  outline: none;
+  overflow: hidden;
+  padding: 0;
+  width: 400px;
+}
+
+#supervised-user-creation-image-grid img {
+  background-color: white;
+  height: 50px;
+  vertical-align: middle;
+  width: 50px;
+}
+
+#supervised-user-creation-image-grid > li {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  display: inline-block;
+  margin: 4px;
+  padding: 3px;
+}
+
+#supervised-user-creation-image-grid [selected] {
+  border: 2px solid rgb(0, 102, 204);
+  padding: 2px;
+}
+
+#supervised-user-creation-image-preview {
+  float: right;
+  margin: 4px;
+  max-width: 220px;
+  position: relative;
+}
+
+html[dir=rtl] #supervised-user-creation-image-preview {
+  float: left;
+}
+
+#supervised-user-creation-image-preview-img {
+  display: block;
+  max-height: 220px;
+  max-width: 220px;
+}
+
+#supervised-user-creation-image-preview-img.animated-transform {
+  -webkit-transition: -webkit-transform 200ms linear;
+}
+
+.camera.live #supervised-user-creation-image-preview-img {
+  display: none;
+}
+
+.camera.flip-x #supervised-user-creation-image-preview-img {
+  -webkit-transform: rotateY(180deg);
+}
+
+.default-image #supervised-user-creation-image-preview-img {
+  background: white;
+  border: solid 1px #cacaca;
+  border-radius: 4px;
+  padding: 2px;
+}
+
+.supervised-user-creation-image-stream-area {
+  display: none;
+  padding: 0;
+  position: relative;
+}
+
+.camera.live .supervised-user-creation-image-stream-area {
+  display: block;
+}
+
+#supervised-user-creation-image-stream-crop {
+  -webkit-transition: -webkit-transform 200ms linear;
+  height: 220px;
+  overflow: hidden;
+  position: relative;
+  width: 220px;
+}
+
+.flip-x #supervised-user-creation-image-stream-crop {
+  -webkit-transform: rotateY(180deg);
+}
+
+.supervised-user-creation-image-stream {
+  border: solid 1px #cacaca;
+  height: 220px;
+  /* Center image for 4:3 aspect ratio. */
+  left: -16.6%;
+  position: absolute;
+  visibility: hidden;
+}
+
+.online .supervised-user-creation-image-stream {
+  visibility: visible;
+}
+
+#supervised-user-creation-image-preview-caption {
+  color: dimGray;
+  font-size: smaller;
+  margin: 8px 4px;
+}
+
+.camera #supervised-user-creation-image-preview-caption {
+  display: none;
+}
+
+#supervised-user-creation-flip-photo {
+  -webkit-transition: opacity 75ms linear;
+  background: -webkit-image-set(url(chrome://theme/IDR_MIRROR_FLIP) 1x, url(chrome://theme/IDR_MIRROR_FLIP@2x) 2x) no-repeat;
+  border: none;
+  bottom: 44px;  /* 8px + image bottom. */
+  display: block;
+  height: 32px;
+  opacity: 0;
+  position: absolute;
+  right: 8px;
+  width: 32px;
+}
+
+/* TODO(merkulova): remove when webkit crbug.com/126479 is fixed. */
+.flip-trick {
+  -webkit-transform: translateZ(1px);
+}
+
+html[dir=rtl] #supervised-user-creation-flip-photo {
+  left: 8px;
+  right: auto;
+}
+
+/* "Flip photo" button is hidden during flip animation. */
+.camera.online:not(.animation) #supervised-user-creation-flip-photo,
+.camera.phototaken:not(.animation) #supervised-user-creation-flip-photo {
+  opacity: 0.75;
+}
+
+#supervised-user-creation-discard-photo,
+#supervised-user-creation-take-photo {
+  display: none;
+  height: 25px;
+  margin: 4px 1px;
+  padding: 0;
+  width: 220px;
+}
+
+.camera:not(.live) #supervised-user-creation-discard-photo {
+  background: -webkit-image-set(url(chrome://theme/IDR_USER_IMAGE_RECYCLE) 1x, url(chrome://theme/IDR_USER_IMAGE_RECYCLE@2x) 2x)
+      no-repeat center center;
+  display: block;
+}
+
+.camera.live.online #supervised-user-creation-take-photo {
+  background: -webkit-image-set(url(chrome://theme/IDR_USER_IMAGE_CAPTURE) 1x, url(chrome://theme/IDR_USER_IMAGE_CAPTURE@2x) 2x)
+      no-repeat center -1px;
+  display: block;
+}
+
+#supervised-user-creation-image-preview .perspective-box {
+  -webkit-perspective: 600px;
+   border: solid 1px #cacaca;
+   border-radius: 4px;
+   padding: 2px;
+   width: 220px;
+}
+
+.supervised-user-creation-image-stream-area .spinner {
+  display: none;
+  height: 44px;
+  left: 50%;
+  margin-left: -22px;
+  margin-top: -22px;
+  position: absolute;
+  top: 50%;
+  width: 44px;
+}
+
+.camera.live:not(.online) .supervised-user-creation-image-stream-area .spinner {
+  display: block;
+}
+
+#supervised-user-creation-navigation {
+  color: rgba(0, 0, 0, .54);
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1;
+}
+</style>
+<style>/* Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#confirm-password {
+  height: 528px; /* Should be the same as #gaia-signin. */
+  width: 448px; /* Should be the same as #gaia-signin. */
+}
+
+.confirm-password #step-logo {
+  display: none;
+}
+
+#saml-confirm-password {
+  bottom: 0;
+  display: block;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+</style>
+<style>/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#fatal-error {
+  height: 528px; /* Should be the same as #gaia-signin. */
+  width: 448px; /* Should be the same as #gaia-signin. */
+}
+
+.fatal-error #step-logo {
+  display: none;
+}
+
+#fatal-error-card {
+  bottom: 0;
+  display: block;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+</style>
+<style>/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#device-disabled,
+#device-disabled-top-container,
+#device-disabled-bottom-container {
+  display: flex;
+  flex-direction: column;
+}
+
+#device-disabled {
+  font-size: 12px;
+  line-height: 18px;
+  width: 330px;
+}
+
+#device-disabled-top-container {
+  background-color: rgb(213, 0, 0);
+  color: white;
+  padding: 25px 20px;
+  text-align: center;
+}
+
+#device-disabled-symbol {
+  align-self: center;
+  background-image: -webkit-image-set(url(chrome://theme/IDR_DEVICE_DISABLED) 1x, url(chrome://theme/IDR_DEVICE_DISABLED@2x) 2x);
+  height: 24px;
+  width: 24px;
+}
+
+#device-disabled-heading {
+  font-size: 15px;
+  line-height: 15px;
+  margin-top: 8px;
+}
+
+#device-disabled-explanation {
+  font-weight: bold;
+  margin: 25px 0 -5px;
+  max-height: 54px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#device-disabled-bottom-container {
+  background-color: white;
+  padding: 25px 20px;
+}
+
+#device-disabled-message {
+  margin: -3px 0 -5px;
+  max-height: 400px;
+  overflow: auto;
+  text-overflow: clip;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+</style>
+<style>/* Copyright (c) 2016 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#unrecoverable-cryptohome-error {
+  width: 448px; /* Should be the same as #gaia-signin. */
+}
+</style>
+
+<style>/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+.bluetooth-device-list {
+  margin: 10px 0;
+  padding: 5px 10px;
+}
+
+.bluetooth-device[notconnectable] {
+  color: gray;
+}
+
+.bluetooth-device[connected] {
+  font-weight: bold; /* semibold */
+}
+
+#bluetooth-options .bluetooth-device-list {
+  margin: 0 10px;
+}
+
+#bluetooth-options .button-strip {
+  -webkit-box-pack: justify;
+}
+
+#bluetooth-options .button-strip #bluetooth-scanning-label,
+#bluetooth-options .button-strip #bluetooth-scan-stopped-label {
+  -webkit-box-flex: 1;
+  display: block;
+}
+
+#bluetooth-scanning-label,
+#bluetooth-scan-stopped-label {
+  -webkit-margin-start: 5px;
+  color: #999;
+}
+
+#bluetooth-scanning-icon {
+  height: 20px;
+  opacity: 0.66;
+  vertical-align: middle;
+  width: 20px;
+}
+
+#bluetooth-paired-devices-list {
+  min-height: 96px !important;
+}
+
+#bluetooth-paired-devices-list,
+#bluetooth-unpaired-devices-list {
+  /* Prevent dialog from expanding if many devices are found. */
+  max-height: 192px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.bluetooth-empty-list-label {
+  box-sizing: border-box;
+  color: #999;
+  padding-top: 32px;
+  text-align: center;
+}
+
+#bluetooth-paired-devices-list-empty-placeholder {
+  height: 96px;
+}
+
+#bluetooth-unpaired-devices-list-empty-placeholder {
+  height: 192px;
+}
+
+/* Fix the dimensions of the message area so that the dialog does not change
+   change size during the pairing process as the message changes. Sized
+   generously to accomodate the longest of the messages. */
+#bluetooth-pairing-message-area {
+  display: table;
+  height: 160px;
+  padding: 6px 0 !important;
+  width: 420px;
+}
+
+/* Force the message to be vertical centered so that a shorter message does not
+   look out of place when there is room for a much longer message. */
+#bluetooth-pairing-message-contents {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+#bluetooth-pairing-instructions,
+#bluetooth-pairing-passkey-display,
+#bluetooth-pairing-passkey-entry,
+#bluetooth-pairing-pincode-entry,
+#bluetooth-passkey,
+#bluetooth-pincode {
+  text-align: center;
+}
+
+#bluetooth-pairing-instructions {
+  margin: 10px;
+}
+
+#bluetooth-pairing-passkey-display,
+#bluetooth-pairing-passkey-entry,
+#bluetooth-pairing-pincode-entry {
+  margin: 40px 0;
+}
+
+.bluetooth-keyboard-button {
+  -webkit-padding-end: 15px;
+  -webkit-padding-start: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px #222;
+  color: #222;
+  display: inline-block;
+  font-size: 16px;
+  height: 38px;
+  line-height: 38px;
+  margin: 0 10px 0 0;
+  position: relative;
+  text-align: center;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+  vertical-align: baseline;
+}
+
+.bluetooth-keyboard-button:last-child {
+  margin: 0;
+}
+
+#bluetooth-enter-key {
+  min-width: 54px;
+}
+
+.bluetooth-passkey-char {
+  -webkit-margin-start: 45px;
+  color: #999;
+  font-size: 20px;
+  font-weight: 600; /* semibold */
+  padding-bottom: 5px;
+}
+
+.bluetooth-passkey-char:first-child {
+  -webkit-margin-start: 0;
+}
+
+.bluetooth-keyboard-button.key-typed {
+  color: #222;
+}
+
+.bluetooth-keyboard-button.key-next {
+  background: rgb(77, 144, 254);
+  background-image: none;
+  border: 2px solid rgb(77, 144, 254);
+  box-shadow: none;
+  color: #fff;
+}
+
+.bluetooth-keyboard-button.key-untyped {
+  border: 1px solid #d4d4d4;
+  box-shadow: 0 0 0 1px #888;
+  color: #666;
+}
+</style>
+
+<script src="chrome://oobe/keyboard_utils.js"></script>
+<script src="chrome://resources/js/polymer_config.js"></script>
+
+<link rel="import" href="chrome://resources/polymer/v1_0/polymer/polymer.html">
+<link rel="import" href="chrome://oobe/custom_elements.html">
+<style>/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* TODO(dzhioev): get rid of this file, when we have Roboto among system fonts.
+ * http://crbug.com/409047
+ */
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 100;
+  src: url(Roboto-Thin.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 300;
+  src: url(Roboto-Light.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: url(Roboto-Regular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 500;
+  src: url(Roboto-Medium.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  src: url(Roboto-Bold.ttf) format('truetype');
+}
+</style>
+<style>/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#accessibility-menu {
+  -webkit-padding-end: 80px;
+  -webkit-padding-start: 25px;
+  padding-bottom: 25px;
+  padding-top: 15px;
+  z-index: 1;
+}
+
+.checkboxrow {
+  display: -webkit-box;
+  margin-top: 10px;
+}
+
+.checkboxlabel {
+  -webkit-margin-start: 10px;
+}
+
+.close-button {
+  background: -webkit-image-set(url(chrome://theme/IDR_CLOSE_DIALOG) 1x, url(chrome://theme/IDR_CLOSE_DIALOG@2x) 2x) center no-repeat;
+  height: 14px;
+  position: absolute;
+  right: 7px;
+  top: 7px;
+  width: 14px;
+}
+
+.close-button:hover {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_CLOSE_DIALOG_H) 1x, url(chrome://theme/IDR_CLOSE_DIALOG_H@2x) 2x);
+}
+
+.close-button:active {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_CLOSE_DIALOG_P) 1x, url(chrome://theme/IDR_CLOSE_DIALOG_P@2x) 2x);
+}
+
+html[dir=rtl] .close-button {
+  left: 10px;
+  right: auto;
+}
+
+</style>
+<script src="chrome://oobe/oobe.js"></script>
+<script src="chrome://oobe/gaia_auth_host.js"></script>
+</head>
+<body class="oobe-display" i18n-values=".style.fontFamily:fontfamily;">
+  <div id="background" class="background-initial"></div>
+<div id="version-labels" hidden>
+  <div id="version"></div>
+  <div id="asset-id"></div>
+</div>
+
+<div id="api-keys-notice-container" hidden>
+  <div id="api-keys-notice" i18n-content="missingAPIKeysNotice"></div>
+</div>
+
+<div id="scroll-container">
+  <div id="outer-container" class="down">
+    <!-- TODO(jdufault): Place this in a better location in DOM once we know how
+                         the PIN element will look w.r.t. user pods. -->
+    <div id="pin-container">
+      <pin-keyboard id="pin-keyboard"></pin-keyboard>
+    </div>
+    <div id="oobe" class="faded">
+      <div id="inner-container" class="down">
+        <div id="step-logo" hidden>
+          <img src="chrome://theme/IDR_PRODUCT_LOGO" alt style="content: -webkit-image-set(url('chrome://theme/IDR_PRODUCT_LOGO') 1x, url('chrome://theme/IDR_PRODUCT_LOGO@2x') 2x);">
+          <div id="header-sections">
+          </div>
+        </div>
+        <div class="step right hidden animated eula-loading" id="eula" role="group"
+     i18n-values="aria-label:eulaScreenAccessibleTitle" hidden>
+  <div class="step-contents">
+    <div id="eulas" class="eula-columns one-column">
+      <div id="cros-eula" tabindex="0">
+        <iframe id="cros-eula-frame" name="cros-eula-frame" class="eula-frame"
+            src="about:blank"></iframe>
+        <div id="cros-eula-loading">
+          <div>
+            <p i18n-content="termsOfServiceLoading"></p>
+          </div>
+        </div>
+      </div>
+      <div id="oem-eula">
+        <iframe id="oem-eula-frame" name="oem-eula-frame" class="eula-frame"></iframe>
+      </div>
+    </div>
+    <div id="logging">
+      <div>
+        <input id="usage-stats" type="checkbox">
+      </div>
+      <div>
+        <label for="usage-stats" i18n-content="checkboxLogging"></label>
+        <a id="stats-help-link" href="#" i18n-content="learnMore"></a>
+      </div>
+    </div>
+  </div>
+  <div id="eula-controls" class="step-controls"></div>
+  <div id="eula-extra-controls" class="step-extra-controls">
+    <div id="installation-settings">
+      <a id="installation-settings-link" href="#"
+         i18n-content="eulaSystemInstallationSettings">
+      </a>
+    </div>
+    <div id="eula-accessibility">
+      <a id="eula-accessibility-link" href="#" role="button"
+        i18n-content="accessibilityLink"></a>
+    </div>
+    <div id="eula-chrome-credits"
+       class="credits"><a id="eula-chrome-credits-link" href="#" role="button"
+        i18n-content="chromeCreditsLink"></a></div>
+    <div id="eula-chromeos-credits"
+       class="credits"><a id="eula-chromeos-credits-link" href="#" role="button"
+        i18n-content="chromeosCreditsLink"></a></div>
+  </div>
+  <div id="eula-busy" class="step-loading">
+    <div class="throbber"></div>
+  </div>
+</div>
+
+<!-- Copyright 2016 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<div class="step hidden animated" id="connect" role="group" hidden>
+  <div id="oobe-poly-connect">
+    <div class="step-contents">
+      <oobe-welcome-md id="oobe-welcome-md" class="fit"></oobe-welcome-md>
+    </div>
+  </div>
+  <div id="oobe-connect">
+    <div class="step-contents">
+      <div id="welcome-message" i18n-content="networkScreenGreeting">
+      </div>
+      <div class="control-with-label">
+        <label id="language-select-label" i18n-content="selectLanguage"
+               class="label"></label>
+        <div class="menu-area" aria-labelledby="language-select-label">
+          <select id="language-select" class="menu-control"></select>
+        </div>
+      </div>
+      <div class="control-with-label">
+        <label id="keyboard-select-label" i18n-content="selectKeyboard"
+               class="label"></label>
+        <div class="menu-area" aria-labelledby="keyboard-select-label">
+          <select id="keyboard-select" class="menu-control"></select>
+        </div>
+      </div>
+      <div class="control-with-label" id="network-timezone-setting">
+        <label id="timezone-select-label" i18n-content="selectTimezone"
+               class="label"></label>
+        <div class="menu-area" aria-labelledby="timezone-select-label">
+          <select id="timezone-select" class="menu-control"></select>
+        </div>
+      </div>
+      <div class="control-with-label">
+        <label id="networks-list-label" i18n-content="selectNetwork"
+               class="label"></label>
+        <div class="menu-area">
+          <div id="networks-list" aria-labelledby="networks-list-label"
+               class="menu-control"></div>
+        </div>
+      </div>
+    </div>
+    <div id="connect-controls" class="step-controls"></div>
+    <div id="connect-extra-controls" class="step-extra-controls">
+      <div id="connect-accessibility">
+        <a id="connect-accessibility-link" href="#" role="button"
+           i18n-content="accessibilityLink"></a>
+      </div>
+      <div class="connect-debugging-specific">
+        <a id="connect-debugging-features-link" href="#" role="button"
+           i18n-content="debuggingFeaturesLink"></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="step faded hidden no-logo" id="debugging" role="group" hidden
+     i18n-values="aria-label:enableDebuggingScreenAccessibleTitle">
+  <div class="step-contents" aria-live="polite" aria-atomic="true">
+    <div id="enable-debugging-icon"></div>
+    <div i18n-content="enableDebuggingScreenTitle"
+        class="enable-debugging-title remove-protection-specific setup-specific
+               done-specific wait-specific">
+    </div>
+    <div i18n-content="enableDebuggingErrorTitle"
+        class="enable-debugging-title error-specific">
+    </div>
+    <div id="enable-debugging-info"
+        class="enable-debugging-text
+               remove-protection-specific setup-specific state-specific
+               error-specific done-specific">
+      <div id="enable-debugging-remove-protection-details"
+          class="remove-protection-specific">
+        <span i18n-content="enableDebuggingRemveRootfsMessage"></span>
+        <a id="enable-debugging-help-link" href="#"
+            i18n-content="enableDebuggingLearnMore"></a>
+      </div>
+      <div id="enable-debugging-setup-details"
+          i18n-content="enableDebuggingSetupMessage"
+          class="setup-specific">
+      </div>
+      <div id="enable-debugging-passwords" class="setup-specific">
+        <div class="enable-debugging-password-input">
+          <input id="enable-debugging-password" type="password">
+          <input id="enable-debugging-password2" type="password">
+        </div>
+        <div id="enable-debugging-password-note"
+            i18n-content="enableDebuggingPasswordLengthNote">
+        </div>
+      </div>
+      <div class="enable-debugging-completed-details done-specific"
+          i18n-content="enableDebuggingDoneMessage">
+      </div>
+      <div class="enable-debugging-error-details error-specific"
+          i18n-content="enableDebuggingErrorMessage">
+      </div>
+    </div>
+    <div id="revert-promise" class="enable-debugging-text wait-specific">
+      <div id="enable-debugging-wait-msg"
+          i18n-content="enableDebuggingWaitMessage">
+      </div>
+    </div>
+  </div>
+  <div id="debugging-controls" class="step-controls"></div>
+</div>
+
+<div class="step faded hidden no-logo" id="reset" role="group" hidden
+     i18n-values="aria-label:resetScreenAccessibleTitle">
+  <div class="step-contents">
+    <div id="reset-warning-msg" i18n-content="resetWarningTitle"
+        class="revert-promise-specific restart-required-specific
+               powerwash-proposal-specific rollback-proposal-specific">
+    </div>
+    <img id="reset-warning-icon" src="chrome://theme/IDR_RESET_WARNING"
+        i18n-values="alt:resetScreenIconTitle" style="content: -webkit-image-set(url('chrome://theme/IDR_RESET_WARNING') 1x, url('chrome://theme/IDR_RESET_WARNING@2x') 2x);">
+    <div id="reset-info"
+        class="reset-text powerwash-proposal-specific rollback-proposal-specific
+               restart-required-specific">
+      <div id="powerwash-warning-details"
+          i18n-content="resetPowerwashWarningDetails"
+          class="powerwash-proposal-specific">
+      </div>
+      <div id="rollback-warning-details"
+          i18n-content="resetPowerwashRollbackWarningDetails"
+          class="rollback-proposal-specific">
+      </div>
+      <div id="reset-warning-data-details"
+          class="reset-text powerwash-proposal-specific
+                 rollback-proposal-specific"
+          i18n-content="resetWarningDataDetails">
+      </div>
+      <div id="reset-warning-restart" i18n-content="resetRestartMessage"
+           class="reset-text restart-required-specific">
+      </div>
+      <a id="powerwash-help-link" href="#" i18n-content="learnMore"></a>
+    </div>
+    <div id="revert-promise" class="revert-promise-specific">
+      <div id="reset-revert-promise-msg" i18n-content="resetRevertPromise">
+      </div>
+      <div id="reset-revert-spinner" class="throbber">
+      </div>
+      <div id="reset-revert-spinner-message" class="reset-text"
+           i18n-content="resetRevertSpinnerMessage">
+      </div>
+    </div>
+  </div>
+  <div id="reset-controls" class="step-controls"></div>
+</div>
+
+<div class="step hidden no-logo" id="autolaunch" hidden>
+  <div class="step-contents">
+    <div id="autolaunch-warning-title" i18n-content="autolaunchTitle"></div>
+    <div id="autolaunch-app-container">
+       <img id="autolaunch-app-icon" alt="">
+       <div id="autolaunch-app-name"></div>
+    </div>
+    <div id="autolaunch-warning" i18n-content="autolaunchWarning"></div>
+  </div>
+  <div id="autolaunch-controls" class="step-controls"></div>
+</div>
+
+<div class="step hidden no-logo" id="kiosk-enable" hidden>
+  <div class="step-contents">
+    <div id="kiosk-enable-msg" i18n-content="kioskEnableWarningText"></div>
+    <img id="kiosk-enable-icon" src="chrome://theme/IDR_RESET_WARNING" alt="" style="content: -webkit-image-set(url('chrome://theme/IDR_RESET_WARNING') 1x, url('chrome://theme/IDR_RESET_WARNING@2x') 2x);">
+    <div id="kiosk-enable-details"
+        i18n-content="kioskEnableWarningDetails"></div>
+  </div>
+  <div id="kiosk-enable-controls" class="step-controls"></div>
+</div>
+
+<div class="step right hidden tos-loading" id="terms-of-service" hidden>
+  <div class="step-contents">
+    <h1 id="tos-heading"></h1>
+    <div id="tos-subheading"></div>
+    <div id="tos-container">
+      <div id="tos-content">
+        <h2 id="tos-content-heading"></h2>
+        <span id="tos-content-main"></span>
+      </div>
+      <div id="tos-loading">
+        <div>
+          <p i18n-content="termsOfServiceLoading"></p>
+        </div>
+      </div>
+      <div id="tos-error">
+        <div>
+          <p i18n-content="termsOfServiceError"></p>
+          <p i18n-content="termsOfServiceTryAgain"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="terms-of-service-controls" class="step-controls"></div>
+</div>
+
+<div class="step right hidden animated" id="update" role="group"
+     i18n-values="aria-label:updateScreenAccessibleTitle" hidden>
+  <div class="step-contents">
+    <div id="update-cancel-hint" hidden>
+      <p i18n-content="cancelUpdateHint"></p>
+    </div>
+    <div id="update-screen-curtain">
+      <div id="checking-updates-label" i18n-content="checkingForUpdatesMsg">
+      </div>
+      <div id="update-checking-progress" aria-live="polite">
+        <div class="throbber"></div>
+        <div i18n-content="checkingForUpdates"></div>
+      </div>
+    </div>
+    <div id="update-screen-main" hidden>
+      <p id="update-upper-label"></p>
+      <p id="update-bottom-label" i18n-content="installingUpdateDesc"></p>
+      <progress id="update-progress-bar" max="100" value="0"></progress>
+      <p id="estimated-time-left" class="progress-message" hidden></p>
+      <p id="progress-message" class="progress-message" hidden></p>
+    </div>
+  </div>
+  <div id="update-extra-controls" class="step-extra-controls">
+    <div id="update-accessibility">
+      <a id="update-accessibility-link" href="#" role="button"
+         i18n-content="accessibilityLink"></a>
+    </div>
+  </div>
+</div>
+
+<div class="step hidden no-logo" id="controller-pairing" hidden>
+  <controller-pairing-screen name="ControllerPairingScreen">
+  </controller-pairing-screen>
+</div>
+
+<div class="step hidden no-logo fullscreen" id="host-pairing" hidden>
+  <host-pairing-screen name="HostPairingScreen"></host-pairing-screen>
+</div>
+
+<div class="step right hidden animated" id="auto-enrollment-check" role="group"
+     i18n-values="aria-label:autoEnrollmentCheckScreenHeader" hidden>
+  <div class="step-contents">
+    <div id="auto-enrollment-check-progress" aria-live="polite">
+      <div class="throbber"></div>
+      <div i18n-content="autoEnrollmentCheckMessage"></div>
+    </div>
+  </div>
+</div>
+
+<div class="step right hidden loading" id="user-image" hidden>
+  <div class="step-contents">
+    <div id="user-image-screen-curtain">
+      <p id="user-image-screen-description"
+         i18n-content="userImageScreenDescription"></p>
+    </div>
+    <div id="user-image-screen-main">
+      <grid id="user-image-grid" tabindex="1"
+          aria-labelledby="user-image-screen-description">
+      </grid>
+      <div id="user-image-preview">
+        <img id="user-image-preview-img" class="animated-transform" alt="">
+        <div class="user-image-stream-area">
+          <div class="perspective-box">
+            <div id="user-image-stream-crop">
+              <video class="user-image-stream" autoplay></video>
+            </div>
+          </div>
+          <div class="spinner"></div>
+        </div>
+        <p id="user-image-preview-caption"></p>
+        <button id="discard-photo" i18n-values="title:discardPhoto"
+            tabindex="2"></button>
+        <button id="take-photo" i18n-values="title:takePhoto" tabindex="2">
+        </button>
+        <button id="flip-photo" class="custom-appearance"
+            i18n-values="title:flipPhoto" tabindex="1"></button>
+      </div>
+      <div id="user-image-attribution">
+        <span i18n-content="authorCredit"></span>
+        <strong id="user-image-author-name"></strong>
+        <a id="user-image-author-website" target="_blank"></a>
+      </div>
+    </div>
+  </div>
+  <div id="user-image-controls" class="step-controls"></div>
+  <div id="user-images-loading" class="step-loading">
+    <throbber-notice i18n-values="text:syncingPreferences" class="fit">
+    </throbber-notice>
+  </div>
+</div>
+
+<div class="step hidden" id="hid-detection" hidden role="group"
+    i18n-values="aria-label:hidDetectionInvitation">
+  <div class="step-contents">
+    <div id="hid-invitation-text" i18n-content="hidDetectionInvitation"></div>
+    <div id="hid-prerequisite-msg" i18n-content="hidDetectionPrerequisites">
+    </div>
+    <div id="hid-mouse-block">
+      <div id="hid-mouse-icon-block">
+        <img id="hid-mouse-icon" src="chrome://theme/IDR_BLUETOOTH_MOUSE"
+            alt="" style="content: -webkit-image-set(url('chrome://theme/IDR_BLUETOOTH_MOUSE') 1x, url('chrome://theme/IDR_BLUETOOTH_MOUSE@2x') 2x);">
+        <img id="hid-mouse-tick" src="chrome://theme/IDR_BLUETOOTH_PAIRING_TICK"
+            alt="" style="content: -webkit-image-set(url('chrome://theme/IDR_BLUETOOTH_PAIRING_TICK') 1x, url('chrome://theme/IDR_BLUETOOTH_PAIRING_TICK@2x') 2x);">
+      </div>
+      <div id="hid-mouse-label">
+        <span id="hid-mouse-label-searching" aria-live="polite"
+            i18n-content="hidDetectionMouseSearching" class="label">
+        </span>
+        <span id="hid-mouse-label-usb" aria-live="polite"
+            i18n-content="hidDetectionUSBMouseConnected" class="label">
+        </span>
+        <span id="hid-mouse-label-connected" aria-live="polite"
+            i18n-content="hidDetectionPointingDeviceConnected" class="label">
+        </span>
+        <span id="hid-mouse-label-paired" aria-live="polite"
+            i18n-content="hidDetectionBTMousePaired" class="label">
+        </span>
+      </div>
+    </div>
+    <div id="hid-keyboard-block" class="searching">
+      <div id="hid-keyboard-icon-block">
+        <img id="hid-keyboard-icon" src="chrome://theme/IDR_BLUETOOTH_KEYBOARD"
+            alt="" style="content: -webkit-image-set(url('chrome://theme/IDR_BLUETOOTH_KEYBOARD') 1x, url('chrome://theme/IDR_BLUETOOTH_KEYBOARD@2x') 2x);">
+        <img id="hid-keyboard-tick"
+            src="chrome://theme/IDR_BLUETOOTH_PAIRING_TICK" alt="" style="content: -webkit-image-set(url('chrome://theme/IDR_BLUETOOTH_PAIRING_TICK') 1x, url('chrome://theme/IDR_BLUETOOTH_PAIRING_TICK@2x') 2x);">
+      </div>
+      <div id="hid-keyboard-label">
+        <span id="hid-keyboard-label-searching" aria-live="polite"
+            i18n-content="hidDetectionKeyboardSearching" class="label">
+        </span>
+        <span id="hid-keyboard-label-usb" aria-live="polite"
+            i18n-content="hidDetectionUSBKeyboardConnected" class="label">
+        </span>
+        <span id="hid-keyboard-label-paired" class="label" aria-live="polite">
+        </span>
+        <span id="hid-keyboard-label-pairing" class="label"></span>
+      </div>
+      <div id="hid-keyboard-pincode" hidden>
+        <div id="hid-keyboard-pincode-sym-1" class="bluetooth-keyboard-button">
+        </div>
+        <div id="hid-keyboard-pincode-sym-2" class="bluetooth-keyboard-button">
+        </div>
+        <div id="hid-keyboard-pincode-sym-3" class="bluetooth-keyboard-button">
+        </div>
+        <div id="hid-keyboard-pincode-sym-4" class="bluetooth-keyboard-button">
+        </div>
+        <div id="hid-keyboard-pincode-sym-5" class="bluetooth-keyboard-button">
+        </div>
+        <div id="hid-keyboard-pincode-sym-6" class="bluetooth-keyboard-button">
+        </div>
+        <div id="hid-keyboard-pincode-sym-7"
+            i18n-content="hidDetectionBTEnterKey"
+            class="bluetooth-keyboard-button">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="hid-detection-controls" class="step-controls"></div>
+</div>
+
+<div id="account-picker" class="step faded hidden no-logo" hidden>
+  <div id="signin-banner-container1">
+    <div id="signin-banner-container2">
+      <div id="signin-banner"
+          i18n-content="signinBannerText"></div>
+    </div>
+  </div>
+  <podrow id="pod-row" class="podrow images-loading"></podrow>
+</div>
+
+<link rel="import" href="chrome://oobe/custom_elements.html">
+
+<div id="error-message" class="step hidden show-offline-error" hidden>
+  <div class="step-contents">
+    <div class="error-header" aria-live="assertive">
+      <img alt class="error-icon" src="chrome://theme/IDR_ERROR_NETWORK_OFFLINE" style="content: -webkit-image-set(url('chrome://theme/IDR_ERROR_NETWORK_OFFLINE') 1x, url('chrome://theme/IDR_ERROR_NETWORK_OFFLINE@2x') 2x);">
+      <div id="captive-portal-title" i18n-content="captivePortalTitle"
+          class="error-title
+                 show-with-error-state-portal
+                 show-with-error-state-offline"></div>
+      <div id="login-error-title" i18n-content="loginErrorTitle"
+          class="error-title
+                 show-with-error-state-proxy
+                 show-with-error-state-auth-ext-timeout
+                 show-with-ui-state-local-state-error">
+      </div>
+      <div id="kiosk-online-title" i18n-content="kioskOnlineTitle"
+          class="error-title
+                 show-with-error-state-kiosk-online">
+      </div>
+      <div id="rollback-error-title" i18n-content="rollbackErrorTitle"
+           class="error-title
+                 show-with-ui-state-rollback-error">
+      </div>
+    </div>
+    <div class="error-body" aria-live="assertive">
+      <div id="kiosk-online-message-body"
+          class="error-message-paragraph
+                 show-with-error-state-kiosk-online">
+        <span i18n-content="kioskOnlineMessageBody"
+            class="show-with-error-state-kiosk-online"></span>
+      </div>
+      <div id="offline-message-body"
+          class="error-message-paragraph
+                 show-with-error-state-offline
+                 show-with-error-state-auth-ext-timeout">
+        <span id="update-offline-message-text"
+            i18n-content="updateOfflineMessageBody"
+            class="show-with-ui-state-update"></span>
+        <span id="signin-offline-message-text"
+            i18n-content="signinOfflineMessageBody"
+            class="show-with-ui-state-signin
+                   show-with-ui-state-supervised"></span>
+        <span id="kiosk-offline-message-text"
+            i18n-content="kioskOfflineMessageBody"
+            class="show-with-ui-state-kiosk-mode"></span>
+        <span id="auto-enrollment-offline-message-text"
+            class="show-with-ui-state-auto-enrollment-error"></span>
+      </div>
+      <div id="captive-portal-message-body"
+          class="error-message-paragraph
+                 show-with-error-state-portal">
+        <span id="captive-portal-message-text"
+            class="show-with-ui-state-update
+                   show-with-ui-state-signin
+                   show-with-ui-state-supervised
+                   show-with-ui-state-kiosk-mode
+                   show-with-ui-state-auto-enrollment-error"></span>
+      </div>
+      <div id="captive-portal-proxy-message-body"
+          class="error-message-paragraph
+                 show-with-error-state-portal
+                 show-with-error-state-auth-ext-timeout">
+        <span id="captive-portal-proxy-message-text"
+            class="show-with-ui-state-update
+                   show-with-ui-state-signin
+                   show-with-ui-state-supervised
+                   show-with-ui-state-kiosk-mode
+                   show-with-ui-state-auto-enrollment-error"></span>
+      </div>
+      <div id="proxy-message-body"
+          class="error-message-paragraph
+                 show-with-error-state-proxy">
+        <span id="update-proxy-message-text"
+            class="show-with-ui-state-update
+                   show-with-ui-state-auto-enrollment-error"></span>
+        <span id="signin-proxy-message-text"
+            class="show-with-ui-state-signin
+                   show-with-ui-state-supervised
+                   show-with-ui-state-kiosk-mode"></span>
+      </div>
+      <div id="offline-network-control-body"
+          class="show-with-ui-state-update
+                 show-with-ui-state-signin
+                 show-with-ui-state-supervised
+                 show-with-ui-state-kiosk-mode
+                 show-with-ui-state-auto-enrollment-error">
+        <div id="offline-network-control" class="error-message-paragraph">
+          <label for="offline-networks-list-dropdown"
+              i18n-content="selectNetwork"
+              class="offline-network-list-label
+                     show-with-error-state-offline
+                     show-with-error-state-proxy
+                     show-with-error-state-auth-timeout
+                     show-with-error-state-kiosk-online"></label>
+          <label for="offline-networks-list-dropdown"
+              i18n-content="selectAnotherNetwork"
+              class="offline-network-list-label
+                     show-with-error-state-portal">
+          </label>
+          <div class="menu-area">
+            <div id="offline-networks-list" class="menu-control"></div>
+          </div>
+        </div>
+      </div>
+      <div id="local-state-error-body"
+          class="show-with-ui-state-local-state-error">
+        <div i18n-content="localStateErrorText0"
+            class="error-message-paragraph">
+        </div>
+        <div i18n-content="localStateErrorText1"
+            class="error-message-paragraph">
+        </div>
+      </div>
+      <div id="rollback-error-message-body"
+          class="error-message-paragraph
+                 show-with-ui-state-rollback-error">
+        <span i18n-content="rollbackErrorMessageBody"
+            class="show-with-ui-state-rollback-error"></span>
+      </div>
+      <div class="show-with-ui-state-update
+                  show-with-ui-state-signin
+                  show-with-ui-state-supervised
+                  show-with-ui-state-kiosk-mode
+                  show-with-ui-local-state-error">
+        <span id="error-guest-signin"
+            class="error-message-paragraph guest-signin"></span>
+      </div>
+      <div class="show-with-ui-state-auto-enrollment-error">
+        <span id="error-guest-signin-fix-network"
+            class="error-message-paragraph guest-signin"></span>
+      </div>
+      <div id="error-offline-login"
+          class="error-message-paragraph offline-login"></div>
+      <div id="connecting-indicator"
+          class="connecting-indicator error-message-paragraph"></div>
+    </div>
+  </div>
+  <div class="error-controls">
+    <div id="error-message-controls" class="step-controls"></div>
+  </div>
+  <navigation-bar id="error-navigation" close-visible><navigation-bar>
+</div>
+
+<link rel="import" href="chrome://oobe/custom_elements.html">
+
+<div class="step right hidden" id="gaia-signin" role="group"
+    aria-live="polite" hidden>
+  <div class="step-contents">
+    <div id="gaia-signin-form-container">
+      <webview id="signin-frame" name="signin-frame" hidden></webview>
+      <offline-gaia id="offline-gaia" class="fit" hidden></offline-gaia>
+      <saml-interstitial id="saml-interstitial" class="fit" hidden>
+      </saml-interstitial>
+    </div>
+  </div>
+  <div id="gaia-loading" class="step-loading" hidden>
+    <throbber-notice i18n-values="text:gaiaLoading"></throbber-notice>
+  </div>
+  <notification-card id="gaia-whitelist-error" type="fail"
+      i18n-values="button-label:tryAgainButton;
+                   link-label:learnMoreButton">
+  </notification-card>
+  <div id="saml-notice-container" hidden>
+    <span id="saml-notice-recording-indicator" hidden>
+      <img src="chrome://theme/IDR_TAB_RECORDING_INDICATOR" style="content: -webkit-image-set(url('chrome://theme/IDR_TAB_RECORDING_INDICATOR') 1x, url('chrome://theme/IDR_TAB_RECORDING_INDICATOR@2x') 2x);">
+    </span>
+    <span id="saml-notice-message"></span>
+  </div>
+  <navigation-bar id="gaia-navigation"></navigation-bar>
+</div>
+
+<link rel="import" href="chrome://oobe/custom_elements.html">
+<div class="step hidden" id="supervised-user-creation" hidden>
+  <div class="step-contents">
+    <div id="supervised-user-creation-intro" class="step-no-logo">
+      <div id="supervised-user-creation-marketing-intro"
+          class="marketing">
+        <img src="chrome://theme/IDR_SUPERVISED_ILLUSTRATION_START" alt="" style="content: -webkit-image-set(url('chrome://theme/IDR_SUPERVISED_ILLUSTRATION_START') 1x, url('chrome://theme/IDR_SUPERVISED_ILLUSTRATION_START@2x') 2x);">
+      </div>
+      <div class="below-marketing">
+        <div class="page-title"
+            i18n-content="createSupervisedUserIntroTextTitle">
+        </div>
+        <div id="supervised-user-creation-intro-alternate-text"></div>
+        <div i18n-content="createSupervisedUserIntroText2"></div>
+        <div id="supervised-user-creation-intro-text-3"
+            i18n-content="createSupervisedUserIntroText3"></div>
+      </div>
+    </div>
+
+    <div id="supervised-user-creation-manager" class="page-no-marketing" hidden>
+      <div id="supervised-user-creation-managers-block" hidden>
+        <div class="logo-padded-text">
+          <div class="page-title"
+              i18n-content="createSupervisedUserPickManagerTitle"></div>
+          <div class="page-title-explanation"
+              i18n-content="createSupervisedUserPickManagerTitleExplanation">
+          </div>
+        </div>
+        <div id="supervised-user-creation-managers-pane"></div>
+      </div>
+    </div>
+
+    <div id="supervised-user-creation-username" class="page-no-marketing"
+        role="group"
+        i18n-values="aria-label:createSupervisedUserNameAccessibleTitle" hidden>
+      <div class="logo-padded-text">
+        <div class="hide-on-import">
+          <div class="page-title inline"
+              i18n-content="createSupervisedUserNameTitle"></div>
+          <div id="supervised-user-creation-name-explanation"
+              class="page-title-explanation inline"></div>
+        </div>
+        <div id="supervised-user-creation-name-block" class="hide-on-import">
+          <input id="supervised-user-creation-name" type="text" maxlength="50"
+              i18n-values="placeholder:createSupervisedUserNameHint" />
+          <span id="supervised-user-creation-name-error" class="no-error">
+          </span>
+        </div>
+        <div>
+          <div class="page-title inline"
+              i18n-content="createSupervisedUserPasswordTitle"></div>
+          <div class="page-title-explanation inline"
+              i18n-content="createSupervisedUserPasswordExplanation"></div>
+        </div>
+        <div id="supervised-user-creation-password-block">
+            <div>
+              <input id="supervised-user-creation-password" type="password"
+                  i18n-values="placeholder:createSupervisedUserPasswordHint" />
+            </div>
+            <div>
+              <input id="supervised-user-creation-password-confirm"
+                  type="password"
+                  i18n-values="
+                      placeholder:createSupervisedUserPasswordConfirmHint" />
+            </div>
+          </div>
+      </div>
+      <div id="supervised-user-creation-image-picker" class="logo-padded-text">
+        <grid id="supervised-user-creation-image-grid">
+        </grid>
+        <div id="supervised-user-creation-image-preview">
+          <img id="supervised-user-creation-image-preview-img" alt="">
+          <div class="supervised-user-creation-image-stream-area">
+            <div class="perspective-box">
+              <div id="supervised-user-creation-image-stream-crop">
+                <video class="supervised-user-creation-image-stream" autoplay>
+                </video>
+              </div>
+            </div>
+            <div class="spinner"></div>
+          </div>
+          <p id="supervised-user-creation-image-preview-caption"></p>
+            <button id="supervised-user-creation-flip-photo"
+                class="custom-appearance"
+                i18n-values="title:flipPhoto"></button>
+          <button id="supervised-user-creation-discard-photo"
+              i18n-values="title:discardPhoto"></button>
+          <button id="supervised-user-creation-take-photo"
+              i18n-values="title:takePhoto"></button>
+        </div>
+      </div>
+    </div>
+
+    <div id="supervised-user-creation-import" class="page-no-marketing" hidden>
+      <div class="logo-padded-text">
+        <div>
+          <div class="page-title"
+              i18n-content="importExistingSupervisedUserTitle"></div>
+          <div class="page-title-explanation"
+              i18n-content="importExistingSupervisedUserText"></div>
+        </div>
+      </div>
+      <div id="supervised-user-creation-import-pane"></div>
+    </div>
+
+    <div id="supervised-user-creation-created" class="step-no-logo" hidden>
+      <div class="marketing">
+        <img src="chrome://theme/IDR_SUPERVISED_ILLUSTRATION_DONE" alt="" style="content: -webkit-image-set(url('chrome://theme/IDR_SUPERVISED_ILLUSTRATION_DONE') 1x, url('chrome://theme/IDR_SUPERVISED_ILLUSTRATION_DONE@2x') 2x);">
+      </div>
+      <div class="below-marketing">
+        <div>
+          <div id="supervised-user-creation-created-text-1"
+              class="page-title"></div>
+          <div id="supervised-user-creation-created-text-2"></div>
+          <div id="supervised-user-creation-created-text-3"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="supervised-user-creation-error" hidden>
+      <img alt class="error-icon" src="chrome://theme/IDR_TECHNICAL_ERROR" style="content: -webkit-image-set(url('chrome://theme/IDR_TECHNICAL_ERROR') 1x, url('chrome://theme/IDR_TECHNICAL_ERROR@2x') 2x);">
+      <div id="supervised-user-creation-error-title" class="error-title"></div>
+      <div id="supervised-user-creation-error-text"
+          class="error-message-paragraph"></div>
+      <div>
+        <button id="supervised-user-creation-error-button"
+            class="custom-appearance button-fancy button-blue">
+        </button>
+      </div>
+    </div>
+  </div>
+  <div id="supervised-user-creation-controls" class="step-controls">
+  </div>
+  <div class="template-import-supervised-user-link button-link" hidden>
+    <a href="#" class="signin-link" i18n-content="importSupervisedUserLink"></a>
+  </div>
+  <div class="template-create-supervised-user-link button-link" hidden>
+    <a href="#" class="signin-link" i18n-content="createSupervisedUserLink"></a>
+  </div>
+  <div class="template-status-container status-container" hidden>
+    <span class="id-text"></span>
+    <div class="spinner-wrapper">
+      <div class="id-spinner inline-spinner"></div>
+    </div>
+  </div>
+  <div id="supervised-user-creation-manager-template" hidden
+      class="manager-pod">
+    <div class="supervised-user-creation-manager-info-block">
+      <img class="supervised-user-creation-manager-image" alt="">
+      <div class="supervised-user-creation-manager-info-text">
+        <div class="supervised-user-creation-manager-name"></div>
+        <div class="supervised-user-creation-manager-email"></div>
+      </div>
+    </div>
+    <div class="password-block" hidden>
+      <input class="supervised-user-creation-manager-password" type="password"
+          i18n-values="placeholder:createSupervisedUserManagerPasswordHint" />
+    </div>
+  </div>
+  <div id="supervised-user-creation-import-template" hidden class="import-pod">
+    <img class="import-pod-image"></img>
+    <div class="import-pod-name"></div>
+  </div>
+  <navigation-bar id="supervised-user-creation-navigation" close-visible>
+  </navigation-bar>
+</div>
+
+<link rel="import" href="chrome://oobe/custom_elements.html">
+
+<div id="password-changed" class="step faded hidden migrate" hidden>
+  <gaia-password-changed id="gaia-password-changed"></gaia-password-changed>
+</div>
+
+<div id="tpm-error-message" class="step faded hidden" hidden>
+  <div class="step-contents">
+    <div class="error-header">
+      <img alt class="error-icon" src="chrome://theme/IDR_FATAL_ERROR" style="content: -webkit-image-set(url('chrome://theme/IDR_FATAL_ERROR') 1x, url('chrome://theme/IDR_FATAL_ERROR@2x') 2x);">
+      <div id="tpm-error-title" class="error-title"
+          i18n-content="errorTpmFailureTitle"></div>
+    </div>
+    <div class="error-body">
+      <div id="tmp-error-reboot-text" class="error-message-paragraph"
+          i18n-content="errorTpmFailureReboot"></div>
+      <div id="tpm-error-message-controls"
+          class="error-message-paragraph"></div>
+    </div>
+  </div>
+</div>
+
+<div class="step hidden no-logo" id="wrong-hwid" hidden>
+  <div class="step-contents">
+    <div id="wrong-hwid-message">
+      <div id="wrong-hwid-message-header" i18n-content="wrongHWIDScreenHeader">
+      </div>
+      <img id="wrong-hwid-icon" src="chrome://theme/IDR_RESET_WARNING"/ style="content: -webkit-image-set(url('chrome://theme/IDR_RESET_WARNING') 1x, url('chrome://theme/IDR_RESET_WARNING@2x') 2x);">
+      <div id="wrong-hwid-message-content"></div>
+    </div>
+    <div id="skip-hwid-warning" class="step-controls">
+      <a id="skip-hwid-warning-link" href="#"
+          i18n-content="wrongHWIDScreenSkipLink"></a>
+    </div>
+  </div>
+</div>
+
+
+<div id="app-launch-splash" class="step hidden no-logo fullscreen" hidden>
+  <div id="splash-content">
+    <div id="splash-header" i18n-content="productName"></div>
+    <div id="splash-launch-text" i18n-content="appStartMessage"></div>
+    <div id="splash-config-network-container" class="faded">
+      <a id="splash-config-network" i18n-content="configureNetwork" href="javascript:void(0)"></a>
+    </div>
+    <div id="splash-spinner" class="spinner"></div>
+  </div>
+  <p id="splash-shortcut-info" i18n-content="shortcutInfo"></p>
+</div>
+
+<link rel="import" href="chrome://oobe/custom_elements.html">
+<div id="confirm-password" class="step hidden" hidden>
+  <saml-confirm-password id="saml-confirm-password"></saml-confirm-password>
+</div>
+
+<link rel="import" href="chrome://oobe/custom_elements.html">
+
+<div id="fatal-error" class="step hidden" hidden>
+  <notification-card id="fatal-error-card" type="fail"></notification-card>
+</div>
+
+
+<div id="device-disabled" class="step hidden no-logo" role="group" hidden>
+  <div id="device-disabled-top-container">
+    <div id="device-disabled-symbol"></div>
+    <div id="device-disabled-heading" i18n-content="deviceDisabledHeading">
+    </div>
+    <div id="device-disabled-explanation"></div>
+  </div>
+  <div id="device-disabled-bottom-container">
+    <div id="device-disabled-message"></div>
+  </div>
+</div>
+
+
+      </div>
+      <div id="progress-dots" class="down"></div>
+    </div>
+  </div>
+</div>
+<div id="bubble" class="bubble faded" hidden></div>
+<div id="login-header-bar" hidden class="login-header-bar-hidden">
+  <div id="shutdown-header-bar-item" class="header-bar-item">
+    <button id="shutdown-button" class="custom-appearance"
+        i18n-content="shutDown"></button>
+  </div>
+  <div id="restart-header-bar-item" class="header-bar-item">
+    <button id="restart-button" class="custom-appearance"
+        i18n-content="restart"></button>
+  </div>
+  <div id="apps-header-bar-item" class="header-bar-item" hidden>
+    <button id="show-apps-button" class="custom-appearance"
+        i18n-content="showApps"></button>
+  </div>
+  <div id="guest-user-header-bar-item" class="header-bar-item" hidden>
+    <button id="guest-user-button" class="custom-appearance"
+        i18n-content="browseAsGuest"></button>
+  </div>
+  <div id="add-user-header-bar-item" class="header-bar-item" hidden>
+    <button id="add-user-button" class="custom-appearance"
+        i18n-content="addUser"></button>
+  </div>
+  <div id="more-settings-header-bar-item" class="header-bar-item">
+    <button id="more-settings-button" class="custom-appearance"
+        i18n-values="aria-label:moreOptions"></button>
+    <button class="add-supervised-user-menu custom-appearance"
+        id="add-supervised-user-menu" tabindex="0"
+        i18n-content="addSupervisedUser">
+    </button>
+  </div>
+  <div id="sign-out-user-item" class="header-bar-item" hidden>
+    <button id="sign-out-user-button" class="custom-appearance"
+        i18n-content="signOutUser"></button>
+  </div>
+  <div id="cancel-multiple-sign-in-item" class="header-bar-item" hidden>
+    <button id="cancel-multiple-sign-in-button" class="custom-appearance"
+        i18n-content="cancel"></button>
+  </div>
+</div>
+
+<div id="user-pod-template" class="pod" hidden>
+  <div class="user-image-pane">
+    <div class="user-image-container">
+      <img class="user-image" alt>
+    </div>
+    <div class="signed-in-indicator" i18n-content="signedIn"></div>
+    <div class="indicator-container">
+      <div class="indicator legacy-supervised-indicator"></div>
+      <div class="indicator child-indicator"></div>
+      <div class="indicator locked-indicator"></div>
+    </div>
+  </div>
+  <div class="main-pane">
+    <div class="name-container">
+      <div class="name"></div>
+      <div class="learn-more-container">
+        <div class="learn-more"></div>
+      </div>
+    </div>
+    <div class="auth-container">
+      <!-- Password Authentication -->
+      <div class="password-entry-container">
+        <div class="password-container">
+          <input type="password" class="password"
+                 i18n-values="placeholder:passwordHint">
+        </div>
+        <div class="capslock-hint-container">
+          <img class="capslock-hint"
+               src="chrome://theme/IDR_LOGIN_PASSWORD_CAPS_LOCK" alt style="content: -webkit-image-set(url('chrome://theme/IDR_LOGIN_PASSWORD_CAPS_LOCK') 1x, url('chrome://theme/IDR_LOGIN_PASSWORD_CAPS_LOCK@2x') 2x);">
+        </div>
+      </div>
+      <!-- User Click Authentication -->
+      <div class="password-label"></div>
+      <div class="signin-transition-container">
+        <span class="signing-in-label" i18n-content="signingIn"></span>
+        <span class="animated-ellipsis-component0">.</span>
+        <span class="animated-ellipsis-component1">.</span>
+        <span class="animated-ellipsis-component2">.</span>
+      </div>
+      <div class="custom-icon-container" hidden></div>
+      <div class="reauth-hint-container">
+        <span class="reauth-warning"></span>
+        <span class="reauth-name-hint"></span>
+      </div>
+      <div class="launch-app-button-container" hidden>
+        <button class="launch-app-button" i18n-content="launchAppButton">
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="action-box-area">
+    <div class="custom-appearance action-box-button"></div>
+    <!-- iron-icon is imported inside user_manager.html -->
+    <iron-icon icon="cr:more-vert" class="action-box-icon"></iron-icon>
+  </div>
+  <div class="user-image-gradient-area">
+  </div>
+  <div class="user-type-icon-area" hidden>
+    <div class="custom-appearance user-type-icon-image"></div>
+  </div>
+  <div class="action-box-menu">
+    <div class="action-box-menu-title">
+      <span class="action-box-menu-title-name"></span>
+      <span class="action-box-menu-title-email"></span>
+    </div>
+    <div class="action-box-menu-remove">
+      <span class="action-box-menu-remove-command"/>
+    </div>
+    <div class="action-box-remove-user-warning" hidden>
+      <div class="action-box-remove-user-warning-text"></div>
+      <table class="action-box-remove-user-warning-table-nonsync
+                    non-sync has-stats">
+        <tbody>
+          <tr>
+            <td i18n-content="removeUserWarningTextHistory"></td>
+            <td class="action-box-remove-user-warning-history
+                       action-box-remove-user-warning-table-numbers"
+                i18n-content="removeUserWarningTextCalculating"></td>
+          </tr>
+          <tr>
+            <td i18n-content="removeUserWarningTextPasswords"></td>
+            <td class="action-box-remove-user-warning-passwords
+                       action-box-remove-user-warning-table-numbers"
+                i18n-content="removeUserWarningTextCalculating"></td>
+          </tr>
+          <tr>
+            <td i18n-content="removeUserWarningTextBookmarks"></td>
+            <td class="action-box-remove-user-warning-bookmarks
+                       action-box-remove-user-warning-table-numbers"
+                i18n-content="removeUserWarningTextCalculating"></td>
+          </tr>
+          <tr>
+            <td i18n-content="removeUserWarningTextSettings"></td>
+            <td class="action-box-remove-user-warning-settings
+                       action-box-remove-user-warning-table-numbers"
+                i18n-content="removeUserWarningTextCalculating"></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="action-box-remove-legacy-supervised-user-warning-text"
+          i18n-content="removeLegacySupervisedUserWarningText"></div>
+      <!-- paper-button is imported inside user_manager.html -->
+      <paper-button class="remove-warning-button"
+          i18n-content="removeUserWarningButtonTitle"></paper-button>
+    </div>
+  </div>
+  <div class="user-type-bubble">
+    <div class="user-type-bubble-header">
+      <span class="mp-policy-title"
+          i18n-content="multiProfilesRestrictedPolicyTitle"></span>
+    </div>
+    <div class="user-type-bubble-body">
+      <span class="mp-policy-not-allowed-msg"
+          i18n-content="multiProfilesNotAllowedPolicyMsg" hidden></span>
+      <span class="mp-policy-primary-only-msg"
+          i18n-content="multiProfilesPrimaryOnlyPolicyMsg" hidden></span>
+      <span class="mp-owner-primary-only-msg"
+          i18n-content="multiProfilesOwnerPrimaryOnlyMsg" hidden></span>
+    </div>
+  </div>
+</div>
+
+<!-- Extra elements that are appended to above "user-pod-template" for public
+     account user pod. Note that only the children of the template div are
+     appended. -->
+<div id="public-account-user-pod-extras-template" hidden>
+  <div class="expanded-pane">
+    <div class="expanded-pane-contents">
+      <div class="side-container">
+        <div class="expanded-pane-name"></div>
+        <div class="reminder" i18n-content="publicAccountReminder"></div>
+        <div class="language-and-input-section">
+          <div class="select-with-label">
+            <label class="language-select-label"
+                   i18n-content="publicSessionSelectLanguage">
+            </label>
+            <div class="select-container">
+              <select class="language-select"></select>
+            </div>
+          </div>
+          <div class="select-with-label">
+            <label class="keyboard-select-label"
+                   i18n-content="publicSessionSelectKeyboard">
+            </label>
+            <div class="select-container">
+              <select class="keyboard-select"></select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bottom-container">
+        <div class="expanded-pane-learn-more-container">
+          <div class="expanded-pane-learn-more"></div>
+        </div>
+        <div class="info"></div>
+        <div class="language-and-input-container">
+          <a class="language-and-input" href="#" role="button"
+             i18n-content="publicSessionLanguageAndInput"></a>
+        </div>
+        <button class="enter-button"
+                i18n-content="publicAccountEnter"
+                i18n-values="aria-label:publicAccountEnterAccessibleName">
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="overlay-reset" class="popup-overlay" hidden>
+<div id="reset-confirm-overlay" class="oobe-popup not-resizable">
+  <h1 i18n-content="confirmPowerwashTitle" class="powerwash-proposal-specific">
+  </h1>
+  <h1 i18n-content="confirmRollbackTitle" class="rollback-proposal-specific">
+  </h1>
+  <div class="popup-content-area">
+    <div id="reset-confirm-info"
+      class="content-area reset-text">
+      <div id="powerwash-confirm-message"
+          i18n-content="confirmPowerwashMessage"
+          class="powerwash-proposal-specific">
+      </div>
+      <div id="rollback-confirm-message"
+          i18n-content="confirmRollbackMessage"
+          class="rollback-proposal-specific">
+      </div>
+    </div>
+  </div>
+  <div id="reset-buttons" class="button-strip">
+    <button id="reset-confirm-commit" i18n-content="confirmResetButton">
+    </button>
+    <button id="reset-confirm-dismiss" i18n-content="cancel"></button>
+  </div>
+</div>
+</div>
+
+
+  <div id="accessibility-menu" class="bubble faded" hidden>
+  <div class="checkboxrow">
+    <input id="spoken-feedback" type="checkbox">
+    <label for="spoken-feedback" class="checkboxlabel"
+        i18n-content="spokenFeedbackOption">
+    </label>
+  </div>
+  <div class="checkboxrow">
+    <input id="large-cursor" type="checkbox">
+    <label for="large-cursor" class="checkboxlabel"
+        i18n-content="largeCursorOption">
+    </label>
+  </div>
+  <div class="checkboxrow">
+    <input id="high-contrast" type="checkbox">
+    <label for="high-contrast" class="checkboxlabel"
+        i18n-content="highContrastOption">
+    </label>
+  </div>
+  <div class="checkboxrow">
+    <input id="screen-magnifier" type="checkbox">
+    <label for="screen-magnifier" class="checkboxlabel"
+        i18n-content="screenMagnifierOption">
+    </label>
+  </div>
+  <div class="checkboxrow">
+    <input id="virtual-keyboard" type="checkbox">
+    <label for="virtual-keyboard" class="checkboxlabel"
+        i18n-content="virtualKeyboardOption">
+    </label>
+  </div>
+  <div id="close-accessibility-menu" class="close-button"
+       i18n-values="title:closeAccessibilityMenu" tabindex="0">
+  </div>
+</div>
+
+  <div id="popup-overlay" class="popup-overlay" hidden>
+    <div id="installation-settings-popup" class="oobe-popup">
+  <h1 i18n-content="eulaSystemInstallationSettings"></h1>
+  <div class="popup-content-area">
+    <div id="tpm-settings">
+      <p i18n-content="eulaTpmDesc"></p>
+      <p id="tpm-desc" i18n-content="eulaTpmKeyDesc"></p>
+      <p id="tpm-desc-powerwash" i18n-content="eulaTpmDescPowerwash" hidden>
+      </p>
+      <div id="tpm-busy">
+         <div id="spinner" class="inline-spinner"></div>
+         <span i18n-content="eulaTpmBusy"></span>
+      </div>
+      <p id="tpm-password"></p>
+    </div>
+  </div>
+  <button id="installation-settings-ok-button"
+      i18n-content="eulaSystemInstallationSettingsOkButton">
+  </button>
+</div>
+
+  </div>
+  <script src="chrome://resources/js/i18n_template.js"></script>
+</body>
+</html>

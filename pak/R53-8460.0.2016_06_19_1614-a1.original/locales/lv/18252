@@ -1,0 +1,1 @@
+Ja ir konfigurēts starpniekserveris, parasti tas neatļauj autorizāciju citā caurlaides lapā. Šī opcija iespējo caurlaides lapas autorizācijas dialoglodziņa atvēršanu atsevišķā logā, kas ignorē starpniekservera iestatījumus.

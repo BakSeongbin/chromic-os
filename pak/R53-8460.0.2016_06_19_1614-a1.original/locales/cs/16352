@@ -1,0 +1,1 @@
+Zobrazovat okna aplikací po prvním překreslení. V případě aplikací, které načítají velké množství zdrojů synchronně, se okna budou zobrazovat podstatně později. V případě aplikací, které načítají většinu zdrojů asynchronně, zpoždění nebude podstatné.

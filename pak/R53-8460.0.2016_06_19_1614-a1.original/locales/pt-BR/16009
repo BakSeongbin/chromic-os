@@ -1,0 +1,1 @@
+Usa uma thread secundária na composição da página da web. Isso permite uma rolagem suave, mesmo quando a thread principal não responde.

@@ -1,0 +1,1 @@
+Ativar a implementação experimental do Cache-Control: diretiva stale-while-revalidate. Esta opção permite aos servidores especificar que alguns recursos podem ser revalidados no segundo plano para melhorar a latência.

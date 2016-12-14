@@ -1,0 +1,1 @@
+Nekatere spletne strani uporabljajo starejše ali nestandardne razširitve JavaScripta, ki so morda v sporu z najnovejšimi funkcijami JavaScripta. Ta zastavica dovoli onemogočanje podpore za te funkcije zaradi združljivosti s takimi stranmi.

@@ -1,0 +1,1 @@
+Enable Out-of-process V8 Proxy Resolver. Runs the V8 proxy resolver in a utility process instead of inside the browser process.

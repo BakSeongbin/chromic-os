@@ -1,0 +1,1 @@
+Causa streams de saída de áudio para verificar se layouts de canal que não sejam o layout de hardware padrão estão disponíveis.

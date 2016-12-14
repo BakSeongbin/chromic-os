@@ -1,0 +1,1 @@
+Sallii selainkehyksen ulkopuolella avautuvat paneeli-ikkunat. Jos tämä on pois käytöstä, paneeli-ikkunan sijaan avataan ponnahdusikkuna. Oletuksena paneeli-ikkunat on sallittu vain sallittujen luettelossa oleville laajennuksille. Jos asetus on käytössä, paneelit sallitaan kaikille laajennuksille. Jos se on pois käytöstä, minkään laajennuksen paneeleja ei sallita.

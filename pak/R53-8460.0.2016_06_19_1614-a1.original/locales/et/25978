@@ -1,0 +1,1 @@
+{0,select, single{Rakendus „{1}” taotleb juurdepääsu ühele seadmele.}multiple{Rakendus „{1}” taotleb juurdepääsu vähemalt ühele seadmele.}other{UNUSED}}

@@ -1,0 +1,1 @@
+Vis appvinduer etter første maling. Vinduene vises betydelig senere for tyngre apper som laster inn ressurser synkront, men det har ingenting å si for apper som laster inn flesteparten av ressursene sine asynkront.

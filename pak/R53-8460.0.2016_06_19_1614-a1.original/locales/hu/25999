@@ -1,0 +1,1 @@
+Nem lehet kicsomagolni a bővítményt. A bővítmények biztonságos kicsomagolásához kell lennie egy olyan elérési útnak a profilkönyvtárban, amelyben nem szerepel közvetett hivatkozás (symlink). Ilyen elérési út nem létezik a profiljában.

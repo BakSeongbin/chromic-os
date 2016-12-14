@@ -1,0 +1,1 @@
+Permite que el usuario solicite un sitio de tablet. El contenido web suele optimizarse para tablets. Cuando esta opción está seleccionada, la cadena de agente de usuario se cambia para indicar que se trata de una tablet. A partir de entonces, se recibe contenido web optimizado para tablets en la pestaña actual.

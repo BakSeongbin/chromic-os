@@ -1,0 +1,3 @@
+<p>Lorsque vous exécutez $1 dans un environnement de bureau compatible, les paramètres proxy du système sont utilisés. Cependant, soit votre système n'est pas compatible, soit un problème est survenu lors du lancement de votre configuration système.</p>
+
+        <p>Vous avez toujours la possibilité d'effectuer la configuration via la ligne de commande. Pour plus d'informations sur les indicateurs et les variables d'environnement, veuillez vous reporter à <code>man $2</code>.</p>

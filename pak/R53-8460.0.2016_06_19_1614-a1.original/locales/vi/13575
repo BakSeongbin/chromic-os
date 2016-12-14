@@ -1,0 +1,18 @@
+<h3>Các tính năng gỡ lỗi</h3>
+    <br>
+    Bạn có thể bật các tính năng gỡ lỗi trên thiết bị Chrome OS để cài đặt và kiểm tra mã tùy chỉnh trên thiết bị của mình.  Điều này cho phép bạn:<br>
+    <ul>
+      <li>Xóa xác thực rootfs để bạn có thể sửa đổi tệp OS
+      <li>Cho phép truy cập SSH vào thiết bị sử dụng khóa kiểm tra tiêu chuẩn để bạn có thể sử dụng các công cụ như <span style="color:grey;font-family:monospace">'cros flash'</span> để truy cập thiết bị
+      <li>Bật khởi động từ USB để bạn có thể cài đặt hình ảnh OS từ ổ USB
+      <li>Đặt dev và mật khẩu đăng nhập gốc hệ thống thành một giá trị tùy chỉnh để bạn có thể SSH thủ công vào thiết bị
+    </ul>
+    <br>
+    Sau khi được bật, hầu hết các tính năng gỡ lỗi sẽ vẫn được bật kể cả sau khi thực hiện powerwash hoặc quét dữ liệu trên thiết bị do doanh nghiệp quản lý.  Để tắt tất cả các tính năng gỡ lỗi, hãy hoàn tất quy trình khôi phục Chrome OS (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Để biết thêm thông tin về các tính năng gỡ lỗi, hãy xem:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Lưu ý:</b>  Hệ thống sẽ khởi động lại trong quá trình này.

@@ -1,0 +1,7 @@
+Lépjen ide:
+        Chromium menü >
+        <span jscontent="settingsTitle"></span>
+        >
+        <span jscontent="advancedTitle"></span>,
+        és törölje a jelet a(z) „<span jscontent="noNetworkPredictionTitle"></span>” jelölőnégyzetből.
+        Ha ettől nem szűnik meg a probléma, javasoljuk, hogy jelölje be ismét ezt a lehetőséget a jobb teljesítmény érdekében.

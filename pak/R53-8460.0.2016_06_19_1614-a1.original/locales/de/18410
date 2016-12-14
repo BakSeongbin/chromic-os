@@ -1,0 +1,1 @@
+Dieser Parameter macht Chrome unsicher und sollte nur verwendet werden, wenn Sie mit seiner Funktionsweise vertraut sind. Beachten Sie, dass diese Option ohne Vorankündigung entfernt werden kann. Solange die Option aktiviert ist, können Frames mit HTTPS-Ursprung WebSockets mit einer unsicheren URL wie ws:// verwenden.

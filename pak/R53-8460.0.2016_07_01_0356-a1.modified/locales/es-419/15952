@@ -1,0 +1,1 @@
+Habilita la depuración del código auxiliar GDB. Esto detendrá una aplicación Native Client en el inicio y esperará a que se una nacl-gdb (desde el SDK de NaCl).

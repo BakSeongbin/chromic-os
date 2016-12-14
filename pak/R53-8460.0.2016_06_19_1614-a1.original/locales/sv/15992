@@ -1,0 +1,1 @@
+Kontroller av användarengagemang för visning av appbanners förbigås. Det gäller till exempel krav på att användare har besökt webbplatsen tidigare och att bannern inte har visats nyligen. Utvecklare tillåts testa om andra kvalificeringskrav för att visa appbanners (till exempel att ha ett manifest) uppfylls.

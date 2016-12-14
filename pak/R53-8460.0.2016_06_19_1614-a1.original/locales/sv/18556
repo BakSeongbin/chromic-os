@@ -1,0 +1,1 @@
+Tillåter begäranden till lokalvärd över HTTPS även när ett ogiltigt certifikat presenteras.

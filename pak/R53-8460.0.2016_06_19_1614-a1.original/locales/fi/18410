@@ -1,0 +1,1 @@
+Tämä valinta tekee Chromesta suojaamattoman. Ota valinta käyttöön vain, jos ymmärrät, miten ominaisuus toimii. Huomaa, että tämä valinta voidaan poistaa ilman etukäteisilmoitusta. Jos valinta on käytössä, https-protokollan kautta toimivat kehykset voivat käyttää WebSockets-yhteyksiä, joilla on suojaamaton URL-osoite (ws://).

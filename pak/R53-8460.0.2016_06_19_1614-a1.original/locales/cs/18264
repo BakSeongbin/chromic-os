@@ -1,0 +1,1 @@
+Vysoce experimentální režim, při kterém jsou prvky iframe napříč weby vykreslovány v samostatných procesech oddělených od hlavního dokumentu. V tomto režimu budou prvky iframe z různých webů třetích stran moci sdílet stejný proces.

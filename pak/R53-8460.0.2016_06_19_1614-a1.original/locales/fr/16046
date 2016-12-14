@@ -1,0 +1,1 @@
+Activez cette option pour envoyer des informations d'authentification supplémentaires dans le paquet SYN initial d'un client connecté précédemment. Cela vous garantit un démarrage plus rapide de l'envoi de données.

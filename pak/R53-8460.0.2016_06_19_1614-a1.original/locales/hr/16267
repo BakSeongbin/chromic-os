@@ -1,0 +1,1 @@
+Omogućuje se izvanprocesno razrješavanje V8 proxyja. Razrješavanje V8 proxyja pokreće se u uslužnom, a ne pregledničkom procesu.

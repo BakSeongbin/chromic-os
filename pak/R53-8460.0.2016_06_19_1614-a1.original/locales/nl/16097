@@ -1,0 +1,1 @@
+Dwingt af dat event-listeners voor touchstart, touchmove, muiswiel en wiel (die niet op een andere manier zijn aangevraagd) worden behandeld als passief. Dit verstoort het aanraak-/wielgedrag op sommige websites, maar is handig om de potentiële prestatievoordelen aan te tonen van het gebruik van passieve event-listeners.

@@ -1,0 +1,1 @@
+{COUNT,plural, =0{vismaz 1 vienums sinhronizētās ierīcēs}=1{1 vienums (un vēl citi sinhronizētās ierīcēs)}zero{# vienumu (un vēl citi sinhronizētās ierīcēs)}one{# vienums (un vēl citi sinhronizētās ierīcēs)}other{# vienumi (un vēl citi sinhronizētās ierīcēs)}}

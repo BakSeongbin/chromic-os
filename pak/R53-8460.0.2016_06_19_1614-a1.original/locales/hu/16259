@@ -1,0 +1,1 @@
+A Cache-Control „újraérvényesítés közben elévült” direktíva kísérleti megvalósításának engedélyezése. Ez lehetővé teszi, hogy a szerverek meghatározzák, hogy egyes források érvényesítése a háttérben folyjon a várakozási idő javításának érdekében.

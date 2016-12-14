@@ -1,0 +1,1 @@
+Mod de performanță foarte experimental prin care cadrele iframe între site-uri sunt păstrate într-un proces separat de documentul din partea de sus. În acest mod, cadrele iframe de pe diferite site-uri terță parte vor avea permisiunea să folosească același proces.

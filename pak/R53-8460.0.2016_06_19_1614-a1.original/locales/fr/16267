@@ -1,0 +1,1 @@
+Autorise la résolution de proxy V8 hors processus. Cette résolution est exécutée dans le processus d'un utilitaire et non dans celui du navigateur.

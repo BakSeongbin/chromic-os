@@ -1,0 +1,1 @@
+Cannot unpack extension.  To unpack an extension safely, there must be a path to your profile directory that does not contain a symlink.  No such path exists for your profile.

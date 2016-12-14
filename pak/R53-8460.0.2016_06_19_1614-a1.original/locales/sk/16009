@@ -1,0 +1,1 @@
+Na skladanie webových stránok využíva sekundárne vlákno. To umožňuje plynulé posúvanie aj v prípade, keď hlavné vlákno neodpovedá.

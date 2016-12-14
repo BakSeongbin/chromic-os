@@ -1,0 +1,1 @@
+Αναζητήστε στο Google για <a jsvalues="href:searchUrl;.jstdata:$this" onclick="linkClicked(this.jstdata)" jscontent="searchTerms" id="search-link"></a>

@@ -1,0 +1,1 @@
+Gestionarea cu fire de execuție a evenimentelor de intrare prin derulare. Dacă dezactivezi această opțiune, toate aceste evenimente de derulare vor fi gestionate în firul principal. Reține că această opțiune poate afecta semnificativ performanța de derulare a majorității site-urilor și că este destinată numai pentru testare.

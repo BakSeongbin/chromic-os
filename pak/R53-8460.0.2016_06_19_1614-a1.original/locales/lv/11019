@@ -1,0 +1,1 @@
+{MINUTES,plural, =1{Pirms 1 min}zero{Pirms # min}one{Pirms # min}other{Pirms # min}}

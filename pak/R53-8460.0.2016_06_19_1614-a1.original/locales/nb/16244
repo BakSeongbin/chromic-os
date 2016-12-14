@@ -1,0 +1,1 @@
+Ved tvungen ny innlasting av brukergrensesnitt utløses ikke-validerende ny innlasting (i stedet for vanlig, buffervaliderende ny innlasting når flagget er slått av).

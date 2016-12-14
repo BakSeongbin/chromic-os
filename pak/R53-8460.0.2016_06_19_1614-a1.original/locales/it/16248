@@ -1,0 +1,2 @@
+Questo flag deve essere utilizzato insieme al flag enable-navigation-tracing.
+        Selezionare l'etichetta che descrive meglio le tracce registrate. Verrà scelta la destinazione su cui caricare le tracce. In caso di dubbi, selezionare Altro. Se l'opzione non viene impostata, le tracce non verranno caricate.

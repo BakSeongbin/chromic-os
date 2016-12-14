@@ -1,0 +1,1 @@
+Aktivieren Sie die experimentelle Implementierung der Richtlinie "Cache-Control: stale-while-revalidate". Dadurch können Server angeben, dass einige Ressourcen im Hintergrund erneut überprüft werden sollten, um die Latenz zu verbessern.

@@ -1,0 +1,1 @@
+Permite habilitar la herramienta de resolución de proxy V8 fuera del proceso. Se ejecuta la herramienta en un proceso de utilidad en lugar de hacerlo en un proceso del navegador.

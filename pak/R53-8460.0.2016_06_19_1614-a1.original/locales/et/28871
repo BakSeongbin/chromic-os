@@ -1,0 +1,1 @@
+Püüdsite jõuda saidile <strong>$1</strong>, kuid server esitas sertifikaadi, mis on allkirjastatud nõrga allkirjaalgoritmiga. See tähendab, et serveri esitatud turvamandaadid võivad olla võltsitud ning server ei pruugi olla see, mida eeldate (võimalik, et suhtlete ründajaga).

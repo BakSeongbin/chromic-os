@@ -1,0 +1,18 @@
+<h3>Fitur Debug</h3>
+    <br>
+    Fitur debug di Perangkat Chrome OS dapat diaktifkan untuk memasang dan menguji kode khusus pada perangkat.  Sehingga Anda akan dapat:<br>
+    <ul>
+      <li>Menghapus verifikasi rootfs agar dapat memodifikasi file OS
+      <li>Mengaktifkan akses SSH ke perangkat menggunakan kunci pengujian standar agar dapat menggunakan alat seperti <span style="color:grey;font-family:monospace">'cros flash'</span> untuk mengakses perangkat
+      <li>Mengaktifkan booting dari USB agar dapat memasang gambar OS dari perangkat USB
+      <li>Menyetel sandi masuk akar sistem maupun dev ke nilai khusus agar dapat melakukan SSH ke perangkat secara manual
+    </ul>
+    <br>
+    Setelah diaktifkan, sebagian besar fitur debug akan tetap aktif meskipun powerwash dilakukan atau data pada perangkat yang dikelola perusahaan dihapus.  Untuk menonaktifkan semua fitur debug sepenuhnya, selesaikan proses pemulihan Chrome OS (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Untuk informasi selengkapnya tentang fitur debug, lihat:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Catatan:</b>  Sistem akan melakukan boot ulang selama proses ini.

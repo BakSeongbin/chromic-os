@@ -1,0 +1,2 @@
+Ini harus digunakan bersama tanda trace-upload-url.
+        PERINGATAN: Jika diaktifkan, Chrome akan merekam data performa untuk setiap navigasi dan mengunggahnya ke URL yang ditentukan oleh tanda trace-upload-url. Pelacakan dapat menyertakan informasi indentitas pribadi (PII) seperti judul and URL situs web yang Anda kunjungi.

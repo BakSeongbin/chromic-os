@@ -1,0 +1,18 @@
+<h3>Ciri Penyahpepijatan</h3>
+    <br>
+    Anda boleh mendayakan ciri penyahpepijatan pada Peranti OS Chrome bagi memasang dan menguji kod peribadi pada peranti anda.  Ini akan membolehkan anda untuk:<br>
+    <ul>
+      <li>Mengalih keluar pengesahan rootfs supaya anda boleh mengubah fail OS
+      <li>Mendayakan akses SSH kepada peranti menggunakan kunci ujian standard supaya anda boleh menggunakan alatan seperti <span style="color:grey;font-family:monospace">'cros flash'</span> untuk mengakses peranti
+      <li>Mendayakan pengebutan dari USB supaya anda boleh memasang imej OS dari pemacu USB
+      <li>Menetapkan kedua-dua kata laluan log masuk dev dan akar sistem kepada nilai peribadi supaya anda boleh SSH kepada peranti secara manual
+    </ul>
+    <br>
+    Setelah didayakan, kebanyakan ciri penyahpepijatan akan kekal didayakan walaupun selepas melakukan powerwash atau penyapuan data pada peranti diurus perusahaan.  Untuk melumpuhkan sepenuhnya semua ciri penyahpepijatan, sila lengkapkan proses pemulihan OS Chrome (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Untuk maklumat lanjut tentang ciri penyahpepijatan sila lihat:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Nota:</b>  Sistem akan mengebut semula semasa proses ini.

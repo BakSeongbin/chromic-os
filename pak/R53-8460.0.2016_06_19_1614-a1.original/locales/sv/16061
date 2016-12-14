@@ -1,0 +1,1 @@
+Tillåt att tillägg skapar panelfönster som öppnas utanför webbläsarens ram. Om detta inte är aktiverat öppnas ett popupfönster istället för en panel. Standardbeteendet är att endast godkända tillägg får öppna panelfönster. Om du aktiverar beteendet tillåter du att alla tillägg öppnar paneler. Om du inaktiverar beteendet tillåter du inte att några tillägg öppnar paneler.

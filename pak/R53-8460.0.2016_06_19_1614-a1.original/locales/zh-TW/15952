@@ -1,0 +1,1 @@
+啟用 GDB 偵錯 Stub。這會使 Native Client 應用程式停留在起始畫面，直到 nacl-gdb (來自 NaCl SDK) 附加完成為止。

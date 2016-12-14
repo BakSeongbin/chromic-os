@@ -1,0 +1,1 @@
+{NUM_DOWNLOAD,plural, =1{En este momento, hay una descarga en curso. ¿Deseas cancelarla y salir de Chromium?}other{En este momento, hay # descargas en curso. ¿Deseas cancelarlas y salir de Chromium?}}

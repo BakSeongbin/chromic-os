@@ -1,0 +1,1 @@
+Ak je nakonfigurovaný proxy server, obvykle bráni autorizácii prostredníctvom rôznych prihlasovacích portálov. Tento príznak aktivuje otvorenie dialógu na autorizáciu prostredníctvom prihlasovacieho portálu v samostatnom okne, ktoré ignoruje nastavenia proxy servera.

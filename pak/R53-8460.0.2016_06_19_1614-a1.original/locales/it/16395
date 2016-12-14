@@ -1,0 +1,1 @@
+Gli stream di uscita audio controllano se sono disponibili layout dei canali diversi dal layout hardware predefinito. Se attivi questa opzione, il sistema operativo potrà eseguire l'espansione da stereo a surround se è supportata. Questa funzione potrebbe esporre a bug di driver di terze parti, quindi è da utilizzare con cautela.

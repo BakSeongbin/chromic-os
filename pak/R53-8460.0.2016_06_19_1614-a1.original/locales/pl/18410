@@ -1,0 +1,1 @@
+Ta opcja zmniejsza bezpieczeństwo Chrome. Używaj jej tylko wtedy, gdy znasz zasady jej działania. Pamiętaj, że możemy ją usunąć bez żadnego powiadomienia. Po jej włączeniu ramki z adresu źródłowego https mogą korzystać z protokołu WebSockets przy niezabezpieczonym adresie URL (ws://).

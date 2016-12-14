@@ -1,0 +1,1 @@
+Activează implementarea experimentală a directivei Cache-Control: stale-while-revalidate. Aceasta permite serverelor să specifice faptul că unele resurse pot fi revalidate în fundal, pentru îmbunătățirea latenței.

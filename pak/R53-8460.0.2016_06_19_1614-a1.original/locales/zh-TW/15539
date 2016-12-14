@@ -1,0 +1,1 @@
+{NUM_DEVICES,plural, =1{與 1 個 USB 裝置通訊}other{與 # 個 USB 裝置通訊}}

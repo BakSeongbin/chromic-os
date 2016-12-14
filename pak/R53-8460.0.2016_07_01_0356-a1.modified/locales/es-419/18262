@@ -1,0 +1,1 @@
+Compatibilidad muy experimental para procesar iframes entre sitios en procesos separados. En este modo, los documentos comparten una instancia de procesamiento solo si pertenecen al mismo sitio web.

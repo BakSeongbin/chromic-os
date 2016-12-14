@@ -1,0 +1,4772 @@
+<!doctype html>
+<html i18n-values="dir:textdirection;highlight:highlightStrength;lang:language">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="chrome://resources/css/chrome_shared.css">
+<link rel="stylesheet" href="chrome://resources/css/list.css">
+<link rel="stylesheet" href="chrome://resources/css/widgets.css">
+
+<style>/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+body {
+  position: relative;
+}
+
+#main-content {
+  bottom: 0;
+  display: -webkit-box;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+#mainview {
+  -webkit-box-align: stretch;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1;
+}
+
+#mainview-content {
+  min-height: 100%;
+  position: relative;
+}
+
+#page-container {
+  box-sizing: border-box;
+  max-width: 888px;
+  min-width: 600px;
+}
+
+body #searchBox {
+  position: fixed;
+  z-index: 4;
+}
+
+div.disabled {
+  color: #999;
+}
+
+.settings-row {
+  display: block;
+  margin: 0.65em 0;
+}
+
+.hbox {
+  -webkit-box-orient: horizontal;
+  display: -webkit-box;
+}
+
+.vbox {
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+}
+
+.box-align-center {
+  -webkit-box-align: center;
+}
+
+.stretch {
+  -webkit-box-flex: 1;
+}
+
+.raw-button,
+.raw-button:hover,
+.raw-button:active {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  border: none;
+  box-shadow: none;
+  min-width: 0;
+  padding: 1px 6px;
+}
+
+.bottom-strip {
+  border-top: none;
+  bottom: 0;
+  padding: 12px;
+  position: absolute;
+  right: 0;
+}
+
+/* Omit top padding (currently only on #settings) whenever the search page is
+ * showing.
+ */
+#searchPage:not([hidden]) + #settings {
+  padding-top: 0;
+}
+
+.page list {
+  /* Min height is a multiple of the list item height (32) */
+  min-height: 192px;
+}
+
+.option {
+  margin-top: 0;
+}
+
+.touch-slider {
+  -webkit-appearance: slider-horizontal;
+}
+
+.settings-list,
+.settings-list-empty {
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+}
+
+.settings-list-empty {
+  background-color: #f4f4f4;
+  box-sizing: border-box;
+  min-height: 125px;
+  padding-left: 20px;
+  padding-top: 20px;
+}
+
+
+/* Editable text field properties */
+.editable-text-field > * {
+  -webkit-box-align: center;
+  -webkit-transition: 150ms background-color;
+  border: none;
+  box-sizing: border-box;
+  display: -webkit-box;
+  height: 20px;
+  margin: 0;
+}
+
+.editable-text-field > .spacer {
+  /* The above height rule should not apply to spacers. */
+  height: 0;
+}
+
+.editable-text-field .editable-text {
+  padding: 2px 3px;
+}
+
+.editable-text-field .static-text {
+  height: 24px;
+  overflow: hidden;
+  padding: 3px 4px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editable-text-field:not([editable]) > [displaymode='edit'] {
+  display: none;
+}
+
+.editable-text-field[editable] > [displaymode='static'] {
+  display: none;
+}
+
+.editable-text-field[empty] > input[type='text'] {
+  color: #ccc;
+  font-style: italic;
+}
+
+.editable-text-field[disabled] {
+  opacity: 0.6;
+}
+
+/* Editable List properties */
+list > * {
+  -webkit-box-align: center;
+  -webkit-transition: 150ms background-color;
+  border: none;
+  border-radius: 0;  /* TODO(dbeam): Is this necessary? */
+  box-sizing: border-box;
+  display: -webkit-box;
+  height: 32px;
+  margin: 0;
+}
+
+list > .spacer {
+  /* The above height rule should not apply to spacers. When redraw is called
+     on the list they will be given an explicit element height but this ensures
+     they have 0 height to begin with. */
+  height: 0;
+}
+
+list:not([disabled]) > :hover {
+  background-color: rgb(228, 236, 247);
+}
+
+/* Note: If this becomes the list style for other WebUI pages these rules can be
+ * simplified (since they wont need to override other rules). */
+
+list:not([has-element-focus]) > [selected],
+list:not([has-element-focus]) > [lead][selected] {
+  background-color: #d0d0d0;
+  background-image: none;
+}
+
+list[has-element-focus] > [selected],
+list[has-element-focus] > [lead][selected],
+list:not([has-element-focus]) > [selected]:hover,
+list:not([has-element-focus]) > [selected][lead]:hover {
+  background-color: rgb(187, 206, 233);
+  background-image: none;
+}
+
+.settings-list[has-element-focus] > [lead],
+.settings-list[has-element-focus] > [lead][selected] {
+  border-bottom: 1px solid rgb(120, 146, 180);
+  border-top: 1px solid rgb(120, 146, 180);
+}
+
+.settings-list[has-element-focus] > [lead]:nth-child(2),
+.settings-list[has-element-focus] > [lead][selected]:nth-child(2) {
+  border-top: 1px solid transparent;
+}
+
+.settings-list[has-element-focus] > [lead]:nth-last-child(2),
+.settings-list[has-element-focus] > [lead][selected]:nth-last-child(2) {
+  border-bottom: 1px solid transparent;
+}
+
+.settings-list[disabled] > [lead][selected],
+.settings-list[disabled]:focus > [lead][selected] {
+  border: none;
+}
+
+list[disabled] {
+  opacity: 0.6;
+}
+
+list > .heading {
+  color: #666;
+}
+
+list > .heading:hover {
+  background-color: transparent;
+  border-color: transparent;
+}
+
+list .deletable-item {
+  -webkit-box-align: center;
+  outline: none;
+}
+
+list .deletable-item > :first-child {
+  -webkit-box-align: center;
+  -webkit-box-flex: 1;
+  -webkit-padding-end: 5px;
+  display: -webkit-box;
+}
+
+list .row-delete-button {
+  -webkit-transition: 150ms opacity;
+  background-color: transparent;
+  background-image: -webkit-image-set(
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAiElEQVR42r2RsQrDMAxEBRdl8SDcX8lQPGg1GBI6lvz/h7QyRRXV0qUULwfvwZ1tenw5PxToRPWMC52eA9+WDnlh3HFQ/xBQl86NFYJqeGflkiogrOvVlIFhqURFVho3x1moGAa3deMs+LS30CAhBN5nNxeT5hbJ1zwmji2k+aF6NENIPf/hs54f0sZFUVAMigAAAABJRU5ErkJggg==) 1x,
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAA9UlEQVR4Xu3UsWrCUByH0fMEouiuhrg4xohToJVGH0CHLBncEwfx/VvIFHLJBWmHDvKbv7PcP9f3L/fXwBsApZSRpUpEgbOnxwiReng6x4AvjdrNXRLkibubWqMcB9Yujk7qjhjmtZOji/U4wELuoBwQXa50kFsQA5jK+kQ/l5kSA4ZEK5Fo+3kcCIlGM8ijQEhUqkEeBUKiUPTyl4C5vZ1cbmdv/iqwclXY6aZwtXoFSLQqhVwmkytUWglxAMG7T0yCu4gD0v7ZBKeVxoEwFxIxYBPmIWEzDnyEeUj4HAfYdvmMcGYdsSUGsOzlIbHEv/uV38APrreiBRBIs3QAAAAASUVORK5CYII=) 2x);
+  border: none;
+  display: block;
+  height: 16px;
+  opacity: 1;
+  width: 16px;
+}
+
+list > *:not(:hover):not([selected]):not([lead]) .row-delete-button,
+list:not([has-element-focus]) > *:not(:hover):not([selected])
+    .row-delete-button,
+list[disabled] .row-delete-button,
+list .row-delete-button[disabled] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* HostedApp entries use the disabled closing button to display the App's
+ * favicon, as an indicator that instead of deleting the permission here
+ * the user has to remove the hosted app.*/
+list div[role='listitem'][managedby='HostedApp'] .row-delete-button {
+  opacity: 1;
+}
+
+list .row-delete-button:hover {
+  background-image: -webkit-image-set(
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAqUlEQVR4XqWRMQqEMBBF/1E8Ra6x6V3FRnS9QbCxtJg6Z7CzE9lTiIXXyUb3C8EULixDIMM8Zt4kcDfxM5A45U+cgeXnC1tREgkzAgob3hiq3CUHvGLG4FTQoSgxQGDrzN8WTLBGnx2IVDksen9GH7Z9hA5E6uxABMJyCHDMCEGHzugLQPPlBCBNGq+5YtpnGw1Bv+te15ypljTpVzdak5Opy+z+qf//zQ+Lg+07ay5KsgAAAABJRU5ErkJggg==) 1x,
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAB4UlEQVR42u2VsWoCQRBAh+MUFP0C1V9QD4NEOxs9xBQHQVCwSJFWVBAtBNXCxk6wTkBJYUTwEwQLC61E8QP0NzZzt5g5726DkC7EYWHZ8T3WndkV2C/jLwn4hwVYBIdLn9vkLp79QcBCTDMiy3w2gQ9XeTYkEHA8vqj2rworXu3HF1YFfSWgp5QFnKVLvYvzDEKEZ5hW70oXOCtcEbQLIkx7+IQtfMBSOjU6XEF4oyOdYInZbXyOuajjDlpNeQgleIUJKUz4BDMledhqOu/AzVSmzZ49CUjCC0yvim98iqtJT2L2jKsqczsdok9XrHNexaww415lnTNwn6CM/KxJIR8bnUZHPhLO6yMoIyk2pNjLewFuE5AiY1KMMQx8Q7hQYFek4AkjxXFe1rsF84I/BTFQMGL+1Lxwl4DwdtM1gjwKohgxyLtG7SYpxALqugOMcfOKN+bFXeBsLB1uulNcRqq7/tt36k41zoL6QlxGjtd6lrahiqCi1iOFYyvXuxY8yzK33VnvUivbLlOlj/jktm0s3YnXrNIXXufHNxuOGasi8S68zkwrlnV8ZcJJsTIUxbLgQcFZWE8N0gau2p40VVcM0gYeFpSRK6445UhBuKiRgiyKw+34rLt59nb1/7+RwReVkaFtqvNBuwAAAABJRU5ErkJggg==) 2x);
+}
+
+list .row-delete-button:active {
+  background-image: -webkit-image-set(
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAQklEQVR4AWP4TwBSTQGDHcMZIIYAKA9VwRkwtINJgyCaCTAlCBaKAoQ+hFmoCqBKENKkK8C0gpAjCXuTyICiQ2QBAPSwyG3ByZlCAAAAAElFTkSuQmCC)
+          1x,
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAA/ElEQVR4Xu3UsWrCUBiG4efGlIBoIMFbcnYolYJ3pg4iKGrGYFTRwaUFhYAekiDt0EG++X2W83N8/3J/DbwBMJJSsdQItcDY1VlCOImzq3Ed8OmicHASB3ns5KBw8VUNpDJrW7uAiJ3sbK1l0mqArpmFTUlQ5jYWZrrUAUSmT0SZm4qoA56JvVhs/5g3A7RLolA85A1ASOTye65NMxASK6syfxGITMzvMxG9CvRkliWwlOm9AsSOcitzU1NzK7mjuBkQvHtLK7iLBiB5PhttJSGpB8I8vM6kDuiHeUjoVwMfYR4SRtUAw1veIZzOjRhSBzCoyKFjgH/3K7+BHzg+Cgw0eSW3AAAAAElFTkSuQmCC)
+          2x);
+}
+
+list .static-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+list[type='text'][inlineeditable] input {
+  box-sizing: border-box;
+  margin: 0;
+  width: 100%;
+}
+
+list > :not([editing]) [displaymode='edit'] {
+  display: none;
+}
+
+list > [editing] [displaymode='static'] {
+  /* Don't use display:none or visibility:hidden because we need to keep an
+   * element focusable.
+   * We shrink only height.  We don't shrink width to avoid to change the size
+   * of containing boxes.
+   */
+  border-bottom: 0 !important;
+  border-top: 0 !important;
+  height: 0 !important;
+  margin-bottom: 0 !important;
+  margin-top: 0 !important;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+list > [editing] input:invalid {
+  background-color: pink;
+}
+
+.list-inline-button {
+  -webkit-appearance: none;
+  -webkit-transition: opacity 150ms;
+  background: rgb(138, 170, 237);
+  border: none;
+  border-radius: 2px;
+  color: white;
+  font-weight: bold;
+  opacity: 0.7;
+}
+
+.list-inline-button:hover {
+  opacity: 1;
+}
+
+.option-name {
+  -webkit-padding-end: 5px;
+}
+
+.favicon-cell {
+  -webkit-padding-start: 20px;
+  background-position: left;
+  background-repeat: no-repeat;
+  background-size: 16px;
+}
+
+input[type='url'].favicon-cell {
+  -webkit-padding-start: 22px;
+  background-position-x: 4px;
+}
+
+html[dir=rtl] input.favicon-cell,
+input[dir=rtl].favicon-cell {
+  background-position-x: -webkit-calc(100% - 4px);
+}
+
+list .favicon-cell {
+  -webkit-margin-start: 7px;
+  -webkit-padding-start: 26px;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html[dir=rtl] list .favicon-cell {
+  background-position: right;
+}
+
+html[enable-background-mode=false] #background-mode-section {
+ display: none;
+}
+
+/* UI Controls */
+
+/* LIST */
+.settings-list[has-element-focus] {
+outline: 1px solid rgba(0, 128, 256, 0.5);
+  outline-offset: -2px;
+
+}
+
+.suboption {
+  -webkit-margin-start: 23px;
+}
+
+list.autocomplete-suggestions {
+  background-color: white;
+  border: 1px solid #aaa;
+  border-radius: 2px;
+  min-height: 0;
+  opacity: 0.9;
+  position: fixed;
+  z-index: 3;
+}
+
+list.autocomplete-suggestions > div {
+  height: auto;
+}
+
+list.autocomplete-suggestions:not([has-element-focus]) > [selected],
+list.autocomplete-suggestions:not([has-element-focus]) > [lead][selected] {
+  background-color: rgb(187, 206, 233);
+}
+
+html:not(.focus-outline-visible)
+:enabled:focus:-webkit-any(input[type='checkbox'], input[type='radio']) {
+  /* Cancel border-color for :focus specified in widgets.css. */
+  border-color: rgba(0, 0, 0, 0.25);
+}
+
+html:not([hasFlashPlugin]) .flash-plugin-area,
+/* If the Flash plug-in supports the NPP_ClearSiteData API, we don't need to
+ * show the link to the Flash storage settings manager:
+ */
+html[flashPluginSupportsClearSiteData] .flash-plugin-area,
+html:not([flashPluginSupportsClearSiteData]) .clear-plugin-lso-data-enabled,
+html[flashPluginSupportsClearSiteData] .clear-plugin-lso-data-disabled,
+html:not([enablePepperFlashSettings]) .pepper-flash-settings {
+  display: none;
+}
+
+.standalone-action-link {
+  padding: 0;
+}
+
+:-webkit-any(.checkbox, .radio) label ~ a {
+  display: inline-block;
+  /* Matches padding of -webkit-any(.checkbox, .radio) */
+  padding-bottom: 7px;
+  vertical-align: bottom;
+}
+</style>
+<style>/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* Force tab strip to extend to the left and right edges of the window. */
+#internet-details-content-area {
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  padding: 6px 0 0 0;
+}
+
+#network-details-header {
+  -webkit-padding-start: 20px;
+  margin: 0;
+  padding-bottom: 12px;
+  padding-top: 32px;
+}
+
+#network-details-title {
+  font-size: 18px;
+}
+
+#network-details-subtitle-status {
+  color: rgb(53, 174, 71);
+}
+
+
+/* Fix the height of the subpages so that the dialog does not resize when the
+   user switches tabs. */
+#internet-details-content-area > .subpages-tab-contents {
+  -webkit-box-flex: 1;
+  -webkit-box-sizing: border-box;
+  -webkit-padding-end: 10px;
+  height: 390px;
+  min-width: 480px;
+  overflow-y: auto;
+}
+
+/* Avoid additional margins between text fields and controlled setting
+   indicators as the fields in these dialogs have sufficient spacing around
+   them already. */
+#internet-details-content-area
+    input:-webkit-any([type='text'],[type='url'],:not([type])) +
+    .controlled-setting-indicator {
+  -webkit-margin-start: 0;
+}
+
+#vpn-tab td {
+  padding: 0;
+}
+
+#vpn-tab .option-value:not(input) {
+  padding: 4px;
+}
+
+#vpn-tab.third-party-vpn-provider tr.built-in-vpn-provider-only {
+  display: none;
+}
+
+#vpn-tab:not(.third-party-vpn-provider) tr.third-party-vpn-provider-only {
+  display: none;
+}
+
+#ip-config-list {
+  min-height: 96px !important;
+}
+
+/* Minimum and maximum height are integer multiples of the height of a list
+   entry. */
+#ignored-host-list {
+  -webkit-margin-start: 0;
+  border: 1px solid #bfbfbf;
+  min-height: 64px;
+  width: 400px;
+}
+
+#ignored-host-list[disabled] {
+  background-color: rgb(235, 235, 228);
+  color: #999;
+  opacity: 1;
+}
+
+#new-host {
+  -webkit-margin-start: 0;
+  margin-top: 8px;
+}
+
+#ipconfig-section {
+  border-top: 1px solid #eee;
+  margin-bottom: 8px;
+  padding-top: 8px;
+}
+
+#ipconfig-dns-section {
+  border-top: 1px solid #eee;
+  padding-top: 8px;
+}
+
+#user-dns-settings:not([selected]) {
+  display: none;
+}
+
+.dns-display {
+  -webkit-margin-start: 24px;
+  -webkit-transition: opacity 150ms ease-in-out;
+  color: #bbb;
+  font-style: italic;
+}
+
+.dns-display:not([selected]) {
+  -webkit-transition: opacity 150ms ease-in-out;
+  display: none;
+}
+
+.proxy-subsection {
+  padding-left: 24px;
+}
+</style>
+<style>/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* These additional styles constrain the size of the proxy page to the height of
+   the dialog containing them. */
+html {
+  height: 100%;
+}
+
+body {
+  -webkit-box-sizing: border-box;
+  height: 100%;
+  margin: 0;
+  padding: 8px;
+}
+
+#proxyPage {
+  height: 100%;
+}
+
+#proxy-page-title {
+  /* We have a title on the window, so the title in domui should be hidden. */
+  display: none;
+}
+
+#internet-details-content-area > .subpages-tab-contents {
+  height: 100% !important;
+}
+
+#advanced-config {
+  padding-top: 10px;
+}
+
+html[highlight=strong] input[type='button']:focus,
+html[highlight=strong] input[type='checkbox']:focus,
+html[highlight=strong] input[type='radio']:focus,
+html[highlight=strong] input[type='text']:focus,
+html[highlight=strong] input[type='url']:focus,
+html[highlight=strong] button:focus,
+html[highlight=strong] list:focus {
+  box-shadow: 0 0 23px rgb(77, 144, 254) !important;
+}
+
+html[highlight=strong] #network-proxy-tab {
+  padding: 10px;
+}
+</style>
+<script src="chrome://resources/js/cr.js"></script>
+<script src="chrome://resources/js/event_tracker.js"></script>
+<script src="chrome://resources/js/cr/event_target.js"></script>
+<script src="chrome://resources/js/cr/ui.js"></script>
+<script src="chrome://resources/js/cr/ui/touch_handler.js"></script>
+<script src="chrome://resources/js/cr/ui/array_data_model.js"></script>
+<script src="chrome://resources/js/cr/ui/list_selection_model.js"></script>
+<script src="chrome://resources/js/cr/ui/list_selection_controller.js"></script>
+<script src="chrome://resources/js/cr/ui/list_single_selection_model.js"></script>
+<script src="chrome://resources/js/cr/ui/list_item.js"></script>
+<script src="chrome://resources/js/cr/ui/list.js"></script>
+<script src="chrome://resources/js/cr/ui/page_manager/page_manager.js"></script>
+<script src="chrome://resources/js/cr/ui/page_manager/page.js"></script>
+<script src="chrome://resources/js/util.js"></script>
+
+<script>// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('options', function() {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // Preferences class:
+
+  /**
+   * Preferences class manages access to Chrome profile preferences.
+   * @constructor
+   * @extends {cr.EventTarget}
+   */
+  function Preferences() {
+    // Map of registered preferences.
+    this.registeredPreferences_ = {};
+  }
+
+  cr.addSingletonGetter(Preferences);
+
+  /**
+   * Sets a Boolean preference and signals its new value.
+   * @param {string} name Preference name.
+   * @param {boolean} value New preference value.
+   * @param {boolean} commit Whether to commit the change to Chrome.
+   * @param {string=} opt_metric User metrics identifier.
+   */
+  Preferences.setBooleanPref = function(name, value, commit, opt_metric) {
+    if (!commit) {
+      Preferences.getInstance().setPrefNoCommit_(name, 'bool', Boolean(value));
+      return;
+    }
+
+    var argumentList = [name, Boolean(value)];
+    if (opt_metric != undefined) argumentList.push(opt_metric);
+    chrome.send('setBooleanPref', argumentList);
+  };
+
+  /**
+   * Sets an integer preference and signals its new value.
+   * @param {string} name Preference name.
+   * @param {number} value New preference value.
+   * @param {boolean} commit Whether to commit the change to Chrome.
+   * @param {string} metric User metrics identifier.
+   */
+  Preferences.setIntegerPref = function(name, value, commit, metric) {
+    if (!commit) {
+      Preferences.getInstance().setPrefNoCommit_(name, 'int', Number(value));
+      return;
+    }
+
+    var argumentList = [name, Number(value)];
+    if (metric != undefined) argumentList.push(metric);
+    chrome.send('setIntegerPref', argumentList);
+  };
+
+  /**
+   * Sets a double-valued preference and signals its new value.
+   * @param {string} name Preference name.
+   * @param {number} value New preference value.
+   * @param {boolean} commit Whether to commit the change to Chrome.
+   * @param {string} metric User metrics identifier.
+   */
+  Preferences.setDoublePref = function(name, value, commit, metric) {
+    if (!commit) {
+      Preferences.getInstance().setPrefNoCommit_(name, 'double', Number(value));
+      return;
+    }
+
+    var argumentList = [name, Number(value)];
+    if (metric != undefined) argumentList.push(metric);
+    chrome.send('setDoublePref', argumentList);
+  };
+
+  /**
+   * Sets a string preference and signals its new value.
+   * @param {string} name Preference name.
+   * @param {string} value New preference value.
+   * @param {boolean} commit Whether to commit the change to Chrome.
+   * @param {string} metric User metrics identifier.
+   */
+  Preferences.setStringPref = function(name, value, commit, metric) {
+    if (!commit) {
+      Preferences.getInstance().setPrefNoCommit_(name, 'string', String(value));
+      return;
+    }
+
+    var argumentList = [name, String(value)];
+    if (metric != undefined) argumentList.push(metric);
+    chrome.send('setStringPref', argumentList);
+  };
+
+  /**
+   * Sets a string preference that represents a URL and signals its new value.
+   * The value will be fixed to be a valid URL when it gets committed to Chrome.
+   * @param {string} name Preference name.
+   * @param {string} value New preference value.
+   * @param {boolean} commit Whether to commit the change to Chrome.
+   * @param {string} metric User metrics identifier.
+   */
+  Preferences.setURLPref = function(name, value, commit, metric) {
+    if (!commit) {
+      Preferences.getInstance().setPrefNoCommit_(name, 'url', String(value));
+      return;
+    }
+
+    var argumentList = [name, String(value)];
+    if (metric != undefined) argumentList.push(metric);
+    chrome.send('setURLPref', argumentList);
+  };
+
+  /**
+   * Sets a JSON list preference and signals its new value.
+   * @param {string} name Preference name.
+   * @param {Array} value New preference value.
+   * @param {boolean} commit Whether to commit the change to Chrome.
+   * @param {string} metric User metrics identifier.
+   */
+  Preferences.setListPref = function(name, value, commit, metric) {
+    if (!commit) {
+      Preferences.getInstance().setPrefNoCommit_(name, 'list', value);
+      return;
+    }
+
+    var argumentList = [name, JSON.stringify(value)];
+    if (metric != undefined) argumentList.push(metric);
+    chrome.send('setListPref', argumentList);
+  };
+
+  /**
+   * Clears the user setting for a preference and signals its new effective
+   * value.
+   * @param {string} name Preference name.
+   * @param {boolean} commit Whether to commit the change to Chrome.
+   * @param {string=} opt_metric User metrics identifier.
+   */
+  Preferences.clearPref = function(name, commit, opt_metric) {
+    if (!commit) {
+      Preferences.getInstance().clearPrefNoCommit_(name);
+      return;
+    }
+
+    var argumentList = [name];
+    if (opt_metric != undefined) argumentList.push(opt_metric);
+    chrome.send('clearPref', argumentList);
+  };
+
+  Preferences.prototype = {
+    __proto__: cr.EventTarget.prototype,
+
+    /**
+     * Adds an event listener to the target.
+     * @param {string} type The name of the event.
+     * @param {EventListenerType} handler The handler for the event. This is
+     *     called when the event is dispatched.
+     */
+    addEventListener: function(type, handler) {
+      cr.EventTarget.prototype.addEventListener.call(this, type, handler);
+      if (!(type in this.registeredPreferences_))
+        this.registeredPreferences_[type] = {};
+    },
+
+    /**
+     * Initializes preference reading and change notifications.
+     */
+    initialize: function() {
+      var params1 = ['Preferences.prefsFetchedCallback'];
+      var params2 = ['Preferences.prefsChangedCallback'];
+      for (var prefName in this.registeredPreferences_) {
+        params1.push(prefName);
+        params2.push(prefName);
+      }
+      chrome.send('fetchPrefs', params1);
+      chrome.send('observePrefs', params2);
+    },
+
+    /**
+     * Helper function for flattening of dictionary passed via fetchPrefs
+     * callback.
+     * @param {string} prefix Preference name prefix.
+     * @param {Object} dict Map with preference values.
+     * @private
+     */
+    flattenMapAndDispatchEvent_: function(prefix, dict) {
+      for (var prefName in dict) {
+        var value = dict[prefName];
+        if (typeof value == 'object' &&
+            !this.registeredPreferences_[prefix + prefName]) {
+          this.flattenMapAndDispatchEvent_(prefix + prefName + '.', value);
+        } else if (value) {
+          var event = new Event(prefix + prefName);
+          this.registeredPreferences_[prefix + prefName].orig = value;
+          event.value = value;
+          this.dispatchEvent(event);
+        }
+      }
+    },
+
+    /**
+     * Sets a preference and signals its new value. The change is propagated
+     * throughout the UI code but is not committed to Chrome yet. The new value
+     * and its data type are stored so that commitPref() can later be used to
+     * invoke the appropriate set*Pref() method and actually commit the change.
+     * @param {string} name Preference name.
+     * @param {string} type Preference data type.
+     * @param {*} value New preference value.
+     * @private
+     */
+    setPrefNoCommit_: function(name, type, value) {
+      var pref = this.registeredPreferences_[name];
+      pref.action = 'set';
+      pref.type = type;
+      pref.value = value;
+
+      var event = new Event(name);
+      // Decorate pref value as CoreOptionsHandler::CreateValueForPref() does.
+      event.value = {value: value, uncommitted: true};
+      if (pref.orig) {
+        event.value.recommendedValue = pref.orig.recommendedValue;
+        event.value.disabled = pref.orig.disabled;
+      }
+      this.dispatchEvent(event);
+    },
+
+    /**
+     * Clears a preference and signals its new value. The change is propagated
+     * throughout the UI code but is not committed to Chrome yet.
+     * @param {string} name Preference name.
+     * @private
+     */
+    clearPrefNoCommit_: function(name) {
+      var pref = this.registeredPreferences_[name];
+      pref.action = 'clear';
+      delete pref.type;
+      delete pref.value;
+
+      var event = new Event(name);
+      // Decorate pref value as CoreOptionsHandler::CreateValueForPref() does.
+      event.value = {controlledBy: 'recommended', uncommitted: true};
+      if (pref.orig) {
+        event.value.value = pref.orig.recommendedValue;
+        event.value.recommendedValue = pref.orig.recommendedValue;
+        event.value.disabled = pref.orig.disabled;
+      }
+      this.dispatchEvent(event);
+    },
+
+    /**
+     * Commits a preference change to Chrome and signals the new preference
+     * value. Does nothing if there is no uncommitted change.
+     * @param {string} name Preference name.
+     * @param {string} metric User metrics identifier.
+     */
+    commitPref: function(name, metric) {
+      var pref = this.registeredPreferences_[name];
+      switch (pref.action) {
+        case 'set':
+          switch (pref.type) {
+            case 'bool':
+              Preferences.setBooleanPref(name, pref.value, true, metric);
+              break;
+            case 'int':
+              Preferences.setIntegerPref(name, pref.value, true, metric);
+              break;
+            case 'double':
+              Preferences.setDoublePref(name, pref.value, true, metric);
+              break;
+            case 'string':
+              Preferences.setStringPref(name, pref.value, true, metric);
+              break;
+            case 'url':
+              Preferences.setURLPref(name, pref.value, true, metric);
+              break;
+            case 'list':
+              Preferences.setListPref(name, pref.value, true, metric);
+              break;
+          }
+          break;
+        case 'clear':
+          Preferences.clearPref(name, true, metric);
+          break;
+      }
+      delete pref.action;
+      delete pref.type;
+      delete pref.value;
+    },
+
+    /**
+     * Rolls back a preference change and signals the original preference value.
+     * Does nothing if there is no uncommitted change.
+     * @param {string} name Preference name.
+     */
+    rollbackPref: function(name) {
+      var pref = this.registeredPreferences_[name];
+      if (!pref.action)
+        return;
+
+      delete pref.action;
+      delete pref.type;
+      delete pref.value;
+
+      var event = new Event(name);
+      event.value = pref.orig || {};
+      event.value.uncommitted = true;
+      this.dispatchEvent(event);
+    }
+  };
+
+  /**
+   * Callback for fetchPrefs method.
+   * @param {Object} dict Map of fetched property values.
+   */
+  Preferences.prefsFetchedCallback = function(dict) {
+    Preferences.getInstance().flattenMapAndDispatchEvent_('', dict);
+  };
+
+  /**
+   * Callback for observePrefs method.
+   * @param {Array} notification An array defining changed preference values.
+   *     notification[0] contains name of the change preference while its new
+   *     value is stored in notification[1].
+   */
+  Preferences.prefsChangedCallback = function(notification) {
+    var event = new Event(notification[0]);
+    event.value = notification[1];
+    var prefs = Preferences.getInstance();
+    prefs.registeredPreferences_[notification[0]] = {orig: notification[1]};
+    if (event.value)
+      prefs.dispatchEvent(event);
+  };
+
+  // Export
+  return {
+    Preferences: Preferences
+  };
+
+});
+</script>
+<script>// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('options', function() {
+  var Preferences = options.Preferences;
+
+  /**
+   * Allows an element to be disabled for several reasons.
+   * The element is disabled if at least one reason is true, and the reasons
+   * can be set separately.
+   * @private
+   * @param {!HTMLElement} el The element to update.
+   * @param {string} reason The reason for disabling the element.
+   * @param {boolean} disabled Whether the element should be disabled or enabled
+   * for the given |reason|.
+   */
+  function updateDisabledState(el, reason, disabled) {
+    if (!el.disabledReasons)
+      el.disabledReasons = {};
+
+    if (el.disabled && (Object.keys(el.disabledReasons).length == 0)) {
+      // The element has been previously disabled without a reason, so we add
+      // one to keep it disabled.
+      el.disabledReasons.other = true;
+    }
+
+    if (!el.disabled) {
+      // If the element is not disabled, there should be no reason, except for
+      // 'other'.
+      delete el.disabledReasons.other;
+      if (Object.keys(el.disabledReasons).length > 0)
+        console.error('Element is not disabled but should be');
+    }
+
+    if (disabled)
+      el.disabledReasons[reason] = true;
+    else
+      delete el.disabledReasons[reason];
+
+    el.disabled = Object.keys(el.disabledReasons).length > 0;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // PrefInputElement class:
+
+  /**
+   * Define a constructor that uses an input element as its underlying element.
+   * @constructor
+   * @extends {HTMLInputElement}
+   */
+  var PrefInputElement = cr.ui.define('input');
+
+  PrefInputElement.prototype = {
+    // Set up the prototype chain
+    __proto__: HTMLInputElement.prototype,
+
+    /**
+     * Initialization function for the cr.ui framework.
+     */
+    decorate: function() {
+      var self = this;
+
+      // Listen for user events.
+      this.addEventListener('change', this.handleChange.bind(this));
+
+      // Listen for pref changes.
+      Preferences.getInstance().addEventListener(this.pref, function(event) {
+        if (event.value.uncommitted && !self.dialogPref)
+          return;
+        self.updateStateFromPref(event);
+        updateDisabledState(self, 'notUserModifiable', event.value.disabled);
+        self.controlledBy = event.value.controlledBy;
+      });
+    },
+
+    /**
+     * Handle changes to the input element's state made by the user. If a custom
+     * change handler does not suppress it, a default handler is invoked that
+     * updates the associated pref.
+     * @param {Event} event Change event.
+     * @protected
+     */
+    handleChange: function(event) {
+      if (!this.customChangeHandler(event))
+        this.updatePrefFromState();
+    },
+
+    /**
+     * Handles changes to the pref. If a custom change handler does not suppress
+     * it, a default handler is invoked that updates the input element's state.
+     * @param {Event} event Pref change event.
+     * @protected
+     */
+    updateStateFromPref: function(event) {
+      if (!this.customPrefChangeHandler(event))
+        this.value = event.value.value;
+    },
+
+    /**
+     * An abstract method for all subclasses to override to update their
+     * preference from existing state.
+     * @protected
+     */
+    updatePrefFromState: assertNotReached,
+
+    /**
+     * See |updateDisabledState| above.
+     */
+    setDisabled: function(reason, disabled) {
+      updateDisabledState(this, reason, disabled);
+    },
+
+    /**
+     * Custom change handler that is invoked first when the user makes changes
+     * to the input element's state. If it returns false, a default handler is
+     * invoked next that updates the associated pref. If it returns true, the
+     * default handler is suppressed (i.e., this works like stopPropagation or
+     * cancelBubble).
+     * @param {Event} event Input element change event.
+     */
+    customChangeHandler: function(event) {
+      return false;
+    },
+
+    /**
+     * Custom change handler that is invoked first when the preference
+     * associated with the input element changes. If it returns false, a default
+     * handler is invoked next that updates the input element. If it returns
+     * true, the default handler is suppressed.
+     * @param {Event} event Input element change event.
+     */
+    customPrefChangeHandler: function(event) {
+      return false;
+    },
+  };
+
+  /**
+   * The name of the associated preference.
+   */
+  cr.defineProperty(PrefInputElement, 'pref', cr.PropertyKind.ATTR);
+
+  /**
+   * The data type of the associated preference, only relevant for derived
+   * classes that support different data types.
+   */
+  cr.defineProperty(PrefInputElement, 'dataType', cr.PropertyKind.ATTR);
+
+  /**
+   * Whether this input element is part of a dialog. If so, changes take effect
+   * in the settings UI immediately but are only actually committed when the
+   * user confirms the dialog. If the user cancels the dialog instead, the
+   * changes are rolled back in the settings UI and never committed.
+   */
+  cr.defineProperty(PrefInputElement, 'dialogPref', cr.PropertyKind.BOOL_ATTR);
+
+  /**
+   * Whether the associated preference is controlled by a source other than the
+   * user's setting (can be 'policy', 'extension', 'recommended' or unset).
+   */
+  cr.defineProperty(PrefInputElement, 'controlledBy', cr.PropertyKind.ATTR);
+
+  /**
+   * The user metric string.
+   */
+  cr.defineProperty(PrefInputElement, 'metric', cr.PropertyKind.ATTR);
+
+  /////////////////////////////////////////////////////////////////////////////
+  // PrefCheckbox class:
+
+  /**
+   * Define a constructor that uses an input element as its underlying element.
+   * @constructor
+   * @extends {options.PrefInputElement}
+   */
+  var PrefCheckbox = cr.ui.define('input');
+
+  PrefCheckbox.prototype = {
+    // Set up the prototype chain
+    __proto__: PrefInputElement.prototype,
+
+    /**
+     * Initialization function for the cr.ui framework.
+     */
+    decorate: function() {
+      PrefInputElement.prototype.decorate.call(this);
+      this.type = 'checkbox';
+
+      // Consider a checked dialog checkbox as a 'suggestion' which is committed
+      // once the user confirms the dialog.
+      if (this.dialogPref && this.checked)
+        this.updatePrefFromState();
+    },
+
+    /**
+     * Update the associated pref when when the user makes changes to the
+     * checkbox state.
+     * @override
+     */
+    updatePrefFromState: function() {
+      var value = this.inverted_pref ? !this.checked : this.checked;
+      Preferences.setBooleanPref(this.pref, value,
+                                 !this.dialogPref, this.metric);
+    },
+
+    /** @override */
+    updateStateFromPref: function(event) {
+      if (!this.customPrefChangeHandler(event))
+        this.defaultPrefChangeHandler(event);
+    },
+
+    /**
+     * @param {Event} event A pref change event.
+     */
+    defaultPrefChangeHandler: function(event) {
+      var value = Boolean(event.value.value);
+      this.checked = this.inverted_pref ? !value : value;
+    },
+  };
+
+  /**
+   * Whether the mapping between checkbox state and associated pref is inverted.
+   */
+  cr.defineProperty(PrefCheckbox, 'inverted_pref', cr.PropertyKind.BOOL_ATTR);
+
+  /////////////////////////////////////////////////////////////////////////////
+  // PrefNumber class:
+
+  // Define a constructor that uses an input element as its underlying element.
+  var PrefNumber = cr.ui.define('input');
+
+  PrefNumber.prototype = {
+    // Set up the prototype chain
+    __proto__: PrefInputElement.prototype,
+
+    /**
+     * Initialization function for the cr.ui framework.
+     */
+    decorate: function() {
+      PrefInputElement.prototype.decorate.call(this);
+      this.type = 'number';
+    },
+
+    /**
+     * Update the associated pref when the user inputs a number.
+     * @override
+     */
+    updatePrefFromState: function() {
+      if (this.validity.valid) {
+        Preferences.setIntegerPref(this.pref, this.value,
+                                   !this.dialogPref, this.metric);
+      }
+    },
+  };
+
+  /////////////////////////////////////////////////////////////////////////////
+  // PrefRadio class:
+
+  //Define a constructor that uses an input element as its underlying element.
+  var PrefRadio = cr.ui.define('input');
+
+  PrefRadio.prototype = {
+    // Set up the prototype chain
+    __proto__: PrefInputElement.prototype,
+
+    /**
+     * Initialization function for the cr.ui framework.
+     */
+    decorate: function() {
+      PrefInputElement.prototype.decorate.call(this);
+      this.type = 'radio';
+    },
+
+    /**
+     * Update the associated pref when when the user selects the radio button.
+     * @override
+     */
+    updatePrefFromState: function() {
+      if (this.value == 'true' || this.value == 'false') {
+        Preferences.setBooleanPref(this.pref,
+                                   this.value == String(this.checked),
+                                   !this.dialogPref, this.metric);
+      } else {
+        Preferences.setIntegerPref(this.pref, this.value,
+                                   !this.dialogPref, this.metric);
+      }
+    },
+
+    /** @override */
+    updateStateFromPref: function(event) {
+      if (!this.customPrefChangeHandler(event))
+        this.checked = this.value == String(event.value.value);
+    },
+  };
+
+  /////////////////////////////////////////////////////////////////////////////
+  // PrefRange class:
+
+  /**
+   * Define a constructor that uses an input element as its underlying element.
+   * @constructor
+   * @extends {options.PrefInputElement}
+   */
+  var PrefRange = cr.ui.define('input');
+
+  PrefRange.prototype = {
+    // Set up the prototype chain
+    __proto__: PrefInputElement.prototype,
+
+    /**
+     * The map from slider position to corresponding pref value.
+     */
+    valueMap: undefined,
+
+    /**
+     * Initialization function for the cr.ui framework.
+     */
+    decorate: function() {
+      PrefInputElement.prototype.decorate.call(this);
+      this.type = 'range';
+
+      // Listen for user events.
+      // TODO(jhawkins): Add onmousewheel handling once the associated WK bug is
+      // fixed.
+      // https://bugs.webkit.org/show_bug.cgi?id=52256
+      this.addEventListener('keyup', this.handleRelease_.bind(this));
+      this.addEventListener('mouseup', this.handleRelease_.bind(this));
+      this.addEventListener('touchcancel', this.handleRelease_.bind(this));
+      this.addEventListener('touchend', this.handleRelease_.bind(this));
+    },
+
+    /**
+     * Update the associated pref when when the user releases the slider.
+     * @override
+     */
+    updatePrefFromState: function() {
+      Preferences.setIntegerPref(
+          this.pref,
+          this.mapPositionToPref(parseInt(this.value, 10)),
+          !this.dialogPref,
+          this.metric);
+    },
+
+    /** @override */
+    handleChange: function() {
+      // Ignore changes to the slider position made by the user while the slider
+      // has not been released.
+    },
+
+    /**
+     * Handle changes to the slider position made by the user when the slider is
+     * released. If a custom change handler does not suppress it, a default
+     * handler is invoked that updates the associated pref.
+     * @param {Event} event Change event.
+     * @private
+     */
+    handleRelease_: function(event) {
+      if (!this.customChangeHandler(event))
+        this.updatePrefFromState();
+    },
+
+    /**
+     * Handles changes to the pref associated with the slider. If a custom
+     * change handler does not suppress it, a default handler is invoked that
+     * updates the slider position.
+     * @override.
+     */
+    updateStateFromPref: function(event) {
+      if (this.customPrefChangeHandler(event))
+        return;
+      var value = event.value.value;
+      this.value = this.valueMap ? this.valueMap.indexOf(value) : value;
+    },
+
+    /**
+     * Map slider position to the range of values provided by the client,
+     * represented by |valueMap|.
+     * @param {number} position The slider position to map.
+     */
+    mapPositionToPref: function(position) {
+      return this.valueMap ? this.valueMap[position] : position;
+    },
+  };
+
+  /////////////////////////////////////////////////////////////////////////////
+  // PrefSelect class:
+
+  // Define a constructor that uses a select element as its underlying element.
+  var PrefSelect = cr.ui.define('select');
+
+  PrefSelect.prototype = {
+    // Set up the prototype chain
+    __proto__: HTMLSelectElement.prototype,
+
+    /** @override */
+    decorate: PrefInputElement.prototype.decorate,
+
+    /** @override */
+    handleChange: PrefInputElement.prototype.handleChange,
+
+    /**
+     * Update the associated pref when when the user selects an item.
+     * @override
+     */
+    updatePrefFromState: function() {
+      var value = this.options[this.selectedIndex].value;
+      switch (this.dataType) {
+        case 'number':
+          Preferences.setIntegerPref(this.pref, value,
+                                     !this.dialogPref, this.metric);
+          break;
+        case 'double':
+          Preferences.setDoublePref(this.pref, value,
+                                    !this.dialogPref, this.metric);
+          break;
+        case 'boolean':
+          Preferences.setBooleanPref(this.pref, value == 'true',
+                                     !this.dialogPref, this.metric);
+          break;
+        case 'string':
+          Preferences.setStringPref(this.pref, value,
+                                    !this.dialogPref, this.metric);
+          break;
+        default:
+          console.error('Unknown data type for <select> UI element: ' +
+                        this.dataType);
+      }
+    },
+
+    /** @override */
+    updateStateFromPref: function(event) {
+      if (this.customPrefChangeHandler(event))
+        return;
+
+      // Make sure the value is a string, because the value is stored as a
+      // string in the HTMLOptionElement.
+      var value = String(event.value.value);
+
+      var found = false;
+      for (var i = 0; i < this.options.length; i++) {
+        if (this.options[i].value == value) {
+          this.selectedIndex = i;
+          found = true;
+        }
+      }
+
+      // Item not found, select first item.
+      if (!found)
+        this.selectedIndex = 0;
+
+      // The "onchange" event automatically fires when the user makes a manual
+      // change. It should never be fired for a programmatic change. However,
+      // these two lines were here already and it is hard to tell who may be
+      // relying on them.
+      if (this.onchange)
+        this.onchange(event);
+    },
+
+    /** @override */
+    setDisabled: PrefInputElement.prototype.setDisabled,
+
+    /** @override */
+    customChangeHandler: PrefInputElement.prototype.customChangeHandler,
+
+    /** @override */
+    customPrefChangeHandler: PrefInputElement.prototype.customPrefChangeHandler,
+  };
+
+  /**
+   * The name of the associated preference.
+   */
+  cr.defineProperty(PrefSelect, 'pref', cr.PropertyKind.ATTR);
+
+  /**
+   * The data type of the associated preference, only relevant for derived
+   * classes that support different data types.
+   */
+  cr.defineProperty(PrefSelect, 'dataType', cr.PropertyKind.ATTR);
+
+  /**
+   * Whether this input element is part of a dialog. If so, changes take effect
+   * in the settings UI immediately but are only actually committed when the
+   * user confirms the dialog. If the user cancels the dialog instead, the
+   * changes are rolled back in the settings UI and never committed.
+   */
+  cr.defineProperty(PrefSelect, 'dialogPref', cr.PropertyKind.BOOL_ATTR);
+
+  /**
+   * Whether the associated preference is controlled by a source other than the
+   * user's setting (can be 'policy', 'extension', 'recommended' or unset).
+   */
+  cr.defineProperty(PrefSelect, 'controlledBy', cr.PropertyKind.ATTR);
+
+  /**
+   * The user metric string.
+   */
+  cr.defineProperty(PrefSelect, 'metric', cr.PropertyKind.ATTR);
+
+  /////////////////////////////////////////////////////////////////////////////
+  // PrefTextField class:
+
+  // Define a constructor that uses an input element as its underlying element.
+  var PrefTextField = cr.ui.define('input');
+
+  PrefTextField.prototype = {
+    // Set up the prototype chain
+    __proto__: PrefInputElement.prototype,
+
+    /**
+     * Initialization function for the cr.ui framework.
+     */
+    decorate: function() {
+      PrefInputElement.prototype.decorate.call(this);
+      var self = this;
+
+      // Listen for user events.
+      window.addEventListener('unload', function() {
+        if (document.activeElement == self)
+          self.blur();
+      });
+    },
+
+    /**
+     * Update the associated pref when when the user inputs text.
+     * @override
+     */
+    updatePrefFromState: function(event) {
+      switch (this.dataType) {
+        case 'number':
+          Preferences.setIntegerPref(this.pref, this.value,
+                                     !this.dialogPref, this.metric);
+          break;
+        case 'double':
+          Preferences.setDoublePref(this.pref, this.value,
+                                    !this.dialogPref, this.metric);
+          break;
+        case 'url':
+          Preferences.setURLPref(this.pref, this.value,
+                                 !this.dialogPref, this.metric);
+          break;
+        default:
+          Preferences.setStringPref(this.pref, this.value,
+                                    !this.dialogPref, this.metric);
+          break;
+      }
+    },
+  };
+
+  /////////////////////////////////////////////////////////////////////////////
+  // PrefPortNumber class:
+
+  // Define a constructor that uses an input element as its underlying element.
+  var PrefPortNumber = cr.ui.define('input');
+
+  PrefPortNumber.prototype = {
+    // Set up the prototype chain
+    __proto__: PrefTextField.prototype,
+
+    /**
+     * Initialization function for the cr.ui framework.
+     */
+    decorate: function() {
+      var self = this;
+      self.type = 'text';
+      self.dataType = 'number';
+      PrefTextField.prototype.decorate.call(this);
+      self.oninput = function() {
+        // Note that using <input type="number"> is insufficient to restrict
+        // the input as it allows negative numbers and does not limit the
+        // number of charactes typed even if a range is set.  Furthermore,
+        // it sometimes produces strange repaint artifacts.
+        var filtered = self.value.replace(/[^0-9]/g, '');
+        if (filtered != self.value)
+          self.value = filtered;
+      };
+    }
+  };
+
+  /////////////////////////////////////////////////////////////////////////////
+  // PrefButton class:
+
+  // Define a constructor that uses a button element as its underlying element.
+  var PrefButton = cr.ui.define('button');
+
+  PrefButton.prototype = {
+    // Set up the prototype chain
+    __proto__: HTMLButtonElement.prototype,
+
+    /**
+     * Initialization function for the cr.ui framework.
+     */
+    decorate: function() {
+      var self = this;
+
+      // Listen for pref changes.
+      // This element behaves like a normal button and does not affect the
+      // underlying preference; it just becomes disabled when the preference is
+      // managed, and its value is false. This is useful for buttons that should
+      // be disabled when the underlying Boolean preference is set to false by a
+      // policy or extension.
+      Preferences.getInstance().addEventListener(this.pref, function(event) {
+        updateDisabledState(self, 'notUserModifiable',
+                            event.value.disabled && !event.value.value);
+        self.controlledBy = event.value.controlledBy;
+      });
+    },
+
+    /**
+     * See |updateDisabledState| above.
+     */
+    setDisabled: function(reason, disabled) {
+      updateDisabledState(this, reason, disabled);
+    },
+  };
+
+  /**
+   * The name of the associated preference.
+   */
+  cr.defineProperty(PrefButton, 'pref', cr.PropertyKind.ATTR);
+
+  /**
+   * Whether the associated preference is controlled by a source other than the
+   * user's setting (can be 'policy', 'extension', 'recommended' or unset).
+   */
+  cr.defineProperty(PrefButton, 'controlledBy', cr.PropertyKind.ATTR);
+
+  // Export
+  return {
+    PrefCheckbox: PrefCheckbox,
+    PrefInputElement: PrefInputElement,
+    PrefNumber: PrefNumber,
+    PrefRadio: PrefRadio,
+    PrefRange: PrefRange,
+    PrefSelect: PrefSelect,
+    PrefTextField: PrefTextField,
+    PrefPortNumber: PrefPortNumber,
+    PrefButton: PrefButton
+  };
+});
+</script>
+<script>// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('options', function() {
+  /** @const */ var FocusOutlineManager = cr.ui.FocusOutlineManager;
+
+  var OptionsPage = {
+    /**
+     * This is the absolute difference maintained between standard and
+     * fixed-width font sizes. Refer http://crbug.com/91922.
+     * @const
+     */
+    SIZE_DIFFERENCE_FIXED_STANDARD: 3,
+
+    /**
+     * Initializes the complete options page. This will cause all C++ handlers
+     * to be invoked to do final setup.
+     */
+    initialize: function() {
+      chrome.send('coreOptionsInitialize');
+    },
+
+    /**
+     * Shows the tab contents for the given navigation tab.
+     * @param {Node} tab The tab that the user clicked.
+     */
+    showTab: function(tab) {
+      // Search parents until we find a tab, or the nav bar itself. This allows
+      // tabs to have child nodes, e.g. labels in separately-styled spans.
+      while (tab && tab.classList &&
+             !tab.classList.contains('subpages-nav-tabs') &&
+             !tab.classList.contains('tab')) {
+        tab = tab.parentNode;
+      }
+      if (!tab || !tab.classList || !tab.classList.contains('tab'))
+        return;
+
+      // Find tab bar of the tab.
+      var tabBar = tab;
+      while (tabBar && tabBar.classList &&
+             !tabBar.classList.contains('subpages-nav-tabs')) {
+        tabBar = tabBar.parentNode;
+      }
+      if (!tabBar || !tabBar.classList)
+        return;
+
+      if (tabBar.activeNavTab != null) {
+        tabBar.activeNavTab.classList.remove('active-tab');
+        $(tabBar.activeNavTab.getAttribute('tab-contents')).classList.
+            remove('active-tab-contents');
+      }
+
+      tab.classList.add('active-tab');
+      $(tab.getAttribute('tab-contents')).classList.add('active-tab-contents');
+      tabBar.activeNavTab = tab;
+    },
+
+    /**
+     * Shows or hides options for clearing Flash LSOs.
+     * @param {boolean} enabled Whether plugin data can be cleared.
+     */
+    setClearPluginLSODataEnabled: function(enabled) {
+      if (enabled) {
+        document.documentElement.setAttribute(
+            'flashPluginSupportsClearSiteData', '');
+      } else {
+        document.documentElement.removeAttribute(
+            'flashPluginSupportsClearSiteData');
+      }
+      if (navigator.plugins['Shockwave Flash'])
+        document.documentElement.setAttribute('hasFlashPlugin', '');
+    },
+
+    /**
+     * Shows or hides Pepper Flash settings.
+     * @param {boolean} enabled Whether Pepper Flash settings should be enabled.
+     */
+    setPepperFlashSettingsEnabled: function(enabled) {
+      if (enabled) {
+        document.documentElement.setAttribute(
+            'enablePepperFlashSettings', '');
+      } else {
+        document.documentElement.removeAttribute(
+            'enablePepperFlashSettings');
+      }
+    },
+
+    /**
+     * Sets whether Settings is shown as a standalone page in a window for the
+     * app launcher settings "app".
+     * @param {boolean} isSettingsApp Whether this page is shown standalone.
+     */
+    setIsSettingsApp: function(isSettingsApp) {
+      document.documentElement.classList.toggle('settings-app', isSettingsApp);
+    },
+
+    /**
+     * Returns true if Settings is shown as an "app" (in a window by itself)
+     * for the app launcher settings "app".
+     * @return {boolean} Whether this page is shown standalone.
+     */
+    isSettingsApp: function() {
+      return document.documentElement.classList.contains('settings-app');
+    },
+  };
+
+  // Export
+  return {
+    OptionsPage: OptionsPage
+  };
+});
+</script>
+<script>// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview ONC Data support class. Wraps a dictionary object containing
+ * ONC managed or unmanaged dictionaries. Supports nested dictionaries,
+ * e.g. data.getManagedProperty('VPN.Type').
+ */
+
+cr.exportPath('cr.onc');
+
+cr.define('cr.onc', function() {
+  'use strict';
+
+  /**
+   * @constructor
+   */
+  function OncData(data) {
+    this.data_ = data;
+  }
+
+  OncData.prototype = {
+    /** @return {string} The GUID of the network. */
+    guid: function() { return this.data_['GUID']; },
+
+    /**
+     * Returns either a managed property dictionary or an unmanaged value.
+     * @param {string} key The property key.
+     * @return {?} The property value or dictionary if it exists, otherwise
+     *     undefined.
+     */
+    getManagedProperty: function(key) {
+      var data = this.data_;
+      while (true) {
+        var index = key.indexOf('.');
+        if (index < 0)
+          break;
+        var keyComponent = key.substr(0, index);
+        if (!(keyComponent in data))
+          return undefined;
+        data = data[keyComponent];
+        key = key.substr(index + 1);
+      }
+      return data[key];
+    },
+
+    /**
+     * Sets the value of a property. Currently only supports unmanaged
+     * properties.
+     * @param {string} key The property key.
+     * @param {?} value The property value to set.
+     */
+    setProperty: function(key, value) {
+      var data = this.data_;
+      while (true) {
+        var index = key.indexOf('.');
+        if (index < 0)
+          break;
+        var keyComponent = key.substr(0, index);
+        if (!(keyComponent in data))
+          data[keyComponent] = {};
+        data = data[keyComponent];
+        key = key.substr(index + 1);
+      }
+      if (!(key in data) ||
+          (typeof data[key] != 'object') ||
+          (!('Active' in data[key]) && !('Effective' in data[key]))) {
+        data[key] = value;
+      } else {
+        var effective = data[key]['Effective'];
+        assert(effective != 'UserPolicy' || data[key]['UserEditable']);
+        assert(effective != 'DevicePolicy' || data[key]['DeviceEditable']);
+        // For now, just update the active value. TODO(stevenjb): Eventually we
+        // should update the 'UserSetting' and 'Effective' properties correctly
+        // and send that back to Chrome.
+        data[key]['Active'] = value;
+      }
+    },
+
+    /**
+     * Gets the active value of a property.
+     * @param {string} key The property key.
+     * @return {?} The property value or undefined.
+     */
+    getActiveValue: function(key) {
+      var property = this.getManagedProperty(key);
+      if (Array.isArray(property) || typeof property != 'object')
+        return property;
+      // Otherwise get the Active value (default behavior).
+      if ('Active' in property)
+        return property['Active'];
+      // If no Active value is defined, return the effective value if present.
+      var effective = this.getEffectiveValueFromProperty_(
+          /** @type {Object} */(property));
+      if (effective != undefined)
+        return effective;
+      // Otherwise this is an Object but not a Managed one.
+      return property;
+    },
+
+    /**
+     * Gets the translated ONC value from the result of getActiveValue() using
+     * loadTimeData. If no translation exists, returns the untranslated value.
+     * @param {string} key The property key.
+     * @return {?} The translation if available or the value if not.
+     */
+    getTranslatedValue: function(key) {
+      var value = this.getActiveValue(key);
+      if (typeof value != 'string')
+        return value;
+      var oncString = 'Onc' + key + value;
+      // Handle special cases
+      if (key == 'Name' && this.getActiveValue('Type') == 'Ethernet')
+        return loadTimeData.getString('ethernetName');
+      if (key == 'VPN.Type' && value == 'L2TP-IPsec') {
+        var auth = this.getActiveValue('VPN.IPsec.AuthenticationType');
+        if (auth != undefined)
+          oncString += auth;
+      }
+      oncString = oncString.replace(/\./g, '-');
+      if (loadTimeData.valueExists(oncString))
+        return loadTimeData.getString(oncString);
+      return value;
+    },
+
+    /**
+     * Gets the recommended value of a property.
+     * @param {string} key The property key.
+     * @return {?} The property value or undefined.
+     */
+    getRecommendedValue: function(key) {
+      var property = this.getManagedProperty(key);
+      if (Array.isArray(property) || typeof property != 'object')
+        return undefined;
+      if (property['UserEditable'])
+        return property['UserPolicy'];
+      if (property['DeviceEditable'])
+        return property['DevicePolicy'];
+      // No value recommended by policy.
+      return undefined;
+    },
+
+    /**
+     * Returns the Source of this configuration. If undefined returns 'None'.
+     * @return {string} The configuration source: 'None', 'User', 'Device',
+     *                  'UserPolicy', or 'DevicePolicy'.
+     */
+    getSource: function() {
+      var source = this.getActiveValue('Source');
+      if (source == undefined)
+        return 'None';
+      assert(typeof source == 'string');
+      return source;
+    },
+
+    /**
+     * Returns the WiFi security type (defaults to 'None').
+     * @return {string} The security type.
+     */
+    getWiFiSecurity: function() {
+      var security = this.getActiveValue('WiFi.Security');
+      if (security == undefined)
+        return 'None';
+      assert(typeof security == 'string');
+      return security;
+    },
+
+    /**
+     * Get the effective value from a Managed property ONC dictionary.
+     * @param {Object} property The managed property ONC dictionary.
+     * @return {?} The effective value or undefined.
+     * @private
+     */
+    getEffectiveValueFromProperty_: function(property) {
+      if ('Effective' in property) {
+        var effective = property.Effective;
+        if (effective in property)
+          return property[effective];
+      }
+      return undefined;
+    },
+
+    /**
+     * Returns the complete ONC dictionary.
+     */
+    getData: function() {
+      return this.data_;
+    }
+  };
+
+  return {
+    OncData: OncData
+  };
+});
+</script>
+<script>// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// require: onc_data.js
+
+// NOTE(stevenjb): This code is in the process of being converted to be
+// compatible with the networkingPrivate extension API:
+// * The network property dictionaries are being converted to use ONC values.
+// * chrome.send calls will be replaced with chrome.networkingPrivate calls.
+// See crbug.com/279351 for more info.
+
+cr.define('options.internet', function() {
+  var OncData = cr.onc.OncData;
+  var Page = cr.ui.pageManager.Page;
+  var PageManager = cr.ui.pageManager.PageManager;
+  /** @const */ var IPAddressField = options.internet.IPAddressField;
+
+  /** @const */ var GoogleNameServers = ['8.8.4.4', '8.8.8.8'];
+  /** @const */ var CarrierSprint = 'Sprint';
+  /** @const */ var CarrierVerizon = 'Verizon Wireless';
+
+  /**
+   * Helper function to set hidden attribute for elements matching a selector.
+   * @param {string} selector CSS selector for extracting a list of elements.
+   * @param {boolean} hidden New hidden value.
+   */
+  function updateHidden(selector, hidden) {
+    var elements = cr.doc.querySelectorAll(selector);
+    for (var i = 0, el; el = elements[i]; i++) {
+      el.hidden = hidden;
+    }
+  }
+
+  /**
+   * Helper function to update the properties of the data object from the
+   * properties in the update object.
+   * @param {Object} data Object to update.
+   * @param {Object} update Object containing the updated properties.
+   */
+  function updateDataObject(data, update) {
+    for (var prop in update) {
+      if (prop in data)
+        data[prop] = update[prop];
+    }
+  }
+
+  /**
+   * Monitor pref change of given element.
+   * @param {Element} el Target element.
+   */
+  function observePrefsUI(el) {
+    Preferences.getInstance().addEventListener(el.pref, handlePrefUpdate);
+  }
+
+  /**
+   * UI pref change handler.
+   * @param {Event} e The update event.
+   */
+  function handlePrefUpdate(e) {
+    DetailsInternetPage.getInstance().updateControls();
+  }
+
+  /**
+   * Simple helper method for converting a field to a string. It is used to
+   * easily assign an empty string from fields that may be unknown or undefined.
+   * @param {Object} value that should be converted to a string.
+   * @return {string} the result.
+   */
+  function stringFromValue(value) {
+    return value ? String(value) : '';
+  }
+
+  /**
+   * @param {string} action An action to send to coreOptionsUserMetricsAction.
+   */
+  function sendChromeMetricsAction(action) {
+    chrome.send('coreOptionsUserMetricsAction', [action]);
+  }
+
+  /**
+   * Send metrics to Chrome when the detailed page is opened.
+   * @param {string} type The ONC type of the network being shown.
+   * @param {string} state The ONC network state.
+   */
+  function sendShowDetailsMetrics(type, state) {
+    if (type == 'WiFi') {
+      sendChromeMetricsAction('Options_NetworkShowDetailsWifi');
+      if (state != 'NotConnected')
+        sendChromeMetricsAction('Options_NetworkShowDetailsWifiConnected');
+    } else if (type == 'Cellular') {
+      sendChromeMetricsAction('Options_NetworkShowDetailsCellular');
+      if (state != 'NotConnected')
+        sendChromeMetricsAction('Options_NetworkShowDetailsCellularConnected');
+    } else if (type == 'VPN') {
+      sendChromeMetricsAction('Options_NetworkShowDetailsVPN');
+      if (state != 'NotConnected')
+        sendChromeMetricsAction('Options_NetworkShowDetailsVPNConnected');
+    }
+  }
+
+  /**
+   * Returns the netmask as a string for a given prefix length.
+   * @param {number} prefixLength The ONC routing prefix length.
+   * @return {string} The corresponding netmask.
+   */
+  function prefixLengthToNetmask(prefixLength) {
+    // Return the empty string for invalid inputs.
+    if (prefixLength < 0 || prefixLength > 32)
+      return '';
+    var netmask = '';
+    for (var i = 0; i < 4; ++i) {
+      var remainder = 8;
+      if (prefixLength >= 8) {
+        prefixLength -= 8;
+      } else {
+        remainder = prefixLength;
+        prefixLength = 0;
+      }
+      if (i > 0)
+        netmask += '.';
+      var value = 0;
+      if (remainder != 0)
+        value = ((2 << (remainder - 1)) - 1) << (8 - remainder);
+      netmask += value.toString();
+    }
+    return netmask;
+  }
+
+  /**
+   * Returns the prefix length from the netmask string.
+   * @param {string} netmask The netmask string, e.g. 255.255.255.0.
+   * @return {number} The corresponding netmask or -1 if invalid.
+   */
+  function netmaskToPrefixLength(netmask) {
+    var prefixLength = 0;
+    var tokens = netmask.split('.');
+    if (tokens.length != 4)
+      return -1;
+    for (var i = 0; i < tokens.length; ++i) {
+      var token = tokens[i];
+      // If we already found the last mask and the current one is not
+      // '0' then the netmask is invalid. For example, 255.224.255.0
+      if (prefixLength / 8 != i) {
+        if (token != '0')
+          return -1;
+      } else if (token == '255') {
+        prefixLength += 8;
+      } else if (token == '254') {
+        prefixLength += 7;
+      } else if (token == '252') {
+        prefixLength += 6;
+      } else if (token == '248') {
+        prefixLength += 5;
+      } else if (token == '240') {
+        prefixLength += 4;
+      } else if (token == '224') {
+        prefixLength += 3;
+      } else if (token == '192') {
+        prefixLength += 2;
+      } else if (token == '128') {
+        prefixLength += 1;
+      } else if (token == '0') {
+        prefixLength += 0;
+      } else {
+        // mask is not a valid number.
+        return -1;
+      }
+    }
+    return prefixLength;
+  }
+
+  // Returns true if we should show the 'View Account' button for |onc|.
+  // TODO(stevenjb): We should query the Mobile Config API for whether or not to
+  // show the 'View Account' button once it is integrated with Settings.
+  function shouldShowViewAccountButton(onc) {
+    var activationState = onc.getActiveValue('Cellular.ActivationState');
+    if (activationState != 'Activating' && activationState != 'Activated')
+      return false;
+
+    // If no online payment URL was provided by Shill, only show 'View Account'
+    // for Verizon Wireless.
+    if (!onc.getActiveValue('Cellular.PaymentPortal.Url') &&
+        onc.getActiveValue('Cellular.Carrier') != CarrierVerizon) {
+      return false;
+    }
+
+    // 'View Account' should only be shown for connected networks, or
+    // disconnected LTE networks with a valid MDN.
+    var connectionState = onc.getActiveValue('ConnectionState');
+    if (connectionState != 'Connected') {
+      var technology = onc.getActiveValue('Cellular.NetworkTechnology');
+      if (technology != 'LTE' && technology != 'LTEAdvanced')
+        return false;
+      if (!onc.getActiveValue('Cellular.MDN'))
+        return false;
+    }
+
+    return true;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // DetailsInternetPage class:
+
+  /**
+   * Encapsulated handling of ChromeOS internet details overlay page.
+   * @constructor
+   * @extends {cr.ui.pageManager.Page}
+   */
+  function DetailsInternetPage() {
+    // If non-negative, indicates a custom entry in select-apn.
+    this.userApnIndex_ = -1;
+
+    // The custom APN properties associated with entry |userApnIndex_|.
+    this.userApn_ = {};
+
+    // The currently selected APN entry in $('select-apn') (which may or may not
+    // == userApnIndex_).
+    this.selectedApnIndex_ = -1;
+
+    // We show the Proxy configuration tab for remembered networks and when
+    // configuring a proxy from the login screen.
+    this.showProxy_ = false;
+
+    Page.call(this, 'detailsInternetPage', '', 'details-internet-page');
+  }
+
+  cr.addSingletonGetter(DetailsInternetPage);
+
+  DetailsInternetPage.prototype = {
+    __proto__: Page.prototype,
+
+    /** @override */
+    initializePage: function() {
+      Page.prototype.initializePage.call(this);
+      this.initializePageContents_();
+
+      chrome.networkingPrivate.onNetworksChanged.addListener(
+          this.onNetworksChanged_.bind(this));
+
+      this.showNetworkDetails_();
+    },
+
+    /**
+     * Automatically shows the network details dialog if network information
+     * is included in the URL.
+     */
+    showNetworkDetails_: function() {
+      var guid = parseQueryParams(window.location).guid;
+      if (!guid || !guid.length)
+        return;
+      chrome.networkingPrivate.getManagedProperties(
+          guid, DetailsInternetPage.initializeDetailsPage);
+    },
+
+    /**
+     * networkingPrivate callback when networks change.
+     * @param {Array<string>} changes List of GUIDs whose properties have
+     *     changed.
+     * @private
+     */
+    onNetworksChanged_: function(changes) {
+      if (!this.onc_)
+        return;
+      var guid = this.onc_.guid();
+      if (changes.indexOf(guid) != -1) {
+        chrome.networkingPrivate.getManagedProperties(
+          guid, DetailsInternetPage.updateConnectionData);
+      }
+    },
+
+    /**
+     * Initializes the contents of the page.
+     */
+    initializePageContents_: function() {
+      $('details-internet-dismiss').addEventListener('click', function(event) {
+        DetailsInternetPage.setDetails();
+      });
+
+      $('details-internet-login').addEventListener('click', function(event) {
+        DetailsInternetPage.setDetails();
+        DetailsInternetPage.loginFromDetails();
+      });
+
+      $('details-internet-disconnect').addEventListener('click',
+                                                        function(event) {
+        DetailsInternetPage.setDetails();
+        DetailsInternetPage.disconnectNetwork();
+      });
+
+      $('details-internet-configure').addEventListener('click',
+                                                       function(event) {
+        DetailsInternetPage.setDetails();
+        DetailsInternetPage.configureNetwork();
+      });
+
+      $('activate-details').addEventListener('click', function(event) {
+        DetailsInternetPage.activateFromDetails();
+      });
+
+      $('view-account-details').addEventListener('click', function(event) {
+        chrome.send('showMorePlanInfo',
+                    [DetailsInternetPage.getInstance().onc_.guid()]);
+        PageManager.closeOverlay();
+      });
+
+      $('cellular-apn-use-default').addEventListener('click', function(event) {
+        DetailsInternetPage.getInstance().setDefaultApn_();
+      });
+
+      $('cellular-apn-set').addEventListener('click', function(event) {
+        DetailsInternetPage.getInstance().setApn_($('cellular-apn').value);
+      });
+
+      $('cellular-apn-cancel').addEventListener('click', function(event) {
+        DetailsInternetPage.getInstance().cancelApn_();
+      });
+
+      $('select-apn').addEventListener('change', function(event) {
+        DetailsInternetPage.getInstance().selectApn_();
+      });
+
+      $('sim-card-lock-enabled').addEventListener('click', function(event) {
+        var newValue = $('sim-card-lock-enabled').checked;
+        // Leave value as is because user needs to enter PIN code first.
+        // When PIN will be entered and value changed,
+        // we'll update UI to reflect that change.
+        $('sim-card-lock-enabled').checked = !newValue;
+        var operation = newValue ? 'setLocked' : 'setUnlocked';
+        chrome.send('simOperation', [operation]);
+      });
+      $('change-pin').addEventListener('click', function(event) {
+        chrome.send('simOperation', ['changePin']);
+      });
+
+      // Proxy
+      ['proxy-host-single-port',
+       'secure-proxy-port',
+       'socks-port',
+       'ftp-proxy-port',
+       'proxy-host-port'
+      ].forEach(function(id) {
+        options.PrefPortNumber.decorate($(id));
+      });
+
+      options.proxyexceptions.ProxyExceptions.decorate($('ignored-host-list'));
+      $('remove-host').addEventListener('click',
+                                        this.handleRemoveProxyExceptions_);
+      $('add-host').addEventListener('click', this.handleAddProxyException_);
+      $('direct-proxy').addEventListener('click', this.disableManualProxy_);
+      $('manual-proxy').addEventListener('click', this.enableManualProxy_);
+      $('auto-proxy').addEventListener('click', this.disableManualProxy_);
+      $('proxy-all-protocols').addEventListener('click',
+                                                this.toggleSingleProxy_);
+      $('proxy-use-pac-url').addEventListener('change',
+                                              this.handleAutoConfigProxy_);
+
+      observePrefsUI($('direct-proxy'));
+      observePrefsUI($('manual-proxy'));
+      observePrefsUI($('auto-proxy'));
+      observePrefsUI($('proxy-all-protocols'));
+      observePrefsUI($('proxy-use-pac-url'));
+
+      $('ip-automatic-configuration-checkbox').addEventListener('click',
+        this.handleIpAutoConfig_);
+      $('automatic-dns-radio').addEventListener('click',
+        this.handleNameServerTypeChange_);
+      $('google-dns-radio').addEventListener('click',
+        this.handleNameServerTypeChange_);
+      $('user-dns-radio').addEventListener('click',
+        this.handleNameServerTypeChange_);
+
+      // We only load this string if we have the string data available
+      // because the proxy settings page on the login screen re-uses the
+      // proxy sub-page from the internet options, and it doesn't ever
+      // show the DNS settings, so we don't need this string there.
+      // The string isn't available because
+      // chrome://settings-frame/strings.js (where the string is
+      // stored) is not accessible from the login screen.
+      // TODO(pneubeck): Remove this once i18n of the proxy dialog on the login
+      // page is fixed. http://crbug.com/242865
+      if (loadTimeData.data_) {
+        $('google-dns-label').innerHTML =
+            loadTimeData.getString('googleNameServers');
+      }
+    },
+
+    /**
+     * Handler for "add" event fired from userNameEdit.
+     * @param {Event} e Add event fired from userNameEdit.
+     * @private
+     */
+    handleAddProxyException_: function(e) {
+      var exception = $('new-host').value;
+      $('new-host').value = '';
+
+      exception = exception.trim();
+      if (exception)
+        $('ignored-host-list').addException(exception);
+    },
+
+    /**
+     * Handler for when the remove button is clicked
+     * @param {Event} e The click event.
+     * @private
+     */
+    handleRemoveProxyExceptions_: function(e) {
+      var selectedItems = $('ignored-host-list').selectedItems;
+      for (var x = 0; x < selectedItems.length; x++) {
+        $('ignored-host-list').removeException(selectedItems[x]);
+      }
+    },
+
+    /**
+     * Handler for when the IP automatic configuration checkbox is clicked.
+     * @param {Event} e The click event.
+     * @private
+     */
+    handleIpAutoConfig_: function(e) {
+      var checked = $('ip-automatic-configuration-checkbox').checked;
+      var fields = [$('ip-address'), $('ip-netmask'), $('ip-gateway')];
+      for (var i = 0; i < fields.length; ++i) {
+        fields[i].editable = !checked;
+        if (checked) {
+          var model = fields[i].model;
+          model.value = model.automatic;
+          fields[i].model = model;
+        }
+      }
+      if (!checked)
+        $('ip-address').focus();
+    },
+
+    /**
+     * Handler for when the name server selection changes.
+     * @param {Event} event The click event.
+     * @private
+     */
+    handleNameServerTypeChange_: function(event) {
+      var type = event.target.value;
+      DetailsInternetPage.updateNameServerDisplay(type);
+    },
+
+    /**
+     * Gets the IPConfig ONC Object.
+     * @param {string} nameServerType The selected name server type:
+     *   'automatic', 'google', or 'user'.
+     * @return {Object} The IPConfig ONC object.
+     * @private
+     */
+    getIpConfig_: function(nameServerType) {
+      var ipConfig = {};
+      // If 'ip-address' is empty, automatic configuration will be used.
+      if (!$('ip-automatic-configuration-checkbox').checked &&
+          $('ip-address').model.value) {
+        ipConfig['IPAddress'] = $('ip-address').model.value;
+        var netmask = $('ip-netmask').model.value;
+        var routingPrefix = 0;
+        if (netmask) {
+          routingPrefix = netmaskToPrefixLength(netmask);
+          if (routingPrefix == -1) {
+            console.error('Invalid netmask: ' + netmask);
+            routingPrefix = 0;
+          }
+        }
+        ipConfig['RoutingPrefix'] = routingPrefix;
+        ipConfig['Gateway'] = $('ip-gateway').model.value || '';
+      }
+
+      // Note: If no nameserver fields are set, automatic configuration will be
+      // used. TODO(stevenjb): Validate input fields.
+      if (nameServerType != 'automatic') {
+        var userNameServers = [];
+        if (nameServerType == 'google') {
+          userNameServers = GoogleNameServers.slice();
+        } else if (nameServerType == 'user') {
+          for (var i = 1; i <= 4; ++i) {
+            var nameServerField = $('ipconfig-dns' + i);
+            // Skip empty values.
+            if (nameServerField && nameServerField.model &&
+                nameServerField.model.value) {
+              userNameServers.push(nameServerField.model.value);
+            }
+          }
+        }
+        if (userNameServers.length)
+          ipConfig['NameServers'] = userNameServers.sort();
+      }
+      return ipConfig;
+    },
+
+    /**
+     * Creates an indicator event for controlled properties using
+     * the same dictionary format as CoreOptionsHandler::CreateValueForPref.
+     * @param {string} name The name for the Event.
+     * @param {{value: *, controlledBy: *, recommendedValue: *}} propData
+     *     Property dictionary.
+     * @private
+     */
+    createControlledEvent_: function(name, propData) {
+      assert('value' in propData && 'controlledBy' in propData &&
+             'recommendedValue' in propData);
+      var event = new Event(name);
+      event.value = {
+        value: propData.value,
+        controlledBy: propData.controlledBy,
+        recommendedValue: propData.recommendedValue
+      };
+      return event;
+    },
+
+    /**
+     * Creates an indicator event for controlled properties using
+     * the ONC getManagedProperties dictionary format.
+     * @param {string} name The name for the Event.
+     * @param {Object} propData ONC managed network property dictionary.
+     * @private
+     */
+    createManagedEvent_: function(name, propData) {
+      var event = new Event(name);
+      event.value = {};
+
+      // Set the current value and recommended value.
+      var activeValue = propData['Active'];
+      var effective = propData['Effective'];
+      if (activeValue == undefined)
+        activeValue = propData[effective];
+      event.value.value = activeValue;
+
+      // If a property is editable then it is not enforced, and 'controlledBy'
+      // is set to 'recommended' unless effective == {User|Shared}Setting, in
+      // which case the value was modified from the recommended value.
+      // Otherwise if 'Effective' is set to 'UserPolicy' or 'DevicePolicy' then
+      // the set value is mandated by the policy.
+      if (propData['UserEditable']) {
+        if (effective == 'UserPolicy')
+          event.value.controlledBy = 'recommended';
+        event.value.recommendedValue = propData['UserPolicy'];
+      } else if (propData['DeviceEditable']) {
+        if (effective == 'DevicePolicy')
+          event.value.controlledBy = 'recommended';
+        event.value.recommendedValue = propData['DevicePolicy'];
+      } else if (effective == 'UserPolicy' || effective == 'DevicePolicy') {
+        event.value.controlledBy = 'policy';
+      }
+
+      return event;
+    },
+
+    /**
+     * Update details page controls.
+     */
+    updateControls: function() {
+      // Note: onc may be undefined when called from a pref update before
+      // initialized in initializeDetailsPage.
+      var onc = this.onc_;
+
+      // Always show the ipconfig section. TODO(stevenjb): Improve the display
+      // for unconnected networks. Currently the IP address fields may be
+      // blank if the network is not connected.
+      $('ipconfig-section').hidden = false;
+      $('ipconfig-dns-section').hidden = false;
+
+      // Network type related.
+      updateHidden('#details-internet-page .cellular-details',
+                   this.type_ != 'Cellular');
+      updateHidden('#details-internet-page .wifi-details',
+                   this.type_ != 'WiFi');
+      updateHidden('#details-internet-page .wimax-details',
+                   this.type_ != 'WiMAX');
+      updateHidden('#details-internet-page .vpn-details', this.type_ != 'VPN');
+      updateHidden('#details-internet-page .proxy-details', !this.showProxy_);
+
+      // Cellular
+      if (onc && this.type_ == 'Cellular') {
+        // Hide gsm/cdma specific elements.
+        if (onc.getActiveValue('Cellular.Family') == 'GSM')
+          updateHidden('#details-internet-page .cdma-only', true);
+        else
+          updateHidden('#details-internet-page .gsm-only', true);
+      }
+
+      // Wifi
+
+      // Hide network tab for VPN.
+      updateHidden('#details-internet-page .network-details',
+                   this.type_ == 'VPN');
+
+      // Password and shared.
+      var source = onc ? onc.getSource() : 'None';
+      var shared = (source == 'Device' || source == 'DevicePolicy');
+      var security = onc ? onc.getWiFiSecurity() : 'None';
+      updateHidden('#details-internet-page #password-details',
+                   this.type_ != 'WiFi' || security == 'None');
+      updateHidden('#details-internet-page #wifi-shared-network', !shared);
+      updateHidden('#details-internet-page #prefer-network', source == 'None');
+
+      // WiMAX.
+      updateHidden('#details-internet-page #wimax-shared-network', !shared);
+
+      // Proxy
+      this.updateProxyBannerVisibility_();
+      this.toggleSingleProxy_();
+      if ($('manual-proxy').checked)
+        this.enableManualProxy_();
+      else
+        this.disableManualProxy_();
+    },
+
+    /**
+     * Updates info banner visibility state. This function shows the banner
+     * if proxy is managed or shared-proxies is off for shared network.
+     * @private
+     */
+    updateProxyBannerVisibility_: function() {
+      var bannerDiv = $('network-proxy-info-banner');
+      if (!loadTimeData.data_) {
+        // TODO(pneubeck): This temporarily prevents an exception below until
+        // i18n of the proxy dialog on the login page is
+        // fixed. http://crbug.com/242865
+        bannerDiv.hidden = true;
+        return;
+      }
+
+      // Show banner and determine its message if necessary.
+      var controlledBy = $('direct-proxy').controlledBy;
+      if (!controlledBy || controlledBy == '') {
+        bannerDiv.hidden = true;
+      } else {
+        bannerDiv.hidden = false;
+        // The possible banner texts are loaded in proxy_handler.cc.
+        var bannerText = 'proxyBanner' + controlledBy.charAt(0).toUpperCase() +
+                         controlledBy.slice(1);
+        $('banner-text').textContent = loadTimeData.getString(bannerText);
+      }
+    },
+
+    /**
+     * Handler for when the user clicks on the checkbox to allow a
+     * single proxy usage.
+     * @private
+     */
+    toggleSingleProxy_: function() {
+      if ($('proxy-all-protocols').checked) {
+        $('multi-proxy').hidden = true;
+        $('single-proxy').hidden = false;
+      } else {
+        $('multi-proxy').hidden = false;
+        $('single-proxy').hidden = true;
+      }
+    },
+
+    /**
+     * Handler for when the user clicks on the checkbox to enter
+     * auto configuration URL.
+     * @private
+     */
+    handleAutoConfigProxy_: function() {
+      $('proxy-pac-url').disabled = !$('proxy-use-pac-url').checked;
+    },
+
+    /**
+     * Handler for selecting a radio button that will disable the manual
+     * controls.
+     * @private
+     */
+    disableManualProxy_: function() {
+      $('ignored-host-list').disabled = true;
+      $('new-host').disabled = true;
+      $('remove-host').disabled = true;
+      $('add-host').disabled = true;
+      $('proxy-all-protocols').disabled = true;
+      $('proxy-host-name').disabled = true;
+      $('proxy-host-port').disabled = true;
+      $('proxy-host-single-name').disabled = true;
+      $('proxy-host-single-port').disabled = true;
+      $('secure-proxy-host-name').disabled = true;
+      $('secure-proxy-port').disabled = true;
+      $('ftp-proxy').disabled = true;
+      $('ftp-proxy-port').disabled = true;
+      $('socks-host').disabled = true;
+      $('socks-port').disabled = true;
+      $('proxy-use-pac-url').disabled = $('auto-proxy').disabled ||
+                                        !$('auto-proxy').checked;
+      $('proxy-pac-url').disabled = $('proxy-use-pac-url').disabled ||
+                                    !$('proxy-use-pac-url').checked;
+      $('auto-proxy-parms').hidden = !$('auto-proxy').checked;
+      $('manual-proxy-parms').hidden = !$('manual-proxy').checked;
+      sendChromeMetricsAction('Options_NetworkManualProxy_Disable');
+    },
+
+    /**
+     * Handler for selecting a radio button that will enable the manual
+     * controls.
+     * @private
+     */
+    enableManualProxy_: function() {
+      $('ignored-host-list').redraw();
+      var allDisabled = $('manual-proxy').disabled;
+      $('ignored-host-list').disabled = allDisabled;
+      $('new-host').disabled = allDisabled;
+      $('remove-host').disabled = allDisabled;
+      $('add-host').disabled = allDisabled;
+      $('proxy-all-protocols').disabled = allDisabled;
+      $('proxy-host-name').disabled = allDisabled;
+      $('proxy-host-port').disabled = allDisabled;
+      $('proxy-host-single-name').disabled = allDisabled;
+      $('proxy-host-single-port').disabled = allDisabled;
+      $('secure-proxy-host-name').disabled = allDisabled;
+      $('secure-proxy-port').disabled = allDisabled;
+      $('ftp-proxy').disabled = allDisabled;
+      $('ftp-proxy-port').disabled = allDisabled;
+      $('socks-host').disabled = allDisabled;
+      $('socks-port').disabled = allDisabled;
+      $('proxy-use-pac-url').disabled = true;
+      $('proxy-pac-url').disabled = true;
+      $('auto-proxy-parms').hidden = !$('auto-proxy').checked;
+      $('manual-proxy-parms').hidden = !$('manual-proxy').checked;
+      sendChromeMetricsAction('Options_NetworkManualProxy_Enable');
+    },
+
+    /**
+     * Helper method called from initializeDetailsPage and updateConnectionData.
+     * Updates visibility/enabled of the login/disconnect/configure buttons.
+     * @private
+     */
+    updateConnectionButtonVisibility_: function() {
+      var onc = this.onc_;
+
+      var prohibitedByPolicy =
+          this.type_ == 'WiFi' &&
+          loadTimeData.valueExists('allowOnlyPolicyNetworksToConnect') &&
+          loadTimeData.getBoolean('allowOnlyPolicyNetworksToConnect') &&
+          (onc.data_.Source != 'DevicePolicy' &&
+           onc.data_.Source != 'UserPolicy');
+
+      if (this.type_ == 'Ethernet') {
+        // Ethernet can never be connected or disconnected and can always be
+        // configured (e.g. to set security).
+        $('details-internet-login').hidden = true;
+        $('details-internet-disconnect').hidden = true;
+        $('details-internet-configure').hidden = false;
+        return;
+      }
+
+      var connectable = onc.getActiveValue('Connectable');
+      var connectState = onc.getActiveValue('ConnectionState');
+      if (connectState == 'NotConnected') {
+        $('details-internet-disconnect').hidden = true;
+        $('details-internet-login').hidden = false;
+        // Connecting to an unconfigured network might trigger certificate
+        // installation UI. Until that gets handled here, always enable the
+        // Connect button for built-in networks.
+        var enabled = ((this.type_ != 'VPN') ||
+                      (onc.getActiveValue('VPN.Type') != 'ThirdPartyVPN') ||
+                      connectable) && !prohibitedByPolicy;
+        if (prohibitedByPolicy) {
+          $('details-internet-login').setAttribute(
+              'title', loadTimeData.getString('prohibitedNetwork'));
+        } else {
+          $('details-internet-login').removeAttribute('title');
+        }
+        $('details-internet-login').disabled = !enabled;
+      } else {
+        $('details-internet-login').hidden = true;
+        $('details-internet-disconnect').hidden = false;
+      }
+
+      var showConfigure = false;
+      if (this.type_ == 'VPN') {
+        showConfigure = true;
+      } else if (this.type_ == 'WiMAX' && connectState == 'NotConnected') {
+        showConfigure = true;
+      } else if (this.type_ == 'WiFi') {
+        showConfigure = (connectState == 'NotConnected' &&
+                         (!connectable || onc.getWiFiSecurity() != 'None') &&
+                         !prohibitedByPolicy);
+      }
+      $('details-internet-configure').hidden = !showConfigure;
+    },
+
+    /**
+     * Helper method called from initializeDetailsPage and updateConnectionData.
+     * Updates the connection state property and account / sim card links.
+     * @private
+     */
+    updateDetails_: function() {
+      var onc = this.onc_;
+
+      var connectionStateString = onc.getTranslatedValue('ConnectionState');
+      $('connection-state').textContent = connectionStateString;
+
+      var type = this.type_;
+      var showViewAccount = false;
+      var showActivate = false;
+      if (type == 'WiFi') {
+        $('wifi-connection-state').textContent = connectionStateString;
+      } else if (type == 'WiMAX') {
+        $('wimax-connection-state').textContent = connectionStateString;
+      } else if (type == 'Cellular') {
+        $('activation-state').textContent =
+            onc.getTranslatedValue('Cellular.ActivationState');
+        if (onc.getActiveValue('Cellular.Family') == 'GSM') {
+          var lockEnabled =
+              onc.getActiveValue('Cellular.SIMLockStatus.LockEnabled');
+          $('sim-card-lock-enabled').checked = lockEnabled;
+          $('change-pin').hidden = !lockEnabled;
+        }
+        showViewAccount = shouldShowViewAccountButton(onc);
+        var activationState = onc.getActiveValue('Cellular.ActivationState');
+        showActivate = (activationState == 'NotActivated' ||
+                        activationState == 'PartiallyActivated');
+      }
+
+      $('view-account-details').hidden = !showViewAccount;
+      $('activate-details').hidden = !showActivate;
+      // If activation is not complete, hide the login button.
+      if (showActivate)
+        $('details-internet-login').hidden = true;
+    },
+
+    /**
+     * Helper method called from initializeDetailsPage and updateConnectionData.
+     * Updates the fields in the header section of the details frame.
+     * @private
+     */
+    populateHeader_: function() {
+      var onc = this.onc_;
+
+      var name = onc.getTranslatedValue('Name');
+      if (onc.getActiveValue('Type') == 'VPN' &&
+          onc.getActiveValue('VPN.Type') == 'ThirdPartyVPN') {
+        var providerName =
+            onc.getActiveValue('VPN.ThirdPartyVPN.ProviderName') ||
+            loadTimeData.getString('defaultThirdPartyProviderName');
+        name = loadTimeData.getStringF('vpnNameTemplate', providerName, name);
+      }
+      $('network-details-title').textContent = name;
+
+      var connectionStateString = onc.getTranslatedValue('ConnectionState');
+      $('network-details-subtitle-status').textContent = connectionStateString;
+
+      var typeKey;
+      var type = this.type_;
+      if (type == 'Ethernet')
+        typeKey = 'ethernetTitle';
+      else if (type == 'WiFi')
+        typeKey = 'wifiTitle';
+      else if (type == 'WiMAX')
+        typeKey = 'wimaxTitle';
+      else if (type == 'Cellular')
+        typeKey = 'cellularTitle';
+      else if (type == 'VPN')
+        typeKey = 'vpnTitle';
+      else
+        typeKey = null;
+      var typeLabel = $('network-details-subtitle-type');
+      var typeSeparator = $('network-details-subtitle-separator');
+      if (typeKey) {
+        typeLabel.textContent = loadTimeData.getString(typeKey);
+        typeLabel.hidden = false;
+        typeSeparator.hidden = false;
+      } else {
+        typeLabel.hidden = true;
+        typeSeparator.hidden = true;
+      }
+    },
+
+    /**
+     * Helper method to insert a 'user' option into the Apn list.
+     * @param {Object} userOption The 'user' apn dictionary
+     * @private
+     */
+    insertApnUserOption_: function(userOption) {
+      // Add the 'user' option before the last option ('other')
+      var apnSelector = $('select-apn');
+      assert(apnSelector.length > 0);
+      var otherOption = apnSelector[apnSelector.length - 1];
+      apnSelector.add(userOption, otherOption);
+      this.userApnIndex_ = apnSelector.length - 2;
+      this.selectedApnIndex_ = this.userApnIndex_;
+    },
+
+    /**
+     * Helper method called from initializeApnList to populate the Apn list.
+     * @param {Array} apnList List of available APNs.
+     * @private
+     */
+    populateApnList_: function(apnList) {
+      var onc = this.onc_;
+      var apnSelector = $('select-apn');
+      assert(apnSelector.length == 1);
+      var otherOption = apnSelector[0];
+      var activeApn = onc.getActiveValue('Cellular.APN.AccessPointName');
+      var lastGoodApn =
+          onc.getActiveValue('Cellular.LastGoodAPN.AccessPointName');
+      for (var i = 0; i < apnList.length; i++) {
+        var apnDict = apnList[i];
+        var localizedName = apnDict['LocalizedName'];
+        var name = localizedName ? localizedName : apnDict['Name'];
+        var accessPointName = apnDict['AccessPointName'];
+        var option = document.createElement('option');
+        option.textContent =
+            name ? (name + ' (' + accessPointName + ')') : accessPointName;
+        option.value = i;
+        // Insert new option before 'other' option.
+        apnSelector.add(option, otherOption);
+        if (this.selectedApnIndex_ != -1)
+          continue;
+        // If this matches the active Apn name, or LastGoodApn name (or there
+        // is no last good APN), set it as the selected Apn.
+        if ((activeApn == accessPointName) ||
+            (!activeApn && (!lastGoodApn || lastGoodApn == accessPointName))) {
+          this.selectedApnIndex_ = i;
+        }
+      }
+      if (this.selectedApnIndex_ == -1 && activeApn) {
+        this.userApn_ = activeApn;
+        // Create a 'user' entry for any active apn not in the list.
+        var userOption = document.createElement('option');
+        userOption.textContent = activeApn;
+        userOption.value = -1;
+        this.insertApnUserOption_(userOption);
+      }
+    },
+
+    /**
+     * Helper method called from initializeDetailsPage to initialize the Apn
+     * list.
+     * @private
+     */
+    initializeApnList_: function() {
+      this.selectedApnIndex_ = -1;
+      this.userApnIndex_ = -1;
+
+      var onc = this.onc_;
+      var apnSelector = /** @type {HTMLSelectElement} */($('select-apn'));
+
+      // Clear APN lists, keep only last element, 'other'.
+      while (apnSelector.length != 1)
+        apnSelector.remove(0);
+
+      var apnList = onc.getActiveValue('Cellular.APNList');
+      if (apnList) {
+        // Populate the list with the existing APNs.
+        this.populateApnList_(apnList);
+      } else {
+        // Create a single 'default' entry.
+        var otherOption = apnSelector[0];
+        var defaultOption = /** @type {HTMLElement} */(
+            document.createElement('option'));
+        defaultOption.textContent =
+            loadTimeData.getString('cellularApnUseDefault');
+        defaultOption.value = -1;
+        // Add 'default' entry before 'other' option
+        apnSelector.add(defaultOption, otherOption);
+        assert(apnSelector.length == 2);  // 'default', 'other'
+        this.selectedApnIndex_ = 0;  // Select 'default'
+      }
+      assert(this.selectedApnIndex_ >= 0);
+      apnSelector.selectedIndex = this.selectedApnIndex_;
+      updateHidden('.apn-list-view', false);
+      updateHidden('.apn-details-view', true);
+    },
+
+    /**
+     * Helper function for setting APN properties.
+     * @param {Object} apnValue Dictionary of APN properties.
+     * @private
+     */
+    setActiveApn_: function(apnValue) {
+      var activeApn = {};
+      var apnName = apnValue['AccessPointName'];
+      if (apnName) {
+        activeApn['AccessPointName'] = apnName;
+        activeApn['Username'] = stringFromValue(apnValue['Username']);
+        activeApn['Password'] = stringFromValue(apnValue['Password']);
+      }
+      // Set the cached ONC data.
+      this.onc_.setProperty('Cellular.APN', activeApn);
+      // Set an ONC object with just the APN values.
+      var oncData = new OncData({});
+      oncData.setProperty('Cellular.APN', activeApn);
+      chrome.networkingPrivate.setProperties(this.onc_.guid(),
+                                             oncData.getData());
+    },
+
+    /**
+     * Event Listener for the cellular-apn-use-default button.
+     * @private
+     */
+    setDefaultApn_: function() {
+      var apnSelector = /** @type {HTMLSelectElement} */($('select-apn'));
+
+      // Remove the 'user' entry if it exists.
+      if (this.userApnIndex_ != -1) {
+        assert(this.userApnIndex_ < apnSelector.length - 1);
+        apnSelector.remove(this.userApnIndex_);
+        this.userApnIndex_ = -1;
+      }
+
+      var apnList = this.onc_.getActiveValue('Cellular.APNList');
+      var iApn = (apnList != undefined && apnList.length > 0) ? 0 : -1;
+      apnSelector.selectedIndex = iApn;
+      this.selectedApnIndex_ = iApn;
+
+      // Clear any user APN entry to inform Chrome to use the default APN.
+      this.setActiveApn_({});
+
+      updateHidden('.apn-list-view', false);
+      updateHidden('.apn-details-view', true);
+    },
+
+    /**
+     * Event Listener for the cellular-apn-set button.
+     * @private
+     */
+    setApn_: function(apnValue) {
+      if (apnValue == '')
+        return;
+
+      var apnSelector = /** @type {HTMLSelectElement} */($('select-apn'));
+
+      var activeApn = {};
+      activeApn['AccessPointName'] = stringFromValue(apnValue);
+      activeApn['Username'] = stringFromValue($('cellular-apn-username').value);
+      activeApn['Password'] = stringFromValue($('cellular-apn-password').value);
+      this.setActiveApn_(activeApn);
+      // Set the user selected APN.
+      this.userApn_ = activeApn;
+
+      // Remove any existing 'user' entry.
+      if (this.userApnIndex_ != -1) {
+        assert(this.userApnIndex_ < apnSelector.length - 1);
+        apnSelector.remove(this.userApnIndex_);
+        this.userApnIndex_ = -1;
+      }
+
+      // Create a new 'user' entry with the new active apn.
+      var option = document.createElement('option');
+      option.textContent = activeApn['AccessPointName'];
+      option.value = -1;
+      option.selected = true;
+      this.insertApnUserOption_(option);
+
+      updateHidden('.apn-list-view', false);
+      updateHidden('.apn-details-view', true);
+    },
+
+    /**
+     * Event Listener for the cellular-apn-cancel button.
+     * @private
+     */
+    cancelApn_: function() { this.initializeApnList_(); },
+
+    /**
+     * Event Listener for the select-apn button.
+     * @private
+     */
+    selectApn_: function() {
+      var onc = this.onc_;
+      var apnSelector = $('select-apn');
+      if (apnSelector[apnSelector.selectedIndex].value != -1) {
+        var apnList = onc.getActiveValue('Cellular.APNList');
+        var apnIndex = apnSelector.selectedIndex;
+        assert(apnIndex < apnList.length);
+        this.selectedApnIndex_ = apnIndex;
+        this.setActiveApn_(apnList[apnIndex]);
+      } else if (apnSelector.selectedIndex == this.userApnIndex_) {
+        this.selectedApnIndex_ = apnSelector.selectedIndex;
+        this.setActiveApn_(this.userApn_);
+      } else { // 'Other'
+        var apnDict;
+        if (this.userApn_['AccessPointName']) {
+          // Fill in the details fields with the existing 'user' config.
+          apnDict = this.userApn_;
+        } else {
+          // No 'user' config, use the current values.
+          apnDict = {};
+          apnDict['AccessPointName'] =
+              onc.getActiveValue('Cellular.APN.AccessPointName');
+          apnDict['Username'] = onc.getActiveValue('Cellular.APN.Username');
+          apnDict['Password'] = onc.getActiveValue('Cellular.APN.Password');
+        }
+        $('cellular-apn').value = stringFromValue(apnDict['AccessPointName']);
+        $('cellular-apn-username').value = stringFromValue(apnDict['Username']);
+        $('cellular-apn-password').value = stringFromValue(apnDict['Password']);
+        updateHidden('.apn-list-view', true);
+        updateHidden('.apn-details-view', false);
+      }
+    }
+  };
+
+  /**
+   * Enables or Disables all buttons that provide operations on the cellular
+   * network.
+   */
+  DetailsInternetPage.changeCellularButtonsState = function(disable) {
+    var buttonsToDisableList =
+        new Array('details-internet-login',
+                  'details-internet-disconnect',
+                  'details-internet-configure',
+                  'activate-details',
+                  'view-account-details');
+
+    for (var i = 0; i < buttonsToDisableList.length; ++i) {
+      var button = $(buttonsToDisableList[i]);
+      button.disabled = disable;
+    }
+  };
+
+  /**
+   * If the network is not already activated, starts the activation process or
+   * shows the activation UI. Otherwise does nothing.
+   */
+  DetailsInternetPage.activateCellular = function(guid) {
+    chrome.networkingPrivate.getProperties(guid, function(properties) {
+      var oncData = new OncData(properties);
+      if (oncData.getActiveValue('Cellular.ActivationState') == 'Activated') {
+        return;
+      }
+      var carrier = oncData.getActiveValue('Cellular.Carrier');
+      if (carrier == CarrierSprint) {
+        // Sprint is directly ativated, call startActivate().
+        chrome.networkingPrivate.startActivate(guid, '');
+      } else {
+        chrome.send('showMorePlanInfo', [guid]);
+      }
+    });
+  };
+
+  /**
+   * Performs minimal initialization of the InternetDetails dialog in
+   * preparation for showing proxy-settings.
+   */
+  DetailsInternetPage.initializeProxySettings = function() {
+    DetailsInternetPage.getInstance().initializePageContents_();
+  };
+
+  /**
+   * Displays the InternetDetails dialog with only the proxy settings visible.
+   */
+  DetailsInternetPage.showProxySettings = function() {
+    var detailsPage = DetailsInternetPage.getInstance();
+    $('network-details-header').hidden = true;
+    $('activate-details').hidden = true;
+    $('view-account-details').hidden = true;
+    $('web-proxy-auto-discovery').hidden = true;
+    detailsPage.showProxy_ = true;
+    updateHidden('#internet-tab', true);
+    updateHidden('#details-tab-strip', true);
+    updateHidden('#details-internet-page .action-area', true);
+    detailsPage.updateControls();
+    detailsPage.visible = true;
+    sendChromeMetricsAction('Options_NetworkShowProxyTab');
+  };
+
+  /**
+   * Initializes even handling for keyboard driven flow.
+   */
+  DetailsInternetPage.initializeKeyboardFlow = function() {
+    keyboard.initializeKeyboardFlow();
+  };
+
+  DetailsInternetPage.updateProxySettings = function(type) {
+      var proxyHost = null,
+          proxyPort = null;
+
+      if (type == 'cros.session.proxy.singlehttp') {
+        proxyHost = 'proxy-host-single-name';
+        proxyPort = 'proxy-host-single-port';
+      } else if (type == 'cros.session.proxy.httpurl') {
+        proxyHost = 'proxy-host-name';
+        proxyPort = 'proxy-host-port';
+      } else if (type == 'cros.session.proxy.httpsurl') {
+        proxyHost = 'secure-proxy-host-name';
+        proxyPort = 'secure-proxy-port';
+      } else if (type == 'cros.session.proxy.ftpurl') {
+        proxyHost = 'ftp-proxy';
+        proxyPort = 'ftp-proxy-port';
+      } else if (type == 'cros.session.proxy.socks') {
+        proxyHost = 'socks-host';
+        proxyPort = 'socks-port';
+      } else {
+        return;
+      }
+
+      var hostValue = $(proxyHost).value;
+      if (hostValue.indexOf(':') !== -1) {
+        if (hostValue.match(/:/g).length == 1) {
+          hostValue = hostValue.split(':');
+          $(proxyHost).value = hostValue[0];
+          $(proxyPort).value = hostValue[1];
+        }
+      }
+  };
+
+  DetailsInternetPage.loginFromDetails = function() {
+    DetailsInternetPage.configureOrConnect();
+    PageManager.closeOverlay();
+  };
+
+  /**
+   * This function identifies unconfigured networks and networks that are
+   * likely to fail (e.g. due to a bad passphrase on a previous connect
+   * attempt). For such networks a configure dialog will be opened. Otherwise
+   * a connection will be attempted.
+   */
+  DetailsInternetPage.configureOrConnect = function() {
+    var detailsPage = DetailsInternetPage.getInstance();
+    if (detailsPage.type_ == 'WiFi')
+      sendChromeMetricsAction('Options_NetworkConnectToWifi');
+    else if (detailsPage.type_ == 'VPN')
+      sendChromeMetricsAction('Options_NetworkConnectToVPN');
+
+    var onc = detailsPage.onc_;
+    var guid = onc.guid();
+    var type = onc.getActiveValue('Type');
+
+    // Built-in VPNs do not correctly set 'Connectable', so we always show the
+    // configuration UI.
+    if (type == 'VPN') {
+      if (onc.getActiveValue('VPN.Type') != 'ThirdPartyVPN') {
+        chrome.send('configureNetwork', [guid]);
+        return;
+      }
+    }
+
+    // If 'Connectable' is false for WiFi or WiMAX, Shill requires
+    // additional configuration to connect, so show the configuration UI.
+    if ((type == 'WiFi' || type == 'WiMAX') &&
+        !onc.getActiveValue('Connectable')) {
+      chrome.send('configureNetwork', [guid]);
+      return;
+    }
+
+    // Secure WiFi networks with ErrorState set most likely require
+    // configuration (e.g. a correct passphrase) before connecting.
+    if (type == 'WiFi' && onc.getWiFiSecurity() != 'None') {
+      var errorState = onc.getActiveValue('ErrorState');
+      if (errorState && errorState != 'Unknown') {
+        chrome.send('configureNetwork', [guid]);
+        return;
+      }
+    }
+
+    // Cellular networks need to be activated before they can be connected to.
+    if (type == 'Cellular') {
+      var activationState = onc.getActiveValue('Cellular.ActivationState');
+      if (activationState != 'Activated' && activationState != 'Unknown') {
+        DetailsInternetPage.activateCellular(guid);
+        return;
+      }
+    }
+
+    chrome.networkingPrivate.startConnect(guid);
+  };
+
+  DetailsInternetPage.disconnectNetwork = function() {
+    var detailsPage = DetailsInternetPage.getInstance();
+    if (detailsPage.type_ == 'WiFi')
+      sendChromeMetricsAction('Options_NetworkDisconnectWifi');
+    else if (detailsPage.type_ == 'VPN')
+      sendChromeMetricsAction('Options_NetworkDisconnectVPN');
+    chrome.networkingPrivate.startDisconnect(detailsPage.onc_.guid());
+    PageManager.closeOverlay();
+  };
+
+  DetailsInternetPage.configureNetwork = function() {
+    var detailsPage = DetailsInternetPage.getInstance();
+    // This is an explicit request to show the configure dialog; do not show
+    // the enrollment dialog for networks missing a certificate.
+    var forceShow = true;
+    chrome.send('configureNetwork', [detailsPage.onc_.guid(), forceShow]);
+    PageManager.closeOverlay();
+  };
+
+  DetailsInternetPage.activateFromDetails = function() {
+    var detailsPage = DetailsInternetPage.getInstance();
+    if (detailsPage.type_ == 'Cellular')
+      DetailsInternetPage.activateCellular(detailsPage.onc_.guid());
+    PageManager.closeOverlay();
+  };
+
+  /**
+   * Event handler called when the details page is closed. Sends changed
+   * properties to Chrome and closes the overlay.
+   */
+  DetailsInternetPage.setDetails = function() {
+    var detailsPage = DetailsInternetPage.getInstance();
+    var type = detailsPage.type_;
+    var oncData = new OncData({});
+    var autoConnectCheckboxId = '';
+    if (type == 'WiFi') {
+      var preferredCheckbox =
+          assertInstanceof($('prefer-network-wifi'), HTMLInputElement);
+      if (!preferredCheckbox.hidden && !preferredCheckbox.disabled) {
+        var kPreferredPriority = 1;
+        var priority = preferredCheckbox.checked ? kPreferredPriority : 0;
+        oncData.setProperty('Priority', priority);
+        sendChromeMetricsAction('Options_NetworkSetPrefer');
+      }
+      autoConnectCheckboxId = 'auto-connect-network-wifi';
+    } else if (type == 'WiMAX') {
+      autoConnectCheckboxId = 'auto-connect-network-wimax';
+    } else if (type == 'Cellular') {
+      autoConnectCheckboxId = 'auto-connect-network-cellular';
+    } else if (type == 'VPN') {
+      var providerType = detailsPage.onc_.getActiveValue('VPN.Type');
+      if (providerType != 'ThirdPartyVPN') {
+        oncData.setProperty('VPN.Type', providerType);
+        oncData.setProperty('VPN.Host', $('inet-server-hostname').value);
+        autoConnectCheckboxId = 'auto-connect-network-vpn';
+      }
+    }
+    if (autoConnectCheckboxId != '') {
+      var autoConnectCheckbox =
+          assertInstanceof($(autoConnectCheckboxId), HTMLInputElement);
+      if (!autoConnectCheckbox.hidden && !autoConnectCheckbox.disabled) {
+        var autoConnectKey = type + '.AutoConnect';
+        oncData.setProperty(autoConnectKey, !!autoConnectCheckbox.checked);
+        sendChromeMetricsAction('Options_NetworkAutoConnect');
+      }
+    }
+
+    var nameServerTypes = ['automatic', 'google', 'user'];
+    var nameServerType = 'automatic';
+    for (var i = 0; i < nameServerTypes.length; ++i) {
+      if ($(nameServerTypes[i] + '-dns-radio').checked) {
+        nameServerType = nameServerTypes[i];
+        break;
+      }
+    }
+    var ipConfig = detailsPage.getIpConfig_(nameServerType);
+    var ipAddressType = ('IPAddress' in ipConfig) ? 'Static' : 'DHCP';
+    var nameServersType = ('NameServers' in ipConfig) ? 'Static' : 'DHCP';
+    oncData.setProperty('IPAddressConfigType', ipAddressType);
+    oncData.setProperty('NameServersConfigType', nameServersType);
+    oncData.setProperty('StaticIPConfig', ipConfig);
+
+    var data = oncData.getData();
+    if (Object.keys(data).length > 0) {
+      // TODO(stevenjb): Only set changed properties.
+      chrome.networkingPrivate.setProperties(detailsPage.onc_.guid(), data);
+    }
+
+    PageManager.closeOverlay();
+  };
+
+  /**
+   * Event handler called when the name server type changes.
+   * @param {string} type The selected name sever type, 'automatic', 'google',
+   *                      or 'user'.
+   */
+  DetailsInternetPage.updateNameServerDisplay = function(type) {
+    var editable = type == 'user';
+    var fields = [$('ipconfig-dns1'), $('ipconfig-dns2'),
+                  $('ipconfig-dns3'), $('ipconfig-dns4')];
+    for (var i = 0; i < fields.length; ++i) {
+      fields[i].editable = editable;
+    }
+    if (editable)
+      $('ipconfig-dns1').focus();
+
+    var automaticDns = $('automatic-dns-display');
+    var googleDns = $('google-dns-display');
+    var userDns = $('user-dns-settings');
+    switch (type) {
+      case 'automatic':
+        automaticDns.setAttribute('selected', '');
+        googleDns.removeAttribute('selected');
+        userDns.removeAttribute('selected');
+        break;
+      case 'google':
+        automaticDns.removeAttribute('selected');
+        googleDns.setAttribute('selected', '');
+        userDns.removeAttribute('selected');
+        break;
+      case 'user':
+        automaticDns.removeAttribute('selected');
+        googleDns.removeAttribute('selected');
+        userDns.setAttribute('selected', '');
+        break;
+    }
+  };
+
+  /**
+   * Method called from Chrome when the ONC properties for the displayed
+   * network may have changed.
+   * @param {Object} oncData The updated ONC dictionary for the network.
+   */
+  DetailsInternetPage.updateConnectionData = function(oncData) {
+    var detailsPage = DetailsInternetPage.getInstance();
+    if (!detailsPage.visible)
+      return;
+
+    if (oncData.GUID != detailsPage.onc_.guid())
+      return;
+
+    // Update our cached data object.
+    detailsPage.onc_ = new OncData(oncData);
+
+    detailsPage.populateHeader_();
+    detailsPage.updateConnectionButtonVisibility_();
+    detailsPage.updateDetails_();
+  };
+
+  /**
+   * Initializes the details page with the provided ONC data.
+   * @param {Object} oncData Dictionary of ONC properties.
+   */
+  DetailsInternetPage.initializeDetailsPage = function(oncData) {
+    var onc = new OncData(oncData);
+
+    var detailsPage = DetailsInternetPage.getInstance();
+    detailsPage.onc_ = onc;
+    var type = onc.getActiveValue('Type');
+    detailsPage.type_ = type;
+
+    sendShowDetailsMetrics(type, onc.getActiveValue('ConnectionState'));
+
+    detailsPage.populateHeader_();
+    detailsPage.updateConnectionButtonVisibility_();
+    detailsPage.updateDetails_();
+
+    // TODO(stevenjb): Some of the setup below should be moved to
+    // updateDetails_() so that updates are reflected in the UI.
+
+    // Only show proxy for remembered networks.
+    var remembered = onc.getSource() != 'None';
+    if (remembered) {
+      detailsPage.showProxy_ = true;
+      // Inform Chrome which network to use for proxy configuration.
+      chrome.send('selectNetwork', [detailsPage.onc_.guid()]);
+    } else {
+      detailsPage.showProxy_ = false;
+    }
+
+    $('web-proxy-auto-discovery').hidden = true;
+
+    var restricted = onc.getActiveValue('RestrictedConnectivity');
+    var restrictedString = loadTimeData.getString(
+        restricted ? 'restrictedYes' : 'restrictedNo');
+
+    // These objects contain an 'automatic' property that is displayed when
+    // ip-automatic-configuration-checkbox is checked, and a 'value' property
+    // that is displayed when unchecked and used to set the associated ONC
+    // property for StaticIPConfig on commit.
+    var inetAddress = {};
+    var inetNetmask = {};
+    var inetGateway = {};
+    var ipv6Address = {};
+
+    var inetNameServersString;
+
+    var ipconfigList = onc.getActiveValue('IPConfigs');
+    if (Array.isArray(ipconfigList)) {
+      for (var i = 0; i < ipconfigList.length; ++i) {
+        var ipconfig = ipconfigList[i];
+        var ipType = ipconfig['Type'];
+        var address = ipconfig['IPAddress'];
+        if (ipType != 'IPv4') {
+          if (ipType == 'IPv6' && !ipv6Address.value) {
+            ipv6Address.automatic = address;
+            ipv6Address.value = address;
+          }
+          continue;
+        }
+        if (inetAddress.value)
+          continue;  // ipv4 address already provided.
+        inetAddress.automatic = address;
+        inetAddress.value = address;
+        var netmask = prefixLengthToNetmask(ipconfig['RoutingPrefix']);
+        inetNetmask.automatic = netmask;
+        inetNetmask.value = netmask;
+        var gateway = ipconfig['Gateway'];
+        inetGateway.automatic = gateway;
+        inetGateway.value = gateway;
+        if ('WebProxyAutoDiscoveryUrl' in ipconfig) {
+          $('web-proxy-auto-discovery').hidden = false;
+          $('web-proxy-auto-discovery-url').value =
+              ipconfig['WebProxyAutoDiscoveryUrl'];
+        }
+        if ('NameServers' in ipconfig) {
+          var inetNameServers = ipconfig['NameServers'];
+          inetNameServers = inetNameServers.sort();
+          inetNameServersString = inetNameServers.join(',');
+        }
+      }
+    }
+
+    // Override the 'automatic' properties with the saved DHCP values if the
+    // saved value is set, and set any unset 'value' properties.
+    var savedNameServersString;
+    var savedIpAddress = onc.getActiveValue('SavedIPConfig.IPAddress');
+    if (savedIpAddress != undefined) {
+      inetAddress.automatic = savedIpAddress;
+      if (!inetAddress.value)
+        inetAddress.value = savedIpAddress;
+    }
+    var savedPrefix = onc.getActiveValue('SavedIPConfig.RoutingPrefix');
+    if (savedPrefix != undefined) {
+      assert(typeof savedPrefix == 'number');
+      var savedNetmask = prefixLengthToNetmask(
+          /** @type {number} */(savedPrefix));
+      inetNetmask.automatic = savedNetmask;
+      if (!inetNetmask.value)
+        inetNetmask.value = savedNetmask;
+    }
+    var savedGateway = onc.getActiveValue('SavedIPConfig.Gateway');
+    if (savedGateway != undefined) {
+      inetGateway.automatic = savedGateway;
+      if (!inetGateway.value)
+        inetGateway.value = savedGateway;
+    }
+
+    var savedNameServers = onc.getActiveValue('SavedIPConfig.NameServers');
+    if (savedNameServers) {
+      savedNameServers = savedNameServers.sort();
+      savedNameServersString = savedNameServers.join(',');
+    }
+
+    var ipAutoConfig = 'automatic';
+    if (onc.getActiveValue('IPAddressConfigType') == 'Static') {
+      ipAutoConfig = 'user';
+      var staticIpAddress = onc.getActiveValue('StaticIPConfig.IPAddress');
+      inetAddress.user = staticIpAddress;
+      inetAddress.value = staticIpAddress;
+
+      var staticPrefix = onc.getActiveValue('StaticIPConfig.RoutingPrefix');
+      if (typeof staticPrefix != 'number')
+        staticPrefix = 0;
+      var staticNetmask = prefixLengthToNetmask(
+          /** @type {number} */ (staticPrefix));
+      inetNetmask.user = staticNetmask;
+      inetNetmask.value = staticNetmask;
+
+      var staticGateway = onc.getActiveValue('StaticIPConfig.Gateway');
+      inetGateway.user = staticGateway;
+      inetGateway.value = staticGateway;
+    }
+
+    var staticNameServersString;
+    if (onc.getActiveValue('NameServersConfigType') == 'Static') {
+      var staticNameServers = onc.getActiveValue('StaticIPConfig.NameServers');
+      staticNameServers = staticNameServers.sort();
+      staticNameServersString = staticNameServers.join(',');
+    }
+
+    $('ip-automatic-configuration-checkbox').checked =
+        ipAutoConfig == 'automatic';
+
+    inetAddress.autoConfig = ipAutoConfig;
+    inetNetmask.autoConfig = ipAutoConfig;
+    inetGateway.autoConfig = ipAutoConfig;
+
+    var configureAddressField = function(field, model) {
+      IPAddressField.decorate(field);
+      field.model = model;
+      field.editable = model.autoConfig == 'user';
+    };
+    configureAddressField($('ip-address'), inetAddress);
+    configureAddressField($('ipv6-address'), ipv6Address);
+    configureAddressField($('ip-netmask'), inetNetmask);
+    configureAddressField($('ip-gateway'), inetGateway);
+
+    // Set Nameserver fields. Nameservers are 'automatic' by default. If a
+    // static namerserver is set, use that unless it does not match a non
+    // empty 'NameServers' value (indicating that the custom nameservers are
+    // invalid or not being applied for some reason). TODO(stevenjb): Only
+    // set these properites if they change so that invalid custom values do
+    // not get lost.
+    var nameServerType = 'automatic';
+    if (staticNameServersString &&
+        (!inetNameServersString ||
+         staticNameServersString == inetNameServersString)) {
+      if (staticNameServersString == GoogleNameServers.join(','))
+        nameServerType = 'google';
+      else
+        nameServerType = 'user';
+    }
+    if (nameServerType == 'automatic')
+      $('automatic-dns-display').textContent = inetNameServersString;
+    else
+      $('automatic-dns-display').textContent = savedNameServersString;
+    $('google-dns-display').textContent = GoogleNameServers.join(',');
+
+    var nameServersUser = [];
+    if (staticNameServers) {
+      nameServersUser = staticNameServers;
+    } else if (savedNameServers) {
+      // Pre-populate with values provided by DHCP server.
+      nameServersUser = savedNameServers;
+    }
+
+    var nameServerModels = [];
+    for (var i = 0; i < 4; ++i)
+      nameServerModels.push({value: nameServersUser[i] || ''});
+
+    $(nameServerType + '-dns-radio').checked = true;
+    configureAddressField($('ipconfig-dns1'), nameServerModels[0]);
+    configureAddressField($('ipconfig-dns2'), nameServerModels[1]);
+    configureAddressField($('ipconfig-dns3'), nameServerModels[2]);
+    configureAddressField($('ipconfig-dns4'), nameServerModels[3]);
+
+    DetailsInternetPage.updateNameServerDisplay(nameServerType);
+
+    var macAddress = onc.getActiveValue('MacAddress');
+    if (macAddress) {
+      $('hardware-address').textContent = macAddress;
+      $('hardware-address-row').style.display = 'table-row';
+    } else {
+      // This is most likely a device without a hardware address.
+      $('hardware-address-row').style.display = 'none';
+    }
+
+    var setOrHideParent = function(field, property) {
+      if (property != undefined) {
+        $(field).textContent = property;
+        $(field).parentElement.hidden = false;
+      } else {
+        $(field).parentElement.hidden = true;
+      }
+    };
+
+    var networkName = onc.getTranslatedValue('Name');
+
+    // Signal strength as percentage (for WiFi and WiMAX).
+    var signalStrength;
+    if (type == 'WiFi' || type == 'WiMAX')
+      signalStrength = onc.getActiveValue(type + '.SignalStrength');
+    if (!signalStrength)
+      signalStrength = 0;
+    var strengthFormat = loadTimeData.getString('inetSignalStrengthFormat');
+    var strengthString = strengthFormat.replace('$1', signalStrength);
+
+    if (type == 'WiFi') {
+      OptionsPage.showTab($('wifi-network-nav-tab'));
+      $('wifi-restricted-connectivity').textContent = restrictedString;
+      var ssid = onc.getActiveValue('WiFi.SSID');
+      $('wifi-ssid').textContent = ssid ? ssid : networkName;
+      setOrHideParent('wifi-bssid', onc.getActiveValue('WiFi.BSSID'));
+      var security = onc.getWiFiSecurity();
+      if (security == 'None')
+        security = undefined;
+      setOrHideParent('wifi-security', security);
+      // Frequency is in MHz.
+      var frequency = onc.getActiveValue('WiFi.Frequency');
+      if (!frequency)
+        frequency = 0;
+      var frequencyFormat = loadTimeData.getString('inetFrequencyFormat');
+      frequencyFormat = frequencyFormat.replace('$1', frequency);
+      $('wifi-frequency').textContent = frequencyFormat;
+      $('wifi-signal-strength').textContent = strengthString;
+      setOrHideParent('wifi-hardware-address',
+                      onc.getActiveValue('MacAddress'));
+      var priority = onc.getActiveValue('Priority');
+      $('prefer-network-wifi').checked = priority > 0;
+      $('prefer-network-wifi').disabled = !remembered;
+      $('auto-connect-network-wifi').checked =
+          onc.getActiveValue('WiFi.AutoConnect');
+      $('auto-connect-network-wifi').disabled = !remembered;
+    } else if (type == 'WiMAX') {
+      OptionsPage.showTab($('wimax-network-nav-tab'));
+      $('wimax-restricted-connectivity').textContent = restrictedString;
+
+      $('auto-connect-network-wimax').checked =
+          onc.getActiveValue('WiMAX.AutoConnect');
+      $('auto-connect-network-wimax').disabled = !remembered;
+      var identity = onc.getActiveValue('WiMAX.EAP.Identity');
+      setOrHideParent('wimax-eap-identity', identity);
+      $('wimax-signal-strength').textContent = strengthString;
+    } else if (type == 'Cellular') {
+      OptionsPage.showTab($('cellular-conn-nav-tab'));
+
+      var isGsm = onc.getActiveValue('Cellular.Family') == 'GSM';
+
+      $('service-name').textContent = networkName;
+
+      // TODO(stevenjb): Ideally many of these should be localized.
+      $('network-technology').textContent =
+          onc.getActiveValue('Cellular.NetworkTechnology');
+      $('roaming-state').textContent =
+          onc.getTranslatedValue('Cellular.RoamingState');
+      $('cellular-restricted-connectivity').textContent = restrictedString;
+      $('error-state').textContent = onc.getActiveValue('ErrorState');
+      $('manufacturer').textContent =
+          onc.getActiveValue('Cellular.Manufacturer');
+      $('model-id').textContent = onc.getActiveValue('Cellular.ModelID');
+      $('firmware-revision').textContent =
+          onc.getActiveValue('Cellular.FirmwareRevision');
+      $('hardware-revision').textContent =
+          onc.getActiveValue('Cellular.HardwareRevision');
+      $('mdn').textContent = onc.getActiveValue('Cellular.MDN');
+
+      // Show ServingOperator properties only if available.
+      var servingOperatorName =
+          onc.getActiveValue('Cellular.ServingOperator.Name');
+      var servingOperatorCode =
+          onc.getActiveValue('Cellular.ServingOperator.Code');
+      if (servingOperatorName != undefined &&
+          servingOperatorCode != undefined) {
+        $('operator-name').textContent = servingOperatorName;
+        $('operator-code').textContent = servingOperatorCode;
+      } else {
+        $('operator-name').parentElement.hidden = true;
+        $('operator-code').parentElement.hidden = true;
+      }
+      // Make sure that GSM/CDMA specific properties that shouldn't be hidden
+      // are visible.
+      updateHidden('#details-internet-page .gsm-only', false);
+      updateHidden('#details-internet-page .cdma-only', false);
+
+      // Show IMEI/ESN/MEID/MIN/PRL only if they are available.
+      setOrHideParent('esn', onc.getActiveValue('Cellular.ESN'));
+      setOrHideParent('imei', onc.getActiveValue('Cellular.IMEI'));
+      setOrHideParent('meid', onc.getActiveValue('Cellular.MEID'));
+      setOrHideParent('min', onc.getActiveValue('Cellular.MIN'));
+      setOrHideParent('prl-version', onc.getActiveValue('Cellular.PRLVersion'));
+
+      if (isGsm) {
+        $('iccid').textContent = onc.getActiveValue('Cellular.ICCID');
+        $('imsi').textContent = onc.getActiveValue('Cellular.IMSI');
+        detailsPage.initializeApnList_();
+      }
+      $('auto-connect-network-cellular').checked =
+          onc.getActiveValue('Cellular.AutoConnect');
+      $('auto-connect-network-cellular').disabled = false;
+    } else if (type == 'VPN') {
+      OptionsPage.showTab($('vpn-nav-tab'));
+      var providerType = onc.getActiveValue('VPN.Type');
+      var isThirdPartyVPN = providerType == 'ThirdPartyVPN';
+      $('vpn-tab').classList.toggle('third-party-vpn-provider',
+                                    isThirdPartyVPN);
+
+      $('inet-service-name').textContent = networkName;
+      $('inet-provider-type').textContent =
+          onc.getTranslatedValue('VPN.Type');
+
+      if (isThirdPartyVPN) {
+        $('inet-provider-name').textContent =
+            onc.getActiveValue('VPN.ThirdPartyVPN.ProviderName');
+      } else {
+        var usernameKey;
+        if (providerType == 'OpenVPN')
+          usernameKey = 'VPN.OpenVPN.Username';
+        else if (providerType == 'L2TP-IPsec')
+          usernameKey = 'VPN.L2TP.Username';
+
+        if (usernameKey) {
+          $('inet-username').parentElement.hidden = false;
+          $('inet-username').textContent = onc.getActiveValue(usernameKey);
+        } else {
+          $('inet-username').parentElement.hidden = true;
+        }
+        var inetServerHostname = $('inet-server-hostname');
+        inetServerHostname.value = onc.getActiveValue('VPN.Host');
+        inetServerHostname.resetHandler = function() {
+          PageManager.hideBubble();
+          var recommended = onc.getRecommendedValue('VPN.Host');
+          if (recommended != undefined)
+            inetServerHostname.value = recommended;
+        };
+        $('auto-connect-network-vpn').checked =
+            onc.getActiveValue('VPN.AutoConnect');
+        $('auto-connect-network-vpn').disabled = false;
+      }
+    } else {
+      OptionsPage.showTab($('internet-nav-tab'));
+    }
+
+    // Update controlled option indicators.
+    var indicators = cr.doc.querySelectorAll(
+        '#details-internet-page .controlled-setting-indicator');
+    for (var i = 0; i < indicators.length; i++) {
+      var managed = indicators[i].hasAttribute('managed');
+      // TODO(stevenjb): Eliminate support for 'data' once 39 is stable.
+      var attributeName = managed ? 'managed' : 'data';
+      var propName = indicators[i].getAttribute(attributeName);
+      if (!propName)
+        continue;
+      var propValue = managed ?
+          onc.getManagedProperty(propName) :
+          onc.getActiveValue(propName);
+      // If the property is unset or unmanaged (i.e. not an Object) skip it.
+      if (propValue == undefined || (typeof propValue != 'object'))
+        continue;
+      var event;
+      if (managed)
+        event = detailsPage.createManagedEvent_(propName, propValue);
+      else
+        event = detailsPage.createControlledEvent_(propName,
+            /** @type {{value: *, controlledBy: *, recommendedValue: *}} */(
+                propValue));
+      indicators[i].handlePrefChange(event);
+      var forElement = $(indicators[i].getAttribute('internet-detail-for'));
+      if (forElement) {
+        if (event.value.controlledBy == 'policy')
+          forElement.disabled = true;
+        if (forElement.resetHandler)
+          indicators[i].resetHandler = forElement.resetHandler;
+      }
+    }
+
+    detailsPage.updateControls();
+
+    // Don't show page name in address bar and in history to prevent people
+    // navigate here by hand and solve issue with page session restore.
+    PageManager.showPageByName('detailsInternetPage', false);
+  };
+
+  return {
+    DetailsInternetPage: DetailsInternetPage
+  };
+});
+</script>
+<script>// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('options.proxyexceptions', function() {
+  /** @const */ var List = cr.ui.List;
+  /** @const */ var ListItem = cr.ui.ListItem;
+  /** @const */ var ArrayDataModel = cr.ui.ArrayDataModel;
+
+  /**
+   * Creates a new exception list.
+   * @param {Object=} opt_propertyBag Optional properties.
+   * @constructor
+   * @extends {cr.ui.List}
+   */
+  var ProxyExceptions = cr.ui.define('list');
+
+  ProxyExceptions.prototype = {
+    __proto__: List.prototype,
+
+    pref: 'cros.session.proxy.ignorelist',
+
+    /** @override */
+    decorate: function() {
+      List.prototype.decorate.call(this);
+      this.autoExpands = true;
+
+      // HACK(arv): http://crbug.com/40902
+      window.addEventListener('resize', this.redraw.bind(this));
+
+      this.addEventListener('click', this.handleClick_);
+
+      var self = this;
+
+      // Listens to pref changes.
+      Preferences.getInstance().addEventListener(this.pref,
+          function(event) {
+            self.load_(event.value.value);
+          });
+    },
+
+    /**
+     * @override
+     * @param {Object} exception
+     */
+    createItem: function(exception) {
+      return new ProxyExceptionsItem(exception);
+    },
+
+    /**
+     * Adds given exception to model and update backend.
+     * @param {Object} exception A exception to be added to exception list.
+     */
+    addException: function(exception) {
+      this.dataModel.push(exception);
+      this.updateBackend_();
+    },
+
+    /**
+     * Removes given exception from model and update backend.
+     */
+    removeException: function(exception) {
+      var dataModel = this.dataModel;
+
+      var index = dataModel.indexOf(exception);
+      if (index >= 0) {
+        dataModel.splice(index, 1);
+        this.updateBackend_();
+      }
+    },
+
+    /**
+     * Handles the clicks on the list and triggers exception removal if the
+     * click is on the remove exception button.
+     * @private
+     * @param {!Event} e The click event object.
+     */
+    handleClick_: function(e) {
+      // Handle left button click
+      if (e.button == 0) {
+        var el = e.target;
+        if (el.className == 'remove-exception-button') {
+          this.removeException(el.parentNode.exception);
+        }
+      }
+    },
+
+    /**
+     * Loads given exception list.
+     * @param {!Array} exceptions An array of exception object.
+     */
+    load_: function(exceptions) {
+      this.dataModel = new ArrayDataModel(exceptions);
+    },
+
+    /**
+     * Updates backend.
+     */
+    updateBackend_: function() {
+      Preferences.setListPref(this.pref, this.dataModel.slice(), true);
+    }
+  };
+
+  /**
+   * Creates a new exception list item.
+   * @param {Object} exception The exception account this represents.
+   * @constructor
+   * @extends {cr.ui.ListItem}
+   */
+  function ProxyExceptionsItem(exception) {
+    var el = cr.doc.createElement('div');
+    el.exception = exception;
+    ProxyExceptionsItem.decorate(el);
+    return el;
+  }
+
+  /**
+   * Decorates an element as a exception account item.
+   * @param {!HTMLElement} el The element to decorate.
+   */
+  ProxyExceptionsItem.decorate = function(el) {
+    el.__proto__ = ProxyExceptionsItem.prototype;
+    el.decorate();
+  };
+
+  ProxyExceptionsItem.prototype = {
+    __proto__: ListItem.prototype,
+
+    /** @override */
+    decorate: function() {
+      ListItem.prototype.decorate.call(this);
+      this.className = 'exception-list-item';
+
+      var labelException = this.ownerDocument.createElement('span');
+      labelException.className = '';
+      labelException.textContent = this.exception;
+      this.appendChild(labelException);
+    }
+  };
+
+  return {
+    ProxyExceptions: ProxyExceptions
+  };
+});
+</script>
+<script>// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * Namespace for keyboard utility functions.
+ */
+var keyboard = {};
+
+/**
+ * Swallows keypress and keyup events of arrow keys.
+ * @param {Event} event Raised event.
+ * @private
+ */
+keyboard.onKeyIgnore_ = function(event) {
+  event = /** @type {KeyboardEvent} */(event);
+
+  if (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)
+    return;
+
+  if (event.keyIdentifier == 'Left' ||
+      event.keyIdentifier == 'Right' ||
+      event.keyIdentifier == 'Up' ||
+      event.keyIdentifier == 'Down') {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+};
+
+/**
+ * Converts arrow keys into tab/shift-tab key events.
+ * @param {Event} event Raised event.
+ * @private
+ */
+keyboard.onKeyDown_ = function(event) {
+  event = /** @type {KeyboardEvent} */(event);
+
+  if (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)
+    return;
+
+  // This file also gets embedded inside of the CfM/hotrod enrollment webview.
+  // Events will bubble down into the webview, which means that the event
+  // handler from the webui will steal the events meant for the webview. So we
+  // have to disable the webui handler if the active element is the webview.
+  //
+  // $ is defined differently depending on how this file gets executed; we have
+  // to use document.getElementById to get consistent behavior.
+  //
+  // See crbug.com/543865.
+  if (document.activeElement ===
+      document.getElementById('oauth-enroll-auth-view'))
+    return;
+
+  var needsUpDownKeys = event.target.classList.contains('needs-up-down-keys');
+
+  if (event.keyIdentifier == 'Left' ||
+      (!needsUpDownKeys && event.keyIdentifier == 'Up')) {
+    keyboard.raiseKeyFocusPrevious(document.activeElement);
+    event.stopPropagation();
+    event.preventDefault();
+  } else if (event.keyIdentifier == 'Right' ||
+             (!needsUpDownKeys && event.keyIdentifier == 'Down')) {
+    keyboard.raiseKeyFocusNext(document.activeElement);
+    event.stopPropagation();
+    event.preventDefault();
+  }
+};
+
+/**
+ * Raises tab/shift-tab keyboard events.
+ * @param {HTMLElement} element Element that should receive the event.
+ * @param {string} eventType Keyboard event type.
+ * @param {boolean} shift True if shift should be on.
+ * @private
+ */
+keyboard.raiseTabKeyEvent_ = function(element, eventType, shift) {
+  var event = document.createEvent('KeyboardEvent');
+  event.initKeyboardEvent(
+      eventType,
+      true,  // canBubble
+      true,  // cancelable
+      window,
+      'U+0009',
+      0,  // keyLocation
+      false,  // ctrl
+      false,  // alt
+      shift,  // shift
+      false);  // meta
+  element.dispatchEvent(event);
+};
+
+/**
+ * Raises shift+tab keyboard events to focus previous element.
+ * @param {HTMLElement} element Element that should receive the event.
+ */
+keyboard.raiseKeyFocusPrevious = function(element) {
+  keyboard.raiseTabKeyEvent_(element, 'keydown', true);
+  keyboard.raiseTabKeyEvent_(element, 'keypress', true);
+  keyboard.raiseTabKeyEvent_(element, 'keyup', true);
+};
+
+/**
+ * Raises tab keyboard events to focus next element.
+ * @param {HTMLElement} element Element that should receive the event.
+ */
+keyboard.raiseKeyFocusNext = function(element) {
+  keyboard.raiseTabKeyEvent_(element, 'keydown', false);
+  keyboard.raiseTabKeyEvent_(element, 'keypress', false);
+  keyboard.raiseTabKeyEvent_(element, 'keyup', false);
+};
+
+/**
+ * Initializes event handling for arrow keys driven focus flow.
+ */
+keyboard.initializeKeyboardFlow = function() {
+  document.addEventListener('keydown',
+      keyboard.onKeyDown_, true);
+  document.addEventListener('keypress',
+      keyboard.onKeyIgnore_, true);
+  document.addEventListener('keyup',
+      keyboard.onKeyIgnore_, true);
+};
+</script>
+
+<script>// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+var Preferences = options.Preferences;
+var DetailsInternetPage = options.internet.DetailsInternetPage;
+
+/**
+ * DOMContentLoaded handler, sets up the page.
+ */
+function load() {
+  if (cr.isChromeOS)
+    document.documentElement.setAttribute('os', 'chromeos');
+
+  // Decorate the existing elements in the document.
+  cr.ui.decorate('input[pref][type=checkbox]', options.PrefCheckbox);
+  cr.ui.decorate('input[pref][type=number]', options.PrefNumber);
+  cr.ui.decorate('input[pref][type=radio]', options.PrefRadio);
+  cr.ui.decorate('input[pref][type=range]', options.PrefRange);
+  cr.ui.decorate('select[pref]', options.PrefSelect);
+  cr.ui.decorate('input[pref][type=text]', options.PrefTextField);
+  cr.ui.decorate('input[pref][type=url]', options.PrefTextField);
+
+  DetailsInternetPage.initializeProxySettings();
+
+  // TODO(ivankr): remove when http://crosbug.com/20660 is resolved.
+  var inputs = document.querySelectorAll('input[pref]');
+  for (var i = 0, el; el = inputs[i]; i++) {
+    el.addEventListener('keyup', function(e) {
+      cr.dispatchSimpleEvent(this, 'change');
+    });
+  }
+
+  Preferences.getInstance().initialize();
+  chrome.send('coreOptionsInitialize');
+
+  var params = parseQueryParams(window.location);
+  var network = params.network;
+  if (!network) {
+    console.error('Error: No network argument provided!');
+    network = '';
+  }
+  chrome.send('selectNetwork', [network]);
+
+  DetailsInternetPage.showProxySettings();
+}
+
+disableTextSelectAndDrag(function(e) {
+  var src = e.target;
+  return src instanceof HTMLTextAreaElement ||
+         src instanceof HTMLInputElement &&
+         /text|url/.test(src.type);
+});
+
+document.addEventListener('DOMContentLoaded', load);
+</script>
+</head>
+
+<body>
+<div id="details-internet-page" class="page" hidden>
+  <div class="close-button"></div>
+  <!-- Network header -->
+  <div id="network-details-header">
+    <div id="network-details-title"></div>
+    <div id="network-details-subtitle">
+      <span id="network-details-subtitle-status"></span>
+      <span id="network-details-subtitle-separator"> - </span>
+      <span id="network-details-subtitle-type"></span>
+    </div>
+  </div>
+  <div id="internet-details-content-area" class="content-area">
+    <!-- Navigation tabs -->
+    <div id="details-tab-strip" class="subpages-nav-tabs">
+      <span id="wifi-network-nav-tab" class="tab wifi-details"
+          tab-contents="wifi-network-tab">
+        <span class="tab-label"
+            i18n-content="wifiNetworkTabLabel"></span>
+        <span class="active-tab-label"
+            i18n-content="wifiNetworkTabLabel"></span>
+      </span>
+      <span id="vpn-nav-tab" class="tab vpn-details"
+          tab-contents="vpn-tab">
+        <span class="tab-label"
+            i18n-content="vpnTabLabel"></span>
+        <span class="active-tab-label" i18n-content="vpnTabLabel"></span>
+      </span>
+      <span id="wimax-network-nav-tab" class="tab wimax-details"
+          tab-contents="wimax-network-tab">
+        <span class="tab-label"
+            i18n-content="wimaxConnTabLabel"></span>
+        <span class="active-tab-label"
+            i18n-content="wimaxConnTabLabel"></span>
+      </span>
+      <span id="cellular-conn-nav-tab" class="tab cellular-details"
+          tab-contents="cellular-conn-tab">
+        <span class="tab-label"
+            i18n-content="cellularConnTabLabel"></span>
+        <span class="active-tab-label"
+            i18n-content="cellularConnTabLabel"></span>
+      </span>
+      <span id="cellular-device-nav-tab" class="tab cellular-details"
+          tab-contents="cellular-device-tab">
+        <span class="tab-label"
+            i18n-content="cellularDeviceTabLabel"></span>
+        <span class="active-tab-label"
+            i18n-content="cellularDeviceTabLabel"></span>
+      </span>
+      <span id="internet-nav-tab" class="tab network-details"
+          tab-contents="internet-tab">
+        <span class="tab-label" i18n-content="networkTabLabel"></span>
+        <span class="active-tab-label" i18n-content="networkTabLabel"></span>
+      </span>
+      <span id="security-nav-tab" class="tab cellular-details gsm-only"
+          tab-contents="security-tab">
+        <span class="tab-label" i18n-content="securityTabLabel"></span>
+        <span class="active-tab-label" i18n-content="securityTabLabel"></span>
+      </span>
+      <span id="internet-proxy-nav-tab" class="tab proxy-details"
+          tab-contents="network-proxy-tab">
+        <span class="tab-label" i18n-content="proxyTabLabel"></span>
+        <span class="active-tab-label" i18n-content="proxyTabLabel"></span>
+      </span>
+    </div>
+    <div id="wifi-network-tab" class="subpages-tab-contents wifi-details">
+      <section>
+        <table class="option-control-table">
+          <tr id="prefer-network">
+            <td>
+              <div class="checkbox controlled-setting-with-label">
+                <label>
+                  <input id="prefer-network-wifi" type="checkbox">
+                  <span>
+                    <span i18n-content="inetPreferredNetwork"></span>
+                    <span class="controlled-setting-indicator"
+                          managed="Priority"
+                          internet-detail-for="prefer-network-wifi"></span>
+                  </span>
+                </label>
+              </div>
+            </td>
+          </tr>
+          <tr class="auto-connect-network">
+            <td>
+              <div class="checkbox controlled-setting-with-label">
+                <label>
+                  <input id="auto-connect-network-wifi" type="checkbox">
+                  <span>
+                    <span i18n-content="inetAutoConnectNetwork"></span>
+                    <span class="controlled-setting-indicator"
+                          managed="WiFi.AutoConnect"
+                          internet-detail-for="auto-connect-network-wifi">
+                    </span>
+                  </span>
+                </label>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </section>
+      <section>
+        <table id="wifi-settings-table">
+          <tr>
+            <td class="option-name" i18n-content="connectionState"></td>
+            <td id="wifi-connection-state" class="option-value"></td>
+          </tr>
+          <tr>
+            <td class="option-name" i18n-content="restrictedConnectivity"></td>
+            <td id="wifi-restricted-connectivity" class="option-value"></td>
+          </tr>
+          <tr>
+            <td class="option-name" i18n-content="inetSsid"></td>
+            <td id="wifi-ssid" class="option-value"></td>
+          </tr>
+          <tr id="wifi-bssid-entry">
+            <td class="option-name" i18n-content="inetBssid"></td>
+            <td id="wifi-bssid" class="option-value"></td>
+          </tr>
+          <tr id="wifi-security-entry">
+            <td class="options-name" i18n-content="inetEncryption"></td>
+            <td id="wifi-security" class="option-value"></td>
+          </tr>
+          <tr>
+            <td class="options-name" i18n-content="inetFrequency"></td>
+            <td id="wifi-frequency" class="option-value"></td>
+          </tr>
+          <tr>
+            <td class="options-name" i18n-content="inetSignalStrength"></td>
+            <td id="wifi-signal-strength" class="option-value"></td>
+          </tr>
+          <tr id="wifi-hardware-address-entry">
+            <td class="option-name" i18n-content="hardwareAddress"></td>
+            <td id="wifi-hardware-address" class="option-value"></td>
+          </tr>
+        </table>
+      </section>
+      <section>
+        <table class="option-control-table">
+          <tr>
+            <td id="password-details"  class="option-name"
+                i18n-content="inetPassProtected">
+            </td>
+          </tr>
+          <tr>
+            <td id="wifi-shared-network" class="option-name"
+                i18n-content="inetNetworkShared">
+            </td>
+          </tr>
+        </table>
+      </section>
+    </div>
+    <div id="wimax-network-tab" class="subpages-tab-contents wimax-details">
+      <section>
+        <table class="option-control-table">
+          <tr class="auto-connect-network">
+            <td>
+              <div class="checkbox controlled-setting-with-label">
+                <label>
+                  <input id="auto-connect-network-wimax" type="checkbox">
+                  <span>
+                    <span i18n-content="inetAutoConnectNetwork"></span>
+                    <span class="controlled-setting-indicator"
+                          managed="WiMAX.AutoConnect"
+                          internet-detail-for="auto-connect-network-wimax">
+                    </span>
+                  </span>
+                </label>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </section>
+      <section>
+        <table id="wimax-settings-table">
+          <tr>
+            <td class="option-name" i18n-content="connectionState"></td>
+            <td id="wimax-connection-state" class="option-value"></td>
+          </tr>
+          <tr>
+            <td class="option-name" i18n-content="restrictedConnectivity"></td>
+            <td id="wimax-restricted-connectivity" class="option-value"></td>
+          </tr>
+          <tr id="wimax-eap-identity-entry">
+            <td class="option-name" i18n-content="inetUsername"></td>
+            <td id="wimax-eap-identity" class="option-value"></td>
+          </tr>
+          <tr>
+            <td class="options-name" i18n-content="inetSignalStrength"></td>
+            <td id="wimax-signal-strength" class="option-value"></td>
+          </tr>
+        </table>
+      </section>
+      <section>
+        <table class="option-control-table">
+          <tr>
+            <td id="wimax-shared-network" class="option-name"
+                i18n-content="inetNetworkShared">
+            </td>
+          </tr>
+        </table>
+      </section>
+    </div>
+    <div id="vpn-tab" class="subpages-tab-contents vpn-details">
+      <section>
+        <table class="option-control-table">
+          <tr class="auto-connect-network built-in-vpn-provider-only">
+            <td>
+              <div class="checkbox controlled-setting-with-label">
+                <label>
+                  <input id="auto-connect-network-vpn" type="checkbox">
+                  <span>
+                    <span i18n-content="inetAutoConnectNetwork"></span>
+                    <span class="controlled-setting-indicator"
+                          managed="VPN.AutoConnect"
+                          internet-detail-for="auto-connect-network-vpn"></span>
+                  </span>
+                </label>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="option-name" i18n-content="inetServiceName"></td>
+            <td id="inet-service-name" class="option-value"></td>
+          </tr>
+          <tr class="built-in-vpn-provider-only">
+            <td class="option-name" i18n-content="inetServerHostname"></td>
+            <td>
+              <input class="option-value" id="inet-server-hostname"></input>
+              <span class="controlled-setting-indicator"
+                    managed="VPN.Host"
+                    internet-detail-for="inet-server-hostname"></span>
+            </td>
+          </tr>
+          <tr>
+            <td class="option-name" i18n-content="inetProviderType"></td>
+            <td id="inet-provider-type" class="option-value"></td>
+          </tr>
+          <tr class="third-party-vpn-provider-only">
+            <td class="option-name" i18n-content="inetProviderName"></td>
+            <td id="inet-provider-name" class="option-value"></td>
+          </tr>
+          <tr class="built-in-vpn-provider-only">
+            <td class="option-name" i18n-content="inetUsername"></td>
+            <td id="inet-username" class="option-value"></td>
+          </tr>
+        </table>
+      </section>
+    </div>
+    <div id="cellular-conn-tab" class="subpages-tab-contents cellular-details">
+      <section id="cellular-network-options">
+        <table class="option-control-table">
+          <tr>
+            <td class="option-name" i18n-content="serviceName"></td>
+            <td id="service-name" class="option-value"></td>
+          </tr>
+          <tr>
+            <td class="option-name" i18n-content="networkTechnology"></td>
+            <td id="network-technology" class="option-value"></td>
+          </tr>
+          <tr>
+            <td class="option-name" i18n-content="activationState"></td>
+            <td id="activation-state" class="option-value"></td>
+          </tr>
+          <tr>
+            <td class="option-name" i18n-content="roamingState"></td>
+            <td id="roaming-state" class="option-value"></td>
+          </tr>
+          <tr>
+            <td class="option-name" i18n-content="restrictedConnectivity"></td>
+            <td id="cellular-restricted-connectivity" class="option-value"></td>
+          </tr>
+          <tr>
+            <td class="option-name" i18n-content="operatorName"></td>
+            <td id="operator-name" class="option-value"></td>
+          </tr>
+          <tr>
+            <td class="option-name" i18n-content="operatorCode"></td>
+            <td id="operator-code" class="option-value"></td>
+          </tr>
+          <tr>
+            <td class="option-name" i18n-content="errorState"></td>
+            <td id="error-state" class="option-value"></td>
+          </tr>
+          <tr class="gsm-only apn-list-view">
+            <td class="option-name" i18n-content="cellularApnLabel"></td>
+            <td id="cellular-apn-label" class="option-value">
+              <select id="select-apn">
+                <option value="-1" i18n-content="cellularApnOther">
+                </option>
+              </select>
+              <span class="controlled-setting-indicator"
+                    managed="Cellular.APN"
+                    internet-detail-for="select-apn"></span>
+            </td>
+          </tr>
+          <tr class="gsm-only apn-details-view">
+            <td class="option-name" i18n-content="cellularApnLabel"></td>
+            <td id="cellular-apn-label" class="option-value">
+              <input id="cellular-apn" type="text">
+            </td>
+          </tr>
+          <tr class="gsm-only apn-details-view">
+            <td class="option-name" i18n-content="cellularApnUsername"></td>
+            <td id="cellular-apn-username-label" class="option-value">
+              <input id="cellular-apn-username" type="text">
+            </td>
+          </tr>
+          <tr class="gsm-only apn-details-view">
+            <td class="option-name" i18n-content="cellularApnPassword"></td>
+            <td id="cellular-apn-password-label" class="option-value">
+              <input id="cellular-apn-password" type="password">
+            </td>
+          </tr>
+          <tr class="gsm-only apn-details-view">
+            <td class="option-name"></td>
+            <td class="option-value">
+              <button id="cellular-apn-use-default"
+                  i18n-content="cellularApnUseDefault"></button>
+              <button id="cellular-apn-set"
+                  i18n-content="cellularApnSet"></button>
+              <button id="cellular-apn-cancel"
+                  i18n-content="cellularApnCancel"></button>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <div class="checkbox controlled-setting-with-label">
+                <label>
+                  <input id="auto-connect-network-cellular" type="checkbox">
+                  <span>
+                    <span i18n-content="inetAutoConnectNetwork"></span>
+                    <span class="controlled-setting-indicator"
+                          managed="Cellular.AutoConnect"
+                          internet-detail-for="auto-connect-network-cellular">
+                    </span>
+                  </span>
+                </label>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </section>
+    </div>
+    <div id="cellular-device-tab" class="subpages-tab-contents
+        cellular-details">
+      <section id="cellular-device-options">
+        <table class="option-control-table">
+          <tr>
+            <td class="option-name" i18n-content="cellularManufacturer"></td>
+            <td id="manufacturer" class="option-value"></td>
+          </tr>
+          <tr>
+            <td class="option-name" i18n-content="modelId"></td>
+            <td id="model-id" class="option-value"></td>
+          </tr>
+          <tr>
+            <td class="option-name" i18n-content="firmwareRevision"></td>
+            <td id="firmware-revision" class="option-value"></td>
+          </tr>
+          <tr>
+            <td class="option-name" i18n-content="hardwareRevision"></td>
+            <td id="hardware-revision" class="option-value"></td>
+          </tr>
+          <tr class="cdma-only">
+            <td class="option-name" i18n-content="prlVersion"></td>
+            <td id="prl-version" class="option-value"></td>
+          </tr>
+          <tr>
+            <td class="option-name">MEID:</td>
+            <td id="meid" class="option-value"></td>
+          </tr>
+          <tr class="gsm-only">
+            <td class="option-name">ICCID:</td>
+            <td id="iccid" class="option-value"></td>
+          </tr>
+          <tr>
+            <td class="option-name">ESN:</td>
+            <td id="esn" class="option-value"></td>
+          </tr>
+          <tr>
+            <td class="option-name">IMEI:</td>
+            <td id="imei" class="option-value"></td>
+          </tr>
+          <tr class="gsm-only">
+            <td class="option-name">IMSI:</td>
+            <td id="imsi" class="option-value"></td>
+          </tr>
+          <tr>
+            <td class="option-name">MDN:</td>
+            <td id="mdn" class="option-value"></td>
+          </tr>
+          <tr>
+            <td class="option-name">MIN/MSID:</td>
+            <td id="min" class="option-value"></td>
+          </tr>
+        </table>
+      </section>
+    </div>
+    <div id="internet-tab" class="subpages-tab-contents">
+      <section id="advanced-section">
+        <table class="option-control-table">
+          <tr>
+            <td class="option-name" i18n-content="connectionState"></td>
+            <td id="connection-state" class="option-value"></td>
+          </tr>
+          <tr id="hardware-address-row">
+            <td class="option-name" i18n-content="hardwareAddress"></td>
+             <td id="hardware-address" class="option-value"></td>
+          </tr>
+        </table>
+      </section>
+      <section id="ipconfig-section">
+        <div id="ip-automatic-configuration"
+            class="checkbox controlled-setting-with-label">
+          <label>
+            <input id="ip-automatic-configuration-checkbox"
+                type="checkbox">
+            <span>
+              <span i18n-content="ipAutomaticConfiguration"></span>
+              <span class="controlled-setting-indicator"
+                    managed="IPAddressConfigType"></span>
+            </span>
+          </label>
+        </div>
+        <div>
+        <table id="ip-address-settings">
+          <tr>
+            <td class="spacer" width="14px"></td>
+            <td class="option-name" i18n-content="inetAddress"></td>
+            <td><div id="ip-address"></div></td>
+          </tr>
+          <tr>
+            <td class="spacer" width="14px"></td>
+            <td class="option-name" id="ip-netmask-label"
+                i18n-content="inetNetmask"></td>
+            <td><div id="ip-netmask"></div></td>
+          </tr>
+          <tr>
+            <td class="spacer" width="14px"></td>
+            <td class="option-name" i18n-content="inetGateway"></td>
+            <td><div id="ip-gateway"></div></td>
+          </tr>
+          <tr>
+            <td class="spacer" width="14px"></td>
+            <td class="option-name" i18n-content="ipv6Address"></td>
+            <td><div id="ipv6-address"></div></td>
+          </tr>
+        </table>
+      </section>
+      <section id="ipconfig-dns-section">
+        <div class="radio">
+          <label>
+            <input id="automatic-dns-radio" type="radio" name="dnstype"
+                value="automatic">
+            <span>
+              <span i18n-content="automaticNameServers"></span>
+              <span class="controlled-setting-indicator"
+                    managed="NameServersConfigType"></span>
+            </span>
+          </label>
+        </div>
+        <div id="automatic-dns-display" class="dns-display"></div>
+        <div class="radio">
+          <label>
+            <input id="google-dns-radio" type="radio" name="dnstype"
+                value="google">
+            <span id="google-dns-label"></span>
+          </label>
+        </div>
+        <div id="google-dns-display" class="dns-display"></div>
+        <div class="radio">
+          <label>
+            <input id="user-dns-radio" type="radio" name="dnstype"
+                value="user">
+            <span i18n-content="userNameServers"></span>
+          </label>
+        </div>
+        <table id="user-dns-settings">
+          <tr>
+            <td class="spacer" width="14px"></td>
+            <td>
+              <div id="ipconfig-dns1" i18n-placeholder-text="userNameServer1"
+                  allow-empty>
+              </div>
+            </td>
+            <td>
+              <div id="ipconfig-dns2" i18n-placeholder-text="userNameServer2"
+                  allow-empty>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="spacer" width="14px"></td>
+            <td>
+              <div id="ipconfig-dns3" i18n-placeholder-text="userNameServer3"
+                  allow-empty>
+              </div>
+            </td>
+            <td>
+              <div id="ipconfig-dns4" i18n-placeholder-text="userNameServer4"
+                  allow-empty>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </section>
+    </div>
+    <div id="security-tab"
+         class="subpages-tab-contents cellular-details gsm-only">
+      <div id="cellular-security-options">
+        <section>
+          <div id="sim-pin-lock" class="checkbox controlled-setting-with-label">
+            <label>
+              <input id="sim-card-lock-enabled" type="checkbox">
+              <span>
+                <span i18n-content="lockSimCard"></span>
+                <span class="controlled-setting-indicator"
+                      managed="Cellular.SIMLockStatus.LockEnabled"
+                      internet-detail-for="sim-card-lock-enabled"></span>
+              </span>
+            </label>
+          </div>
+        </section>
+        <section>
+          <div id="change-pin-area">
+            <button id="change-pin" i18n-content="changePinButton"></button>
+            <span class="controlled-setting-indicator"
+                  managed="Cellular.SIMLockStatus.LockType"
+                  internet-detail-for="change-pin"></span>
+          </div>
+        </section>
+      </div>
+    </div>
+    <div id="network-proxy-tab" class="subpages-tab-contents">
+      <section>
+        <div id="network-proxy-info-banner" hidden>
+          <span id="banner-text" class="page-banner-text"></span>
+        </div>
+        <div class="radio">
+          <label>
+            <input id="direct-proxy" type="radio" name="proxytype" value="1"
+                pref="cros.session.proxy.type">
+            <span i18n-content="proxyDirectInternetConnection"></span>
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            <input id="auto-proxy" type="radio" name="proxytype" value="3"
+                pref="cros.session.proxy.type">
+            <span i18n-content="proxyAutomatic"></span>
+          </label>
+        </div>
+        <div class="proxy-subsection" id="auto-proxy-parms">
+          <div class="checkbox">
+            <label>
+              <input id="proxy-use-pac-url" type="checkbox"
+                  pref="cros.session.proxy.usepacurl">
+              <span i18n-content="proxyUseConfigUrl"></span>
+            </label>
+          </div>
+          <div>
+            <label>
+              <input id="proxy-pac-url" type="url" size="50"
+                  pref="cros.session.proxy.pacurl">
+            </label>
+          </div>
+        </div>
+        <div class="radio">
+          <label>
+            <input id="manual-proxy" type="radio" name="proxytype" value="2"
+                pref="cros.session.proxy.type">
+            <span i18n-content="proxyManual"></span>
+          </label>
+        </div>
+        <div class="proxy-subsection" id="manual-proxy-parms">
+          <div class="checkbox">
+            <label>
+              <input id="proxy-all-protocols" type="checkbox"
+                  pref="cros.session.proxy.single">
+              <span i18n-content="sameProxyProtocols"></span>
+            </label>
+          </div>
+          <div id="single-proxy">
+            <table>
+              <tr>
+                <td>
+                  <span i18n-content="httpProxy"></span>
+                  <input id="proxy-host-single-name" type="text" size="25"
+                      pref="cros.session.proxy.singlehttp" disabled>
+                </td>
+                <td>
+                  <span i18n-content="proxyPort"></span>
+                  <input id="proxy-host-single-port" size="4"
+                      pref="cros.session.proxy.singlehttpport" disabled>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div id="multi-proxy">
+            <table>
+              <tr>
+                <td>
+                  <span i18n-content="httpProxy"></span>
+                </td>
+                <td>
+                  <input id="proxy-host-name" type="text" size="25"
+                      pref="cros.session.proxy.httpurl" disabled>
+                </td>
+                <td>
+                  <span i18n-content="proxyPort"></span>
+                </td>
+                <td>
+                  <input id="proxy-host-port" size="4"
+                      pref="cros.session.proxy.httpport" disabled>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span i18n-content="secureHttpProxy"></span>
+                </td>
+                <td>
+                  <input id="secure-proxy-host-name" type="text" size="25"
+                      pref="cros.session.proxy.httpsurl" disabled>
+                </td>
+                <td>
+                  <span i18n-content="proxyPort"></span>
+                </td>
+                <td>
+                  <input id="secure-proxy-port" size="4"
+                      pref="cros.session.proxy.httpsport" disabled>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span i18n-content="ftpProxy"></span>
+                </td>
+                <td>
+                  <input id="ftp-proxy" type="text" size="25"
+                      pref="cros.session.proxy.ftpurl" disabled>
+                </td>
+                <td>
+                  <span i18n-content="proxyPort"></span>
+                  </td>
+                <td>
+                  <input id="ftp-proxy-port" size="4"
+                      pref="cros.session.proxy.ftpport" disabled>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span i18n-content="socksHost"></span>
+                </td>
+                <td>
+                  <input id="socks-host" type="text" size="25"
+                      pref="cros.session.proxy.socks" disabled>
+                </td>
+                <td>
+                  <span i18n-content="proxyPort"></span>
+                </td>
+                <td>
+                  <input id="socks-port" size="4"
+                      pref="cros.session.proxy.socksport" disabled>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div id="advanced-config">
+            <div class="option vbox flex">
+              <div i18n-content="proxyBypass"></div>
+              <list id="ignored-host-list"></list>
+              <input id="new-host" type="url" size="30">
+              <button id="add-host" i18n-content="addHost"></button>
+              <button id="remove-host" i18n-content="removeHost"></button>
+            </div>
+          </div>
+        </div>
+        <div class="proxy-subsection" id="web-proxy-auto-discovery">
+          <span i18n-content="webProxyAutoDiscoveryUrl"></span>
+          <input id="web-proxy-auto-discovery-url" type="url" disabled>
+        </div>
+      </section>
+    </div>
+  </div>
+  <div class="action-area">
+    <div class="button-strip">
+      <!-- TODO(dbeam): Clarify style guide regarding tag wrap. -->
+      <button id="details-internet-dismiss" class="default-button"
+          i18n-content="detailsInternetDismiss">
+      </button>
+      <button id="details-internet-login" i18n-content="connectButton">
+      </button>
+      <button id="details-internet-disconnect" i18n-content="disconnectButton">
+      </button>
+      <button id="details-internet-configure" i18n-content="configureButton">
+      </button>
+      <button id="activate-details" i18n-content="activateButton"></button>
+      <button id="view-account-details" i18n-content="viewAccountButton">
+      </button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+<h3>Virheenkorjausominaisuudet</h3>
+    <br>
+    Voit ottaa virheenkorjausominaisuudet käyttöön Chrome-käyttöjärjestelmää käyttävässä laitteessa, jotta voit asentaa ja testata muokattua koodia laitteessasi. Tämän avulla voit<br>
+    <ul>
+      <li>poistaa rootfs-vahvistuksen, jotta voit muokata käyttöjärjestelmän tietoja
+      <li>ottaa käyttöön laitteen SSH-käytön vakiotestipainikkeilla, jotta voit käyttää laitetta työkaluilla kuten <span style="color:grey;font-family:monospace">cros flash</span>
+      <li>ottaa käyttöön USB-muistitikulta käynnistämisen, jotta voit asentaa käyttöjärjestelmän kopion USB:n kautta
+      <li>asettaa sekä kehittäjäversion että järjestelmän pääkäyttäjän salasanaksi muokatun arvon, jotta voit käyttää SSH:ta manuaalisesti laitteessa.
+    </ul>
+    <br>
+    Jos otat ne käyttöön, suurin osa virheenkorjausominaisuuksista on edelleen käytössä, vaikka yrityksen hallinnoimalle laitteelle suoritettaisiin powerwash tai sen tiedot tyhjennettäisiin. Jos haluat poistaa käytöstä kaikki virheenkorjausominaisuudet, palauta Chrome-käyttöjärjestelmän tehdasasetukset (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Lisätietoja virheenkorjausominaisuuksista:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Huomaa:</b> järjestelmä käynnistyy uudelleen tämän prosessin aikana.

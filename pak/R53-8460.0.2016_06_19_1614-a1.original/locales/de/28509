@@ -1,0 +1,2 @@
+Es wurden mehrere unterschiedliche "Location"-Header empfangen. Dies ist zum
+    Schutz vor HTTP Response Splitting-Angriffen unzulässig.

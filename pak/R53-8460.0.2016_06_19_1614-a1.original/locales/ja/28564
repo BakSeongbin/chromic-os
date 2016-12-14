@@ -1,0 +1,1 @@
+<a jsvalues="href:searchUrl;.jstdata:$this" onclick="linkClicked(this.jstdata)" jscontent="searchTerms" id="search-link"></a> を Google で検索してください

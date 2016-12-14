@@ -1,0 +1,1 @@
+{MINUTES,plural, =1{Zbývá 1 minuta}few{Zbývají # minuty}many{Zbývá # minuty}other{Zbývá # minut}}

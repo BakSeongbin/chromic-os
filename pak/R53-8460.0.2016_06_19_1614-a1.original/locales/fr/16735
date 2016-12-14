@@ -1,0 +1,1 @@
+{COUNT,plural, =0{aucune}=1{1 élément}one{# élément}other{# éléments}}

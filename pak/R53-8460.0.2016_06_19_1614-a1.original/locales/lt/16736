@@ -1,0 +1,1 @@
+{COUNT,plural, =0{nėra}=1{1 programa („$1“)}=2{2 programos („$1“, „$2“)}one{# programa („$1“, „$2“, „$3“)}few{# programos („$1“, „$2“, „$3“)}many{# programos („$1“, „$2“, „$3“)}other{# programų („$1“, „$2“, „$3“)}}

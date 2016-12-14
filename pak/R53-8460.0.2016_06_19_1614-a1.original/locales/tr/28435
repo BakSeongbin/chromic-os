@@ -1,0 +1,1 @@
+<span jscontent="originalUrlForDisplay"></span> sitesinin <a jsvalues="href:urlCorrection;.jstdata:$this" onmousedown="linkClicked(this.jstdata)">önbelleğe alınmış bir kopyasına</a> erişin

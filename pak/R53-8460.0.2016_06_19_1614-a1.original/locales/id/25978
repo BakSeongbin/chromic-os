@@ -1,0 +1,1 @@
+{0,select, single{Aplikasi "{1}" meminta akses ke salah satu perangkat Anda.}multiple{Aplikasi "{1}" meminta akses ke satu atau beberapa perangkat Anda.}other{UNUSED}}

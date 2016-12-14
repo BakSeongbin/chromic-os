@@ -1,0 +1,1 @@
+{NUM_DOWNLOAD,plural, =1{Momentálně probíhá stahování. Chcete stahování zrušit a opustit anonymní režim?}few{Momentálně probíhají # stahování. Chcete stahování zrušit a opustit anonymní režim?}many{Momentálně probíhá # stahování. Chcete stahování zrušit a opustit anonymní režim?}other{Momentálně probíhá # stahování. Chcete stahování zrušit a opustit anonymní režim?}}

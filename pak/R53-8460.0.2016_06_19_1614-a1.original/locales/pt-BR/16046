@@ -1,0 +1,1 @@
+Ativar a opção de enviar informações extras de autenticação no pacote SYN inicial para um cliente anteriormente conectado, permitindo mais rapidez no início do envio de dados.

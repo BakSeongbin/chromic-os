@@ -1,0 +1,1 @@
+{COUNT,plural, =0{nincsen}=1{1 alkalmazás ($1)}=2{2 alkalmazás ($1, $2)}other{# alkalmazás ($1, $2 és $3)}}

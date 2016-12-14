@@ -1,0 +1,1 @@
+Slå på eksperimentell implementering av «Cache-Control: stale-while-revalidate»-direktivet. Dette gjør at tjenere kan spesifisere at enkelte ressurser kan valideres på nytt i bakgrunnen, for å redusere tidsforsinkelser.

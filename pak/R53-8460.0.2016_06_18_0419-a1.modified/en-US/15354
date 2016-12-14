@@ -1,0 +1,1 @@
+If you delete a Certification Authority (CA) certificate, your browser will no longer trust any certificates issued by that CA.

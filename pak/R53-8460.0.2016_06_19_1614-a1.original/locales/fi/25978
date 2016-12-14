@@ -1,0 +1,1 @@
+{0,select, single{Sovellus {1} pyytää laitteesi käyttöoikeutta.}multiple{Sovellus {1} pyytää yhden tai useamman laitteesi käyttöoikeutta.}other{EI KÄYTÖSSÄ}}

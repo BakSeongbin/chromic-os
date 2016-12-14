@@ -1,0 +1,1 @@
+Mengaktifkan opsi ini membuat elemen posisi tetap memiliki layar gabungannya sendiri. Perhatikan bahwa elemen posisi tetap juga harus membuat konteks tumpukan agar hal ini dapat bekerja.

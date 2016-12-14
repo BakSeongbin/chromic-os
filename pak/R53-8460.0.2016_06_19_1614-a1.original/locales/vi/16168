@@ -1,0 +1,1 @@
+Không hiển thị thanh thông tin khi tiện ích đính kèm với trang thông qua API chrome.debugger. Điều này là bắt buộc để gỡ lỗi trang nền tiện ích.

@@ -1,0 +1,1 @@
+ವೇಗವಾದ ಟ್ಯಾಬ್/ವಿಂಡೋ ಮುಚ್ಚುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸುತ್ತದೆ - runs a tab's onunload js handler independently of the GUI.

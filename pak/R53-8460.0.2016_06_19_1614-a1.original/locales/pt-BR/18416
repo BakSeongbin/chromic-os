@@ -1,0 +1,1 @@
+Essa sinalização pode ser usada para verificar se há correspondência de conteúdo dos arquivos do disco com extensões da webstore conforme esperado. Ela pode ser usada para ativar esse recurso, caso ainda não tenha sido ativado, mas não pode ser usada para desativá-lo (porque essa configuração pode ser adulterada por malware).

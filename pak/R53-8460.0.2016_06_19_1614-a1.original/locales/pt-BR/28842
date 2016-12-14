@@ -1,0 +1,2 @@
+O site $1 geralmente usa criptografia para proteger suas informações. Quando o Chromium tentou se conectar a $1 dessa vez, o website retornou credenciais
+incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser $1 ou quando uma tela de login por Wi-Fi interrompeu a conexão. Suas informações ainda estão protegidas, porque o Chromium interrompeu a conexão antes que os dados fossem trocados.

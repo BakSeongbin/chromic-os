@@ -1,0 +1,1 @@
+Prikazivanje prozora aplikacija nakon prvog bojenja. Prozori će se prikazivati značajno kasnije za bogate aplikacije koje učitavaju resurse sinkrono, no kašnjenje će biti beznačajno za aplikacije koje učitavaju većinu resursa asinkrono.

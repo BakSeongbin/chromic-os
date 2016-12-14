@@ -1,0 +1,18 @@
+<h3>Funcions de depuració</h3>
+    <br>
+    Podeu activar les funcions de depuració als dispositius Chrome OS per tal d'instal·lar-hi i de provar-hi el codi personalitzat. Podreu fer el següent:<br>
+    <ul>
+      <li>suprimir la verificació rootfs per tal de poder modificar els fitxers d'OS,
+      <li>activar l'accés SSH al dispositiu mitjançant les claus de prova estàndard per tal de poder fer servir eines com ara <span style="color:grey;font-family:monospace">'cros flash'</span> per accedir-hi,
+      <li>activar l'inici a partir d'USB per tal de poder instal·lar una imatge d'OS mitjançant una unitat USB,
+      <li>establir contrasenyes d'inici de sessió del sistema i del desenvolupador personalitzades per fer servir el protocol SSH manualment al dispositiu.
+    </ul>
+    <br>
+    Quan les hàgiu activat, la majoria de les funcions de depuració estaran activades, fins i tot després de fer servir la funció Powerwash o de suprimir les dades en dispositius administrats per empreses. Per desactivar completament les funcions de depuració, seguiu el procés de recuperació de Chrome OS (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Per obtenir més informació sobre les funcions de depuració, consulteu l'article següent:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Nota</b>: el sistema es reiniciarà durant el procés.

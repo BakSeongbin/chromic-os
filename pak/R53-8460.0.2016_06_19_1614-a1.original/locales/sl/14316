@@ -1,0 +1,4 @@
+Če uporabljate strežnik proxy, preverite nastavitve proxyja ali
+        se obrnite na omrežnega skrbnika in poskrbite, da strežnik
+        proxy deluje. Če menite, da vam strežnika proxy ni treba
+        uporabljati, prilagodite $1nastavitve proxyja$2.

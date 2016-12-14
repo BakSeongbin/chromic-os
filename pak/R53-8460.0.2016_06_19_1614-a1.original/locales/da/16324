@@ -1,0 +1,1 @@
+Nulstil installationstilstanden for applisten ved genstart. Hvis dette flag er markeret, glemmer Chrome, at applisten er installeret, hver gang den åbnes. Dette bruges til at teste installationsflowet for applisten.

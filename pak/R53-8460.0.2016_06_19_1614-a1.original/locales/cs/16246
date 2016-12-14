@@ -1,0 +1,1 @@
+Vynutí, aby po přijetí žádosti o obnovení proběhlo opětovné načtení bez ověření (pokud je tento příznak deaktivován, obvykle probíhá běžné načtení s ověřením mezipaměti).

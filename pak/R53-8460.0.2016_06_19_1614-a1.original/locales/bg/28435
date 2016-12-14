@@ -1,0 +1,1 @@
+Вижте <a jsvalues="href:urlCorrection;.jstdata:$this" onmousedown="linkClicked(this.jstdata)">кеширано копие</a> на <span jscontent="originalUrlForDisplay"></span>

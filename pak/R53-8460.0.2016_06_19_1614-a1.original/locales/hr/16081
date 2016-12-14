@@ -1,0 +1,1 @@
+Ako se ta opcija omogući, elementi s fiksnim položajem imat će vlastite složene slojeve. Napominjemo da elementi s fiksnim položajem također moraju izraditi kontekste za slaganje kako bi to funkcioniralo.

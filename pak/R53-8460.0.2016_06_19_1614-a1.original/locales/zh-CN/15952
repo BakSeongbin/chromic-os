@@ -1,0 +1,1 @@
+启用 GDB 调试存根。这会在启动时停止 Native Client 应用，然后等待 nacl-gdb（来自 NaCl SDK）附加到该应用。

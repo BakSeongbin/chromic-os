@@ -1,0 +1,1 @@
+{COUNT,plural, =0{žádné}=1{1 položka}few{# položky}many{# položky}other{# položek}}

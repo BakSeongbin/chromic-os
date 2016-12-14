@@ -1,0 +1,1 @@
+{COUNT,plural, =0{tiada}=1{1 item}other{# item}}

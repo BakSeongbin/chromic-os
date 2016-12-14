@@ -1,0 +1,1 @@
+Pakottaa passiivisen kohtelun touchstart-, touchmove-, mousewheel- ja wheel-tapahtumien seuraimille (jos ne eivät ole pyytäneet muuta kohtelua). Tämä häiritsee koskettamis- ja vierittämistoimintoja joillakin sivustoilla, mutta osoittaa samalla, kuinka passiiviset tapahtumaseuraimet voivat parantaa tehokkuutta.

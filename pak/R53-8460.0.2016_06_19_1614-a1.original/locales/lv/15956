@@ -1,0 +1,1 @@
+Tiek ierobežota Native Client lietojumprogrammu uz GDB balstīta atkļūdošana pēc manifesta failā norādītā URL. Lai šī opcija darbotos, ir jāiespējo Native Client uz GDB balstītā atkļūdošana.

@@ -1,0 +1,1 @@
+Záložný protokol TLS 1.0 dokázal nadviazať spojenie so serverom, ale protokoly TLS 1.0 už neakceptujeme. Server musíte aktualizovať, aby správne implementoval vyjednávanie verzie a radšej podporoval protokol TLS 1.2.

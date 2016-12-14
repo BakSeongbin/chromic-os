@@ -1,0 +1,1 @@
+No mostra la barra d'informació quan una extensió s'adjunti a una pàgina mitjançant l'API chrome.debugger. Això és obligatori per depurar les pàgines en segon pla de les extensions.

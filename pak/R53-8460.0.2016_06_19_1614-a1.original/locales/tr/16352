@@ -1,0 +1,1 @@
+İlk boyamanın ardından uygulama pencerelerini görüntüleyin. Pencereler, büyük uygulamaların kaynakları eşzamanlı olarak yüklemesinden sonra fark edilebilir düzeyde bir gecikmeyle görüntülenir, ancak kendi kaynaklarının çoğunu eşzamansız olarak yükleyen uygulamalarda bu gecikme önemsizdir.

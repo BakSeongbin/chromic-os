@@ -1,0 +1,1 @@
+A Cache-Control: stale-while-revalidate („újraérvényesítés közben elévült”) direktíva kísérleti megvalósításának engedélyezése. Ez lehetővé teszi, hogy a szerverek meghatározzák, hogy egyes források érvényesítése a háttérben történjen a várakozási idő javításának érdekében.

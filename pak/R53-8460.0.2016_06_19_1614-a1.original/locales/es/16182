@@ -1,0 +1,1 @@
+Si una página no ha establecido una política de referencia explícita, al establecer este indicador se reducirá la cantidad de información en el encabezado referer para solicitudes de distinto origen.

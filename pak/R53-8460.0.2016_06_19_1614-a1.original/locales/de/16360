@@ -1,0 +1,1 @@
+Threadbasierte Verarbeitung von Scrolling-Eingabeereignissen. Eine Deaktivierung führt dazu, dass alle Scrollingereignisse im Hauptthread verarbeitet werden. Diese Funktion kann die Scrollingleistung der meisten Websites deutlich vermindern und ist nur zu Testzwecken gedacht.

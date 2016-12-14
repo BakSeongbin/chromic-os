@@ -1,0 +1,1 @@
+Dokunarak başlatma, dokunarak taşıma, fare tekerleği ve tekerlek etkinlik işleyicilerin (başka bir şekilde istenmediği takdirde) pasif sayılmasını zorla uygular. Bu, bazı web sitelerinde dokunma/tekerlek davranışını bozar ancak pasif etkinlik işleyicileri kullanımının olası performansta avantajlarını göstermek için yararlıdır.

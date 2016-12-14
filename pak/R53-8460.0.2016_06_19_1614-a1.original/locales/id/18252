@@ -1,0 +1,1 @@
+Apabila proxy dikonfigurasi, biasanya proxy akan mencegah pemberian otorisasi pada portal tawanan lain. Tindakan ini memungkinkan dialog otorisasi portal tawanan dibuka di jendela terpisah, yang mengabaikan setelan proxy.

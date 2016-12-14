@@ -1,0 +1,1 @@
+{0,select, single{Aplicația „{1}” solicită acces la unul dintre dispozitivele tale}multiple{Aplicația „{1}” solicită acces la unul sau mai multe dintre dispozitivele tale}other{UNUSED}}

@@ -1,0 +1,47 @@
+<link rel="import" href="/settings_page/main_page_behavior.html">
+
+<dom-module id="settings-page-styles">
+  <template>
+    <style include="main-page-styles">
+      :host {
+        --settings-page-padding-top: 21px;
+        box-sizing: border-box;
+        display: block;
+        height: inherit;
+        margin: 0 auto;
+        max-width: 960px;
+        min-width: 622px;
+        position: relative;
+        width: 96%;
+      }
+
+      :host > div {
+        height: inherit;
+      }
+
+      :host > div > * {
+        /* The margin and padding here are doing two things: make the total
+         * separation 24px; and make scrollIntoView align the section header
+         * with the top item in the side nav menu. Both things are desired
+         * by Alan (bettes@). */
+        margin-bottom: 3px;
+        /* TODO(michaelpg): This makes more sense as padding, but uses margin as
+         * a workaround for crbug.com/617287. Because margins collapse, add 3px
+         * to retain mostly the same spacing. */
+        margin-top: calc(var(--settings-page-padding-top) + 3px);
+      }
+
+      :host > div > :first-of-type {
+        /* TODO(michaelpg): This is offset because of the previous addition of
+         * 3px: crbug.com/617287. */
+        margin-top: var(--settings-page-padding-top);
+      }
+
+      .expanded.frozen {
+        /* TODO(michaelpg): This is zeroed out because of the previous
+         * replacement of margin with padding, above: crbug.com/617287. */
+        margin-top: 0;  /* -var(--settings-page-padding-top); */
+      }
+    </style>
+  </template>
+</dom-module>

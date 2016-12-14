@@ -1,0 +1,1 @@
+Sprawia, że strumienie z wyjść audio sprawdzają, czy dostępne są układy kanału inne niż domyślny układ sprzętowy. Włączenie tego ustawienia pozwala systemowi operacyjnemu używać rozszerzenia dźwięku stereo do przestrzennego (jeśli jest ono obsługiwane) i może spowodować wystąpienie błędów związanych z działaniem sterownika firmy zewnętrznej. Korzystaj z tego ustawienia rozważnie.

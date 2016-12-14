@@ -1,0 +1,1 @@
+{COUNT,plural, =0{cap}=1{1 aplicació ($1)}=2{2 aplicacions ($1, $2)}other{# aplicacions ($1, $2 $3)}}

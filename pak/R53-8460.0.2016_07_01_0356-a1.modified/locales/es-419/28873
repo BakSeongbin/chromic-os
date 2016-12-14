@@ -1,0 +1,1 @@
+Intentaste acceder a <strong>$1</strong>, pero el servidor  presentó un certificado que contiene una clave no segura. Es posible que un atacante haya descifrado la clave privada y que este no sea el servidor esperado (es posible que hayas establecido comunicación con un atacante).

@@ -1,0 +1,1 @@
+Consente di forzare l'attivazione del ricaricamento senza convalida da parte delle interfacce utente di ricaricamento (quando il flag è disattivato, avviene il normale ricaricamento con convalida della cache).

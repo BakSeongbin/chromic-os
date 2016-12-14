@@ -1,0 +1,1 @@
+{NUM_FILES,plural, =1{L'application possède un accès permanent à un fichier.}one{L'application possède un accès permanent à # fichier.}other{L'application possède un accès permanent à # fichiers.}}

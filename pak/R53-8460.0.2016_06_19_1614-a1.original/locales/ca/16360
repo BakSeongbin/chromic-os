@@ -1,0 +1,1 @@
+Gestió per processos dels esdeveniments d'entrada relacionats amb el desplaçament. Si es desactiva aquesta opció, obliga a gestionar tots aquests esdeveniments de desplaçament al procés principal. Tingueu en compte que això pot afectar molt negativament el rendiment del desplaçament de la majoria de llocs web i només està pensat per fer proves.

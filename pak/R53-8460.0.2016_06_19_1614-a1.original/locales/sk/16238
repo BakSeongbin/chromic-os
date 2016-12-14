@@ -1,0 +1,1 @@
+Povoľte režim na pozadí pre rozhranie Push API. Prehliadaču Chrome týmto povolíte, aby zostal spustený aj po zatvorení posledného okna a tiež aby sa aktivoval pri spustení operačného systému, ak ho rozhranie Push API potrebuje.

@@ -1,0 +1,1 @@
+Eksperiments, kurā visas saskarnes API atspoguļo izkārtojuma skatvietu. Tādējādi window.scroll rekvizīti būs atkarīgi no izkārtojuma skatvietas.

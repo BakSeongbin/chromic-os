@@ -1,0 +1,1 @@
+Enabling this option allows web applications to access the experimental WebGL 2.0 feature. This option should only be used for application development, and should not be used when browsing arbitrary web sites.

@@ -1,0 +1,1 @@
+Faites en sorte que toutes les API représentent la fenêtre d'affichage de mise en page. De ce fait, les propriétés "window.scroll" seront définies par rapport à la fenêtre d'affichage de mise en page.

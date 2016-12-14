@@ -1,0 +1,1 @@
+{COUNT,plural, =0{нет}=1{1}one{#}few{#}many{#}other{#}}

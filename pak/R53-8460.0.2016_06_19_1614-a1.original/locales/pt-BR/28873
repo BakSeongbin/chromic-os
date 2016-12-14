@@ -1,0 +1,1 @@
+Você tentou acessar <strong>$1</strong>, mas o servidor apresentou um certificado que contém uma chave fraca. Um invasor pode ter violado a chave privada, e o servidor pode não ser o servidor que você esperava (você pode estar se comunicando com um invasor).

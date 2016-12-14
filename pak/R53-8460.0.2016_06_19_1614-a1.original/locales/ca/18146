@@ -1,0 +1,3 @@
+S'ha creat un usuari supervisat amb el nom $1. Si voleu definir els llocs web que aquest usuari supervisat pot veure, podeu configurar restriccions i opcions a la pàgina <a target="_blank" href="$3">$4</a>. Si no canvieu la configuració predeterminada, $1 podrà navegar per tots els llocs del web.
+
+Consulteu el vostre correu electrònic ($2) per obtenir més instruccions.

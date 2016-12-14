@@ -1,0 +1,1 @@
+La segmentació basada en rectangles utilitza una heurística per determinar la segmentació més probable d'un gest, en què la zona tàctil es representa amb un rectangle.

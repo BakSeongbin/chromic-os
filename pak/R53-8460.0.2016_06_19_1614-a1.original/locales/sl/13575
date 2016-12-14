@@ -1,0 +1,18 @@
+<h3>Funkcije za odpravljanje napak</h3>
+    <br>
+    Če želite v napravi s sistemom Chrome OS namestiti in preskusiti kodo po meri, lahko v njej omogočite funkcije za odpravljanje napak. S tem boste lahko:<br>
+    <ul>
+      <li>odstranili preverjanje »rootfs«, tako da boste lahko spreminjali datoteke operacijskega sistema;
+      <li>omogočili dostop do naprave s protokolom SSH s standardnimi preskusnimi kjuči, tako da boste lahko za dostop do naprave uporabljali orodja, kot je <span style="color:grey;font-family:monospace">»cros flash«</span>;
+      <li>omogočili zaganjanje s pogona USB, tako da boste lahko namestili sliko operacijskega sistema s pogona USB;
+      <li>nastavili geslo za prijavo v razvijalski kanal in sistemsko korensko geslo na vrednost po meri, tako da boste imeli na voljo ročni dostop do naprave s protokolom SSH;
+    </ul>
+    <br>
+    Ko so funkcije za odpravljanje napak omogočene, jih bo večina ostala omogočena tudi po izvedbi funkcije Powerwash ali brisanju podatkov v napravi, ki jo upravljajo v podjetju. Če želite v celoti onemogočiti vse funkcije za odpravljanje napak, dokončajte postopek obnovitve sistema Chrome OS (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Če želite več informacij o funkcijah za odpravljanje napak, glejte:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Opomba:</b> Sistem se bo med postopkom znova zagnal.

@@ -1,0 +1,1 @@
+Megpróbálta elérni a(z) <strong>$1</strong> webhelyet, de a szerver egy gyenge aláírási algoritmust használó tanúsítványt adott. Ez alapján elképzelhető, hogy a szerver által megadott biztonsági tanúsítványt meghamisították, és a szerver nem az, amelyikre számított (lehet, hogy éppen egy támadóval kommunikál).

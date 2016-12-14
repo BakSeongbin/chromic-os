@@ -1,0 +1,1 @@
+Permite que las transmisiones continuas de audio saliente verifiquen si hay disponibles disposiciones de canal distintas a la predeterminada del hardware. Al activar esta opción, el SO podrá llevar a cabo una expansión envolvente, de admitirse. Es posible que exponga errores de los controladores de terceros; por lo tanto, debe usarse con precaución.

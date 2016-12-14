@@ -1,0 +1,1 @@
+Visa inte informationsfältet när ett tillägg bifogas till en sida via API:et chrome.debugger. Det här alternativet krävs vid felsökning av bakgrundssidor för tillägg.

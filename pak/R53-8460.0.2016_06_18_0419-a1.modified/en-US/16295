@@ -1,0 +1,1 @@
+Raster threads write directly to GPU memory associated with tiles.

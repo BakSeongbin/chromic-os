@@ -1,0 +1,1 @@
+Jotkin verkkosivut käyttävät vanhoja tai epästandardinmukaisia JavaScript-laajennuksia, jotka voivat olla ristiriidassa uusimpien JavaScript-ominaisuuksien kanssa. Tämä merkintä poistaa käytöstä tällaisten ominaisuuksien tuen, jotta yhteensopivuus tällaisten sivujen kanssa säilyy.

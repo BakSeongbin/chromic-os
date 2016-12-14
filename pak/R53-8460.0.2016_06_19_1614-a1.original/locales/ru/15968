@@ -1,0 +1,1 @@
+Пропускает главный фрейм с HTTP-заголовком Cache-Control: no-store.

@@ -1,0 +1,2 @@
+Dit moet worden gebruikt in combinatie met de markering trace-upload-url.
+        WAARSCHUWING: Als deze optie is ingeschakeld, registreert Chrome de prestatiegegevens voor elke navigatie en worden deze geüpload naar de URL die is opgegeven door de markering trace-upload-url. De tracering kan persoonlijke gegevens (PII; Personally Identifiable Information) bevatten, zoals de titels en URL's van de websites die je bezoekt.

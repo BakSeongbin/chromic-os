@@ -1,0 +1,1 @@
+Slår på det selvstendige løsningsprogrammet for V8-proxy. Løsningsprogrammet for V8-proxy kjøres i en verktøysprosess og ikke i selve nettleserprosessen.

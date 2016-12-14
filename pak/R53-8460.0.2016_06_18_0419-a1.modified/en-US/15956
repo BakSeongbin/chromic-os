@@ -1,0 +1,1 @@
+Restricts Native Client application GDB-based debugging by URL of manifest file. Native Client GDB-based debugging must be enabled for this option to work.

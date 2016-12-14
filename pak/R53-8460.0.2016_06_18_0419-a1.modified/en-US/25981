@@ -1,0 +1,3 @@
+{0, select,
+       single {Select a USB device} multiple {Select USB devices}
+       other {UNUSED}}

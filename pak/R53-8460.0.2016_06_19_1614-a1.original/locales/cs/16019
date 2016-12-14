@@ -1,0 +1,1 @@
+Umožňuje zaznamenávat příkazy canvas 2D pomocí seznamů zobrazení. Rasterizace prvků canvas 2D tak může probíhat v samostatném vlákně.

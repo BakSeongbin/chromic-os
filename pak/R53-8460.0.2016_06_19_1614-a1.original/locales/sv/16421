@@ -1,0 +1,1 @@
+Tillåter inte hämtningar av skript från tredje part som blockerar textanalysatorer som lagts till i huvudramen via document.write.

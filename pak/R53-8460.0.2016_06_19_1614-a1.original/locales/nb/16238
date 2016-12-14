@@ -1,0 +1,1 @@
+Slå på bakgrunnsmodus for Push API. Dette gjør at Chrome kan fortsette å kjøre etter at det siste vinduet er lukket, og starte når OS-et starter, dersom Push API trenger det.

@@ -1,0 +1,1 @@
+Gennemtvinger, at lyttefunktionerne for hændelserne trykstart, trykbevægelse, musehjulet og hjulhændelse (som ikke har anmodet om andet) behandles som passive. Dette vil forstyrre tryk-/hjuladfærden på nogle websites, men er nyttigt til at demonstrere de potentielle effektivitetsfordele ved at anvende passive lyttefunktioner for hændelser.

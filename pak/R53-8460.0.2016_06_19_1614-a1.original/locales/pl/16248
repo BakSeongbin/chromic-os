@@ -1,0 +1,2 @@
+Musi być używana razem z flagą enable-navigation-tracing.
+        Wybierz etykietę najlepiej opisującą zarejestrowane dane śledzenia. Na jej podstawie zostanie wybrane miejsce, do którego będą one wysyłane. Jeśli nie możesz zdecydować, wybierz other. Jeśli nic nie wybierzesz, dane nie będą wysyłane.

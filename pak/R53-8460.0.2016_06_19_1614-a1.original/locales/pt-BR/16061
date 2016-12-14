@@ -1,0 +1,1 @@
+Permitir que extensões criem janelas em painel que se abrem fora da moldura do navegador. As tentativas de abrir um painel abrirão um pop-up, caso esta opção não esteja ativada. O comportamento padrão permite somente extensões de lista de permissões. O comportamento ativado permite todas as extensões. O comportamento desativado não permite painéis para nenhuma extensão.

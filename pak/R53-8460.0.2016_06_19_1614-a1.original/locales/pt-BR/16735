@@ -1,0 +1,1 @@
+{COUNT,plural, =0{nenhum}=1{1 item}other{# itens}}

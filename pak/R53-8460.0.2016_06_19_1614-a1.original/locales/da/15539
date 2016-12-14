@@ -1,0 +1,1 @@
+{NUM_DEVICES,plural, =1{Kommuniker med en USB-enhed}one{Kommuniker med # USB-enheder}other{Kommuniker med # USB-enheder}}

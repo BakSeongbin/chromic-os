@@ -1,0 +1,1 @@
+Cho phép triển khai thử nghiệm lệnh "Kiểm soát bộ nhớ cache: cũ trong khi xác thực lại". Thao tác này cho phép máy chủ chỉ định một số tài nguyên có thể được xác thực lại trong nền để cải thiện độ trễ.

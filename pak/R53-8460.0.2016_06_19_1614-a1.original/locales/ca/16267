@@ -1,0 +1,1 @@
+Activeu el solucionador de servidors intermediaris V8 fora de procés. Executa el solucionador de servidors intermediaris V8 en un procés d'utilitats en lloc de dins del procés de navegador.

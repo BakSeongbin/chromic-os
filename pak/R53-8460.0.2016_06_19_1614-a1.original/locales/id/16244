@@ -1,0 +1,1 @@
+Memaksa pemuatan ulang antarmuka memicu muat ulang non-validasi (meski biasanya hal ini berarti validasi cache reguler dimuat ulang jika tanda dinonaktifkan).

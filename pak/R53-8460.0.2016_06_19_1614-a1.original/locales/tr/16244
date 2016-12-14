@@ -1,0 +1,1 @@
+Kullanıcı arayüzlerinin yeniden yüklenmesinde, doğrulama yapılmayan yeniden yüklemenin tetiklenmesini zorunlu tutar (işaret devre dışıyken bu genellikle normal, önbellek doğrulamalı yeniden yükleme anlamına gelir).

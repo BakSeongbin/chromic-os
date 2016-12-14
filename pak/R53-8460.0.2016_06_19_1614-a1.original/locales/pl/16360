@@ -1,0 +1,1 @@
+Obsługa w wątkach zdarzeń wejściowych związanych z przewijaniem. Wyłączenie tej funkcji spowoduje, że wszystkie takie zdarzenia przewijania będą obsługiwane w wątku głównym. Może to bardzo obniżyć wydajność przewijania na większości stron. Funkcja jest przeznaczona tylko do testów.

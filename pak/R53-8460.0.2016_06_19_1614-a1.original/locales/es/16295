@@ -1,0 +1,1 @@
+Los subprocesos de la trama escriben directamente en la memoria GPU asociada a mosaicos.

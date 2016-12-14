@@ -1,0 +1,1 @@
+Je probeert <strong>$1</strong> te bereiken. De server heeft echter een certificaat geretourneerd dat een zwak ondertekeningsalgoritme gebruikt. Dit houdt in dat de betrouwbaarheidsverklaring van de server kan zijn vervalst. Het is mogelijk dat de server zelf een imitatie is (wellicht een server die je schade probeert te berokkenen).

@@ -1,0 +1,1 @@
+Noen nettsider bruker JavaScript-utvidelser fra en eldre versjon eller som ikke er standard, som kan komme i konflikt med de nyeste JavaScript-funksjonene. Dette flagget gjør det mulig å slå av støtten for disse funksjonene, slik at systemet blir kompatibelt med slike sider.

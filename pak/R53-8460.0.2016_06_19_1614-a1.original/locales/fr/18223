@@ -1,0 +1,1 @@
+Les pages dont le chargement a échoué pendant que le navigateur était en mode hors connexion ne seront automatiquement rechargées que si l'onglet correspondant est visible.

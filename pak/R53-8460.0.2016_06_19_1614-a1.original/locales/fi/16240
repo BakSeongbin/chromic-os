@@ -1,0 +1,1 @@
+Ottaa käyttöön ”Cache-Control: stale-while-revalidate” -komennon kokeellisen käytön. Tämä sallii palvelinten määrittää jotkin resurssit uudelleenvahvistettaviksi taustalla, mikä vähentää viivettä.

@@ -1,0 +1,1 @@
+Permite activar el código auxiliar de depuración de GDB. Esto hace que se detenga la ejecución de una aplicación Native Client al iniciar el sistema y que se espere a que se asocie a ella nacl-gdb (del SDK de NaCl).

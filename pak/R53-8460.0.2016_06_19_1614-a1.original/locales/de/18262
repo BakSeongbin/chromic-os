@@ -1,0 +1,1 @@
+Sehr experimentelle Unterstützung des Renderings von websiteübergreifenden iFrames in separaten Prozessen. In diesem Modus werden nur für Dokumente, die von derselben Website stammen, Renderer-Prozesse durchgeführt.

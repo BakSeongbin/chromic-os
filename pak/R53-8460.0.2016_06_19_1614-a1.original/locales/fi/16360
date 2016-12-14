@@ -1,0 +1,1 @@
+Vieritykseen liittyvien syöttötapahtumien ketjuttaminen. Jos asetus poistetaan käytöstä, kaikki vastaavat vieritystapahtumat käsitellään pääsäikeessä. Huom. Tämä valinta voi haitata merkittävästi useimpien verkkosivustojen vieritysominaisuuksia, ja se on tarkoitettu vain testikäyttöön.

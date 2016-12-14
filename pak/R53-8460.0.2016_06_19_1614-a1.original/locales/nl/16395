@@ -1,0 +1,1 @@
+Dit zorgt ervoor dat audio-uitvoerstreams controleren of er andere kanaalindelingen beschikbaar zijn dan de standaard hardware-indeling. Als je dit inschakelt, kan het besturingssysteem stereo omzetten naar surround sound als dit wordt ondersteund. Hierdoor kunnen bugs in stuurprogramma's van derden optreden, dus gebruik dit voorzichtig.

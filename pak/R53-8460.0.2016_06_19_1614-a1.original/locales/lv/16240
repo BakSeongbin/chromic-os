@@ -1,0 +1,1 @@
+Tiek iespējota direktīvas “Cache-Control: stale-while-revalidate” eksperimentāla ieviešana. Tā ļauj serveriem norādīt, ka dažus resursus var atkārtoti pārbaudīt fonā, lai uzlabotu latentumu.

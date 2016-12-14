@@ -1,0 +1,1 @@
+This flag can be used to turn on verification that the contents of the files on disk for extensions from the webstore match what they're expected to be. This can be used to turn on this feature if it would not otherwise have been turned on, but cannot be used to turn it off (because this setting can be tampered with by malware).

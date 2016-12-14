@@ -1,0 +1,1 @@
+Uruchom aplikację $1 jako zwykły użytkownik. Uruchamianie jako użytkownik root wymaga podania alternatywnego katalogu --user-data-dir do przechowywania danych profilu.

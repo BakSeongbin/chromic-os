@@ -1,0 +1,1 @@
+Allow extensions to create panel windows that open outside of the browser frame. Attempts to open a panel will open a popup instead if not enabled. Default behavior is to allow only for whitelisted extensions. Enabled behavior is to allow for all extensions. Disabled behavior is to disallow panels for any extension.

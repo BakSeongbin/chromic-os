@@ -1,0 +1,1 @@
+{SECONDS,plural, =1{Chromium genstarter om 1 sekund.}one{Chromium genstarter om # sekund.}other{Chromium genstarter om # sekunder.}}

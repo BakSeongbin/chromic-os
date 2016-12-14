@@ -1,0 +1,1 @@
+Affichez les fenêtres des applications après le premier passage. Les fenêtres s'affichent beaucoup moins vite dans le cas d'applications volumineuses chargeant des ressources en même temps. En revanche, ce délai est moindre pour les applications qui chargent la plupart de leurs ressources de manière asynchrone.

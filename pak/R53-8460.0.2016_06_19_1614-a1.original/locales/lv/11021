@@ -1,0 +1,1 @@
+{DAYS,plural, =1{Pirms 1 dienas}zero{Pirms # dienām}one{Pirms # dienas}other{Pirms # dienām}}

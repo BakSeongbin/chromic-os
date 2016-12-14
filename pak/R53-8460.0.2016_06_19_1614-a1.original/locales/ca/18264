@@ -1,0 +1,1 @@
+Mode de rendiment molt experimental en què els iframes entre llocs es mantenen en un procés separat del document principal. En aquest mode, els iframes de diferents llocs de tercers poden compartir un procés.

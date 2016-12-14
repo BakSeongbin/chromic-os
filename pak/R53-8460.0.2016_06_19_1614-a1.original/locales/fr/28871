@@ -1,0 +1,1 @@
+Vous avez tenté d'accéder à <strong>$1</strong>, mais le serveur a présenté un certificat signé à l'aide d'un algorithme de signature faible. Il est possible que le certificat fourni par le serveur ait été falsifié. Il se peut donc que le serveur ne soit pas celui auquel vous souhaitez accéder, et qu'il s'agisse d'une tentative de piratage.

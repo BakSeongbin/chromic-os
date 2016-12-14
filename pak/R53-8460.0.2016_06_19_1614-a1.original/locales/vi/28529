@@ -1,0 +1,1 @@
+Giao thức dự phòng TLS 1.0 có thể kết hợp với máy chủ nhưng chúng tôi không chấp nhận giao thức dự phòng TLS 1.0 nữa. Cần cập nhật máy chủ để triển khai đúng cách việc dàn xếp phiên bản và hỗ trợ tốt nhất cho TLS 1.2.

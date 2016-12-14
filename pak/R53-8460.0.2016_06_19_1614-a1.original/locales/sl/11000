@@ -1,0 +1,1 @@
+{SECONDS,plural, =1{1 s}one{# s}two{# s}few{# s}other{# s}}

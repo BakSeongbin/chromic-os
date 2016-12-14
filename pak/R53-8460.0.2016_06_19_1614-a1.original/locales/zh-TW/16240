@@ -1,0 +1,1 @@
+啟用實驗性「Cache-Control: stale-while-revalidate」指令實作功能。這樣一來，伺服器便可指定在背景重新驗證部分資源，以改善延遲情況。

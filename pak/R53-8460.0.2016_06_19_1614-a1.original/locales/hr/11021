@@ -1,0 +1,1 @@
+{DAYS,plural, =1{Prije 1 dan}one{Prije # dan}few{Prije # dana}other{Prije # dana}}

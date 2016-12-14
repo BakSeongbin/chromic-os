@@ -1,0 +1,1 @@
+Algses katsejärgus olev toimivusrežiim, kus saidiülesed iframe'id hoitakse peamisest dokumendist eraldi protsessis. Selles režiimis lubatakse teiste kolmanda osapoole saitide iframe'idel protsesse jagada.

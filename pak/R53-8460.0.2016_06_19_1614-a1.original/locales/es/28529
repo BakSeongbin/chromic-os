@@ -1,0 +1,1 @@
+Un valor alternativo de TLS 1.0 ha podido establecer un protocolo de enlace con el servidor, pero ya no aceptamos valores de TLS 1.0. Se debe actualizar el servidor para que implemente correctamente la negociación de la versión y admita preferiblemente TLS 1.2.

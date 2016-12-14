@@ -1,0 +1,18 @@
+<h3>Fonctionnalités de débogage</h3>
+    <br>
+    Vous pouvez activer les fonctionnalités de débogage sur votre appareil Chrome OS afin d'installer et de tester du code personnalisé sur votre appareil. Vous aurez ainsi la possibilité d'effectuer les opérations suivantes :<br>
+    <ul>
+      <li>Supprimer la vérification rootfs de manière à pouvoir modifier des fichiers du système d'exploitation
+      <li>Activer l'accès SSH à l'appareil à l'aide des touches de test standards, afin de pouvoir utiliser des outils tels que <span style="color:grey;font-family:monospace">cros flash</span> pour accéder à l'appareil
+      <li>Activer le démarrage depuis un appareil USB afin de pouvoir installer une image du système d'exploitation depuis une clé USB
+      <li>Définir les mots de passe de développement et de connexion à la racine du système sur une valeur personnalisée afin de pouvoir se connecter manuellement à l'appareil via SSH
+    </ul>
+    <br>
+    Une fois activées, la plupart des fonctionnalités de débogage restent actives, même après avoir exécuté la fonctionnalité Powerwash ou effacé les données d'un appareil d'entreprise géré. Pour désactiver complètement ces fonctionnalités, effectuez la procédure de restauration de Chrome OS (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Pour en savoir plus sur les fonctionnalités de débogage, consultez la page suivante :<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Remarque :</b> Le système redémarre au cours de ce processus.

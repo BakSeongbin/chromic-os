@@ -1,0 +1,1 @@
+Odprite <a jsvalues="href:urlCorrection;.jstdata:$this" onmousedown="linkClicked(this.jstdata)">predpomnjeno kopijo</a> strani na naslovu <span jscontent="originalUrlForDisplay"></span>

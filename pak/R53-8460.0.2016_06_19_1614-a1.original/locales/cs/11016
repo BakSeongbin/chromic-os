@@ -1,0 +1,1 @@
+{HOURS,plural, =1{Zbývá 1 hodina}few{Zbývají # hodiny}many{Zbývá # hodiny}other{Zbývá # hodiny}}

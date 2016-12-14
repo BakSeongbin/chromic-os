@@ -1,0 +1,1 @@
+Une requête de secours TLS 1.0 a permis d'établir une liaison avec le serveur. Cependant, nous n'acceptons plus les requêtes de secours TLS 1.0. Le serveur doit être mis à jour pour correctement mettre en œuvre la négociation des versions et pour assurer la compatibilité dans l'idéal avec TLS 1.2.

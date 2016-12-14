@@ -1,0 +1,1 @@
+Obliga a la función de volver a cargar la interfaz de usuario a activar la opción de volver a cargar sin validar (mientras que generalmente significa que se efectúa una recarga validante de la caché de forma periódica cuando la marca se inhabilita).

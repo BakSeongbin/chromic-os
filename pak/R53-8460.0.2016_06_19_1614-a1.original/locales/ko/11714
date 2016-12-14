@@ -1,0 +1,1 @@
+{SECONDS,plural, =1{1초 후에 Chromium이 다시 시작됩니다.}other{#초 후에 Chromium이 다시 시작됩니다.}}

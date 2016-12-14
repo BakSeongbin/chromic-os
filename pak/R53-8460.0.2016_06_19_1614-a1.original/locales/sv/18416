@@ -1,0 +1,1 @@
+Med den här flaggan kan du aktivera verifiering av innehållet i filer på disken för tillägg från webbutiken. Flaggan kan användas för att aktivera funktionen om den annars skulle ha varit inaktiverad, men inte för att inaktivera den (eftersom skadlig programvara skulle kunna manipulera inställningen).

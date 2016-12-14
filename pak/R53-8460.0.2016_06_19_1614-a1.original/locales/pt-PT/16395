@@ -1,0 +1,1 @@
+Faz com que as transmissões de áudio em fluxo contínuo verifiquem se estão disponíveis esquemas de canais diferentes do esquema de hardware predefinido. Ativar esta definição permite ao SO efetuar a expansão de estéreo para surround se for suportado. Pode revelar erros de controladores de terceiros, pelo que deve ser utilizado com cuidado.

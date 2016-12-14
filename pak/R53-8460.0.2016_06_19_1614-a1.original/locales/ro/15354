@@ -1,0 +1,1 @@
+Dacă ștergi un certificat al unei autorități de certificare (CA), browserul nu va mai avea încredere în niciun certificat emis de acea CA.

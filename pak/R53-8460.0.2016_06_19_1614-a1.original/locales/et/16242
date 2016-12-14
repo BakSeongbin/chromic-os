@@ -1,0 +1,2 @@
+Seda kasutatakse koos märgistusega trace-upload-url.
+        HOIATUS. Kui see on lubatud, salvestab Chrome iga liikumise toimivusandmed ja laadib need üles URL-i, mille määrab märgistus trace-upload-url. Jälg võib sisaldada isiklikku teavet (PII), nagu teie külastatavate veebisaitide pealkirjad ja URL-id.

@@ -1,0 +1,1051 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Any strings used here will already be localized. Values such as
+// CastMode.type or IDs will be defined elsewhere and determined later.
+
+cr.exportPath('media_router');
+
+/**
+ * This corresponds to the C++ MediaCastMode, with the exception of AUTO.
+ * See below for details. Note to support fast bitset operations, the values
+ * here are (1 << [corresponding value in MR]).
+ * @enum {number}
+ */
+media_router.CastModeType = {
+  // Note: AUTO mode is only used to configure the sink list container to show
+  // all sinks. Individual sinks are configured with a specific cast mode
+  // (DEFAULT, TAB_MIRROR, DESKTOP_MIRROR).
+  AUTO: -1,
+  DEFAULT: 0x1,
+  TAB_MIRROR: 0x2,
+  DESKTOP_MIRROR: 0x4,
+};
+
+/**
+ * The ESC key maps to KeyboardEvent.key value 'Escape'.
+ * @const {string}
+ */
+media_router.KEY_ESC = 'Escape';
+
+/**
+ * This corresponds to the C++ MediaRouterMetrics
+ * MediaRouterRouteCreationOutcome.
+ * @enum {number}
+ */
+media_router.MediaRouterRouteCreationOutcome = {
+  SUCCESS: 0,
+  FAILURE_NO_ROUTE: 1,
+  FAILURE_INVALID_SINK: 2,
+};
+
+/**
+ * This corresponds to the C++ MediaRouterMetrics MediaRouterUserAction.
+ * @enum {number}
+ */
+media_router.MediaRouterUserAction = {
+  CHANGE_MODE: 0,
+  START_LOCAL: 1,
+  STOP_LOCAL: 2,
+  CLOSE: 3,
+  STATUS_REMOTE: 4,
+  REPLACE_LOCAL_ROUTE: 5,
+};
+
+/**
+ * The possible states of the Media Router dialog. Used to determine which
+ * components to show.
+ * @enum {string}
+ */
+media_router.MediaRouterView = {
+  CAST_MODE_LIST: 'cast-mode-list',
+  FILTER: 'filter',
+  ISSUE: 'issue',
+  ROUTE_DETAILS: 'route-details',
+  SINK_LIST: 'sink-list',
+};
+
+/**
+ * The minimum number of sinks to have to enable the search input strictly for
+ * filtering (i.e. the Media Router doesn't support search so the search input
+ * only filters existing sinks).
+ * @const {number}
+ */
+media_router.MINIMUM_SINKS_FOR_SEARCH = 20;
+
+/**
+ * This corresponds to the C++ MediaSink IconType.
+ * @enum {number}
+ */
+media_router.SinkIconType = {
+  CAST: 0,
+  CAST_AUDIO: 1,
+  CAST_AUDIO_GROUP: 2,
+  GENERIC: 3,
+  HANGOUT: 4,
+};
+
+/**
+ * @enum {string}
+ */
+media_router.SinkStatus = {
+  IDLE: 'idle',
+  ACTIVE: 'active',
+  REQUEST_PENDING: 'request_pending'
+};
+
+cr.define('media_router', function() {
+  'use strict';
+
+  /**
+   * @param {number} type The type of cast mode.
+   * @param {string} description The description of the cast mode.
+   * @param {?string} host The hostname of the site to cast.
+   * @constructor
+   * @struct
+   */
+  var CastMode = function(type, description, host) {
+    /** @type {number} */
+    this.type = type;
+
+    /** @type {string} */
+    this.description = description;
+
+    /** @type {?string} */
+    this.host = host || null;
+  };
+
+  /**
+   * Placeholder object for AUTO cast mode. See comment in CastModeType.
+   * @const {!media_router.CastMode}
+   */
+  var AUTO_CAST_MODE = new CastMode(media_router.CastModeType.AUTO,
+      loadTimeData.getString('autoCastMode'), null);
+
+  /**
+   * @param {string} id The ID of this issue.
+   * @param {string} title The issue title.
+   * @param {string} message The issue message.
+   * @param {number} defaultActionType The type of default action.
+   * @param {number|undefined} secondaryActionType The type of optional action.
+   * @param {?string} routeId The route ID to which this issue
+   *                  pertains. If not set, this is a global issue.
+   * @param {boolean} isBlocking True if this issue blocks other UI.
+   * @param {?number} helpPageId The numeric help center ID.
+   * @constructor
+   * @struct
+   */
+  var Issue = function(id, title, message, defaultActionType,
+                       secondaryActionType, routeId, isBlocking,
+                       helpPageId) {
+    /** @type {string} */
+    this.id = id;
+
+    /** @type {string} */
+    this.title = title;
+
+    /** @type {string} */
+    this.message = message;
+
+    /** @type {number} */
+    this.defaultActionType = defaultActionType;
+
+    /** @type {number|undefined} */
+    this.secondaryActionType = secondaryActionType;
+
+    /** @type {?string} */
+    this.routeId = routeId;
+
+    /** @type {boolean} */
+    this.isBlocking = isBlocking;
+
+    /** @type {?number} */
+    this.helpPageId = helpPageId;
+  };
+
+
+  /**
+   * @param {string} id The media route ID.
+   * @param {string} sinkId The ID of the media sink running this route.
+   * @param {string} description The short description of this route.
+   * @param {?number} tabId The ID of the tab in which web app is running and
+   *                  accessing the route.
+   * @param {boolean} isLocal True if this is a locally created route.
+   * @param {boolean} canJoin True if this route can be joined.
+   * @param {?string} customControllerPath non-empty if this route has custom
+   *                  controller.
+   * @constructor
+   * @struct
+   */
+  var Route = function(id, sinkId, description, tabId, isLocal, canJoin,
+      customControllerPath) {
+    /** @type {string} */
+    this.id = id;
+
+    /** @type {string} */
+    this.sinkId = sinkId;
+
+    /** @type {string} */
+    this.description = description;
+
+    /** @type {?number} */
+    this.tabId = tabId;
+
+    /** @type {boolean} */
+    this.isLocal = isLocal;
+
+    /** @type {boolean} */
+    this.canJoin = canJoin;
+
+    /** @type {number|undefined} */
+    this.currentCastMode = undefined;
+
+    /** @type {?string} */
+    this.customControllerPath = customControllerPath;
+  };
+
+
+  /**
+   * @param {string} id The ID of the media sink.
+   * @param {string} name The name of the sink.
+   * @param {?string} description Optional description of the sink.
+   * @param {?string} domain Optional domain of the sink.
+   * @param {media_router.SinkIconType} iconType the type of icon for the sink.
+   * @param {media_router.SinkStatus} status The readiness state of the sink.
+   * @param {number} castModes Bitset of cast modes compatible with the sink.
+   * @constructor
+   * @struct
+   */
+  var Sink = function(id, name, description, domain, iconType, status,
+      castModes) {
+    /** @type {string} */
+    this.id = id;
+
+    /** @type {string} */
+    this.name = name;
+
+    /** @type {?string} */
+    this.description = description;
+
+    /** @type {?string} */
+    this.domain = domain;
+
+    /** @type {!media_router.SinkIconType} */
+    this.iconType = iconType;
+
+    /** @type {!media_router.SinkStatus} */
+    this.status = status;
+
+    /** @type {number} */
+    this.castModes = castModes;
+
+    /** @type {boolean} */
+    this.isPseudoSink = false;
+  };
+
+
+  /**
+   * @param {number} tabId The current tab ID.
+   * @param {string} domain The domain of the current tab.
+   * @constructor
+   * @struct
+   */
+  var TabInfo = function(tabId, domain) {
+    /** @type {number} */
+    this.tabId = tabId;
+
+    /** @type {string} */
+    this.domain = domain;
+  };
+
+  return {
+    AUTO_CAST_MODE: AUTO_CAST_MODE,
+    CastMode: CastMode,
+    Issue: Issue,
+    Route: Route,
+    Sink: Sink,
+    TabInfo: TabInfo,
+  };
+});
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// API invoked by the browser MediaRouterWebUIMessageHandler to communicate
+// with this UI.
+cr.define('media_router.ui', function() {
+  'use strict';
+
+  // The media-router-container element.
+  var container = null;
+
+  // The media-router-header element.
+  var header = null;
+
+  /**
+   * Handles response of previous create route attempt.
+   *
+   * @param {string} sinkId The ID of the sink to which the Media Route was
+   *     creating a route.
+   * @param {?media_router.Route} route The newly created route that
+   *     corresponds to the sink if route creation succeeded; null otherwise.
+   * @param {boolean} isForDisplay Whether or not |route| is for display.
+   */
+  function onCreateRouteResponseReceived(sinkId, route, isForDisplay) {
+    container.onCreateRouteResponseReceived(sinkId, route, isForDisplay);
+  }
+
+  /**
+   * Handles the search response by forwarding |sinkId| to the container.
+   *
+   * @param {string} sinkId The ID of the sink found by search.
+   */
+  function receiveSearchResult(sinkId) {
+    container.onReceiveSearchResult(sinkId);
+  }
+
+  /**
+   * Sets the cast mode list.
+   *
+   * @param {!Array<!media_router.CastMode>} castModeList
+   */
+  function setCastModeList(castModeList) {
+    container.castModeList = castModeList;
+  }
+
+  /**
+   * Sets |container| and |header|.
+   *
+   * @param {!MediaRouterContainerElement} mediaRouterContainer
+   * @param {!MediaRouterHeaderElement} mediaRouterHeader
+   */
+  function setElements(mediaRouterContainer, mediaRouterHeader) {
+    container = mediaRouterContainer;
+    header = mediaRouterHeader;
+  }
+
+  /**
+   * Populates the WebUI with data obtained about the first run flow.
+   *
+   * @param {{firstRunFlowCloudPrefLearnMoreUrl: string,
+   *          firstRunFlowLearnMoreUrl: string,
+   *          wasFirstRunFlowAcknowledged: boolean,
+   *          showFirstRunFlowCloudPref: boolean}} data
+   * Parameters in data:
+   *   firstRunFlowCloudPrefLearnMoreUrl - url to open when the cloud services
+   *       pref learn more link is clicked.
+   *   firstRunFlowLearnMoreUrl - url to open when the first run flow learn
+   *       more link is clicked.
+   *   wasFirstRunFlowAcknowledged - true if first run flow was previously
+   *       acknowledged by user.
+   *   showFirstRunFlowCloudPref - true if the cloud pref option should be
+   *       shown.
+   */
+  function setFirstRunFlowData(data) {
+    container.firstRunFlowCloudPrefLearnMoreUrl =
+        data['firstRunFlowCloudPrefLearnMoreUrl'];
+    container.firstRunFlowLearnMoreUrl =
+        data['firstRunFlowLearnMoreUrl'];
+    container.showFirstRunFlowCloudPref =
+        data['showFirstRunFlowCloudPref'];
+    // Some users acknowledged the first run flow before the cloud prefs
+    // setting was implemented. These users will see the first run flow
+    // again.
+    container.showFirstRunFlow = !data['wasFirstRunFlowAcknowledged'] ||
+        container.showFirstRunFlowCloudPref;
+  }
+
+  /**
+   * Populates the WebUI with data obtained from Media Router.
+   *
+   * @param {{deviceMissingUrl: string,
+   *          sinksAndIdentity: {
+   *            sinks: !Array<!media_router.Sink>,
+   *            showEmail: boolean,
+   *            userEmail: string,
+   *            showDomain: boolean
+   *          },
+   *          routes: !Array<!media_router.Route>,
+   *          castModes: !Array<!media_router.CastMode>}} data
+   * Parameters in data:
+   *   deviceMissingUrl - url to be opened on "Device missing?" clicked.
+   *   sinksAndIdentity - list of sinks to be displayed and user identity.
+   *   routes - list of routes that are associated with the sinks.
+   *   castModes - list of available cast modes.
+   */
+  function setInitialData(data) {
+    container.deviceMissingUrl = data['deviceMissingUrl'];
+    container.castModeList = data['castModes'];
+    this.setSinkListAndIdentity(data['sinksAndIdentity']);
+    container.routeList = data['routes'];
+    container.maybeShowRouteDetailsOnOpen();
+    media_router.browserApi.onInitialDataReceived();
+  }
+
+  /**
+   * Sets current issue to |issue|, or clears the current issue if |issue| is
+   * null.
+   *
+   * @param {?media_router.Issue} issue
+   */
+  function setIssue(issue) {
+    container.issue = issue;
+  }
+
+  /**
+   * Sets the list of currently active routes.
+   *
+   * @param {!Array<!media_router.Route>} routeList
+   */
+  function setRouteList(routeList) {
+    container.routeList = routeList;
+  }
+
+  /**
+   * Sets the list of discovered sinks along with properties of whether to hide
+   * identity of the user email and domain.
+   *
+   * @param {{sinks: !Array<!media_router.Sink>,
+   *          showEmail: boolean,
+   *          userEmail: string,
+   *          showDomain: boolean}} data
+   * Parameters in data:
+   *   sinks - list of sinks to be displayed.
+   *   showEmail - true if the user email should be shown.
+   *   userEmail - email of the user if the user is signed in.
+   *   showDomain - true if the user domain should be shown.
+   */
+  function setSinkListAndIdentity(data) {
+    container.showDomain = data['showDomain'];
+    container.allSinks = data['sinks'];
+    header.userEmail = data['userEmail'];
+    header.showEmail = data['showEmail'];
+  }
+
+  /**
+   * Updates the max height of the dialog
+   *
+   * @param {number} height
+   */
+  function updateMaxHeight(height) {
+    container.updateMaxDialogHeight(height);
+  }
+
+  return {
+    onCreateRouteResponseReceived: onCreateRouteResponseReceived,
+    receiveSearchResult: receiveSearchResult,
+    setCastModeList: setCastModeList,
+    setElements: setElements,
+    setFirstRunFlowData: setFirstRunFlowData,
+    setInitialData: setInitialData,
+    setIssue: setIssue,
+    setRouteList: setRouteList,
+    setSinkListAndIdentity: setSinkListAndIdentity,
+    updateMaxHeight: updateMaxHeight,
+  };
+});
+
+// API invoked by this UI to communicate with the browser WebUI message handler.
+cr.define('media_router.browserApi', function() {
+  'use strict';
+
+  /**
+   * Indicates that the user has acknowledged the first run flow.
+   *
+   * @param {boolean} optedIntoCloudServices Whether or not the user opted into
+   *                  cloud services.
+   */
+  function acknowledgeFirstRunFlow(optedIntoCloudServices) {
+    chrome.send('acknowledgeFirstRunFlow', [optedIntoCloudServices]);
+  }
+
+  /**
+   * Acts on the given issue.
+   *
+   * @param {string} issueId
+   * @param {number} actionType Type of action that the user clicked.
+   * @param {?number} helpPageId The numeric help center ID.
+   */
+  function actOnIssue(issueId, actionType, helpPageId) {
+    chrome.send('actOnIssue', [{issueId: issueId, actionType: actionType,
+                                helpPageId: helpPageId}]);
+  }
+
+  /**
+   * Closes the dialog.
+   *
+   * @param {boolean} pressEscToClose Whether the user pressed ESC to close the
+   *                  dialog.
+   */
+  function closeDialog(pressEscToClose) {
+    chrome.send('closeDialog', [pressEscToClose]);
+  }
+
+  /**
+   * Closes the given route.
+   *
+   * @param {!media_router.Route} route
+   */
+  function closeRoute(route) {
+    chrome.send('closeRoute', [{routeId: route.id, isLocal: route.isLocal}]);
+  }
+
+  /**
+   * Joins the given route.
+   *
+   * @param {!media_router.Route} route
+   */
+  function joinRoute(route) {
+    chrome.send('joinRoute', [{sinkId: route.sinkId, routeId: route.id}]);
+  }
+
+  /**
+   * Indicates that the initial data has been received.
+   */
+  function onInitialDataReceived() {
+    chrome.send('onInitialDataReceived');
+  }
+
+  /**
+   * Reports when the user clicks outside the dialog.
+   */
+  function reportBlur() {
+    chrome.send('reportBlur');
+  }
+
+  /**
+   * Reports the index of the selected sink.
+   *
+   * @param {number} sinkIndex
+   */
+  function reportClickedSinkIndex(sinkIndex) {
+    chrome.send('reportClickedSinkIndex', [sinkIndex]);
+  }
+
+  /**
+   * Reports that the user used the filter input.
+   */
+  function reportFilter() {
+    chrome.send('reportFilter');
+  }
+
+  /**
+   * Reports the initial dialog view.
+   *
+   * @param {string} view
+   */
+  function reportInitialState(view) {
+    chrome.send('reportInitialState', [view]);
+  }
+
+  /**
+   * Reports the initial action the user took.
+   *
+   * @param {number} action
+   */
+  function reportInitialAction(action) {
+    chrome.send('reportInitialAction', [action]);
+  }
+
+  /**
+   * Reports the navigation to the specified view.
+   *
+   * @param {string} view
+   */
+  function reportNavigateToView(view) {
+    chrome.send('reportNavigateToView', [view]);
+  }
+
+  /**
+   * Reports whether or not a route was created successfully.
+   *
+   * @param {boolean} success
+   */
+  function reportRouteCreation(success) {
+    chrome.send('reportRouteCreation', [success]);
+  }
+
+  /**
+   * Reports the outcome of a create route response.
+   *
+   * @param {number} outcome
+   */
+  function reportRouteCreationOutcome(outcome) {
+    chrome.send('reportRouteCreationOutcome', [outcome]);
+  }
+
+  /**
+   * Reports the cast mode that the user selected.
+   *
+   * @param {number} castModeType
+   */
+  function reportSelectedCastMode(castModeType) {
+    chrome.send('reportSelectedCastMode', [castModeType]);
+  }
+
+  /**
+   * Reports the current number of sinks.
+   *
+   * @param {number} sinkCount
+   */
+  function reportSinkCount(sinkCount) {
+    chrome.send('reportSinkCount', [sinkCount]);
+  }
+
+  /**
+   * Reports the time it took for the user to select a sink after the sink list
+   * is populated and shown.
+   *
+   * @param {number} timeMs
+   */
+  function reportTimeToClickSink(timeMs) {
+    chrome.send('reportTimeToClickSink', [timeMs]);
+  }
+
+  /**
+   * Reports the time, in ms, it took for the user to close the dialog without
+   * taking any other action.
+   *
+   * @param {number} timeMs
+   */
+  function reportTimeToInitialActionClose(timeMs) {
+    chrome.send('reportTimeToInitialActionClose', [timeMs]);
+  }
+
+  /**
+   * Requests data to initialize the WebUI with.
+   * The data will be returned via media_router.ui.setInitialData.
+   */
+  function requestInitialData() {
+    chrome.send('requestInitialData');
+  }
+
+  /**
+   * Requests that a media route be started with the given sink.
+   *
+   * @param {string} sinkId The sink ID.
+   * @param {number} selectedCastMode The value of the cast mode the user
+   *   selected.
+   */
+  function requestRoute(sinkId, selectedCastMode) {
+    chrome.send('requestRoute',
+                [{sinkId: sinkId, selectedCastMode: selectedCastMode}]);
+  }
+
+  /**
+   * Requests that the media router search all providers for a sink matching
+   * |searchCriteria| that can be used with the media source associated with the
+   * cast mode |selectedCastMode|. If such a sink is found, a route is also
+   * created between the sink and the media source.
+   *
+   * @param {string} sinkId Sink ID of the pseudo sink generating the request.
+   * @param {string} searchCriteria Search criteria for the route providers.
+   * @param {string} domain User's current hosted domain.
+   * @param {number} selectedCastMode The value of the cast mode to be used with
+   *   the sink.
+   */
+  function searchSinksAndCreateRoute(
+      sinkId, searchCriteria, domain, selectedCastMode) {
+    chrome.send('searchSinksAndCreateRoute',
+                [{sinkId: sinkId,
+                  searchCriteria: searchCriteria,
+                  domain: domain,
+                  selectedCastMode: selectedCastMode}]);
+  }
+
+  return {
+    acknowledgeFirstRunFlow: acknowledgeFirstRunFlow,
+    actOnIssue: actOnIssue,
+    closeDialog: closeDialog,
+    closeRoute: closeRoute,
+    joinRoute: joinRoute,
+    onInitialDataReceived: onInitialDataReceived,
+    reportBlur: reportBlur,
+    reportClickedSinkIndex: reportClickedSinkIndex,
+    reportFilter: reportFilter,
+    reportInitialAction: reportInitialAction,
+    reportInitialState: reportInitialState,
+    reportNavigateToView: reportNavigateToView,
+    reportRouteCreation: reportRouteCreation,
+    reportRouteCreationOutcome: reportRouteCreationOutcome,
+    reportSelectedCastMode: reportSelectedCastMode,
+    reportSinkCount: reportSinkCount,
+    reportTimeToClickSink: reportTimeToClickSink,
+    reportTimeToInitialActionClose: reportTimeToInitialActionClose,
+    requestInitialData: requestInitialData,
+    requestRoute: requestRoute,
+    searchSinksAndCreateRoute: searchSinksAndCreateRoute,
+  };
+});
+
+
+// Handles user events for the Media Router UI.
+cr.define('media_router', function() {
+  'use strict';
+
+  /**
+   * The media-router-container element. Initialized after polymer is ready.
+   * @type {?MediaRouterContainerElement}
+   */
+  var container = null;
+
+  /**
+   * Initializes the Media Router WebUI and requests initial media
+   * router content, such as the media sink and media route lists.
+   */
+  function initialize() {
+    // For non-Mac platforms, request data immediately after initialization.
+    if (!cr.isMac)
+      onRequestInitialData();
+
+    container = /** @type {!MediaRouterContainerElement} */
+        ($('media-router-container'));
+
+    media_router.ui.setElements(container,
+        /** @type {!MediaRouterHeaderElement} */
+        (container.$['container-header']));
+
+    container.addEventListener('acknowledge-first-run-flow',
+                               onAcknowledgeFirstRunFlow);
+    container.addEventListener('back-click', onNavigateToSinkList);
+    container.addEventListener('cast-mode-selected', onCastModeSelected);
+    container.addEventListener('close-dialog', onCloseDialog);
+    container.addEventListener('close-route', onCloseRoute);
+    container.addEventListener('create-route', onCreateRoute);
+    container.addEventListener('issue-action-click', onIssueActionClick);
+    container.addEventListener('join-route-click', onJoinRouteClick);
+    container.addEventListener('navigate-sink-list-to-details',
+                               onNavigateToDetails);
+    container.addEventListener('navigate-to-cast-mode-list',
+                               onNavigateToCastMode);
+    container.addEventListener('report-filter', onFilter);
+    container.addEventListener('report-initial-action', onInitialAction);
+    container.addEventListener('report-initial-action-close',
+                               onInitialActionClose);
+    container.addEventListener('report-route-creation', onReportRouteCreation);
+    container.addEventListener('report-sink-click-time',
+                               onSinkClickTimeReported);
+    container.addEventListener('report-sink-count', onSinkCountReported);
+    container.addEventListener('report-resolved-route',
+                               onReportRouteCreationOutcome);
+    container.addEventListener('request-initial-data',
+                               onRequestInitialData);
+    container.addEventListener('search-sinks-and-create-route',
+                               onSearchSinksAndCreateRoute);
+    container.addEventListener('show-initial-state', onShowInitialState);
+    container.addEventListener('sink-click', onSinkClick);
+
+    window.addEventListener('blur', onWindowBlur);
+  }
+
+  /**
+   * Requests that the Media Router searches for a sink with criteria
+   * |event.detail.name|.
+   * @param {!Event} event
+   * Parameters in |event|.detail:
+   *   id - id of the pseudo sink generating the request.
+   *   name - sink search criteria.
+   *   domain - user's current domain.
+   *   selectedCastMode - type of cast mode selected by the user.
+   */
+  function onSearchSinksAndCreateRoute(event) {
+    /** @type {{id: string, domain: string, name: string,
+     *          selectedCastMode: number}} */
+    var detail = event.detail;
+    media_router.browserApi.searchSinksAndCreateRoute(
+        detail.id, detail.name, detail.domain, detail.selectedCastMode);
+  }
+
+  /**
+   * Reports the selected cast mode.
+   * Called when the user selects a cast mode from the picker.
+   *
+   * @param {!Event} event
+   * Parameters in |event|.detail:
+   *   castModeType - type of cast mode selected by the user.
+   */
+  function onCastModeSelected(event) {
+    /** @type {{castModeType: number}} */
+    var detail = event.detail;
+    media_router.browserApi.reportSelectedCastMode(detail.castModeType);
+  }
+
+  /**
+   * Updates the preference that the user has seen the first run flow.
+   * Called when the user clicks on the acknowledgement button on the first run
+   * flow.
+   *
+   * @param {!Event} event
+   * Parameters in |event|.detail:
+   *   optedIntoCloudServices - whether or not the user opted into cloud
+   *                            services.
+   */
+  function onAcknowledgeFirstRunFlow(event) {
+    /** @type {{optedIntoCloudServices: boolean}} */
+    var detail = event.detail;
+    media_router.browserApi.acknowledgeFirstRunFlow(
+        detail.optedIntoCloudServices);
+  }
+
+  /**
+   * Closes the dialog.
+   * Called when the user clicks the close button on the dialog. Reports
+   * whether the user closed the dialog via the ESC key.
+   *
+   * @param {!Event} event
+   * Parameters in |event|.detail:
+   *   pressEscToClose - whether or not the user pressed ESC to close the
+   *                     dialog.
+   */
+  function onCloseDialog(event) {
+    /** @type {{pressEscToClose: boolean}} */
+    var detail = event.detail;
+    container.maybeReportUserFirstAction(
+        media_router.MediaRouterUserAction.CLOSE);
+    media_router.browserApi.closeDialog(detail.pressEscToClose);
+  }
+
+  /**
+   * Reports when the user uses the filter input to filter the sink list. This
+   * is reported at most once each time the user enters the filter view, and
+   * only if text is actually entered in the filter input.
+   */
+  function onFilter() {
+    media_router.browserApi.reportFilter();
+  }
+
+  /**
+   * Reports the first action the user takes after opening the dialog.
+   * Called when the user explicitly interacts with the dialog to perform an
+   * action.
+   *
+   * @param {!Event} event
+   * Parameters in |event|.detail:
+   *   action - the first action taken by the user.
+   */
+  function onInitialAction(event) {
+    /** @type {{action: number}} */
+    var detail = event.detail;
+    media_router.browserApi.reportInitialAction(detail.action);
+  }
+
+  /**
+   * Reports the time it took for the user to close the dialog if that was the
+   * first action the user took after opening the dialog.
+   * Called when the user closes the dialog without taking any other action.
+   *
+   * @param {!Event} event
+   * Parameters in |event|.detail:
+   *   timeMs - time in ms for the user to close the dialog.
+   */
+  function onInitialActionClose(event) {
+    /** @type {{timeMs: number}} */
+    var detail = event.detail;
+    media_router.browserApi.reportTimeToInitialActionClose(detail.timeMs);
+  }
+
+  /**
+   * Acts on an issue and dismisses it from the UI.
+   * Called when the user performs an action on an issue.
+   *
+   * @param {!Event} event
+   * Parameters in |event|.detail:
+   *   id - issue ID.
+   *   actionType - type of action performed by the user.
+   *   helpPageId - the numeric help center ID.
+   */
+  function onIssueActionClick(event) {
+    /** @type {{id: string, actionType: number, helpPageId: number}} */
+    var detail = event.detail;
+    media_router.browserApi.actOnIssue(detail.id,
+                                       detail.actionType,
+                                       detail.helpPageId);
+    container.issue = null;
+  }
+
+  /**
+   * Creates a media route.
+   * Called when the user requests to create a media route.
+   *
+   * @param {!Event} event
+   * Parameters in |event|.detail:
+   *   sinkId - sink ID selected by the user.
+   *   selectedCastModeValue - cast mode selected by the user.
+   */
+  function onCreateRoute(event) {
+    /** @type {{sinkId: string, selectedCastModeValue, number}} */
+    var detail = event.detail;
+    media_router.browserApi.requestRoute(detail.sinkId,
+                                         detail.selectedCastModeValue);
+  }
+
+  /**
+   * Stops a route.
+   * Called when the user requests to stop a media route.
+   *
+   * @param {!Event} event
+   * Parameters in |event|.detail:
+   *   route - The route to close.
+   */
+  function onCloseRoute(event) {
+    /** @type {{route: !media_router.Route}} */
+    var detail = event.detail;
+    media_router.browserApi.closeRoute(detail.route);
+  }
+
+  /**
+   * Starts casting to an existing route.
+   * Called when the user requests to start casting to a media route that is
+   * joinable.
+   *
+   * @param {!Event} event
+   * Parameters in |event|.detail:
+   *   route - The route to connect to if possible.
+   */
+  function onJoinRouteClick(event) {
+    /** @type {{route: !media_router.Route}} */
+    var detail = event.detail;
+    media_router.browserApi.joinRoute(detail.route);
+  }
+
+  /**
+   * Reports the user navigation to the cast mode view.
+   * Called when the user clicks the drop arrow to navigate to the cast mode
+   * view on the dialog.
+   */
+  function onNavigateToCastMode() {
+    media_router.browserApi.reportNavigateToView(
+        media_router.MediaRouterView.CAST_MODE_LIST);
+  }
+
+  /**
+   * Reports the user navigation the route details view.
+   * Called when the user clicks on a sink to navigate to the route details
+   * view.
+   */
+  function onNavigateToDetails() {
+    media_router.browserApi.reportNavigateToView(
+        media_router.MediaRouterView.ROUTE_DETAILS);
+  }
+
+  /**
+   * Reports the user navigation the sink list view.
+   * Called when the user clicks on the back button from the route details view
+   * to the sink list view.
+   */
+  function onNavigateToSinkList() {
+    media_router.browserApi.reportNavigateToView(
+        media_router.MediaRouterView.SINK_LIST);
+  }
+
+  /**
+   * Reports whether or not the route creation was successful.
+   *
+   * @param {!Event} event
+   * Parameters in |event|.detail:
+   *   success - whether or not the route creation was successful.
+   */
+  function onReportRouteCreation(event) {
+    var detail = event.detail;
+    media_router.browserApi.reportRouteCreation(detail.success);
+  }
+
+  /**
+   * Reports success or the type of failure for route creation response.
+   * Called when the route is resolved; either the route creation was a success
+   * or if there was no route or the route's corresponding sink is invalid;
+   * either the sink does not exist or was not the sink we were looking for.
+   *
+   * @param {!Event} event
+   * Parameters in |event|.detail:
+   *   outcome - the outcome of a create route response.
+   *
+   */
+  function onReportRouteCreationOutcome(event) {
+    /** @type {{outcome: number}} */
+    var detail = event.detail;
+    media_router.browserApi.reportRouteCreationOutcome(detail.outcome);
+  }
+
+  /**
+   * Requests for initial data to load into the dialog.
+   */
+  function onRequestInitialData() {
+    media_router.browserApi.requestInitialData();
+  }
+
+  /**
+   * Reports the initial state of the dialog after it is opened.
+   * Called after initial data is populated.
+   *
+   * @param {!Event} event
+   * Parameters in |event|.detail:
+   *   currentView - the current dialog's current view.
+   */
+  function onShowInitialState(event) {
+    /** @type {{currentView: string}} */
+    var detail = event.detail;
+    media_router.browserApi.reportInitialState(detail.currentView);
+  }
+
+  /**
+   * Reports the index of the sink that was clicked.
+   * Called when the user selects a sink on the sink list.
+   *
+   * @param {!Event} event
+   * Paramters in |event|.detail:
+   *   index - the index of the clicked sink.
+   */
+  function onSinkClick(event) {
+    /** @type {{index: number}} */
+    var detail = event.detail;
+    media_router.browserApi.reportClickedSinkIndex(detail.index);
+  }
+
+  /**
+   * Reports the time it took for the user to select a sink to create a route
+   * after the list was popuated and shown.
+   *
+   * @param {!Event} event
+   * Paramters in |event|.detail:
+   *   timeMs - the time it took for the user to select a sink.
+   */
+  function onSinkClickTimeReported(event) {
+    /** @type {{timeMs: number}} */
+    var detail = event.detail;
+    media_router.browserApi.reportTimeToClickSink(detail.timeMs);
+  }
+
+  /**
+   * Reports the current sink count.
+   * Called 3 seconds after the dialog is initially opened.
+   *
+   * @param {!Event} event
+   * Parameters in |event|.detail:
+   *   sinkCount - the number of sinks.
+   */
+  function onSinkCountReported(event) {
+    /** @type {{sinkCount: number}} */
+    var detail = event.detail;
+    media_router.browserApi.reportSinkCount(detail.sinkCount);
+  }
+
+  /**
+   * Reports when the user clicks outside the dialog.
+   */
+  function onWindowBlur() {
+    media_router.browserApi.reportBlur();
+  }
+
+  return {
+    initialize: initialize,
+  };
+});
+
+window.addEventListener('load', media_router.initialize);

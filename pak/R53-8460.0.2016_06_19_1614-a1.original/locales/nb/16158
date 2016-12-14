@@ -1,0 +1,1 @@
+Slår på delvis eksperimentell støtte for Pointer Events API. Denne API-en er bare ment å brukes av nettutviklere til testing, og den fører til at enkelte nettsteder ikke fungerer som de skal.

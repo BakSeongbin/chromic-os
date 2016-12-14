@@ -1,0 +1,1 @@
+Če omogočite to možnost, bodo elementi z nespremenljivim položajem imeli svoje sestavljene sloje. Da bi to delovalo, morajo elementi z nespremenljivim položajem ustvariti tudi kontekste za zlaganje.

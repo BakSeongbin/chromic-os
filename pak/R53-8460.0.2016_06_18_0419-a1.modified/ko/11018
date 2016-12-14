@@ -1,0 +1,1 @@
+{SECONDS,plural, =1{1초 전}other{#초 전}}

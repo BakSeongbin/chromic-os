@@ -1,0 +1,1 @@
+Text is rendered with signed distance fields rather than bitmap alpha masks.

@@ -1,0 +1,1 @@
+Dodaj parametr zapytania do URL-a, by strona odświeżała się automatycznie: chrome://device-log/?refresh=<sec>

@@ -1,0 +1,1 @@
+Ativar a resolução de proxy V8 fora do processo. Executa o V8 Proxy Resolver num processo de utilitário, e não no processo do navegador.

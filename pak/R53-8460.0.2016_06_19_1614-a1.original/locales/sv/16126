@@ -1,0 +1,1 @@
+På vissa webbsidor används äldre JavaScript-tillägg, eller JavaScript-tillägg som inte är standard, som kan skapa en konflikt med de senaste JavaScript-funktionerna. Den här flaggan gör det möjligt att inaktivera stödet för de senare funktionerna för kompatibilitet med sådana webbsidor.

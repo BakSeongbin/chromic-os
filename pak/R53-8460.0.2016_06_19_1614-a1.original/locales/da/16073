@@ -1,0 +1,1 @@
+Når den er aktiveret, vil Stun-beskeder, der er genereret af WebRTC, indeholde Origin-headeren.

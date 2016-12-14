@@ -1,0 +1,1 @@
+Próbujesz wejść na <strong>$1</strong>, ale serwer przedstawił certyfikat podpisany słabym algorytmem. Oznacza to, że dane uwierzytelniające podane przez serwer mogły zostać sfałszowane, a serwer może nie być tym, którego oczekujesz (możliwe, że komunikujesz się z intruzem).

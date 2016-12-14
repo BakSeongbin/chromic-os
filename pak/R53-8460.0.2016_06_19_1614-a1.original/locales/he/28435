@@ -1,0 +1,1 @@
+גש אל <a jsvalues="href:urlCorrection;.jstdata:$this" onmousedown="linkClicked(this.jstdata)">עותק בקובץ שמור</a> של <span jscontent="originalUrlForDisplay"></span>

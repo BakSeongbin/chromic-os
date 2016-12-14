@@ -1,0 +1,18 @@
+<h3>Funkcie ladenia</h3>
+    <br>
+    Na svojom zariadení so systémom OS Chrome môžete aktivovať funkcie ladenia, ktoré vám pomôžu na ňom nainštalovať a otestovať vlastný kód. Umožní vám to:<br>
+    <ul>
+      <li>odstrániť overenie rootfs, aby ste mohli upravovať súbory operačného systému;
+      <li>povoliť prístup SSH do zariadenia pomocou štandardných testovacích kľúčov, aby ste mohli na prístup do zariadenia používať nástroje, ako napríklad <span style="color:grey;font-family:monospace">„cros flash“</span>;
+      <li>povoliť spúšťanie cez rozhranie USB, aby ste mohli nainštalovať obraz operačného systému z disku USB;
+      <li>nastaviť prihlasovacie heslo používateľa dev a root na vlastnú hodnotu, aby ste mohli ručne pristúpiť do zariadenia prostredníctvom protokolu SSH.
+    </ul>
+    <br>
+    Väčšina funkcií ladenia zostane po aktivácii povolená aj po vymazaní zariadenia prostredníctvom funkcie Powerwash alebo vymazaní údajov na zariadení spravovanom podnikom. Ak chcete funkcie ladenia úplne deaktivovať, dokončite proces obnovenia systému OS Chrome (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Ďalšie informácie o funkciách ladenia nájdete tu:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Poznámka:</b>  Systém sa počas príslušného procesu reštartuje.

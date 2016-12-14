@@ -1,0 +1,2 @@
+Utworzenie użytkownika nadzorowanego nie powoduje utworzenia konta Google, a jego ustawienia
+    ani dane nie są przenoszone na inne urządzenia przez funkcje synchronizacji w Chrome. Jego zasięg działania jest ograniczony tylko do tego urządzenia.

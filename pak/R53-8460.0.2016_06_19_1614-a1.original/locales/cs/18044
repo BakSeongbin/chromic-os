@@ -1,0 +1,3 @@
+<p>Při spuštění aplikace $1 v podporovaném počítačovém prostředí se použijí systémová nastavení proxy serveru. Váš systém však buď není podporován, nebo došlo k problému se spuštěním konfigurace systému.</p>
+
+<p>Konfiguraci můžete provést pomocí příkazového řádku. Další informace o příznacích a proměnných prostředí zobrazíte zadáním příkazu: <code>man $2</code>.</p>

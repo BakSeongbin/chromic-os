@@ -1,0 +1,3 @@
+<p>Al ejecutar $1 en un entorno de escritorio compatible, se utilizará la configuración de proxy del sistema. Sin embargo, tu sistema no es compatible o ha habido algún problema al iniciar la configuración del sistema.</p>
+
+          <p>Aún puedes configurar el sistema mediante la línea de comandos. Para obtener más información sobre los indicadores y sobre las variables del entorno, consulta <code>man $2</code>.</p>

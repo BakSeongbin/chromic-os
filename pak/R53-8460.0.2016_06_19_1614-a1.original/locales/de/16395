@@ -1,0 +1,1 @@
+Dadurch prüfen Audioausgabestreams, ob außer dem Standard-Hardware-Layout noch andere Channel-Layouts verfügbar sind. Wenn diese Funktion aktiviert wird, kann das Betriebssystem von Stereo auf Surround erweitern, falls dies unterstützt wird. Dies kann Treiberfehler anderer Anbieter auslösen. Setzen Sie die Funktion mit Umsicht ein.

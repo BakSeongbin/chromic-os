@@ -1,0 +1,1 @@
+Inicia $1 como usuario normal. Para ejecutarlo como usuario administrador, debes especificar un directorio de datos del usuario (--user-data-dir) alternativo para almacenar los datos de perfil.

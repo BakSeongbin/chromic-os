@@ -1,0 +1,1 @@
+Bu işaret Chrome'u güvensiz hale getirir. İşareti sadece, ne yaptığını anlıyorsanız kullanın. Bu işaretin herhangi bir bildirimde bulunulmadan kaldırılabileceğini unutmayın. İşaret etkinleştirilirse başlangıç noktası https olan çerçeveler güvenli olmayan bir URL'ye sahip WebSocket'leri kullanabilir (ws://).

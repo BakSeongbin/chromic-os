@@ -1,0 +1,1 @@
+{NUM_DEVICES,plural, =1{Komunikace se zařízením USB}few{Komunikace se # zařízeními USB}many{Komunikace s # zařízení USB}other{Komunikace s # zařízeními USB}}

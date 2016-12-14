@@ -1,0 +1,1 @@
+Vrlo eksperimentalna podrška za generiranje iframeova za više web-lokacija u zasebnim procesima. U tom načinu dokumenti dijele proces generiranja samo ako potječu s iste web-lokacije.

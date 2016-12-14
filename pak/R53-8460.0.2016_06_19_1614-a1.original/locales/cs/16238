@@ -1,0 +1,1 @@
+Povolí režim na pozadí pro rozhraní Push API. Pokud to rozhraní Push API bude potřebovat, bude Chrome moci zůstat spuštěný i po zavření posledního okna a bude se moci spouštět při spuštění operačního systému.

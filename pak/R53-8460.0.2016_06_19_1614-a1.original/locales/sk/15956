@@ -1,0 +1,1 @@
+Obmedzuje v aplikácii Native Client ladenie založené na nástroji GDB podľa webovej adresy súboru manifestu. Aby táto možnosť fungovala, musí byť povolené ladenie aplikácie Native Client založené na nástroji GDB.

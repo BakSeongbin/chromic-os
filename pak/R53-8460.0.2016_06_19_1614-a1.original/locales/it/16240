@@ -1,0 +1,1 @@
+Consente di attivare l'implementazione sperimentale dell'istruzione "Cache-Control: stale-while-revalidate", che permette ai server di specificare che alcune risorse potrebbero essere riconvalidate in background per migliorare la latenza.

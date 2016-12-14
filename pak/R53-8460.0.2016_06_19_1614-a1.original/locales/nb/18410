@@ -1,0 +1,1 @@
+Dette flagget gjør Chrome usikker. Du må bare bruke det hvis du forstår hva det innebærer. Merk at dette flagget kan bli fjernet uten forvarsel. Hvis aktivert, kan rammer med https-opprinnelse bruke WebSockets med en usikker nettadresse (ws://).

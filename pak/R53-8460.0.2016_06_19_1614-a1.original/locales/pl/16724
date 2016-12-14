@@ -1,0 +1,1 @@
+{COUNT,plural, =0{brak}=1{1}few{#}many{#}other{#}}

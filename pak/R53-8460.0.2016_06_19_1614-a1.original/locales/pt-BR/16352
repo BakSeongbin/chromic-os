@@ -1,0 +1,1 @@
+Mostra janelas dos aplicativos após primeira a detecção ("show-on-first-paint"). As janelas serão mostradas bastante tempo depois para aplicativos pesados que estejam carregando recursos de modo síncrono. No entanto, esse tempo é insignificativo para aplicativos que carregam recursos de forma assíncrona.

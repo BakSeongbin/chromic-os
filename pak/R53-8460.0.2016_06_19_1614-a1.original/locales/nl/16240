@@ -1,0 +1,1 @@
+De experimentele implementatie inschakelen van de instructie 'Cache-Control: stale-while-revalidate'. Hiermee kunnen servers specificeren dat bepaalde bronnen op de achtergrond opnieuw kunnen worden gevalideerd om de wachttijd te verbeteren.

@@ -1,0 +1,1 @@
+Deze vlag maakt Chrome onveilig. Gebruik dit alleen als je deze functie begrijpt. Deze vlag kan zonder kennisgeving worden verwijderd. Als deze optie is ingeschakeld, kunnen frames met een HTTPS-herkomst WebSockets met een onveilige URL (ws://) gebruiken.

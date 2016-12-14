@@ -1,0 +1,3 @@
+<p>Bei der Ausführung von $1 in einer unterstützten Desktop-Umgebung werden die Proxy-Einstellungen des Systems verwendet. Allerdings wird entweder Ihr System nicht unterstützt oder Ihre Systemkonfiguration konnte nicht gestartet werden.</p>
+
+          <p>Sie können die Konfiguration dennoch über die Befehlszeile vornehmen. Weitere Informationen zu Markierungen und Umgebungsvariablen finden Sie unter <code>man $2</code>.</p>

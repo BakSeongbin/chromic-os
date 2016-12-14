@@ -1,0 +1,8 @@
+前往
+          Chromium 選單 >
+          [<span jscontent="settingsTitle"></span>]
+          >
+          [<span jscontent="advancedTitle"></span>]
+          然後取消勾選 [<span jscontent="noNetworkPredictionTitle"></span>]。
+          如果仍然無法解決問題，建議您重新勾選這個選項
+          以增進效能。

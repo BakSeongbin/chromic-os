@@ -1,0 +1,1 @@
+Ha egy oldalnál nincs beállítva kifejezett hivatkozói házirend, akkor a jelölő beállítása csökkenti a „referer” fejlécben szereplő információk mennyiségét az eltérő eredetű kéréseknél.

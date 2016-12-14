@@ -1,0 +1,1 @@
+Włącza program do rozpoznawania serwera proxy V8 poza procesem. Uruchamia go jako proces narzędzia zamiast wewnątrz procesu przeglądarki.

@@ -1,0 +1,1 @@
+Permite la compatibilidad con la escritura de MTP en la API del sistema de archivos (y el administrador de archivos). No se admiten las operaciones de edición directa.

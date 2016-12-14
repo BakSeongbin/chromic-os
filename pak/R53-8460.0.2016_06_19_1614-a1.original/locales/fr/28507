@@ -1,0 +1,2 @@
+Plusieurs en-têtes Content-length différents ont été reçus. Ceci n'est pas autorisé
+    afin de se prémunir contre les attaques de type séparation de réponse HTTP.

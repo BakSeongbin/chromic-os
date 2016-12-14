@@ -1,0 +1,1 @@
+Habilita la implementación experimental de la directiva de control de caché stale_while_revalidate, que permite que los servidores especifiquen que algunos recursos se pueden revalidar en segundo plano para mejorar la latencia.

@@ -1,0 +1,1 @@
+Hiermee worden controles voor gebruikersbetrokkenheid omzeild voor het weergeven van app-banners, zoals vereisten dat gebruikers de site eerder hebben bezocht en dat de banner niet onlangs is weergegeven. Zo kunnen ontwikkelaars testen of er wordt voldaan aan andere geschiktheidsvereisten voor het weergeven van app-banners, zoals het hebben van een manifest.

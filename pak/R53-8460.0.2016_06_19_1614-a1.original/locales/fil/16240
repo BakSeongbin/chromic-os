@@ -1,0 +1,1 @@
+I-enable ang pang-eksperimentong pagsasagawa ng "Cache-Control: stale-while-revalidate" na directive. Pinapahintulutan nito ang mga server na tukuyin na maaaring muling mapatunayan sa background ang ilan sa mga mapagkukunan upang mapahusay ang latency.

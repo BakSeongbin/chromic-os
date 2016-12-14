@@ -1,0 +1,1 @@
+Aktivera V8-proxytolk utanför processen. Kör V8-proxytolken i en arbetsprocess i stället för i webbläsarprocessen.

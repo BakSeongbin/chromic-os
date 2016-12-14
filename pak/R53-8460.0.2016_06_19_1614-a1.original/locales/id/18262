@@ -1,0 +1,1 @@
+Dukungan yang sangat eksperimental untuk merender iframe antarsitus dalam proses terpisah. Dalam mode ini, dokumen akan membagikan proses perender hanya jika berasal dari situs web yang sama.

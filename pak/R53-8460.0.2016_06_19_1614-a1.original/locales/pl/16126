@@ -1,0 +1,1 @@
+Niektóre strony internetowe używają przestarzałych lub niestandardowych rozszerzeń JavaScript, które mogą być niezgodne z najnowszymi funkcjami JavaScript. Aby zachować zgodność z tego typu stronami, ta flaga wyłącza obsługę tych funkcji.

@@ -1,0 +1,1 @@
+{DAYS,plural, =1{Pozostał 1 dzień}few{Pozostały # dni}many{Pozostało # dni}other{Pozostało # dnia}}

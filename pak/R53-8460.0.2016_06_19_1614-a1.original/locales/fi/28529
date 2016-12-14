@@ -1,0 +1,1 @@
+TLS 1.0 -varatoiminto onnistui kättelemään palvelimen kanssa, mutta emme enää hyväksy TLS 1.0 -varatoimintoja. Palvelin täytyy päivittää, jotta versiontarkistus ja mahdollisesti myös suositeltava TLS 1.2 -tuki voidaan ottaa käyttöön.

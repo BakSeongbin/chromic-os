@@ -1,0 +1,1 @@
+{COUNT,plural, =0{brez}=1{1}one{#}two{#}few{#}other{#}}

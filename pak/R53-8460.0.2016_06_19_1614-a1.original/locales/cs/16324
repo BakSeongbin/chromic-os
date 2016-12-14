@@ -1,0 +1,1 @@
+Při každém restartu bude resetován stav instalace spouštěče aplikací. Je-li tento příznak nastaven, Chrome při každém spuštění zapomene, že je spouštěč nainstalován. Tato možnost se používá k testování průběhu instalace spouštěče aplikací.

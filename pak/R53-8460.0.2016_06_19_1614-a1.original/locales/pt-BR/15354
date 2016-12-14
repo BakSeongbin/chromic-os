@@ -1,0 +1,1 @@
+Se você excluir o certificado de uma CA (Autoridade de certificação), seu navegador não confiará mais nos certificados emitidos por essa CA.

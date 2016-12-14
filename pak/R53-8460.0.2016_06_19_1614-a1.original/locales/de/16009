@@ -1,0 +1,1 @@
+Verwendet einen sekundären Thread zum Aufbau von Webseiten. Dies ermöglicht auch dann nahtloses Scrollen, wenn der Haupt-Thread nicht reagiert.

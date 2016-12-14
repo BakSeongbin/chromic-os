@@ -1,0 +1,1 @@
+{NUM_FILES,plural, =1{Aplikácia má trvalý prístup k jednému súboru.}few{Aplikácia má trvalý prístup k # súborom.}many{Aplikácia má trvalý prístup k # súboru.}other{Aplikácia má trvalý prístup k # súborom.}}

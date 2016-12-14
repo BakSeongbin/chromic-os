@@ -1,0 +1,1 @@
+Nie pokazuj paska informacyjnego, gdy rozszerzenie jest dołączone do strony przez interfejs API chrome.debugger. Jest to wymagane do debugowania stron rozszerzenia w tle.

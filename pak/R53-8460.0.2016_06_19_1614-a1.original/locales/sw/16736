@@ -1,0 +1,1 @@
+{COUNT,plural, =0{none}=1{Programu 1 ($1)}=2{Programu 2 ($1, $2)}other{Programu # ($1, $2, $3)}}

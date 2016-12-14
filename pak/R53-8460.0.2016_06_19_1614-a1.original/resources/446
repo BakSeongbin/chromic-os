@@ -1,0 +1,5027 @@
+// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('cr.ui', function() {
+  /**
+   * A class to manage focus between given horizontally arranged elements.
+   *
+   * Pressing left cycles backward and pressing right cycles forward in item
+   * order. Pressing Home goes to the beginning of the list and End goes to the
+   * end of the list.
+   *
+   * If an item in this row is focused, it'll stay active (accessible via tab).
+   * If no items in this row are focused, the row can stay active until focus
+   * changes to a node inside |this.boundary_|. If |boundary| isn't specified,
+   * any focus change deactivates the row.
+   *
+   * @param {!Element} root The root of this focus row. Focus classes are
+   *     applied to |root| and all added elements must live within |root|.
+   * @param {?Element} boundary Focus events are ignored outside of this
+   *     element.
+   * @param {cr.ui.FocusRow.Delegate=} opt_delegate An optional event delegate.
+   * @constructor
+   */
+  function FocusRow(root, boundary, opt_delegate) {
+    /** @type {!Element} */
+    this.root = root;
+
+    /** @private {!Element} */
+    this.boundary_ = boundary || document.documentElement;
+
+    /** @type {cr.ui.FocusRow.Delegate|undefined} */
+    this.delegate = opt_delegate;
+
+    /** @protected {!EventTracker} */
+    this.eventTracker = new EventTracker;
+  }
+
+  /** @interface */
+  FocusRow.Delegate = function() {};
+
+  FocusRow.Delegate.prototype = {
+    /**
+     * Called when a key is pressed while on a FocusRow's item. If true is
+     * returned, further processing is skipped.
+     * @param {!cr.ui.FocusRow} row The row that detected a keydown.
+     * @param {!Event} e
+     * @return {boolean} Whether the event was handled.
+     */
+    onKeydown: assertNotReached,
+
+    /**
+     * @param {!cr.ui.FocusRow} row
+     * @param {!Event} e
+     */
+    onFocus: assertNotReached,
+  };
+
+  /** @const {string} */
+  FocusRow.ACTIVE_CLASS = 'focus-row-active';
+
+  /**
+   * Whether it's possible that |element| can be focused.
+   * @param {Element} element
+   * @return {boolean} Whether the item is focusable.
+   */
+  FocusRow.isFocusable = function(element) {
+    if (!element || element.disabled)
+      return false;
+
+    // We don't check that element.tabIndex >= 0 here because inactive rows set
+    // a tabIndex of -1.
+
+    function isVisible(element) {
+      assertInstanceof(element, Element);
+
+      var style = window.getComputedStyle(element);
+      if (style.visibility == 'hidden' || style.display == 'none')
+        return false;
+
+      var parent = element.parentNode;
+      if (!parent)
+        return false;
+
+      if (parent == element.ownerDocument || parent instanceof DocumentFragment)
+        return true;
+
+      return isVisible(parent);
+    }
+
+    return isVisible(element);
+  };
+
+  FocusRow.prototype = {
+    /**
+     * Register a new type of focusable element (or add to an existing one).
+     *
+     * Example: an (X) button might be 'delete' or 'close'.
+     *
+     * When FocusRow is used within a FocusGrid, these types are used to
+     * determine equivalent controls when Up/Down are pressed to change rows.
+     *
+     * Another example: mutually exclusive controls that hide eachother on
+     * activation (i.e. Play/Pause) could use the same type (i.e. 'play-pause')
+     * to indicate they're equivalent.
+     *
+     * @param {string} type The type of element to track focus of.
+     * @param {string} query The selector of the element from this row's root.
+     * @return {boolean} Whether a new item was added.
+     */
+    addItem: function(type, query) {
+      assert(type);
+
+      var element = this.root.querySelector(query);
+      if (!element)
+        return false;
+
+      element.setAttribute('focus-type', type);
+      element.tabIndex = this.isActive() ? 0 : -1;
+
+      this.eventTracker.add(element, 'blur', this.onBlur_.bind(this));
+      this.eventTracker.add(element, 'focus', this.onFocus_.bind(this));
+      this.eventTracker.add(element, 'keydown', this.onKeydown_.bind(this));
+      this.eventTracker.add(element, 'mousedown',
+                             this.onMousedown_.bind(this));
+      return true;
+    },
+
+    /** Dereferences nodes and removes event handlers. */
+    destroy: function() {
+      this.eventTracker.removeAll();
+    },
+
+    /**
+     * @param {Element} sampleElement An element for to find an equivalent for.
+     * @return {!Element} An equivalent element to focus for |sampleElement|.
+     * @protected
+     */
+    getCustomEquivalent: function(sampleElement) {
+      return assert(this.getFirstFocusable());
+    },
+
+    /**
+     * @return {!Array<!Element>} All registered elements (regardless of
+     *     focusability).
+     */
+    getElements: function() {
+      var elements = this.root.querySelectorAll('[focus-type]');
+      return Array.prototype.slice.call(elements);
+    },
+
+    /**
+     * Find the element that best matches |sampleElement|.
+     * @param {!Element} sampleElement An element from a row of the same type
+     *     which previously held focus.
+     * @return {!Element} The element that best matches sampleElement.
+     */
+    getEquivalentElement: function(sampleElement) {
+      if (this.getFocusableElements().indexOf(sampleElement) >= 0)
+        return sampleElement;
+
+      var sampleFocusType = this.getTypeForElement(sampleElement);
+      if (sampleFocusType) {
+        var sameType = this.getFirstFocusable(sampleFocusType);
+        if (sameType)
+          return sameType;
+      }
+
+      return this.getCustomEquivalent(sampleElement);
+    },
+
+    /**
+     * @param {string=} opt_type An optional type to search for.
+     * @return {?Element} The first focusable element with |type|.
+     */
+    getFirstFocusable: function(opt_type) {
+      var filter = opt_type ? '="' + opt_type + '"' : '';
+      var elements = this.root.querySelectorAll('[focus-type' + filter + ']');
+      for (var i = 0; i < elements.length; ++i) {
+        if (cr.ui.FocusRow.isFocusable(elements[i]))
+          return elements[i];
+      }
+      return null;
+    },
+
+    /** @return {!Array<!Element>} Registered, focusable elements. */
+    getFocusableElements: function() {
+      return this.getElements().filter(cr.ui.FocusRow.isFocusable);
+    },
+
+    /**
+     * @param {!Element} element An element to determine a focus type for.
+     * @return {string} The focus type for |element| or '' if none.
+     */
+    getTypeForElement: function(element) {
+      return element.getAttribute('focus-type') || '';
+    },
+
+    /** @return {boolean} Whether this row is currently active. */
+    isActive: function() {
+      return this.root.classList.contains(FocusRow.ACTIVE_CLASS);
+    },
+
+    /**
+     * Enables/disables the tabIndex of the focusable elements in the FocusRow.
+     * tabIndex can be set properly.
+     * @param {boolean} active True if tab is allowed for this row.
+     */
+    makeActive: function(active) {
+      if (active == this.isActive())
+        return;
+
+      this.getElements().forEach(function(element) {
+        element.tabIndex = active ? 0 : -1;
+      });
+
+      this.root.classList.toggle(FocusRow.ACTIVE_CLASS, active);
+    },
+
+    /**
+     * @param {!Event} e
+     * @private
+     */
+    onBlur_: function(e) {
+      if (!this.boundary_.contains(/** @type {Element} */(e.relatedTarget)))
+        return;
+
+      var currentTarget = /** @type {!Element} */(e.currentTarget);
+      if (this.getFocusableElements().indexOf(currentTarget) >= 0)
+        this.makeActive(false);
+    },
+
+    /**
+     * @param {!Event} e
+     * @private
+     */
+    onFocus_: function(e) {
+      if (this.delegate)
+        this.delegate.onFocus(this, e);
+    },
+
+    /**
+     * @param {!Event} e A mousedown event.
+     * @private
+     */
+    onMousedown_: function(e) {
+      // Only accept left mouse clicks.
+      if (e.button)
+        return;
+
+      // Allow the element under the mouse cursor to be focusable.
+      if (!e.currentTarget.disabled)
+        e.currentTarget.tabIndex = 0;
+    },
+
+    /**
+     * @param {Event} e The keydown event.
+     * @private
+     */
+    onKeydown_: function(e) {
+      var elements = this.getFocusableElements();
+      var currentElement = /** @type {!Element} */(e.currentTarget);
+      var elementIndex = elements.indexOf(currentElement);
+      assert(elementIndex >= 0);
+
+      if (this.delegate && this.delegate.onKeydown(this, e))
+        return;
+
+      if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey)
+        return;
+
+      var index = -1;
+
+      if (e.keyIdentifier == 'Left')
+        index = elementIndex + (isRTL() ? 1 : -1);
+      else if (e.keyIdentifier == 'Right')
+        index = elementIndex + (isRTL() ? -1 : 1);
+      else if (e.keyIdentifier == 'Home')
+        index = 0;
+      else if (e.keyIdentifier == 'End')
+        index = elements.length - 1;
+
+      var elementToFocus = elements[index];
+      if (elementToFocus) {
+        this.getEquivalentElement(elementToFocus).focus();
+        e.preventDefault();
+      }
+    },
+  };
+
+  return {
+    FocusRow: FocusRow,
+  };
+});
+
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('cr.ui', function() {
+  /**
+   * A class to manage grid of focusable elements in a 2D grid. For example,
+   * given this grid:
+   *
+   *   focusable  [focused]  focusable  (row: 0, col: 1)
+   *   focusable  focusable  focusable
+   *   focusable  focusable  focusable
+   *
+   * Pressing the down arrow would result in the focus moving down 1 row and
+   * keeping the same column:
+   *
+   *   focusable  focusable  focusable
+   *   focusable  [focused]  focusable  (row: 1, col: 1)
+   *   focusable  focusable  focusable
+   *
+   * And pressing right or tab at this point would move the focus to:
+   *
+   *   focusable  focusable  focusable
+   *   focusable  focusable  [focused]  (row: 1, col: 2)
+   *   focusable  focusable  focusable
+   *
+   * @constructor
+   * @implements {cr.ui.FocusRow.Delegate}
+   */
+  function FocusGrid() {
+    /** @type {!Array<!cr.ui.FocusRow>} */
+    this.rows = [];
+  }
+
+  FocusGrid.prototype = {
+    /** @private {boolean} */
+    ignoreFocusChange_: false,
+
+    /** @override */
+    onFocus: function(row, e) {
+      if (this.ignoreFocusChange_)
+        this.ignoreFocusChange_ = false;
+      else
+        this.lastFocused_ = e.currentTarget;
+
+      this.rows.forEach(function(r) { r.makeActive(r == row); });
+    },
+
+    /** @override */
+    onKeydown: function(row, e) {
+      var rowIndex = this.rows.indexOf(row);
+      assert(rowIndex >= 0);
+
+      var newRow = -1;
+
+      if (e.keyIdentifier == 'Up')
+        newRow = rowIndex - 1;
+      else if (e.keyIdentifier == 'Down')
+        newRow = rowIndex + 1;
+      else if (e.keyIdentifier == 'PageUp')
+        newRow = 0;
+      else if (e.keyIdentifier == 'PageDown')
+        newRow = this.rows.length - 1;
+
+      var rowToFocus = this.rows[newRow];
+      if (rowToFocus) {
+        this.ignoreFocusChange_ = true;
+        rowToFocus.getEquivalentElement(this.lastFocused_).focus();
+        e.preventDefault();
+        return true;
+      }
+
+      return false;
+    },
+
+    /**
+     * Unregisters event handlers and removes all |this.rows|.
+     */
+    destroy: function() {
+      this.rows.forEach(function(row) { row.destroy(); });
+      this.rows.length = 0;
+    },
+
+    /**
+     * @param {!Element} target A target item to find in this grid.
+     * @return {number} The row index. -1 if not found.
+     */
+    getRowIndexForTarget: function(target) {
+      for (var i = 0; i < this.rows.length; ++i) {
+        if (this.rows[i].getElements().indexOf(target) >= 0)
+          return i;
+      }
+      return -1;
+    },
+
+    /**
+     * @param {Element} root An element to search for.
+     * @return {?cr.ui.FocusRow} The row with root of |root| or null.
+     */
+    getRowForRoot: function(root) {
+      for (var i = 0; i < this.rows.length; ++i) {
+        if (this.rows[i].root == root)
+          return this.rows[i];
+      }
+      return null;
+    },
+
+    /**
+     * Adds |row| to the end of this list.
+     * @param {!cr.ui.FocusRow} row The row that needs to be added to this grid.
+     */
+    addRow: function(row) {
+      this.addRowBefore(row, null);
+    },
+
+    /**
+     * Adds |row| before |nextRow|. If |nextRow| is not in the list or it's
+     * null, |row| is added to the end.
+     * @param {!cr.ui.FocusRow} row The row that needs to be added to this grid.
+     * @param {cr.ui.FocusRow} nextRow The row that should follow |row|.
+     */
+    addRowBefore: function(row, nextRow) {
+      row.delegate = row.delegate || this;
+
+      var nextRowIndex = nextRow ? this.rows.indexOf(nextRow) : -1;
+      if (nextRowIndex == -1)
+        this.rows.push(row);
+      else
+        this.rows.splice(nextRowIndex, 0, row);
+    },
+
+    /**
+     * Removes a row from the focus row. No-op if row is not in the grid.
+     * @param {cr.ui.FocusRow} row The row that needs to be removed.
+     */
+    removeRow: function(row) {
+      var nextRowIndex = row ? this.rows.indexOf(row) : -1;
+      if (nextRowIndex > -1)
+        this.rows.splice(nextRowIndex, 1);
+    },
+
+    /**
+     * Makes sure that at least one row is active. Should be called once, after
+     * adding all rows to FocusGrid.
+     */
+    ensureRowActive: function() {
+      if (this.rows.length == 0)
+        return;
+
+      for (var i = 0; i < this.rows.length; ++i) {
+        if (this.rows[i].isActive())
+          return;
+      }
+
+      this.rows[0].makeActive(true);
+    },
+  };
+
+  return {
+    FocusGrid: FocusGrid,
+  };
+});
+
+// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview A collection of utility methods for UberPage and its contained
+ *     pages.
+ */
+
+cr.define('uber', function() {
+  /**
+   * Fixed position header elements on the page to be shifted by handleScroll.
+   * @type {NodeList}
+   */
+  var headerElements;
+
+  /**
+   * This should be called by uber content pages when DOM content has loaded.
+   */
+  function onContentFrameLoaded() {
+    headerElements = document.getElementsByTagName('header');
+    document.addEventListener('scroll', handleScroll);
+    document.addEventListener('mousedown', handleMouseDownInFrame, true);
+
+    invokeMethodOnParent('ready');
+
+    // Prevent the navigation from being stuck in a disabled state when a
+    // content page is reloaded while an overlay is visible (crbug.com/246939).
+    invokeMethodOnParent('stopInterceptingEvents');
+
+    // Trigger the scroll handler to tell the navigation if our page started
+    // with some scroll (happens when you use tab restore).
+    handleScroll();
+
+    window.addEventListener('message', handleWindowMessage);
+  }
+
+  /**
+   * Handles scroll events on the document. This adjusts the position of all
+   * headers and updates the parent frame when the page is scrolled.
+   */
+  function handleScroll() {
+    var scrollLeft = scrollLeftForDocument(document);
+    var offset = scrollLeft * -1;
+    for (var i = 0; i < headerElements.length; i++) {
+      // As a workaround for http://crbug.com/231830, set the transform to
+      // 'none' rather than 0px.
+      headerElements[i].style.webkitTransform = offset ?
+          'translateX(' + offset + 'px)' : 'none';
+    }
+
+    invokeMethodOnParent('adjustToScroll', scrollLeft);
+  }
+
+  /**
+   * Tells the parent to focus the current frame if the mouse goes down in the
+   * current frame (and it doesn't already have focus).
+   * @param {Event} e A mousedown event.
+   */
+  function handleMouseDownInFrame(e) {
+    if (!e.isSynthetic && !document.hasFocus())
+      window.focus();
+  }
+
+  /**
+   * Handles 'message' events on window.
+   * @param {Event} e The message event.
+   */
+  function handleWindowMessage(e) {
+    e = /** @type {!MessageEvent<!{method: string, params: *}>} */(e);
+    if (e.data.method === 'frameSelected') {
+      handleFrameSelected();
+    } else if (e.data.method === 'mouseWheel') {
+      handleMouseWheel(
+          /** @type {{deltaX: number, deltaY: number}} */(e.data.params));
+    } else if (e.data.method === 'mouseDown') {
+      handleMouseDown();
+    } else if (e.data.method === 'popState') {
+      handlePopState(e.data.params.state, e.data.params.path);
+    }
+  }
+
+  /**
+   * This is called when a user selects this frame via the navigation bar
+   * frame (and is triggered via postMessage() from the uber page).
+   */
+  function handleFrameSelected() {
+    setScrollTopForDocument(document, 0);
+  }
+
+  /**
+   * Called when a user mouse wheels (or trackpad scrolls) over the nav frame.
+   * The wheel event is forwarded here and we scroll the body.
+   * There's no way to figure out the actual scroll amount for a given delta.
+   * It differs for every platform and even initWebKitWheelEvent takes a
+   * pixel amount instead of a wheel delta. So we just choose something
+   * reasonable and hope no one notices the difference.
+   * @param {{deltaX: number, deltaY: number}} params A structure that holds
+   *     wheel deltas in X and Y.
+   */
+  function handleMouseWheel(params) {
+    window.scrollBy(-params.deltaX * 49 / 120, -params.deltaY * 49 / 120);
+  }
+
+  /**
+   * Fire a synthetic mousedown on the body to dismiss transient things like
+   * bubbles or menus that listen for mouse presses outside of their UI. We
+   * dispatch a fake mousedown rather than a 'mousepressedinnavframe' so that
+   * settings/history/extensions don't need to know about their embedder.
+   */
+  function handleMouseDown() {
+    var mouseEvent = new MouseEvent('mousedown');
+    mouseEvent.isSynthetic = true;
+    document.dispatchEvent(mouseEvent);
+  }
+
+  /**
+   * Called when the parent window restores some state saved by uber.pushState
+   * or uber.replaceState. Simulates a popstate event.
+   * @param {PopStateEvent} state A state object for replaceState and pushState.
+   * @param {string} path The path the page navigated to.
+   * @suppress {checkTypes}
+   */
+  function handlePopState(state, path) {
+    window.history.replaceState(state, '', path);
+    window.dispatchEvent(new PopStateEvent('popstate', {state: state}));
+  }
+
+  /**
+   * @return {boolean} Whether this frame has a parent.
+   */
+  function hasParent() {
+    return window != window.parent;
+  }
+
+  /**
+   * Invokes a method on the parent window (UberPage). This is a convenience
+   * method for API calls into the uber page.
+   * @param {string} method The name of the method to invoke.
+   * @param {?=} opt_params Optional property bag of parameters to pass to the
+   *     invoked method.
+   */
+  function invokeMethodOnParent(method, opt_params) {
+    if (!hasParent())
+      return;
+
+    invokeMethodOnWindow(window.parent, method, opt_params, 'chrome://chrome');
+  }
+
+  /**
+   * Invokes a method on the target window.
+   * @param {string} method The name of the method to invoke.
+   * @param {?=} opt_params Optional property bag of parameters to pass to the
+   *     invoked method.
+   * @param {string=} opt_url The origin of the target window.
+   */
+  function invokeMethodOnWindow(targetWindow, method, opt_params, opt_url) {
+    var data = {method: method, params: opt_params};
+    targetWindow.postMessage(data, opt_url ? opt_url : '*');
+  }
+
+  /**
+   * Updates the page's history state. If the page is embedded in a child,
+   * forward the information to the parent for it to manage history for us. This
+   * is a replacement of history.replaceState and history.pushState.
+   * @param {Object} state A state object for replaceState and pushState.
+   * @param {string} path The path the page navigated to.
+   * @param {boolean} replace If true, navigate with replacement.
+   */
+  function updateHistory(state, path, replace) {
+    var historyFunction = replace ?
+        window.history.replaceState :
+        window.history.pushState;
+
+    if (hasParent()) {
+      // If there's a parent, always replaceState. The parent will do the actual
+      // pushState.
+      historyFunction = window.history.replaceState;
+      invokeMethodOnParent('updateHistory', {
+        state: state, path: path, replace: replace});
+    }
+    historyFunction.call(window.history, state, '', '/' + path);
+  }
+
+  /**
+   * Sets the current title for the page. If the page is embedded in a child,
+   * forward the information to the parent. This is a replacement for setting
+   * document.title.
+   * @param {string} title The new title for the page.
+   */
+  function setTitle(title) {
+    document.title = title;
+    invokeMethodOnParent('setTitle', {title: title});
+  }
+
+  /**
+   * Pushes new history state for the page. If the page is embedded in a child,
+   * forward the information to the parent; when embedded, all history entries
+   * are attached to the parent. This is a replacement of history.pushState.
+   * @param {Object} state A state object for replaceState and pushState.
+   * @param {string} path The path the page navigated to.
+   */
+  function pushState(state, path) {
+    updateHistory(state, path, false);
+  }
+
+  /**
+   * Replaces the page's history state. If the page is embedded in a child,
+   * forward the information to the parent; when embedded, all history entries
+   * are attached to the parent. This is a replacement of history.replaceState.
+   * @param {Object} state A state object for replaceState and pushState.
+   * @param {string} path The path the page navigated to.
+   */
+  function replaceState(state, path) {
+    updateHistory(state, path, true);
+  }
+
+  return {
+    invokeMethodOnParent: invokeMethodOnParent,
+    invokeMethodOnWindow: invokeMethodOnWindow,
+    onContentFrameLoaded: onContentFrameLoaded,
+    pushState: pushState,
+    replaceState: replaceState,
+    setTitle: setTitle,
+  };
+});
+
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @typedef {{afterHighlight: string,
+ *            beforeHighlight: string,
+ *            highlight: string,
+ *            title: string}}
+ */
+var ExtensionHighlight;
+
+cr.define('extensions', function() {
+  'use strict';
+
+  /**
+   * ExtensionCode is an element which displays code in a styled div, and is
+   * designed to highlight errors.
+   * @constructor
+   * @extends {HTMLDivElement}
+   */
+  function ExtensionCode(div) {
+    div.__proto__ = ExtensionCode.prototype;
+    return div;
+  }
+
+  ExtensionCode.prototype = {
+    __proto__: HTMLDivElement.prototype,
+
+    /**
+     * Populate the content area of the code div with the given code. This will
+     * highlight the erroneous section (if any).
+     * @param {?ExtensionHighlight} code The 'highlight' strings represent the
+     *     three portions of the file's content to display - the portion which
+     *     is most relevant and should be emphasized (highlight), and the parts
+     *     both before and after this portion. The title is the error message,
+     *     which will be the mouseover hint for the highlighted region. These
+     *     may be empty.
+     *  @param {string} emptyMessage The message to display if the code
+     *     object is empty (e.g., 'could not load code').
+     */
+    populate: function(code, emptyMessage) {
+      // Clear any remnant content, so we don't have multiple code listed.
+      this.clear();
+
+      // If there's no code, then display an appropriate message.
+      if (!code ||
+          (!code.highlight && !code.beforeHighlight && !code.afterHighlight)) {
+        var span = document.createElement('span');
+        span.classList.add('extension-code-empty');
+        span.textContent = emptyMessage;
+        this.appendChild(span);
+        return;
+      }
+
+      var sourceDiv = document.createElement('div');
+      sourceDiv.classList.add('extension-code-source');
+      this.appendChild(sourceDiv);
+
+      var lineCount = 0;
+      var createSpan = function(source, isHighlighted) {
+        lineCount += source.split('\n').length - 1;
+        var span = document.createElement('span');
+        span.className = isHighlighted ? 'extension-code-highlighted-source' :
+                                         'extension-code-normal-source';
+        span.textContent = source;
+        return span;
+      };
+
+      if (code.beforeHighlight)
+        sourceDiv.appendChild(createSpan(code.beforeHighlight, false));
+
+      if (code.highlight) {
+        var highlightSpan = createSpan(code.highlight, true);
+        highlightSpan.title = code.message;
+        sourceDiv.appendChild(highlightSpan);
+      }
+
+      if (code.afterHighlight)
+        sourceDiv.appendChild(createSpan(code.afterHighlight, false));
+
+      // Make the line numbers. This should be the number of line breaks + 1
+      // (the last line doesn't break, but should still be numbered).
+      var content = '';
+      for (var i = 1; i < lineCount + 1; ++i)
+        content += i + '\n';
+      var span = document.createElement('span');
+      span.textContent = content;
+
+      var linesDiv = document.createElement('div');
+      linesDiv.classList.add('extension-code-line-numbers');
+      linesDiv.appendChild(span);
+      this.insertBefore(linesDiv, this.firstChild);
+    },
+
+    /**
+     * Clears the content of the element.
+     */
+    clear: function() {
+      while (this.firstChild)
+        this.removeChild(this.firstChild);
+    },
+
+    /**
+     * Scrolls to the error, if there is one. This cannot be called when the
+     * div is hidden.
+     */
+    scrollToError: function() {
+      var errorSpan = this.querySelector('.extension-code-highlighted-source');
+      if (errorSpan)
+        this.scrollTop = errorSpan.offsetTop - this.clientHeight / 2;
+    }
+  };
+
+  // Export
+  return {
+    ExtensionCode: ExtensionCode
+  };
+});
+
+// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('options', function() {
+  'use strict';
+
+  /** @const */ var keyComma = 188;
+  /** @const */ var keyDel = 46;
+  /** @const */ var keyDown = 40;
+  /** @const */ var keyEnd = 35;
+  /** @const */ var keyEscape = 27;
+  /** @const */ var keyHome = 36;
+  /** @const */ var keyIns = 45;
+  /** @const */ var keyLeft = 37;
+  /** @const */ var keyMediaNextTrack = 176;
+  /** @const */ var keyMediaPlayPause = 179;
+  /** @const */ var keyMediaPrevTrack = 177;
+  /** @const */ var keyMediaStop = 178;
+  /** @const */ var keyPageDown = 34;
+  /** @const */ var keyPageUp = 33;
+  /** @const */ var keyPeriod = 190;
+  /** @const */ var keyRight = 39;
+  /** @const */ var keySpace = 32;
+  /** @const */ var keyTab = 9;
+  /** @const */ var keyUp = 38;
+
+  /**
+   * Enum for whether we require modifiers of a keycode.
+   * @enum {number}
+   */
+  var Modifiers = {
+    ARE_NOT_ALLOWED: 0,
+    ARE_REQUIRED: 1
+  };
+
+  /**
+   * Returns whether the passed in |keyCode| is a valid extension command
+   * char or not. This is restricted to A-Z and 0-9 (ignoring modifiers) at
+   * the moment.
+   * @param {number} keyCode The keycode to consider.
+   * @return {boolean} Returns whether the char is valid.
+   */
+  function validChar(keyCode) {
+    return keyCode == keyComma ||
+           keyCode == keyDel ||
+           keyCode == keyDown ||
+           keyCode == keyEnd ||
+           keyCode == keyHome ||
+           keyCode == keyIns ||
+           keyCode == keyLeft ||
+           keyCode == keyMediaNextTrack ||
+           keyCode == keyMediaPlayPause ||
+           keyCode == keyMediaPrevTrack ||
+           keyCode == keyMediaStop ||
+           keyCode == keyPageDown ||
+           keyCode == keyPageUp ||
+           keyCode == keyPeriod ||
+           keyCode == keyRight ||
+           keyCode == keySpace ||
+           keyCode == keyTab ||
+           keyCode == keyUp ||
+           (keyCode >= 'A'.charCodeAt(0) && keyCode <= 'Z'.charCodeAt(0)) ||
+           (keyCode >= '0'.charCodeAt(0) && keyCode <= '9'.charCodeAt(0));
+  }
+
+  /**
+   * Convert a keystroke event to string form, while taking into account
+   * (ignoring) invalid extension commands.
+   * @param {Event} event The keyboard event to convert.
+   * @return {string} The keystroke as a string.
+   */
+  function keystrokeToString(event) {
+    var output = [];
+    if (cr.isMac && event.metaKey)
+      output.push('Command');
+    if (cr.isChromeOS && event.metaKey)
+      output.push('Search');
+    if (event.ctrlKey)
+      output.push('Ctrl');
+    if (!event.ctrlKey && event.altKey)
+      output.push('Alt');
+    if (event.shiftKey)
+      output.push('Shift');
+
+    var keyCode = event.keyCode;
+    if (validChar(keyCode)) {
+      if ((keyCode >= 'A'.charCodeAt(0) && keyCode <= 'Z'.charCodeAt(0)) ||
+          (keyCode >= '0'.charCodeAt(0) && keyCode <= '9'.charCodeAt(0))) {
+        output.push(String.fromCharCode('A'.charCodeAt(0) + keyCode - 65));
+      } else {
+        switch (keyCode) {
+          case keyComma:
+            output.push('Comma'); break;
+          case keyDel:
+            output.push('Delete'); break;
+          case keyDown:
+            output.push('Down'); break;
+          case keyEnd:
+            output.push('End'); break;
+          case keyHome:
+            output.push('Home'); break;
+          case keyIns:
+            output.push('Insert'); break;
+          case keyLeft:
+            output.push('Left'); break;
+          case keyMediaNextTrack:
+            output.push('MediaNextTrack'); break;
+          case keyMediaPlayPause:
+            output.push('MediaPlayPause'); break;
+          case keyMediaPrevTrack:
+            output.push('MediaPrevTrack'); break;
+          case keyMediaStop:
+            output.push('MediaStop'); break;
+          case keyPageDown:
+            output.push('PageDown'); break;
+          case keyPageUp:
+            output.push('PageUp'); break;
+          case keyPeriod:
+            output.push('Period'); break;
+          case keyRight:
+            output.push('Right'); break;
+          case keySpace:
+            output.push('Space'); break;
+          case keyTab:
+            output.push('Tab'); break;
+          case keyUp:
+            output.push('Up'); break;
+        }
+      }
+    }
+
+    return output.join('+');
+  }
+
+  /**
+   * Returns whether the passed in |keyCode| require modifiers. Currently only
+   * "MediaNextTrack", "MediaPrevTrack", "MediaStop", "MediaPlayPause" are
+   * required to be used without any modifier.
+   * @param {number} keyCode The keycode to consider.
+   * @return {Modifiers} Returns whether the keycode require modifiers.
+   */
+  function modifiers(keyCode) {
+    switch (keyCode) {
+      case keyMediaNextTrack:
+      case keyMediaPlayPause:
+      case keyMediaPrevTrack:
+      case keyMediaStop:
+        return Modifiers.ARE_NOT_ALLOWED;
+      default:
+        return Modifiers.ARE_REQUIRED;
+    }
+  }
+
+  /**
+   * Return true if the specified keyboard event has any one of following
+   * modifiers: "Ctrl", "Alt", "Cmd" on Mac, and "Shift" when the
+   * countShiftAsModifier is true.
+   * @param {Event} event The keyboard event to consider.
+   * @param {boolean} countShiftAsModifier Whether the 'ShiftKey' should be
+   *     counted as modifier.
+   */
+  function hasModifier(event, countShiftAsModifier) {
+    return event.ctrlKey || event.altKey || (cr.isMac && event.metaKey) ||
+           (cr.isChromeOS && event.metaKey) ||
+           (countShiftAsModifier && event.shiftKey);
+  }
+
+  /**
+   * Creates a new list of extension commands.
+   * @param {HTMLDivElement} div
+   * @constructor
+   * @extends {HTMLDivElement}
+   */
+  function ExtensionCommandList(div) {
+    div.__proto__ = ExtensionCommandList.prototype;
+    return div;
+  }
+
+  ExtensionCommandList.prototype = {
+    __proto__: HTMLDivElement.prototype,
+
+    /**
+     * While capturing, this records the current (last) keyboard event generated
+     * by the user. Will be |null| after capture and during capture when no
+     * keyboard event has been generated.
+     * @type {KeyboardEvent}.
+     * @private
+     */
+    currentKeyEvent_: null,
+
+    /**
+     * While capturing, this keeps track of the previous selection so we can
+     * revert back to if no valid assignment is made during capture.
+     * @type {string}.
+     * @private
+     */
+    oldValue_: '',
+
+    /**
+     * While capturing, this keeps track of which element the user asked to
+     * change.
+     * @type {HTMLElement}.
+     * @private
+     */
+    capturingElement_: null,
+
+    /**
+     * Updates the extensions data for the overlay.
+     * @param {!Array<chrome.developerPrivate.ExtensionInfo>} data The extension
+     *     data.
+     */
+    setData: function(data) {
+      /** @private {!Array<chrome.developerPrivate.ExtensionInfo>} */
+      this.data_ = data;
+
+      this.textContent = '';
+
+      // Iterate over the extension data and add each item to the list.
+      this.data_.forEach(this.createNodeForExtension_.bind(this));
+    },
+
+    /**
+     * Synthesizes and initializes an HTML element for the extension command
+     * metadata given in |extension|.
+     * @param {chrome.developerPrivate.ExtensionInfo} extension A dictionary of
+     *     extension metadata.
+     * @private
+     */
+    createNodeForExtension_: function(extension) {
+      if (extension.commands.length == 0 ||
+          extension.state == chrome.developerPrivate.ExtensionState.DISABLED)
+        return;
+
+      var template = $('template-collection-extension-commands').querySelector(
+          '.extension-command-list-extension-item-wrapper');
+      var node = template.cloneNode(true);
+
+      var title = node.querySelector('.extension-title');
+      title.textContent = extension.name;
+
+      this.appendChild(node);
+
+      // Iterate over the commands data within the extension and add each item
+      // to the list.
+      extension.commands.forEach(
+          this.createNodeForCommand_.bind(this, extension.id));
+    },
+
+    /**
+     * Synthesizes and initializes an HTML element for the extension command
+     * metadata given in |command|.
+     * @param {string} extensionId The associated extension's id.
+     * @param {chrome.developerPrivate.Command} command A dictionary of
+     *     extension command metadata.
+     * @private
+     */
+    createNodeForCommand_: function(extensionId, command) {
+      var template = $('template-collection-extension-commands').querySelector(
+          '.extension-command-list-command-item-wrapper');
+      var node = template.cloneNode(true);
+      node.id = this.createElementId_('command', extensionId, command.name);
+
+      var description = node.querySelector('.command-description');
+      description.textContent = command.description;
+
+      var shortcutNode = node.querySelector('.command-shortcut-text');
+      shortcutNode.addEventListener('mouseup',
+                                    this.startCapture_.bind(this));
+      shortcutNode.addEventListener('focus', this.handleFocus_.bind(this));
+      shortcutNode.addEventListener('blur', this.handleBlur_.bind(this));
+      shortcutNode.addEventListener('keydown', this.handleKeyDown_.bind(this));
+      shortcutNode.addEventListener('keyup', this.handleKeyUp_.bind(this));
+      if (!command.isActive) {
+        shortcutNode.textContent =
+            loadTimeData.getString('extensionCommandsInactive');
+
+        var commandShortcut = node.querySelector('.command-shortcut');
+        commandShortcut.classList.add('inactive-keybinding');
+      } else {
+        shortcutNode.textContent = command.keybinding;
+      }
+
+      var commandClear = node.querySelector('.command-clear');
+      commandClear.id = this.createElementId_(
+          'clear', extensionId, command.name);
+      commandClear.title = loadTimeData.getString('extensionCommandsDelete');
+      commandClear.addEventListener('click', this.handleClear_.bind(this));
+
+      var select = node.querySelector('.command-scope');
+      select.id = this.createElementId_(
+          'setCommandScope', extensionId, command.name);
+      select.hidden = false;
+      // Add the 'In Chrome' option.
+      var option = document.createElement('option');
+      option.textContent = loadTimeData.getString('extensionCommandsRegular');
+      select.appendChild(option);
+      if (command.isExtensionAction || !command.isActive) {
+        // Extension actions cannot be global, so we might as well disable the
+        // combo box, to signify that, and if the command is inactive, it
+        // doesn't make sense to allow the user to adjust the scope.
+        select.disabled = true;
+      } else {
+        // Add the 'Global' option.
+        option = document.createElement('option');
+        option.textContent = loadTimeData.getString('extensionCommandsGlobal');
+        select.appendChild(option);
+        select.selectedIndex =
+            command.scope == chrome.developerPrivate.CommandScope.GLOBAL ?
+                1 : 0;
+
+        select.addEventListener(
+            'change', this.handleSetCommandScope_.bind(this));
+      }
+
+      this.appendChild(node);
+    },
+
+    /**
+     * Starts keystroke capture to determine which key to use for a particular
+     * extension command.
+     * @param {Event} event The keyboard event to consider.
+     * @private
+     */
+    startCapture_: function(event) {
+      if (this.capturingElement_)
+        return;  // Already capturing.
+
+      chrome.developerPrivate.setShortcutHandlingSuspended(true);
+
+      var shortcutNode = event.target;
+      this.oldValue_ = shortcutNode.textContent;
+      shortcutNode.textContent =
+          loadTimeData.getString('extensionCommandsStartTyping');
+      shortcutNode.parentElement.classList.add('capturing');
+
+      var commandClear =
+          shortcutNode.parentElement.querySelector('.command-clear');
+      commandClear.hidden = true;
+
+      this.capturingElement_ = /** @type {HTMLElement} */(event.target);
+    },
+
+    /**
+     * Ends keystroke capture and either restores the old value or (if valid
+     * value) sets the new value as active..
+     * @param {Event} event The keyboard event to consider.
+     * @private
+     */
+    endCapture_: function(event) {
+      if (!this.capturingElement_)
+        return;  // Not capturing.
+
+      chrome.developerPrivate.setShortcutHandlingSuspended(false);
+
+      var shortcutNode = this.capturingElement_;
+      var commandShortcut = shortcutNode.parentElement;
+
+      commandShortcut.classList.remove('capturing');
+      commandShortcut.classList.remove('contains-chars');
+
+      // When the capture ends, the user may have not given a complete and valid
+      // input (or even no input at all). Only a valid key event followed by a
+      // valid key combination will cause a shortcut selection to be activated.
+      // If no valid selection was made, however, revert back to what the
+      // textbox had before to indicate that the shortcut registration was
+      // canceled.
+      if (!this.currentKeyEvent_ || !validChar(this.currentKeyEvent_.keyCode))
+        shortcutNode.textContent = this.oldValue_;
+
+      var commandClear = commandShortcut.querySelector('.command-clear');
+      if (this.oldValue_ == '') {
+        commandShortcut.classList.remove('clearable');
+        commandClear.hidden = true;
+      } else {
+        commandShortcut.classList.add('clearable');
+        commandClear.hidden = false;
+      }
+
+      this.oldValue_ = '';
+      this.capturingElement_ = null;
+      this.currentKeyEvent_ = null;
+    },
+
+    /**
+     * Handles focus event and adds visual indication for active shortcut.
+     * @param {Event} event to consider.
+     * @private
+     */
+    handleFocus_: function(event) {
+      var commandShortcut = event.target.parentElement;
+      commandShortcut.classList.add('focused');
+    },
+
+    /**
+     * Handles lost focus event and removes visual indication of active shortcut
+     * also stops capturing on focus lost.
+     * @param {Event} event to consider.
+     * @private
+     */
+    handleBlur_: function(event) {
+      this.endCapture_(event);
+      var commandShortcut = event.target.parentElement;
+      commandShortcut.classList.remove('focused');
+    },
+
+    /**
+     * The KeyDown handler.
+     * @param {Event} event The keyboard event to consider.
+     * @private
+     */
+    handleKeyDown_: function(event) {
+      event = /** @type {KeyboardEvent} */(event);
+      if (event.keyCode == keyEscape) {
+        if (!this.capturingElement_) {
+          // If we're not currently capturing, allow escape to propagate (so it
+          // can close the overflow).
+          return;
+        }
+        // Otherwise, escape cancels capturing.
+        this.endCapture_(event);
+        var parsed = this.parseElementId_('clear',
+            event.target.parentElement.querySelector('.command-clear').id);
+        chrome.developerPrivate.updateExtensionCommand({
+          extensionId: parsed.extensionId,
+          commandName: parsed.commandName,
+          keybinding: ''
+        });
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+      if (event.keyCode == keyTab) {
+        // Allow tab propagation for keyboard navigation.
+        return;
+      }
+
+      if (!this.capturingElement_)
+        this.startCapture_(event);
+
+      this.handleKey_(event);
+    },
+
+    /**
+     * The KeyUp handler.
+     * @param {Event} event The keyboard event to consider.
+     * @private
+     */
+    handleKeyUp_: function(event) {
+      event = /** @type {KeyboardEvent} */(event);
+      if (event.keyCode == keyTab || event.keyCode == keyEscape) {
+        // We need to allow tab propagation for keyboard navigation, and escapes
+        // are fully handled in handleKeyDown.
+        return;
+      }
+
+      // We want to make it easy to change from Ctrl+Shift+ to just Ctrl+ by
+      // releasing Shift, but we also don't want it to be easy to lose for
+      // example Ctrl+Shift+F to Ctrl+ just because you didn't release Ctrl
+      // as fast as the other two keys. Therefore, we process KeyUp until you
+      // have a valid combination and then stop processing it (meaning that once
+      // you have a valid combination, we won't change it until the next
+      // KeyDown message arrives).
+      if (!this.currentKeyEvent_ || !validChar(this.currentKeyEvent_.keyCode)) {
+        if (!event.ctrlKey && !event.altKey ||
+            ((cr.isMac || cr.isChromeOS) && !event.metaKey)) {
+          // If neither Ctrl nor Alt is pressed then it is not a valid shortcut.
+          // That means we're back at the starting point so we should restart
+          // capture.
+          this.endCapture_(event);
+          this.startCapture_(event);
+        } else {
+          this.handleKey_(event);
+        }
+      }
+    },
+
+    /**
+     * A general key handler (used for both KeyDown and KeyUp).
+     * @param {KeyboardEvent} event The keyboard event to consider.
+     * @private
+     */
+    handleKey_: function(event) {
+      // While capturing, we prevent all events from bubbling, to prevent
+      // shortcuts lacking the right modifier (F3 for example) from activating
+      // and ending capture prematurely.
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (modifiers(event.keyCode) == Modifiers.ARE_REQUIRED &&
+          !hasModifier(event, false)) {
+        // Ctrl or Alt (or Cmd on Mac) is a must for most shortcuts.
+        return;
+      }
+
+      if (modifiers(event.keyCode) == Modifiers.ARE_NOT_ALLOWED &&
+          hasModifier(event, true)) {
+        return;
+      }
+
+      var shortcutNode = this.capturingElement_;
+      var keystroke = keystrokeToString(event);
+      shortcutNode.textContent = keystroke;
+      event.target.classList.add('contains-chars');
+      this.currentKeyEvent_ = event;
+
+      if (validChar(event.keyCode)) {
+        var node = event.target;
+        while (node && !node.id)
+          node = node.parentElement;
+
+        this.oldValue_ = keystroke;  // Forget what the old value was.
+        var parsed = this.parseElementId_('command', node.id);
+
+        // Ending the capture must occur before calling
+        // setExtensionCommandShortcut to ensure the shortcut is set.
+        this.endCapture_(event);
+        chrome.developerPrivate.updateExtensionCommand(
+            {extensionId: parsed.extensionId,
+             commandName: parsed.commandName,
+             keybinding: keystroke});
+      }
+    },
+
+    /**
+     * A handler for the delete command button.
+     * @param {Event} event The mouse event to consider.
+     * @private
+     */
+    handleClear_: function(event) {
+      var parsed = this.parseElementId_('clear', event.target.id);
+      chrome.developerPrivate.updateExtensionCommand(
+          {extensionId: parsed.extensionId,
+           commandName: parsed.commandName,
+           keybinding: ''});
+    },
+
+    /**
+     * A handler for the setting the scope of the command.
+     * @param {Event} event The mouse event to consider.
+     * @private
+     */
+    handleSetCommandScope_: function(event) {
+      var parsed = this.parseElementId_('setCommandScope', event.target.id);
+      var element = document.getElementById(
+          'setCommandScope-' + parsed.extensionId + '-' + parsed.commandName);
+      var scope = element.selectedIndex == 1 ?
+          chrome.developerPrivate.CommandScope.GLOBAL :
+          chrome.developerPrivate.CommandScope.CHROME;
+      chrome.developerPrivate.updateExtensionCommand(
+          {extensionId: parsed.extensionId,
+           commandName: parsed.commandName,
+           scope: scope});
+    },
+
+    /**
+     * A utility function to create a unique element id based on a namespace,
+     * extension id and a command name.
+     * @param {string} namespace   The namespace to prepend the id with.
+     * @param {string} extensionId The extension ID to use in the id.
+     * @param {string} commandName The command name to append the id with.
+     * @private
+     */
+    createElementId_: function(namespace, extensionId, commandName) {
+      return namespace + '-' + extensionId + '-' + commandName;
+    },
+
+    /**
+     * A utility function to parse a unique element id based on a namespace,
+     * extension id and a command name.
+     * @param {string} namespace   The namespace to prepend the id with.
+     * @param {string} id          The id to parse.
+     * @return {{extensionId: string, commandName: string}} The parsed id.
+     * @private
+     */
+    parseElementId_: function(namespace, id) {
+      var kExtensionIdLength = 32;
+      return {
+        extensionId: id.substring(namespace.length + 1,
+                                  namespace.length + 1 + kExtensionIdLength),
+        commandName: id.substring(namespace.length + 1 + kExtensionIdLength + 1)
+      };
+    },
+  };
+
+  return {
+    ExtensionCommandList: ExtensionCommandList
+  };
+});
+
+
+cr.define('extensions', function() {
+  'use strict';
+
+  // The Extension Commands list object that will be used to show the commands
+  // on the page.
+  var ExtensionCommandList = options.ExtensionCommandList;
+
+  /**
+   * ExtensionCommandsOverlay class
+   * Encapsulated handling of the 'Extension Commands' overlay page.
+   * @constructor
+   */
+  function ExtensionCommandsOverlay() {
+  }
+
+  cr.addSingletonGetter(ExtensionCommandsOverlay);
+
+  ExtensionCommandsOverlay.prototype = {
+    /**
+     * Initialize the page.
+     */
+    initializePage: function() {
+      var overlay = $('overlay');
+      cr.ui.overlay.setupOverlay(overlay);
+      cr.ui.overlay.globalInitialization();
+      overlay.addEventListener('cancelOverlay', this.handleDismiss_.bind(this));
+
+      this.extensionCommandList_ = new ExtensionCommandList(
+          /**@type {HTMLDivElement} */($('extension-command-list')));
+
+      $('extension-commands-dismiss').addEventListener('click', function() {
+        cr.dispatchSimpleEvent(overlay, 'cancelOverlay');
+      });
+
+      // The ExtensionList will update us with its data, so we don't need to
+      // handle that here.
+    },
+
+    /**
+     * Handles a click on the dismiss button.
+     * @param {Event} e The click event.
+     */
+    handleDismiss_: function(e) {
+      extensions.ExtensionSettings.showOverlay(null);
+    },
+  };
+
+  /**
+   * Called by the dom_ui_ to re-populate the page with data representing
+   * the current state of extension commands.
+   * @param {!Array<chrome.developerPrivate.ExtensionInfo>} extensionsData
+   */
+  ExtensionCommandsOverlay.updateExtensionsData = function(extensionsData) {
+    var overlay = ExtensionCommandsOverlay.getInstance();
+    overlay.extensionCommandList_.setData(extensionsData);
+
+    var hasAnyCommands = false;
+    for (var i = 0; i < extensionsData.length; ++i) {
+      if (extensionsData[i].commands.length > 0) {
+        hasAnyCommands = true;
+        break;
+      }
+    }
+
+    // Make sure the config link is visible, since there are commands to show
+    // and potentially configure.
+    document.querySelector('.extension-commands-config').hidden =
+        !hasAnyCommands;
+
+    $('no-commands').hidden = hasAnyCommands;
+    overlay.extensionCommandList_.classList.toggle(
+        'empty-extension-commands-list', !hasAnyCommands);
+  };
+
+  // Export
+  return {
+    ExtensionCommandsOverlay: ExtensionCommandsOverlay
+  };
+});
+
+// Copyright 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+
+/** @typedef {chrome.developerPrivate.RuntimeError} */
+var RuntimeError;
+/** @typedef {chrome.developerPrivate.ManifestError} */
+var ManifestError;
+
+cr.define('extensions', function() {
+  'use strict';
+
+  /**
+   * Clear all the content of a given element.
+   * @param {HTMLElement} element The element to be cleared.
+   */
+  function clearElement(element) {
+    while (element.firstChild)
+      element.removeChild(element.firstChild);
+  }
+
+  /**
+   * Get the url relative to the main extension url. If the url is
+   * unassociated with the extension, this will be the full url.
+   * @param {string} url The url to make relative.
+   * @param {string} extensionUrl The url for the extension resources, in the
+   *     form "chrome-etxension://<extension_id>/".
+   * @return {string} The url relative to the host.
+   */
+  function getRelativeUrl(url, extensionUrl) {
+    return url.substring(0, extensionUrl.length) == extensionUrl ?
+        url.substring(extensionUrl.length) : url;
+  }
+
+  /**
+   * The RuntimeErrorContent manages all content specifically associated with
+   * runtime errors; this includes stack frames and the context url.
+   * @constructor
+   * @extends {HTMLDivElement}
+   */
+  function RuntimeErrorContent() {
+    var contentArea = $('template-collection-extension-error-overlay').
+        querySelector('.extension-error-overlay-runtime-content').
+        cloneNode(true);
+    contentArea.__proto__ = RuntimeErrorContent.prototype;
+    contentArea.init();
+    return contentArea;
+  }
+
+  /**
+   * The name of the "active" class specific to extension errors (so as to
+   * not conflict with other rules).
+   * @type {string}
+   * @const
+   */
+  RuntimeErrorContent.ACTIVE_CLASS_NAME = 'extension-error-active';
+
+  /**
+   * Determine whether or not we should display the url to the user. We don't
+   * want to include any of our own code in stack traces.
+   * @param {string} url The url in question.
+   * @return {boolean} True if the url should be displayed, and false
+   *     otherwise (i.e., if it is an internal script).
+   */
+  RuntimeErrorContent.shouldDisplayForUrl = function(url) {
+    // All our internal scripts are in the 'extensions::' namespace.
+    return !/^extensions::/.test(url);
+  };
+
+  RuntimeErrorContent.prototype = {
+    __proto__: HTMLDivElement.prototype,
+
+    /**
+     * The underlying error whose details are being displayed.
+     * @type {?(RuntimeError|ManifestError)}
+     * @private
+     */
+    error_: null,
+
+    /**
+     * The URL associated with this extension, i.e. chrome-extension://<id>/.
+     * @type {?string}
+     * @private
+     */
+    extensionUrl_: null,
+
+    /**
+     * The node of the stack trace which is currently active.
+     * @type {?HTMLElement}
+     * @private
+     */
+    currentFrameNode_: null,
+
+    /**
+     * Initialize the RuntimeErrorContent for the first time.
+     */
+    init: function() {
+      /**
+       * The stack trace element in the overlay.
+       * @type {HTMLElement}
+       * @private
+       */
+      this.stackTrace_ = /** @type {HTMLElement} */(
+          this.querySelector('.extension-error-overlay-stack-trace-list'));
+      assert(this.stackTrace_);
+
+      /**
+       * The context URL element in the overlay.
+       * @type {HTMLElement}
+       * @private
+       */
+      this.contextUrl_ = /** @type {HTMLElement} */(
+          this.querySelector('.extension-error-overlay-context-url'));
+      assert(this.contextUrl_);
+    },
+
+    /**
+     * Sets the error for the content.
+     * @param {(RuntimeError|ManifestError)} error The error whose content
+     *     should be displayed.
+     * @param {string} extensionUrl The URL associated with this extension.
+     */
+    setError: function(error, extensionUrl) {
+      this.clearError();
+
+      this.error_ = error;
+      this.extensionUrl_ = extensionUrl;
+      this.contextUrl_.textContent = error.contextUrl ?
+          getRelativeUrl(error.contextUrl, this.extensionUrl_) :
+          loadTimeData.getString('extensionErrorOverlayContextUnknown');
+      this.initStackTrace_();
+    },
+
+    /**
+     * Wipe content associated with a specific error.
+     */
+    clearError: function() {
+      this.error_ = null;
+      this.extensionUrl_ = null;
+      this.currentFrameNode_ = null;
+      clearElement(this.stackTrace_);
+      this.stackTrace_.hidden = true;
+    },
+
+    /**
+     * Makes |frame| active and deactivates the previously active frame (if
+     * there was one).
+     * @param {HTMLElement} frameNode The frame to activate.
+     * @private
+     */
+    setActiveFrame_: function(frameNode) {
+      if (this.currentFrameNode_) {
+        this.currentFrameNode_.classList.remove(
+            RuntimeErrorContent.ACTIVE_CLASS_NAME);
+      }
+
+      this.currentFrameNode_ = frameNode;
+      this.currentFrameNode_.classList.add(
+          RuntimeErrorContent.ACTIVE_CLASS_NAME);
+    },
+
+    /**
+     * Initialize the stack trace element of the overlay.
+     * @private
+     */
+    initStackTrace_: function() {
+      for (var i = 0; i < this.error_.stackTrace.length; ++i) {
+        var frame = this.error_.stackTrace[i];
+        // Don't include any internal calls (e.g., schemaBindings) in the
+        // stack trace.
+        if (!RuntimeErrorContent.shouldDisplayForUrl(frame.url))
+          continue;
+
+        var frameNode = document.createElement('li');
+        // Attach the index of the frame to which this node refers (since we
+        // may skip some, this isn't a 1-to-1 match).
+        frameNode.indexIntoTrace = i;
+
+        // The description is a human-readable summation of the frame, in the
+        // form "<relative_url>:<line_number> (function)", e.g.
+        // "myfile.js:25 (myFunction)".
+        var description = getRelativeUrl(frame.url,
+            assert(this.extensionUrl_)) + ':' + frame.lineNumber;
+        if (frame.functionName) {
+          var functionName = frame.functionName == '(anonymous function)' ?
+              loadTimeData.getString('extensionErrorOverlayAnonymousFunction') :
+              frame.functionName;
+          description += ' (' + functionName + ')';
+        }
+        frameNode.textContent = description;
+
+        // When the user clicks on a frame in the stack trace, we should
+        // highlight that overlay in the list, display the appropriate source
+        // code with the line highlighted, and link the "Open DevTools" button
+        // with that frame.
+        frameNode.addEventListener('click', function(frame, frameNode, e) {
+          this.setActiveFrame_(frameNode);
+
+          // Request the file source with the section highlighted.
+          extensions.ExtensionErrorOverlay.getInstance().requestFileSource(
+              {extensionId: this.error_.extensionId,
+               message: this.error_.message,
+               pathSuffix: getRelativeUrl(frame.url,
+                                          assert(this.extensionUrl_)),
+               lineNumber: frame.lineNumber});
+        }.bind(this, frame, frameNode));
+
+        this.stackTrace_.appendChild(frameNode);
+      }
+
+      // Set the current stack frame to the first stack frame and show the
+      // trace, if one exists. (We can't just check error.stackTrace, because
+      // it's possible the trace was purely internal, and we don't show
+      // internal frames.)
+      if (this.stackTrace_.children.length > 0) {
+        this.stackTrace_.hidden = false;
+        this.setActiveFrame_(assertInstanceof(this.stackTrace_.firstChild,
+            HTMLElement));
+      }
+    },
+
+    /**
+     * Open the developer tools for the active stack frame.
+     */
+    openDevtools: function() {
+      var stackFrame =
+          this.error_.stackTrace[this.currentFrameNode_.indexIntoTrace];
+
+      chrome.developerPrivate.openDevTools(
+          {renderProcessId: this.error_.renderProcessId || -1,
+           renderViewId: this.error_.renderViewId || -1,
+           url: stackFrame.url,
+           lineNumber: stackFrame.lineNumber || 0,
+           columnNumber: stackFrame.columnNumber || 0});
+    }
+  };
+
+  /**
+   * The ExtensionErrorOverlay will show the contents of a file which pertains
+   * to the ExtensionError; this is either the manifest file (for manifest
+   * errors) or a source file (for runtime errors). If possible, the portion
+   * of the file which caused the error will be highlighted.
+   * @constructor
+   */
+  function ExtensionErrorOverlay() {
+    /**
+     * The content section for runtime errors; this is re-used for all
+     * runtime errors and attached/detached from the overlay as needed.
+     * @type {RuntimeErrorContent}
+     * @private
+     */
+    this.runtimeErrorContent_ = new RuntimeErrorContent();
+  }
+
+  /**
+   * The manifest filename.
+   * @type {string}
+   * @const
+   * @private
+   */
+  ExtensionErrorOverlay.MANIFEST_FILENAME_ = 'manifest.json';
+
+  /**
+   * Determine whether or not chrome can load the source for a given file; this
+   * can only be done if the file belongs to the extension.
+   * @param {string} file The file to load.
+   * @param {string} extensionUrl The url for the extension, in the form
+   *     chrome-extension://<extension-id>/.
+   * @return {boolean} True if the file can be loaded, false otherwise.
+   * @private
+   */
+  ExtensionErrorOverlay.canLoadFileSource = function(file, extensionUrl) {
+    return file.substr(0, extensionUrl.length) == extensionUrl ||
+           file.toLowerCase() == ExtensionErrorOverlay.MANIFEST_FILENAME_;
+  };
+
+  cr.addSingletonGetter(ExtensionErrorOverlay);
+
+  ExtensionErrorOverlay.prototype = {
+    /**
+     * The underlying error whose details are being displayed.
+     * @type {?(RuntimeError|ManifestError)}
+     * @private
+     */
+    selectedError_: null,
+
+    /**
+     * Initialize the page.
+     * @param {function(HTMLDivElement)} showOverlay The function to show or
+     *     hide the ExtensionErrorOverlay; this should take a single parameter
+     *     which is either the overlay Div if the overlay should be displayed,
+     *     or null if the overlay should be hidden.
+     */
+    initializePage: function(showOverlay) {
+      var overlay = $('overlay');
+      cr.ui.overlay.setupOverlay(overlay);
+      cr.ui.overlay.globalInitialization();
+      overlay.addEventListener('cancelOverlay', this.handleDismiss_.bind(this));
+
+      $('extension-error-overlay-dismiss').addEventListener('click',
+          function() {
+        cr.dispatchSimpleEvent(overlay, 'cancelOverlay');
+      });
+
+      /**
+       * The element of the full overlay.
+       * @type {HTMLDivElement}
+       * @private
+       */
+      this.overlayDiv_ = /** @type {HTMLDivElement} */(
+          $('extension-error-overlay'));
+
+      /**
+       * The portion of the overlay which shows the code relating to the error
+       * and the corresponding line numbers.
+       * @type {extensions.ExtensionCode}
+       * @private
+       */
+      this.codeDiv_ =
+          new extensions.ExtensionCode($('extension-error-overlay-code'));
+
+      /**
+       * The function to show or hide the ExtensionErrorOverlay.
+       * @param {boolean} isVisible Whether the overlay should be visible.
+       */
+      this.setVisible = function(isVisible) {
+        showOverlay(isVisible ? this.overlayDiv_ : null);
+        if (isVisible)
+          this.codeDiv_.scrollToError();
+      };
+
+      /**
+       * The button to open the developer tools (only available for runtime
+       * errors).
+       * @type {HTMLButtonElement}
+       * @private
+       */
+      this.openDevtoolsButton_ = /** @type {HTMLButtonElement} */(
+          $('extension-error-overlay-devtools-button'));
+      this.openDevtoolsButton_.addEventListener('click', function() {
+          this.runtimeErrorContent_.openDevtools();
+      }.bind(this));
+    },
+
+    /**
+     * Handles a click on the dismiss ("OK" or close) buttons.
+     * @param {Event} e The click event.
+     * @private
+     */
+    handleDismiss_: function(e) {
+      this.setVisible(false);
+
+      // There's a chance that the overlay receives multiple dismiss events; in
+      // this case, handle it gracefully and return (since all necessary work
+      // will already have been done).
+      if (!this.selectedError_)
+        return;
+
+      // Remove all previous content.
+      this.codeDiv_.clear();
+
+      this.overlayDiv_.querySelector('.extension-error-list').onRemoved();
+
+      this.clearRuntimeContent_();
+
+      this.selectedError_ = null;
+    },
+
+    /**
+     * Clears the current content.
+     * @private
+     */
+    clearRuntimeContent_: function() {
+      if (this.runtimeErrorContent_.parentNode) {
+        this.runtimeErrorContent_.parentNode.removeChild(
+            this.runtimeErrorContent_);
+        this.runtimeErrorContent_.clearError();
+      }
+      this.openDevtoolsButton_.hidden = true;
+    },
+
+    /**
+     * Sets the active error for the overlay.
+     * @param {?(ManifestError|RuntimeError)} error The error to make active.
+     * @private
+     */
+    setActiveError_: function(error) {
+      this.selectedError_ = error;
+
+      // If there is no error (this can happen if, e.g., the user deleted all
+      // the errors), then clear the content.
+      if (!error) {
+        this.codeDiv_.populate(
+            null, loadTimeData.getString('extensionErrorNoErrorsCodeMessage'));
+        this.clearRuntimeContent_();
+        return;
+      }
+
+      var extensionUrl = 'chrome-extension://' + error.extensionId + '/';
+      // Set or hide runtime content.
+      if (error.type == chrome.developerPrivate.ErrorType.RUNTIME) {
+        this.runtimeErrorContent_.setError(error, extensionUrl);
+        this.overlayDiv_.querySelector('.content-area').insertBefore(
+            this.runtimeErrorContent_,
+            this.codeDiv_.nextSibling);
+        this.openDevtoolsButton_.hidden = false;
+        this.openDevtoolsButton_.disabled = !error.canInspect;
+      } else {
+        this.clearRuntimeContent_();
+      }
+
+      // Read the file source to populate the code section, or set it to null if
+      // the file is unreadable.
+      if (ExtensionErrorOverlay.canLoadFileSource(error.source, extensionUrl)) {
+        // Use pathname instead of relativeUrl.
+        var requestFileSourceArgs = {extensionId: error.extensionId,
+                                     message: error.message};
+        switch (error.type) {
+          case chrome.developerPrivate.ErrorType.MANIFEST:
+            requestFileSourceArgs.pathSuffix = error.source;
+            requestFileSourceArgs.manifestKey = error.manifestKey;
+            requestFileSourceArgs.manifestSpecific = error.manifestSpecific;
+            break;
+          case chrome.developerPrivate.ErrorType.RUNTIME:
+            // slice(1) because pathname starts with a /.
+            var pathname = new URL(error.source).pathname.slice(1);
+            requestFileSourceArgs.pathSuffix = pathname;
+            requestFileSourceArgs.lineNumber =
+                error.stackTrace && error.stackTrace[0] ?
+                    error.stackTrace[0].lineNumber : 0;
+            break;
+          default:
+            assertNotReached();
+        }
+        this.requestFileSource(requestFileSourceArgs);
+      } else {
+        this.onFileSourceResponse_(null);
+      }
+    },
+
+    /**
+     * Associate an error with the overlay. This will set the error for the
+     * overlay, and, if possible, will populate the code section of the overlay
+     * with the relevant file, load the stack trace, and generate links for
+     * opening devtools (the latter two only happen for runtime errors).
+     * @param {Array<(RuntimeError|ManifestError)>} errors The error to show in
+     *     the overlay.
+     * @param {string} extensionId The id of the extension.
+     * @param {string} extensionName The name of the extension.
+     */
+    setErrorsAndShowOverlay: function(errors, extensionId, extensionName) {
+      document.querySelector(
+          '#extension-error-overlay .extension-error-overlay-title').
+              textContent = extensionName;
+      var errorsDiv = this.overlayDiv_.querySelector('.extension-error-list');
+      var extensionErrors =
+          new extensions.ExtensionErrorList(errors, extensionId);
+      errorsDiv.parentNode.replaceChild(extensionErrors, errorsDiv);
+      extensionErrors.addEventListener('activeExtensionErrorChanged',
+                                       function(e) {
+        this.setActiveError_(e.detail);
+      }.bind(this));
+
+      if (errors.length > 0)
+        this.setActiveError_(errors[0]);
+      this.setVisible(true);
+    },
+
+    /**
+     * Requests a file's source.
+     * @param {chrome.developerPrivate.RequestFileSourceProperties} args The
+     *     arguments for the call.
+     */
+    requestFileSource: function(args) {
+      chrome.developerPrivate.requestFileSource(
+          args, this.onFileSourceResponse_.bind(this));
+    },
+
+    /**
+     * Set the code to be displayed in the code portion of the overlay.
+     * @see ExtensionErrorOverlay.requestFileSourceResponse().
+     * @param {?chrome.developerPrivate.RequestFileSourceResponse} response The
+     *     response from the request file source call, which will be shown as
+     *     code. If |response| is null, then a "Could not display code" message
+     *     will be displayed instead.
+     */
+    onFileSourceResponse_: function(response) {
+      this.codeDiv_.populate(
+          response,  // ExtensionCode can handle a null response.
+          loadTimeData.getString('extensionErrorOverlayNoCodeToDisplay'));
+      this.setVisible(true);
+    },
+  };
+
+  // Export
+  return {
+    ExtensionErrorOverlay: ExtensionErrorOverlay
+  };
+});
+
+// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('extensions', function() {
+  /**
+   * @constructor
+   * @extends {cr.ui.FocusManager}
+   */
+  function ExtensionFocusManager() {}
+
+  cr.addSingletonGetter(ExtensionFocusManager);
+
+  ExtensionFocusManager.prototype = {
+    __proto__: cr.ui.FocusManager.prototype,
+
+    /** @override */
+    getFocusParent: function() {
+      var overlay = extensions.ExtensionSettings.getCurrentOverlay();
+      return overlay || $('extension-settings');
+    },
+  };
+
+  return {
+    ExtensionFocusManager: ExtensionFocusManager,
+  };
+});
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('extensions', function() {
+  /**
+   * @param {!Element} root
+   * @param {?Element} boundary
+   * @constructor
+   * @extends {cr.ui.FocusRow}
+   */
+  function FocusRow(root, boundary) {
+    cr.ui.FocusRow.call(this, root, boundary);
+  }
+
+  FocusRow.prototype = {
+    __proto__: cr.ui.FocusRow.prototype,
+
+    /** @override */
+    makeActive: function(active) {
+      cr.ui.FocusRow.prototype.makeActive.call(this, active);
+
+      // Only highlight if the row has focus.
+      this.root.classList.toggle('extension-highlight',
+          active && this.root.contains(document.activeElement));
+    },
+  };
+
+  return {FocusRow: FocusRow};
+});
+
+// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Copyright 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('extensions', function() {
+  'use strict';
+
+  /**
+   * Clone a template within the extension error template collection.
+   * @param {string} templateName The class name of the template to clone.
+   * @return {HTMLElement} The clone of the template.
+   */
+  function cloneTemplate(templateName) {
+    return /** @type {HTMLElement} */($('template-collection-extension-error').
+        querySelector('.' + templateName).cloneNode(true));
+  }
+
+  /**
+   * Checks that an Extension ID follows the proper format (i.e., is 32
+   * characters long, is lowercase, and contains letters in the range [a, p]).
+   * @param {string} id The Extension ID to test.
+   * @return {boolean} Whether or not the ID is valid.
+   */
+  function idIsValid(id) {
+    return /^[a-p]{32}$/.test(id);
+  }
+
+  /**
+   * @param {!Array<(ManifestError|RuntimeError)>} errors
+   * @param {number} id
+   * @return {number} The index of the error with |id|, or -1 if not found.
+   */
+  function findErrorById(errors, id) {
+    for (var i = 0; i < errors.length; ++i) {
+      if (errors[i].id == id)
+        return i;
+    }
+    return -1;
+  }
+
+  /**
+   * Creates a new ExtensionError HTMLElement; this is used to show a
+   * notification to the user when an error is caused by an extension.
+   * @param {(RuntimeError|ManifestError)} error The error the element should
+   *     represent.
+   * @constructor
+   * @extends {HTMLElement}
+   */
+  function ExtensionError(error) {
+    var div = cloneTemplate('extension-error-metadata');
+    div.__proto__ = ExtensionError.prototype;
+    div.decorate(error);
+    return div;
+  }
+
+  ExtensionError.prototype = {
+    __proto__: HTMLElement.prototype,
+
+    /**
+     * @param {(RuntimeError|ManifestError)} error The error the element should
+     *     represent.
+     * @private
+     */
+    decorate: function(error) {
+      /**
+       * The backing error.
+       * @type {(ManifestError|RuntimeError)}
+       */
+      this.error = error;
+      var iconAltTextKey = 'extensionLogLevelWarn';
+
+      // Add an additional class for the severity level.
+      if (error.type == chrome.developerPrivate.ErrorType.RUNTIME) {
+        switch (error.severity) {
+          case chrome.developerPrivate.ErrorLevel.LOG:
+            this.classList.add('extension-error-severity-info');
+            iconAltTextKey = 'extensionLogLevelInfo';
+            break;
+          case chrome.developerPrivate.ErrorLevel.WARN:
+            this.classList.add('extension-error-severity-warning');
+            break;
+          case chrome.developerPrivate.ErrorLevel.ERROR:
+            this.classList.add('extension-error-severity-fatal');
+            iconAltTextKey = 'extensionLogLevelError';
+            break;
+          default:
+            assertNotReached();
+        }
+      } else {
+        // We classify manifest errors as "warnings".
+        this.classList.add('extension-error-severity-warning');
+      }
+
+      var iconNode = document.createElement('img');
+      iconNode.className = 'extension-error-icon';
+      iconNode.alt = loadTimeData.getString(iconAltTextKey);
+      this.insertBefore(iconNode, this.firstChild);
+
+      var messageSpan = this.querySelector('.extension-error-message');
+      messageSpan.textContent = error.message;
+
+      var deleteButton = this.querySelector('.error-delete-button');
+      deleteButton.addEventListener('click', function(e) {
+        this.dispatchEvent(
+            new CustomEvent('deleteExtensionError',
+                            {bubbles: true, detail: this.error}));
+      }.bind(this));
+
+      this.addEventListener('click', function(e) {
+        if (e.target != deleteButton)
+          this.requestActive_();
+      }.bind(this));
+
+      this.addEventListener('keydown', function(e) {
+        if (e.keyIdentifier == 'Enter' && e.target != deleteButton)
+          this.requestActive_();
+      });
+    },
+
+    /**
+     * Bubble up an event to request to become active.
+     * @private
+     */
+    requestActive_: function() {
+      this.dispatchEvent(
+          new CustomEvent('highlightExtensionError',
+                          {bubbles: true, detail: this.error}));
+    },
+  };
+
+  /**
+   * A variable length list of runtime or manifest errors for a given extension.
+   * @param {Array<(RuntimeError|ManifestError)>} errors The list of extension
+   *     errors with which to populate the list.
+   * @param {string} extensionId The id of the extension.
+   * @constructor
+   * @extends {HTMLDivElement}
+   */
+  function ExtensionErrorList(errors, extensionId) {
+    var div = cloneTemplate('extension-error-list');
+    div.__proto__ = ExtensionErrorList.prototype;
+    div.extensionId_ = extensionId;
+    div.decorate(errors);
+    return div;
+  }
+
+  /**
+   * @param {!Element} root
+   * @param {?Element} boundary
+   * @constructor
+   * @extends {cr.ui.FocusRow}
+   */
+  ExtensionErrorList.FocusRow = function(root, boundary) {
+    cr.ui.FocusRow.call(this, root, boundary);
+
+    this.addItem('message', '.extension-error-message');
+    this.addItem('delete', '.error-delete-button');
+  };
+
+  ExtensionErrorList.FocusRow.prototype = {
+    __proto__: cr.ui.FocusRow.prototype,
+  };
+
+  ExtensionErrorList.prototype = {
+    __proto__: HTMLDivElement.prototype,
+
+    /**
+     * Initializes the extension error list.
+     * @param {Array<(RuntimeError|ManifestError)>} errors The list of errors.
+     */
+    decorate: function(errors) {
+      /** @private {!Array<(ManifestError|RuntimeError)>} */
+      this.errors_ = [];
+
+      /** @private {!cr.ui.FocusGrid} */
+      this.focusGrid_ = new cr.ui.FocusGrid();
+
+      /** @private {Element} */
+      this.listContents_ = this.querySelector('.extension-error-list-contents');
+
+      errors.forEach(this.addError_, this);
+
+      this.focusGrid_.ensureRowActive();
+
+      this.addEventListener('highlightExtensionError', function(e) {
+        this.setActiveErrorNode_(e.target);
+      });
+      this.addEventListener('deleteExtensionError', function(e) {
+        this.removeError_(e.detail);
+      });
+
+      this.querySelector('#extension-error-list-clear').addEventListener(
+          'click', function(e) {
+        this.clear(true);
+      }.bind(this));
+
+      /**
+       * The callback for the extension changed event.
+       * @private {function(chrome.developerPrivate.EventData):void}
+       */
+      this.onItemStateChangedListener_ = function(data) {
+        var type = chrome.developerPrivate.EventType;
+        if ((data.event_type == type.ERRORS_REMOVED ||
+             data.event_type == type.ERROR_ADDED) &&
+            data.extensionInfo.id == this.extensionId_) {
+          var newErrors = data.extensionInfo.runtimeErrors.concat(
+              data.extensionInfo.manifestErrors);
+          this.updateErrors_(newErrors);
+        }
+      }.bind(this);
+
+      chrome.developerPrivate.onItemStateChanged.addListener(
+          this.onItemStateChangedListener_);
+
+      /**
+       * The active error element in the list.
+       * @private {?}
+       */
+      this.activeError_ = null;
+
+      this.setActiveError(0);
+    },
+
+    /**
+     * Adds an error to the list.
+     * @param {(RuntimeError|ManifestError)} error The error to add.
+     * @private
+     */
+    addError_: function(error) {
+      this.querySelector('#no-errors-span').hidden = true;
+      this.errors_.push(error);
+
+      var extensionError = new ExtensionError(error);
+      this.listContents_.appendChild(extensionError);
+
+      this.focusGrid_.addRow(
+          new ExtensionErrorList.FocusRow(extensionError, this.listContents_));
+    },
+
+    /**
+     * Removes an error from the list.
+     * @param {(RuntimeError|ManifestError)} error The error to remove.
+     * @private
+     */
+    removeError_: function(error) {
+      var index = 0;
+      for (; index < this.errors_.length; ++index) {
+        if (this.errors_[index].id == error.id)
+          break;
+      }
+      assert(index != this.errors_.length);
+      var errorList = this.querySelector('.extension-error-list-contents');
+
+      var wasActive =
+          this.activeError_ && this.activeError_.error.id == error.id;
+
+      this.errors_.splice(index, 1);
+      var listElement = errorList.children[index];
+
+      var focusRow = this.focusGrid_.getRowForRoot(listElement);
+      this.focusGrid_.removeRow(focusRow);
+      this.focusGrid_.ensureRowActive();
+      focusRow.destroy();
+
+      // TODO(dbeam): in a world where this UI is actually used, we should
+      // probably move the focus before removing |listElement|.
+      listElement.parentNode.removeChild(listElement);
+
+      if (wasActive) {
+        index = Math.min(index, this.errors_.length - 1);
+        this.setActiveError(index);  // Gracefully handles the -1 case.
+      }
+
+      chrome.developerPrivate.deleteExtensionErrors({
+        extensionId: error.extensionId,
+        errorIds: [error.id]
+      });
+
+      if (this.errors_.length == 0)
+        this.querySelector('#no-errors-span').hidden = false;
+    },
+
+    /**
+     * Updates the list of errors.
+     * @param {!Array<(ManifestError|RuntimeError)>} newErrors The new list of
+     *     errors.
+     * @private
+     */
+    updateErrors_: function(newErrors) {
+      this.errors_.forEach(function(error) {
+        if (findErrorById(newErrors, error.id) == -1)
+          this.removeError_(error);
+      }, this);
+      newErrors.forEach(function(error) {
+        var index = findErrorById(this.errors_, error.id);
+        if (index == -1)
+          this.addError_(error);
+        else
+          this.errors_[index] = error;  // Update the existing reference.
+      }, this);
+    },
+
+    /**
+     * Called when the list is being removed.
+     */
+    onRemoved: function() {
+      chrome.developerPrivate.onItemStateChanged.removeListener(
+          this.onItemStateChangedListener_);
+      this.clear(false);
+    },
+
+    /**
+     * Sets the active error in the list.
+     * @param {number} index The index to set to be active.
+     */
+    setActiveError: function(index) {
+      var errorList = this.querySelector('.extension-error-list-contents');
+      var item = errorList.children[index];
+      this.setActiveErrorNode_(
+          item ? item.querySelector('.extension-error-metadata') : null);
+      var node = null;
+      if (index >= 0 && index < errorList.children.length) {
+        node = errorList.children[index].querySelector(
+                   '.extension-error-metadata');
+      }
+      this.setActiveErrorNode_(node);
+    },
+
+    /**
+     * Clears the list of all errors.
+     * @param {boolean} deleteErrors Whether or not the errors should be deleted
+     *     on the backend.
+     */
+    clear: function(deleteErrors) {
+      if (this.errors_.length == 0)
+        return;
+
+      if (deleteErrors) {
+        var ids = this.errors_.map(function(error) { return error.id; });
+        chrome.developerPrivate.deleteExtensionErrors({
+          extensionId: this.extensionId_,
+          errorIds: ids
+        });
+      }
+
+      this.setActiveErrorNode_(null);
+      this.errors_.length = 0;
+      var errorList = this.querySelector('.extension-error-list-contents');
+      while (errorList.firstChild)
+        errorList.removeChild(errorList.firstChild);
+    },
+
+    /**
+     * Sets the active error in the list.
+     * @param {?} node The error to make active.
+     * @private
+     */
+    setActiveErrorNode_: function(node) {
+      if (this.activeError_)
+        this.activeError_.classList.remove('extension-error-active');
+
+      if (node)
+        node.classList.add('extension-error-active');
+
+      this.activeError_ = node;
+
+      this.dispatchEvent(
+          new CustomEvent('activeExtensionErrorChanged',
+                          {bubbles: true, detail: node ? node.error : null}));
+    },
+  };
+
+  return {
+    ExtensionErrorList: ExtensionErrorList
+  };
+});
+
+
+cr.define('extensions', function() {
+  'use strict';
+
+  var ExtensionType = chrome.developerPrivate.ExtensionType;
+
+  /**
+   * @param {string} name The name of the template to clone.
+   * @return {!Element} The freshly cloned template.
+   */
+  function cloneTemplate(name) {
+    var node = $('templates').querySelector('.' + name).cloneNode(true);
+    return assertInstanceof(node, Element);
+  }
+
+  /**
+   * @extends {HTMLElement}
+   * @constructor
+   */
+  function ExtensionWrapper() {
+    var wrapper = cloneTemplate('extension-list-item-wrapper');
+    wrapper.__proto__ = ExtensionWrapper.prototype;
+    wrapper.initialize();
+    return wrapper;
+  }
+
+  ExtensionWrapper.prototype = {
+    __proto__: HTMLElement.prototype,
+
+    initialize: function() {
+      var boundary = $('extension-settings-list');
+      /** @private {!extensions.FocusRow} */
+      this.focusRow_ = new extensions.FocusRow(this, boundary);
+    },
+
+    /** @return {!cr.ui.FocusRow} */
+    getFocusRow: function() {
+      return this.focusRow_;
+    },
+
+    /**
+     * Add an item to the focus row and listen for |eventType| events.
+     * @param {string} focusType A tag used to identify equivalent elements when
+     *     changing focus between rows.
+     * @param {string} query A query to select the element to set up.
+     * @param {string=} opt_eventType The type of event to listen to.
+     * @param {function(Event)=} opt_handler The function that should be called
+     *     by the event.
+     * @private
+     */
+    setupColumn: function(focusType, query, opt_eventType, opt_handler) {
+      assert(this.focusRow_.addItem(focusType, query));
+      if (opt_eventType) {
+        assert(opt_handler);
+        this.querySelector(query).addEventListener(opt_eventType, opt_handler);
+      }
+    },
+  };
+
+  var ExtensionCommandsOverlay = extensions.ExtensionCommandsOverlay;
+
+  /**
+   * Compares two extensions for the order they should appear in the list.
+   * @param {chrome.developerPrivate.ExtensionInfo} a The first extension.
+   * @param {chrome.developerPrivate.ExtensionInfo} b The second extension.
+   * returns {number} -1 if A comes before B, 1 if A comes after B, 0 if equal.
+   */
+  function compareExtensions(a, b) {
+    function compare(x, y) {
+      return x < y ? -1 : (x > y ? 1 : 0);
+    }
+    function compareLocation(x, y) {
+      if (x.location == y.location)
+        return 0;
+      if (x.location == chrome.developerPrivate.Location.UNPACKED)
+        return -1;
+      if (y.location == chrome.developerPrivate.Location.UNPACKED)
+        return 1;
+      return 0;
+    }
+    return compareLocation(a, b) ||
+           compare(a.name.toLowerCase(), b.name.toLowerCase()) ||
+           compare(a.id, b.id);
+  }
+
+  /** @interface */
+  function ExtensionListDelegate() {}
+
+  ExtensionListDelegate.prototype = {
+    /**
+     * Called when the number of extensions in the list has changed.
+     */
+    onExtensionCountChanged: assertNotReached,
+  };
+
+  /**
+   * Creates a new list of extensions.
+   * @param {extensions.ExtensionListDelegate} delegate
+   * @constructor
+   * @extends {HTMLDivElement}
+   */
+  function ExtensionList(delegate) {
+    var div = document.createElement('div');
+    div.__proto__ = ExtensionList.prototype;
+    div.initialize(delegate);
+    return div;
+  }
+
+  ExtensionList.prototype = {
+    __proto__: HTMLDivElement.prototype,
+
+    /**
+     * Indicates whether an embedded options page that was navigated to through
+     * the '?options=' URL query has been shown to the user. This is necessary
+     * to prevent showExtensionNodes_ from opening the options more than once.
+     * @type {boolean}
+     * @private
+     */
+    optionsShown_: false,
+
+    /** @private {!cr.ui.FocusGrid} */
+    focusGrid_: new cr.ui.FocusGrid(),
+
+    /**
+     * Indicates whether an uninstall dialog is being shown to prevent multiple
+     * dialogs from being displayed.
+     * @private {boolean}
+     */
+    uninstallIsShowing_: false,
+
+    /**
+     * Indicates whether a permissions prompt is showing.
+     * @private {boolean}
+     */
+    permissionsPromptIsShowing_: false,
+
+    /**
+     * Whether or not any initial navigation (like scrolling to an extension,
+     * or opening an options page) has occurred.
+     * @private {boolean}
+     */
+    didInitialNavigation_: false,
+
+    /**
+     * Whether or not incognito mode is available.
+     * @private {boolean}
+     */
+    incognitoAvailable_: false,
+
+    /**
+     * Whether or not the app info dialog is enabled.
+     * @private {boolean}
+     */
+    enableAppInfoDialog_: false,
+
+    /**
+     * Initializes the list.
+     * @param {!extensions.ExtensionListDelegate} delegate
+     */
+    initialize: function(delegate) {
+      /** @private {!Array<chrome.developerPrivate.ExtensionInfo>} */
+      this.extensions_ = [];
+
+      /** @private {!extensions.ExtensionListDelegate} */
+      this.delegate_ = delegate;
+
+      this.resetLoadFinished();
+
+      chrome.developerPrivate.onItemStateChanged.addListener(
+          function(eventData) {
+        var EventType = chrome.developerPrivate.EventType;
+        switch (eventData.event_type) {
+          case EventType.VIEW_REGISTERED:
+          case EventType.VIEW_UNREGISTERED:
+          case EventType.INSTALLED:
+          case EventType.LOADED:
+          case EventType.UNLOADED:
+          case EventType.ERROR_ADDED:
+          case EventType.ERRORS_REMOVED:
+          case EventType.PREFS_CHANGED:
+            if (eventData.extensionInfo) {
+              this.updateOrCreateWrapper_(eventData.extensionInfo);
+              this.focusGrid_.ensureRowActive();
+            }
+            break;
+          case EventType.UNINSTALLED:
+            var index = this.getIndexOfExtension_(eventData.item_id);
+            this.extensions_.splice(index, 1);
+            this.removeWrapper_(getRequiredElement(eventData.item_id));
+            break;
+          default:
+            assertNotReached();
+        }
+
+        if (eventData.event_type == EventType.UNLOADED)
+          this.hideEmbeddedExtensionOptions_(eventData.item_id);
+
+        if (eventData.event_type == EventType.INSTALLED ||
+            eventData.event_type == EventType.UNINSTALLED) {
+          this.delegate_.onExtensionCountChanged();
+        }
+
+        if (eventData.event_type == EventType.LOADED ||
+            eventData.event_type == EventType.UNLOADED ||
+            eventData.event_type == EventType.PREFS_CHANGED ||
+            eventData.event_type == EventType.UNINSTALLED) {
+          // We update the commands overlay whenever an extension is added or
+          // removed (other updates wouldn't affect command-ly things). We
+          // need both UNLOADED and UNINSTALLED since the UNLOADED event results
+          // in an extension losing active keybindings, and UNINSTALLED can
+          // result in the "Keyboard shortcuts" link being removed.
+          ExtensionCommandsOverlay.updateExtensionsData(this.extensions_);
+        }
+      }.bind(this));
+    },
+
+    /**
+     * Resets the |loadFinished| promise so that it can be used again; this
+     * is useful if the page updates and tests need to wait for it to finish.
+     */
+    resetLoadFinished: function() {
+      /**
+       * |loadFinished| should be used for testing purposes and will be
+       * fulfilled when this list has finished loading the first time.
+       * @type {Promise}
+       * */
+      this.loadFinished = new Promise(function(resolve, reject) {
+        /** @private {function(?)} */
+        this.resolveLoadFinished_ = resolve;
+      }.bind(this));
+    },
+
+    /**
+     * Updates the extensions on the page.
+     * @param {boolean} incognitoAvailable Whether or not incognito is allowed.
+     * @param {boolean} enableAppInfoDialog Whether or not the app info dialog
+     *     is enabled.
+     * @return {Promise} A promise that is resolved once the extensions data is
+     *     fully updated.
+     */
+    updateExtensionsData: function(incognitoAvailable, enableAppInfoDialog) {
+      // If we start to need more information about the extension configuration,
+      // consider passing in the full object from the ExtensionSettings.
+      this.incognitoAvailable_ = incognitoAvailable;
+      this.enableAppInfoDialog_ = enableAppInfoDialog;
+      /** @private {Promise} */
+      this.extensionsUpdated_ = new Promise(function(resolve, reject) {
+        chrome.developerPrivate.getExtensionsInfo(
+            {includeDisabled: true, includeTerminated: true},
+            function(extensions) {
+          // Sort in order of unpacked vs. packed, followed by name, followed by
+          // id.
+          extensions.sort(compareExtensions);
+          this.extensions_ = extensions;
+          this.showExtensionNodes_();
+
+          // We keep the commands overlay's extension info in sync, so that we
+          // don't duplicate the same querying logic there.
+          ExtensionCommandsOverlay.updateExtensionsData(this.extensions_);
+
+          resolve();
+
+          // |resolve| is async so it's necessary to use |then| here in order to
+          // do work after other |then|s have finished. This is important so
+          // elements are visible when these updates happen.
+          this.extensionsUpdated_.then(function() {
+            this.onUpdateFinished_();
+            this.resolveLoadFinished_();
+          }.bind(this));
+        }.bind(this));
+      }.bind(this));
+      return this.extensionsUpdated_;
+    },
+
+    /**
+     * Updates elements that need to be visible in order to update properly.
+     * @private
+     */
+    onUpdateFinished_: function() {
+      // Cannot focus or highlight a extension if there are none, and we should
+      // only scroll to a particular extension or open the options page once.
+      if (this.extensions_.length == 0 || this.didInitialNavigation_)
+        return;
+
+      this.didInitialNavigation_ = true;
+      assert(!this.hidden);
+      assert(!this.parentElement.hidden);
+
+      var idToHighlight = this.getIdQueryParam_();
+      if (idToHighlight) {
+        var wrapper = $(idToHighlight);
+        if (wrapper) {
+          this.scrollToWrapper_(idToHighlight);
+
+          var focusRow = wrapper.getFocusRow();
+          (focusRow.getFirstFocusable('enabled') ||
+           focusRow.getFirstFocusable('remove-enterprise') ||
+           focusRow.getFirstFocusable('website') ||
+           focusRow.getFirstFocusable('details')).focus();
+        }
+      }
+
+      var idToOpenOptions = this.getOptionsQueryParam_();
+      if (idToOpenOptions && $(idToOpenOptions))
+        this.showEmbeddedExtensionOptions_(idToOpenOptions, true);
+    },
+
+    /** @return {number} The number of extensions being displayed. */
+    getNumExtensions: function() {
+      return this.extensions_.length;
+    },
+
+    /**
+     * @param {string} id The id of the extension.
+     * @return {number} The index of the extension with the given id.
+     * @private
+     */
+    getIndexOfExtension_: function(id) {
+      for (var i = 0; i < this.extensions_.length; ++i) {
+        if (this.extensions_[i].id == id)
+          return i;
+      }
+      return -1;
+    },
+
+    getIdQueryParam_: function() {
+      return parseQueryParams(document.location)['id'];
+    },
+
+    getOptionsQueryParam_: function() {
+      return parseQueryParams(document.location)['options'];
+    },
+
+    /**
+     * Creates or updates all extension items from scratch.
+     * @private
+     */
+    showExtensionNodes_: function() {
+      // Any node that is not updated will be removed.
+      var seenIds = [];
+
+      // Iterate over the extension data and add each item to the list.
+      this.extensions_.forEach(function(extension) {
+        seenIds.push(extension.id);
+        this.updateOrCreateWrapper_(extension);
+      }, this);
+      this.focusGrid_.ensureRowActive();
+
+      // Remove extensions that are no longer installed.
+      var wrappers = document.querySelectorAll(
+          '.extension-list-item-wrapper[id]');
+      Array.prototype.forEach.call(wrappers, function(wrapper) {
+        if (seenIds.indexOf(wrapper.id) < 0)
+          this.removeWrapper_(wrapper);
+      }, this);
+    },
+
+    /**
+     * Removes the wrapper from the DOM and updates the focused element if
+     * needed.
+     * @param {!Element} wrapper
+     * @private
+     */
+    removeWrapper_: function(wrapper) {
+      // If focus is in the wrapper about to be removed, move it first. This
+      // happens when clicking the trash can to remove an extension.
+      if (wrapper.contains(document.activeElement)) {
+        var wrappers = document.querySelectorAll(
+            '.extension-list-item-wrapper[id]');
+        var index = Array.prototype.indexOf.call(wrappers, wrapper);
+        assert(index != -1);
+        var focusableWrapper = wrappers[index + 1] || wrappers[index - 1];
+        if (focusableWrapper) {
+          var newFocusRow = focusableWrapper.getFocusRow();
+          newFocusRow.getEquivalentElement(document.activeElement).focus();
+        }
+      }
+
+      var focusRow = wrapper.getFocusRow();
+      this.focusGrid_.removeRow(focusRow);
+      this.focusGrid_.ensureRowActive();
+      focusRow.destroy();
+
+      wrapper.parentNode.removeChild(wrapper);
+    },
+
+    /**
+     * Scrolls the page down to the extension node with the given id.
+     * @param {string} extensionId The id of the extension to scroll to.
+     * @private
+     */
+    scrollToWrapper_: function(extensionId) {
+      // Scroll offset should be calculated slightly higher than the actual
+      // offset of the element being scrolled to, so that it ends up not all
+      // the way at the top. That way it is clear that there are more elements
+      // above the element being scrolled to.
+      var wrapper = $(extensionId);
+      var scrollFudge = 1.2;
+      var scrollTop = wrapper.offsetTop - scrollFudge * wrapper.clientHeight;
+      setScrollTopForDocument(document, scrollTop);
+    },
+
+    /**
+     * Synthesizes and initializes an HTML element for the extension metadata
+     * given in |extension|.
+     * @param {!chrome.developerPrivate.ExtensionInfo} extension A dictionary
+     *     of extension metadata.
+     * @param {?Element} nextWrapper The newly created wrapper will be inserted
+     *     before |nextWrapper| if non-null (else it will be appended to the
+     *     wrapper list).
+     * @private
+     */
+    createWrapper_: function(extension, nextWrapper) {
+      var wrapper = new ExtensionWrapper;
+      wrapper.id = extension.id;
+
+      // The 'Permissions' link.
+      wrapper.setupColumn('details', '.permissions-link', 'click', function(e) {
+        if (!this.permissionsPromptIsShowing_) {
+          chrome.developerPrivate.showPermissionsDialog(extension.id,
+                                                        function() {
+            this.permissionsPromptIsShowing_ = false;
+          }.bind(this));
+          this.permissionsPromptIsShowing_ = true;
+        }
+        e.preventDefault();
+      });
+
+      wrapper.setupColumn('options', '.options-button', 'click', function(e) {
+        this.showEmbeddedExtensionOptions_(extension.id, false);
+        e.preventDefault();
+      }.bind(this));
+
+      // The 'Options' button or link, depending on its behaviour.
+      // Set an href to get the correct mouse-over appearance (link,
+      // footer) - but the actual link opening is done through developerPrivate
+      // API with a preventDefault().
+      wrapper.querySelector('.options-link').href =
+          extension.optionsPage ? extension.optionsPage.url : '';
+      wrapper.setupColumn('options', '.options-link', 'click', function(e) {
+        chrome.developerPrivate.showOptions(extension.id);
+        e.preventDefault();
+      });
+
+      // The 'View in Web Store/View Web Site' link.
+      wrapper.setupColumn('website', '.site-link');
+
+      // The 'Launch' link.
+      wrapper.setupColumn('launch', '.launch-link', 'click', function(e) {
+        chrome.management.launchApp(extension.id);
+      });
+
+      // The 'Reload' link.
+      wrapper.setupColumn('localReload', '.reload-link', 'click', function(e) {
+        chrome.developerPrivate.reload(extension.id, {failQuietly: true});
+      });
+
+      wrapper.setupColumn('errors', '.errors-link', 'click', function(e) {
+        var extensionId = extension.id;
+        assert(this.extensions_.length > 0);
+        var newEx = this.extensions_.filter(function(e) {
+          return e.state == chrome.developerPrivate.ExtensionState.ENABLED &&
+              e.id == extensionId;
+        })[0];
+        var errors = newEx.manifestErrors.concat(newEx.runtimeErrors);
+        extensions.ExtensionErrorOverlay.getInstance().setErrorsAndShowOverlay(
+            errors, extensionId, newEx.name);
+      }.bind(this));
+
+      wrapper.setupColumn('suspiciousLearnMore',
+                          '.suspicious-install-message .learn-more-link');
+
+      // The path, if provided by unpacked extension.
+      wrapper.setupColumn('loadPath', '.load-path a:first-of-type', 'click',
+                          function(e) {
+        chrome.developerPrivate.showPath(extension.id);
+        e.preventDefault();
+      });
+
+      // The 'Show Browser Action' button.
+      wrapper.setupColumn('showButton', '.show-button', 'click', function(e) {
+        chrome.developerPrivate.updateExtensionConfiguration({
+          extensionId: extension.id,
+          showActionButton: true
+        });
+      });
+
+      // The 'allow in incognito' checkbox.
+      wrapper.setupColumn('incognito', '.incognito-control input', 'change',
+                          function(e) {
+        var butterBar = wrapper.querySelector('.butter-bar');
+        var checked = e.target.checked;
+        butterBar.hidden = !checked ||
+            extension.type == ExtensionType.HOSTED_APP;
+        chrome.developerPrivate.updateExtensionConfiguration({
+          extensionId: extension.id,
+          incognitoAccess: e.target.checked
+        });
+      }.bind(this));
+
+      // The 'collect errors' checkbox. This should only be visible if the
+      // error console is enabled - we can detect this by the existence of the
+      // |errorCollectionEnabled| property.
+      wrapper.setupColumn('collectErrors', '.error-collection-control input',
+          'change', function(e) {
+        chrome.developerPrivate.updateExtensionConfiguration({
+          extensionId: extension.id,
+          errorCollection: e.target.checked
+        });
+      });
+
+      // The 'allow on all urls' checkbox. This should only be visible if
+      // active script restrictions are enabled. If they are not enabled, no
+      // extensions should want all urls.
+      wrapper.setupColumn('allUrls', '.all-urls-control input', 'click',
+                          function(e) {
+        chrome.developerPrivate.updateExtensionConfiguration({
+          extensionId: extension.id,
+          runOnAllUrls: e.target.checked
+        });
+      });
+
+      // The 'allow file:// access' checkbox.
+      wrapper.setupColumn('localUrls', '.file-access-control input', 'click',
+                          function(e) {
+        chrome.developerPrivate.updateExtensionConfiguration({
+          extensionId: extension.id,
+          fileAccess: e.target.checked
+        });
+      });
+
+      // The 'Reload' terminated link.
+      wrapper.setupColumn('terminatedReload', '.terminated-reload-link',
+                          'click', function(e) {
+        chrome.developerPrivate.reload(extension.id, {failQuietly: true});
+      });
+
+      // The 'Repair' corrupted link.
+      wrapper.setupColumn('repair', '.corrupted-repair-button', 'click',
+                          function(e) {
+        chrome.developerPrivate.repairExtension(extension.id);
+      });
+
+      // The 'Enabled' checkbox.
+      wrapper.setupColumn('enabled', '.enable-checkbox input', 'click',
+                          function(e) {
+        var checked = e.target.checked;
+        // TODO(devlin): What should we do if this fails? Ideally we want to
+        // show some kind of error or feedback to the user if this fails.
+        chrome.management.setEnabled(extension.id, checked);
+
+        // This may seem counter-intuitive (to not set/clear the checkmark)
+        // but this page will be updated asynchronously if the extension
+        // becomes enabled/disabled. It also might not become enabled or
+        // disabled, because the user might e.g. get prompted when enabling
+        // and choose not to.
+        e.preventDefault();
+      });
+
+      // 'Remove' button.
+      var trash = cloneTemplate('trash');
+      trash.title = loadTimeData.getString('extensionUninstall');
+
+      wrapper.querySelector('.enable-controls').appendChild(trash);
+
+      wrapper.setupColumn('remove-enterprise', '.trash', 'click', function(e) {
+        trash.classList.add('open');
+        trash.classList.toggle('mouse-clicked', e.detail > 0);
+        if (this.uninstallIsShowing_)
+          return;
+        this.uninstallIsShowing_ = true;
+        chrome.management.uninstall(extension.id,
+                                    {showConfirmDialog: true},
+                                    function() {
+          // TODO(devlin): What should we do if the uninstall fails?
+          this.uninstallIsShowing_ = false;
+
+          if (trash.classList.contains('mouse-clicked'))
+            trash.blur();
+
+          if (chrome.runtime.lastError) {
+            // The uninstall failed (e.g. a cancel). Allow the trash to close.
+            trash.classList.remove('open');
+          } else {
+            // Leave the trash open if the uninstall succeded. Otherwise it can
+            // half-close right before it's removed when the DOM is modified.
+          }
+        }.bind(this));
+      }.bind(this));
+
+      // Maintain the order that nodes should be in when creating as well as
+      // when adding only one new wrapper.
+      this.insertBefore(wrapper, nextWrapper);
+      this.updateWrapper_(extension, wrapper);
+
+      var nextRow = this.focusGrid_.getRowForRoot(nextWrapper);  // May be null.
+      this.focusGrid_.addRowBefore(wrapper.getFocusRow(), nextRow);
+    },
+
+    /**
+     * Updates an HTML element for the extension metadata given in |extension|.
+     * @param {!chrome.developerPrivate.ExtensionInfo} extension A dictionary of
+     *     extension metadata.
+     * @param {!Element} wrapper The extension wrapper element to update.
+     * @private
+     */
+    updateWrapper_: function(extension, wrapper) {
+      var isActive =
+          extension.state == chrome.developerPrivate.ExtensionState.ENABLED;
+      wrapper.classList.toggle('inactive-extension', !isActive);
+      wrapper.classList.remove('controlled', 'may-not-remove');
+
+      if (extension.controlledInfo) {
+        wrapper.classList.add('controlled');
+      } else if (!extension.userMayModify ||
+                 extension.mustRemainInstalled ||
+                 extension.dependentExtensions.length > 0) {
+        wrapper.classList.add('may-not-remove');
+      }
+
+      var item = wrapper.querySelector('.extension-list-item');
+      item.style.backgroundImage = 'url(' + extension.iconUrl + ')';
+
+      this.setText_(wrapper, '.extension-title', extension.name);
+      this.setText_(wrapper, '.extension-version', extension.version);
+      this.setText_(wrapper, '.location-text', extension.locationText || '');
+      this.setText_(wrapper, '.blacklist-text', extension.blacklistText || '');
+      this.setText_(wrapper, '.extension-description', extension.description);
+
+      // The 'Show Browser Action' button.
+      this.updateVisibility_(wrapper, '.show-button',
+                             isActive && extension.actionButtonHidden);
+
+      // The 'allow in incognito' checkbox.
+      this.updateVisibility_(wrapper, '.incognito-control',
+                             isActive && this.incognitoAvailable_,
+                             function(item) {
+        var incognito = item.querySelector('input');
+        incognito.disabled = !extension.incognitoAccess.isEnabled;
+        incognito.checked = extension.incognitoAccess.isActive;
+      });
+      var showButterBar = isActive &&
+            extension.incognitoAccess.isActive &&
+            extension.type != ExtensionType.HOSTED_APP;
+      // The 'allow in incognito' butter bar.
+      this.updateVisibility_(wrapper, '.butter-bar', showButterBar);
+
+      // The 'collect errors' checkbox. This should only be visible if the
+      // error console is enabled - we can detect this by the existence of the
+      // |errorCollectionEnabled| property.
+      this.updateVisibility_(
+          wrapper, '.error-collection-control',
+          isActive && extension.errorCollection.isEnabled,
+          function(item) {
+        item.querySelector('input').checked =
+            extension.errorCollection.isActive;
+      });
+
+      // The 'allow on all urls' checkbox. This should only be visible if
+      // active script restrictions are enabled. If they are not enabled, no
+      // extensions should want all urls.
+      this.updateVisibility_(
+          wrapper, '.all-urls-control',
+          isActive && extension.runOnAllUrls.isEnabled,
+          function(item) {
+        item.querySelector('input').checked = extension.runOnAllUrls.isActive;
+      });
+
+      // The 'allow file:// access' checkbox.
+      this.updateVisibility_(wrapper, '.file-access-control',
+                             isActive && extension.fileAccess.isEnabled,
+                             function(item) {
+        item.querySelector('input').checked = extension.fileAccess.isActive;
+      });
+
+      // The 'Options' button or link, depending on its behaviour.
+      var optionsEnabled = isActive && !!extension.optionsPage;
+      this.updateVisibility_(wrapper, '.options-link', optionsEnabled &&
+                             extension.optionsPage.openInTab);
+      this.updateVisibility_(wrapper, '.options-button', optionsEnabled &&
+                             !extension.optionsPage.openInTab);
+
+      // The 'View in Web Store/View Web Site' link.
+      var siteLinkEnabled = !!extension.homePage.url &&
+                            !this.enableAppInfoDialog_;
+      this.updateVisibility_(wrapper, '.site-link', siteLinkEnabled,
+                             function(item) {
+        item.href = extension.homePage.url;
+        item.textContent = loadTimeData.getString(
+            extension.homePage.specified ? 'extensionSettingsVisitWebsite' :
+                                           'extensionSettingsVisitWebStore');
+      });
+
+      var isUnpacked =
+          extension.location == chrome.developerPrivate.Location.UNPACKED;
+      // The 'Reload' link.
+      this.updateVisibility_(wrapper, '.reload-link', isActive && isUnpacked);
+
+      // The 'Launch' link.
+      this.updateVisibility_(
+          wrapper, '.launch-link',
+          isUnpacked && extension.type == ExtensionType.PLATFORM_APP &&
+              isActive);
+
+      // The 'Errors' link.
+      var hasErrors = extension.runtimeErrors.length > 0 ||
+          extension.manifestErrors.length > 0;
+      this.updateVisibility_(wrapper, '.errors-link', hasErrors,
+                             function(item) {
+        var Level = chrome.developerPrivate.ErrorLevel;
+
+        var map = {};
+        map[Level.LOG] = {weight: 0, name: 'extension-error-info-icon'};
+        map[Level.WARN] = {weight: 1, name: 'extension-error-warning-icon'};
+        map[Level.ERROR] = {weight: 2, name: 'extension-error-fatal-icon'};
+
+        // Find the highest severity of all the errors; manifest errors all have
+        // a 'warning' level severity.
+        var highestSeverity = extension.runtimeErrors.reduce(
+            function(prev, error) {
+          return map[error.severity].weight > map[prev].weight ?
+              error.severity : prev;
+        }, extension.manifestErrors.length ? Level.WARN : Level.LOG);
+
+        // Adjust the class on the icon.
+        var icon = item.querySelector('.extension-error-icon');
+        // TODO(hcarmona): Populate alt text with a proper description since
+        // this icon conveys the severity of the error. (info, warning, fatal).
+        icon.alt = '';
+        icon.className = 'extension-error-icon';  // Remove other classes.
+        icon.classList.add(map[highestSeverity].name);
+      });
+
+      // The 'Reload' terminated link.
+      var isTerminated =
+          extension.state == chrome.developerPrivate.ExtensionState.TERMINATED;
+      this.updateVisibility_(wrapper, '.terminated-reload-link', isTerminated);
+
+      // The 'Repair' corrupted link.
+      var canRepair = !isTerminated &&
+                      extension.disableReasons.corruptInstall &&
+                      extension.location ==
+                          chrome.developerPrivate.Location.FROM_STORE;
+      this.updateVisibility_(wrapper, '.corrupted-repair-button', canRepair);
+
+      // The 'Enabled' checkbox.
+      var isOK = !isTerminated && !canRepair;
+      this.updateVisibility_(wrapper, '.enable-checkbox', isOK, function(item) {
+        var enableCheckboxDisabled =
+            !extension.userMayModify ||
+            extension.disableReasons.suspiciousInstall ||
+            extension.disableReasons.corruptInstall ||
+            extension.disableReasons.updateRequired ||
+            extension.dependentExtensions.length > 0 ||
+            extension.state ==
+                chrome.developerPrivate.ExtensionState.BLACKLISTED;
+        item.querySelector('input').disabled = enableCheckboxDisabled;
+        item.querySelector('input').checked = isActive;
+      });
+
+      // Indicator for extensions controlled by policy.
+      var controlNode = wrapper.querySelector('.enable-controls');
+      var indicator =
+          controlNode.querySelector('.controlled-extension-indicator');
+      var needsIndicator = isOK && extension.controlledInfo;
+
+      if (needsIndicator && !indicator) {
+        indicator = new cr.ui.ControlledIndicator();
+        indicator.classList.add('controlled-extension-indicator');
+        var ControllerType = chrome.developerPrivate.ControllerType;
+        var controlledByStr = '';
+        switch (extension.controlledInfo.type) {
+          case ControllerType.POLICY:
+            controlledByStr = 'policy';
+            break;
+          case ControllerType.CHILD_CUSTODIAN:
+            controlledByStr = 'child-custodian';
+            break;
+          case ControllerType.SUPERVISED_USER_CUSTODIAN:
+            controlledByStr = 'supervised-user-custodian';
+            break;
+        }
+        indicator.setAttribute('controlled-by', controlledByStr);
+        var text = extension.controlledInfo.text;
+        indicator.setAttribute('text' + controlledByStr, text);
+        indicator.image.setAttribute('aria-label', text);
+        controlNode.appendChild(indicator);
+        wrapper.setupColumn('remove-enterprise', '[controlled-by] div');
+      } else if (!needsIndicator && indicator) {
+        controlNode.removeChild(indicator);
+      }
+
+      // Developer mode ////////////////////////////////////////////////////////
+
+      // First we have the id.
+      var idLabel = wrapper.querySelector('.extension-id');
+      idLabel.textContent = ' ' + extension.id;
+
+      // Then the path, if provided by unpacked extension.
+      this.updateVisibility_(wrapper, '.load-path', isUnpacked,
+                             function(item) {
+        item.querySelector('a:first-of-type').textContent =
+            ' ' + extension.prettifiedPath;
+      });
+
+      // Then the 'managed, cannot uninstall/disable' message.
+      // We would like to hide managed installed message since this
+      // extension is disabled.
+      var isRequired =
+          !extension.userMayModify || extension.mustRemainInstalled;
+      this.updateVisibility_(wrapper, '.managed-message', isRequired &&
+                             !extension.disableReasons.updateRequired);
+
+      // Then the 'This isn't from the webstore, looks suspicious' message.
+      var isSuspicious = extension.disableReasons.suspiciousInstall;
+      this.updateVisibility_(wrapper, '.suspicious-install-message',
+                             !isRequired && isSuspicious);
+
+      // Then the 'This is a corrupt extension' message.
+      this.updateVisibility_(wrapper, '.corrupt-install-message', !isRequired &&
+                             extension.disableReasons.corruptInstall);
+
+      // Then the 'An update required by enterprise policy' message. Note that
+      // a force-installed extension might be disabled due to being outdated
+      // as well.
+      this.updateVisibility_(wrapper, '.update-required-message',
+                             extension.disableReasons.updateRequired);
+
+      // The 'following extensions depend on this extension' list.
+      var hasDependents = extension.dependentExtensions.length > 0;
+      wrapper.classList.toggle('developer-extras', hasDependents);
+      this.updateVisibility_(wrapper, '.dependent-extensions-message',
+                             hasDependents, function(item) {
+        var dependentList = item.querySelector('ul');
+        dependentList.textContent = '';
+        extension.dependentExtensions.forEach(function(dependentExtension) {
+          var depNode = cloneTemplate('dependent-list-item');
+          depNode.querySelector('.dep-extension-title').textContent =
+              dependentExtension.name;
+          depNode.querySelector('.dep-extension-id').textContent =
+              dependentExtension.id;
+          dependentList.appendChild(depNode);
+        }, this);
+      }.bind(this));
+
+      // The active views.
+      this.updateVisibility_(wrapper, '.active-views',
+                             extension.views.length > 0, function(item) {
+        var link = item.querySelector('a');
+
+        // Link needs to be an only child before the list is updated.
+        while (link.nextElementSibling)
+          item.removeChild(link.nextElementSibling);
+
+        // Link needs to be cleaned up if it was used before.
+        link.textContent = '';
+        if (link.clickHandler)
+          link.removeEventListener('click', link.clickHandler);
+
+        extension.views.forEach(function(view, i) {
+          if (view.type == chrome.developerPrivate.ViewType.EXTENSION_DIALOG ||
+              view.type == chrome.developerPrivate.ViewType.EXTENSION_POPUP) {
+            return;
+          }
+          var displayName;
+          if (view.url.indexOf('chrome-extension://') == 0) {
+            var pathOffset = 'chrome-extension://'.length + 32 + 1;
+            displayName = view.url.substring(pathOffset);
+            if (displayName == '_generated_background_page.html')
+              displayName = loadTimeData.getString('backgroundPage');
+          } else {
+            displayName = view.url;
+          }
+          var label = displayName +
+              (view.incognito ?
+                  ' ' + loadTimeData.getString('viewIncognito') : '') +
+              (view.renderProcessId == -1 ?
+                  ' ' + loadTimeData.getString('viewInactive') : '') +
+              (view.isIframe ?
+                  ' ' + loadTimeData.getString('viewIframe') : '');
+          link.textContent = label;
+          link.clickHandler = function(e) {
+            chrome.developerPrivate.openDevTools({
+              extensionId: extension.id,
+              renderProcessId: view.renderProcessId,
+              renderViewId: view.renderViewId,
+              incognito: view.incognito
+            });
+          };
+          link.addEventListener('click', link.clickHandler);
+
+          if (i < extension.views.length - 1) {
+            link = link.cloneNode(true);
+            item.appendChild(link);
+          }
+
+          wrapper.setupColumn('activeView', '.active-views a:last-of-type');
+        });
+      });
+
+      // The extension warnings (describing runtime issues).
+      this.updateVisibility_(wrapper, '.extension-warnings',
+                             extension.runtimeWarnings.length > 0,
+                             function(item) {
+        var warningList = item.querySelector('ul');
+        warningList.textContent = '';
+        extension.runtimeWarnings.forEach(function(warning) {
+          var li = document.createElement('li');
+          warningList.appendChild(li).innerText = warning;
+        });
+      });
+
+      // Install warnings.
+      this.updateVisibility_(wrapper, '.install-warnings',
+                             extension.installWarnings.length > 0,
+                             function(item) {
+        var installWarningList = item.querySelector('ul');
+        installWarningList.textContent = '';
+        if (extension.installWarnings) {
+          extension.installWarnings.forEach(function(warning) {
+            var li = document.createElement('li');
+            li.innerText = warning;
+            installWarningList.appendChild(li);
+          });
+        }
+      });
+
+      if (location.hash.substr(1) == extension.id) {
+        // Scroll beneath the fixed header so that the extension is not
+        // obscured.
+        var topScroll = wrapper.offsetTop - $('page-header').offsetHeight;
+        var pad = parseInt(window.getComputedStyle(wrapper).marginTop, 10);
+        if (!isNaN(pad))
+          topScroll -= pad / 2;
+        setScrollTopForDocument(document, topScroll);
+      }
+    },
+
+    /**
+     * Updates an element's textContent.
+     * @param {Node} node Ancestor of the element specified by |query|.
+     * @param {string} query A query to select an element in |node|.
+     * @param {string} textContent
+     * @private
+     */
+    setText_: function(node, query, textContent) {
+      node.querySelector(query).textContent = textContent;
+    },
+
+    /**
+     * Updates an element's visibility and calls |shownCallback| if it is
+     * visible.
+     * @param {Node} node Ancestor of the element specified by |query|.
+     * @param {string} query A query to select an element in |node|.
+     * @param {boolean} visible Whether the element should be visible or not.
+     * @param {function(Element)=} opt_shownCallback Callback if the element is
+     *     visible. The element passed in will be the element specified by
+     *     |query|.
+     * @private
+     */
+    updateVisibility_: function(node, query, visible, opt_shownCallback) {
+      var element = assertInstanceof(node.querySelector(query), Element);
+      element.hidden = !visible;
+      if (visible && opt_shownCallback)
+        opt_shownCallback(element);
+    },
+
+    /**
+     * Opens the extension options overlay for the extension with the given id.
+     * @param {string} extensionId The id of extension whose options page should
+     *     be displayed.
+     * @param {boolean} scroll Whether the page should scroll to the extension
+     * @private
+     */
+    showEmbeddedExtensionOptions_: function(extensionId, scroll) {
+      if (this.optionsShown_)
+        return;
+
+      // Get the extension from the given id.
+      var extension = this.extensions_.filter(function(extension) {
+        return extension.state ==
+                   chrome.developerPrivate.ExtensionState.ENABLED &&
+               extension.id == extensionId;
+      })[0];
+
+      if (!extension)
+        return;
+
+      if (scroll)
+        this.scrollToWrapper_(extensionId);
+
+      // Add the options query string. Corner case: the 'options' query string
+      // will clobber the 'id' query string if the options link is clicked when
+      // 'id' is in the URL, or if both query strings are in the URL.
+      uber.replaceState({}, '?options=' + extensionId);
+
+      var overlay = extensions.ExtensionOptionsOverlay.getInstance();
+      var shownCallback = function() {
+        // This overlay doesn't get focused automatically as <extensionoptions>
+        // is created after the overlay is shown.
+        if (cr.ui.FocusOutlineManager.forDocument(document).visible)
+          overlay.setInitialFocus();
+      };
+      overlay.setExtensionAndShow(extensionId, extension.name,
+                                  extension.iconUrl, shownCallback);
+      this.optionsShown_ = true;
+
+      var self = this;
+      $('overlay').addEventListener('cancelOverlay', function f() {
+        self.optionsShown_ = false;
+        $('overlay').removeEventListener('cancelOverlay', f);
+
+        // Remove the options query string.
+        uber.replaceState({}, '');
+      });
+
+      // TODO(dbeam): why do we need to focus <extensionoptions> before and
+      // after its showing animation? Makes very little sense to me.
+      overlay.setInitialFocus();
+    },
+
+    /**
+     * Hides the extension options overlay for the extension with id
+     * |extensionId|. If there is an overlay showing for a different extension,
+     * nothing happens.
+     * @param {string} extensionId ID of the extension to hide.
+     * @private
+     */
+    hideEmbeddedExtensionOptions_: function(extensionId) {
+      if (!this.optionsShown_)
+        return;
+
+      var overlay = extensions.ExtensionOptionsOverlay.getInstance();
+      if (overlay.getExtensionId() == extensionId)
+        overlay.close();
+    },
+
+    /**
+     * Updates or creates a wrapper for |extension|.
+     * @param {!chrome.developerPrivate.ExtensionInfo} extension The information
+     *     about the extension to update.
+     * @private
+     */
+    updateOrCreateWrapper_: function(extension) {
+      var currIndex = this.getIndexOfExtension_(extension.id);
+      if (currIndex != -1) {
+        // If there is a current version of the extension, update it with the
+        // new version.
+        this.extensions_[currIndex] = extension;
+      } else {
+        // If the extension isn't found, push it back and sort. Technically, we
+        // could optimize by inserting it at the right location, but since this
+        // only happens on extension install, it's not worth it.
+        this.extensions_.push(extension);
+        this.extensions_.sort(compareExtensions);
+      }
+
+      var wrapper = $(extension.id);
+      if (wrapper) {
+        this.updateWrapper_(extension, wrapper);
+      } else {
+        var nextExt = this.extensions_[this.extensions_.indexOf(extension) + 1];
+        this.createWrapper_(extension, nextExt ? $(nextExt.id) : null);
+      }
+    }
+  };
+
+  return {
+    ExtensionList: ExtensionList,
+    ExtensionListDelegate: ExtensionListDelegate
+  };
+});
+
+// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('extensions', function() {
+  /**
+   * PackExtensionOverlay class
+   * Encapsulated handling of the 'Pack Extension' overlay page.
+   * @constructor
+   */
+  function PackExtensionOverlay() {
+  }
+
+  cr.addSingletonGetter(PackExtensionOverlay);
+
+  PackExtensionOverlay.prototype = {
+    /**
+     * Initialize the page.
+     */
+    initializePage: function() {
+      var overlay = $('overlay');
+      cr.ui.overlay.setupOverlay(overlay);
+      cr.ui.overlay.globalInitialization();
+      overlay.addEventListener('cancelOverlay', this.handleDismiss_.bind(this));
+
+      $('pack-extension-dismiss').addEventListener('click', function() {
+        cr.dispatchSimpleEvent(overlay, 'cancelOverlay');
+      });
+      $('pack-extension-commit').addEventListener('click',
+          this.handleCommit_.bind(this));
+      $('browse-extension-dir').addEventListener('click',
+          this.handleBrowseExtensionDir_.bind(this));
+      $('browse-private-key').addEventListener('click',
+          this.handleBrowsePrivateKey_.bind(this));
+    },
+
+    /**
+     * Handles a click on the dismiss button.
+     * @param {Event} e The click event.
+     */
+    handleDismiss_: function(e) {
+      extensions.ExtensionSettings.showOverlay(null);
+    },
+
+    /**
+     * Handles a click on the pack button.
+     * @param {Event} e The click event.
+     */
+    handleCommit_: function(e) {
+      var extensionPath = $('extension-root-dir').value;
+      var privateKeyPath = $('extension-private-key').value;
+      chrome.developerPrivate.packDirectory(
+          extensionPath, privateKeyPath, 0, this.onPackResponse_.bind(this));
+    },
+
+    /**
+     * Utility function which asks the C++ to show a platform-specific file
+     * select dialog, and set the value property of |node| to the selected path.
+     * @param {chrome.developerPrivate.SelectType} selectType
+     *     The type of selection to use.
+     * @param {chrome.developerPrivate.FileType} fileType
+     *     The type of file to select.
+     * @param {HTMLInputElement} node The node to set the value of.
+     * @private
+     */
+    showFileDialog_: function(selectType, fileType, node) {
+      chrome.developerPrivate.choosePath(selectType, fileType, function(path) {
+        // Last error is set if the user canceled the dialog.
+        if (!chrome.runtime.lastError && path)
+          node.value = path;
+      });
+    },
+
+    /**
+     * Handles the showing of the extension directory browser.
+     * @param {Event} e Change event.
+     * @private
+     */
+    handleBrowseExtensionDir_: function(e) {
+      this.showFileDialog_(
+          chrome.developerPrivate.SelectType.FOLDER,
+          chrome.developerPrivate.FileType.LOAD,
+          /** @type {HTMLInputElement} */ ($('extension-root-dir')));
+    },
+
+    /**
+     * Handles the showing of the extension private key file.
+     * @param {Event} e Change event.
+     * @private
+     */
+    handleBrowsePrivateKey_: function(e) {
+      this.showFileDialog_(
+          chrome.developerPrivate.SelectType.FILE,
+          chrome.developerPrivate.FileType.PEM,
+          /** @type {HTMLInputElement} */ ($('extension-private-key')));
+    },
+
+    /**
+     * Handles a response from a packDirectory call.
+     * @param {chrome.developerPrivate.PackDirectoryResponse} response The
+     *     response of the pack call.
+     * @private
+     */
+    onPackResponse_: function(response) {
+      /** @type {string} */
+      var alertTitle;
+      /** @type {string} */
+      var alertOk;
+      /** @type {string} */
+      var alertCancel;
+      /** @type {function()} */
+      var alertOkCallback;
+      /** @type {function()} */
+      var alertCancelCallback;
+
+      var closeAlert = function() {
+        extensions.ExtensionSettings.showOverlay(null);
+      };
+
+      switch (response.status) {
+        case chrome.developerPrivate.PackStatus.SUCCESS:
+          alertTitle = loadTimeData.getString('packExtensionOverlay');
+          alertOk = loadTimeData.getString('ok');
+          alertOkCallback = closeAlert;
+          // No 'Cancel' option.
+          break;
+        case chrome.developerPrivate.PackStatus.WARNING:
+          alertTitle = loadTimeData.getString('packExtensionWarningTitle');
+          alertOk = loadTimeData.getString('packExtensionProceedAnyway');
+          alertCancel = loadTimeData.getString('cancel');
+          alertOkCallback = function() {
+            chrome.developerPrivate.packDirectory(
+                response.item_path,
+                response.pem_path,
+                response.override_flags,
+                this.onPackResponse_.bind(this));
+            closeAlert();
+          }.bind(this);
+          alertCancelCallback = closeAlert;
+          break;
+        case chrome.developerPrivate.PackStatus.ERROR:
+          alertTitle = loadTimeData.getString('packExtensionErrorTitle');
+          alertOk = loadTimeData.getString('ok');
+          alertOkCallback = function() {
+            extensions.ExtensionSettings.showOverlay(
+                $('pack-extension-overlay'));
+          };
+          // No 'Cancel' option.
+          break;
+        default:
+          assertNotReached();
+          return;
+      }
+
+      alertOverlay.setValues(alertTitle,
+                             response.message,
+                             alertOk,
+                             alertCancel,
+                             alertOkCallback,
+                             alertCancelCallback);
+      extensions.ExtensionSettings.showOverlay($('alertOverlay'));
+    },
+  };
+
+  // Export
+  return {
+    PackExtensionOverlay: PackExtensionOverlay
+  };
+});
+
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('extensions', function() {
+  'use strict';
+
+  /**
+   * Construct an ExtensionLoadError around the given |div|.
+   * @param {HTMLDivElement} div The HTML div for the extension load error.
+   * @constructor
+   * @extends {HTMLDivElement}
+   */
+  function ExtensionLoadError(div) {
+    div.__proto__ = ExtensionLoadError.prototype;
+    div.init();
+    return div;
+  }
+
+  /**
+   * Construct a Failure.
+   * @param {string} filePath The path to the unpacked extension.
+   * @param {string} error The reason the extension failed to load.
+   * @param {ExtensionHighlight} manifest Three 'highlight' strings in
+   *     |manifest| represent three portions of the file's content to display -
+   *     the portion which is most relevant and should be emphasized
+   *     (highlight), and the parts both before and after this portion. These
+   *     may be empty.
+   * @param {HTMLLIElement} listElement The HTML element used for displaying the
+   *     failure path for the additional failures UI.
+   * @constructor
+   * @extends {HTMLDivElement}
+   */
+  function Failure(filePath, error, manifest, listElement) {
+    this.path = filePath;
+    this.error = error;
+    this.manifest = manifest;
+    this.listElement = listElement;
+  }
+
+  ExtensionLoadError.prototype = {
+    __proto__: HTMLDivElement.prototype,
+
+    /**
+     * Initialize the ExtensionLoadError div.
+     */
+    init: function() {
+      /**
+       * The element which displays the path of the extension.
+       * @type {HTMLElement}
+       * @private
+       */
+      this.path_ = /** @type {HTMLElement} */(
+          this.querySelector('#extension-load-error-path'));
+
+      /**
+       * The element which displays the reason the extension failed to load.
+       * @type {HTMLElement}
+       * @private
+       */
+      this.reason_ = /** @type {HTMLElement} */(
+          this.querySelector('#extension-load-error-reason'));
+
+      /**
+       * The element which displays the manifest code.
+       * @type {extensions.ExtensionCode}
+       * @private
+       */
+      this.manifest_ = new extensions.ExtensionCode(
+          this.querySelector('#extension-load-error-manifest'));
+
+      /**
+       * The element which displays information about additional errors.
+       * @type {HTMLElement}
+       * @private
+       */
+      this.additional_ = /** @type {HTMLUListElement} */(
+          this.querySelector('#extension-load-error-additional'));
+      this.additional_.list = this.additional_.getElementsByTagName('ul')[0];
+
+      /**
+       * An array of Failures for keeping track of multiple active failures.
+       * @type {Array<Failure>}
+       * @private
+       */
+      this.failures_ = [];
+
+      this.querySelector('#extension-load-error-retry-button').addEventListener(
+          'click', function(e) {
+        chrome.send('extensionLoaderRetry');
+        this.remove_();
+      }.bind(this));
+
+      this.querySelector('#extension-load-error-give-up-button').
+          addEventListener('click', function(e) {
+        chrome.send('extensionLoaderIgnoreFailure');
+        this.remove_();
+      }.bind(this));
+
+      chrome.send('extensionLoaderDisplayFailures');
+    },
+
+    /**
+     * Add a failure to failures_ array. If there is already a displayed
+     * failure, display the additional failures element.
+     * @param {Array<Object>} failures Array of failures containing paths,
+     *     errors, and manifests.
+     * @private
+     */
+    add_: function(failures) {
+      // If a failure is already being displayed, unhide the last item.
+      if (this.failures_.length > 0)
+        this.failures_[this.failures_.length - 1].listElement.hidden = false;
+      failures.forEach(function(failure) {
+        var listItem = /** @type {HTMLLIElement} */(
+            document.createElement('li'));
+        listItem.textContent = failure.path;
+        this.additional_.list.appendChild(listItem);
+        this.failures_.push(new Failure(failure.path,
+                                        failure.error,
+                                        failure.manifest,
+                                        listItem));
+      }.bind(this));
+      // Hide the last item because the UI is displaying its information.
+      this.failures_[this.failures_.length - 1].listElement.hidden = true;
+      this.show_();
+    },
+
+    /**
+     * Remove a failure from |failures_| array. If this was the last failure,
+     * hide the error UI.  If this was the last additional failure, hide
+     * the additional failures UI.
+     * @private
+     */
+    remove_: function() {
+      this.additional_.list.removeChild(
+          this.failures_[this.failures_.length - 1].listElement);
+      this.failures_.pop();
+      if (this.failures_.length > 0) {
+        this.failures_[this.failures_.length - 1].listElement.hidden = true;
+        this.show_();
+      } else {
+        this.hidden = true;
+      }
+    },
+
+    /**
+     * Display the load error to the user. The last failure gets its manifest
+     * and error displayed, while additional failures have their path names
+     * displayed in the additional failures element.
+     * @private
+     */
+    show_: function() {
+      assert(this.failures_.length >= 1);
+      var failure = this.failures_[this.failures_.length - 1];
+      this.path_.textContent = failure.path;
+      this.reason_.textContent = failure.error;
+
+      failure.manifest.message = failure.error;
+      this.manifest_.populate(
+          failure.manifest,
+          loadTimeData.getString('extensionLoadCouldNotLoadManifest'));
+      this.hidden = false;
+      this.manifest_.scrollToError();
+
+      this.additional_.hidden = this.failures_.length == 1;
+    }
+  };
+
+  /**
+   * The ExtensionLoader is the class in charge of loading unpacked extensions.
+   * @constructor
+   */
+  function ExtensionLoader() {
+    /**
+     * The ExtensionLoadError to show any errors from loading an unpacked
+     * extension.
+     * @type {ExtensionLoadError}
+     * @private
+     */
+    this.loadError_ = new ExtensionLoadError(
+        /** @type {HTMLDivElement} */($('extension-load-error')));
+  }
+
+  cr.addSingletonGetter(ExtensionLoader);
+
+  ExtensionLoader.prototype = {
+    /**
+     * Whether or not we are currently loading an unpacked extension.
+     * @private {boolean}
+     */
+    isLoading_: false,
+
+    /**
+     * Begin the sequence of loading an unpacked extension. If an error is
+     * encountered, this object will get notified via notifyFailed().
+     */
+    loadUnpacked: function() {
+      if (this.isLoading_)  // Only one running load at a time.
+        return;
+      this.isLoading_ = true;
+      chrome.developerPrivate.loadUnpacked({failQuietly: true}, function() {
+        // Check lastError to avoid the log, but don't do anything with it -
+        // error-handling is done on the C++ side.
+        var lastError = chrome.runtime.lastError;
+        this.isLoading_ = false;
+      }.bind(this));
+    },
+
+    /**
+     * Notify the ExtensionLoader that loading an unpacked extension failed.
+     * Add the failure to failures_ and show the ExtensionLoadError.
+     * @param {Array<Object>} failures Array of failures containing paths,
+     *     errors, and manifests.
+     */
+    notifyFailed: function(failures) {
+      this.loadError_.add_(failures);
+    },
+  };
+
+  /**
+   * A static forwarding function for ExtensionLoader.notifyFailed.
+   * @param {Array<Object>} failures Array of failures containing paths,
+   *     errors, and manifests.
+   * @see ExtensionLoader.notifyFailed
+   */
+  ExtensionLoader.notifyLoadFailed = function(failures) {
+    ExtensionLoader.getInstance().notifyFailed(failures);
+  };
+
+  return {
+    ExtensionLoader: ExtensionLoader
+  };
+});
+
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Returns the width of a scrollbar in logical pixels.
+function getScrollbarWidth() {
+  // Create nested divs with scrollbars.
+  var outer = document.createElement('div');
+  outer.style.width = '100px';
+  outer.style.overflow = 'scroll';
+  outer.style.visibility = 'hidden';
+  document.body.appendChild(outer);
+  var inner = document.createElement('div');
+  inner.style.width = '101px';
+  outer.appendChild(inner);
+
+  // The outer div's |clientWidth| and |offsetWidth| differ only by the width of
+  // the vertical scrollbar.
+  var scrollbarWidth = outer.offsetWidth - outer.clientWidth;
+  outer.parentNode.removeChild(outer);
+  return scrollbarWidth;
+}
+
+cr.define('extensions', function() {
+  'use strict';
+
+  /**
+   * The ExtensionOptionsOverlay will show an extension's options page using
+   * an <extensionoptions> element.
+   * @constructor
+   */
+  function ExtensionOptionsOverlay() {}
+
+  cr.addSingletonGetter(ExtensionOptionsOverlay);
+
+  ExtensionOptionsOverlay.prototype = {
+    /**
+     * The function that shows the given element in the overlay.
+     * @type {?function(HTMLDivElement)} Function that receives the element to
+     *     show in the overlay.
+     * @private
+     */
+    showOverlay_: null,
+
+    /**
+     * The id of the extension that this options page display.
+     * @type {string}
+     * @private
+     */
+    extensionId_: '',
+
+    /**
+     * Initialize the page.
+     * @param {function(HTMLDivElement)} showOverlay The function to show or
+     *     hide the ExtensionOptionsOverlay; this should take a single parameter
+     *     which is either the overlay Div if the overlay should be displayed,
+     *     or null if the overlay should be hidden.
+     */
+    initializePage: function(showOverlay) {
+      var overlay = $('overlay');
+
+      cr.ui.overlay.setupOverlay(overlay);
+      cr.ui.overlay.globalInitialization();
+      overlay.addEventListener('cancelOverlay', this.handleDismiss_.bind(this));
+
+      this.showOverlay_ = showOverlay;
+    },
+
+    setInitialFocus: function() {
+      this.getExtensionOptions_().focus();
+    },
+
+    /**
+     * @return {?Element}
+     * @private
+     */
+    getExtensionOptions_: function() {
+      return $('extension-options-overlay-guest').querySelector(
+          'extensionoptions');
+    },
+
+    /**
+     * Handles a click on the close button.
+     * @param {Event} event The click event.
+     * @private
+     */
+    handleDismiss_: function(event) {
+      this.setVisible_(false);
+      var extensionoptions = this.getExtensionOptions_();
+      if (extensionoptions)
+        $('extension-options-overlay-guest').removeChild(extensionoptions);
+
+      $('extension-options-overlay-icon').removeAttribute('src');
+    },
+
+    /**
+     * Associate an extension with the overlay and display it.
+     * @param {string} extensionId The id of the extension whose options page
+     *     should be displayed in the overlay.
+     * @param {string} extensionName The name of the extension, which is used
+     *     as the header of the overlay.
+     * @param {string} extensionIcon The URL of the extension's icon.
+     * @param {function():void} shownCallback A function called when
+     *     showing completes.
+     * @suppress {checkTypes}
+     * TODO(vitalyp): remove the suppression after adding
+     * chrome/renderer/resources/extensions/extension_options.js
+     * to dependencies.
+     */
+    setExtensionAndShow: function(extensionId,
+                                  extensionName,
+                                  extensionIcon,
+                                  shownCallback) {
+      var overlay = $('extension-options-overlay');
+      var overlayHeader = $('extension-options-overlay-header');
+      var overlayGuest = $('extension-options-overlay-guest');
+      var overlayStyle = window.getComputedStyle(overlay);
+
+      $('extension-options-overlay-title').textContent = extensionName;
+      $('extension-options-overlay-icon').src = extensionIcon;
+
+      this.setVisible_(true);
+
+      var extensionoptions = new window.ExtensionOptions();
+      extensionoptions.extension = extensionId;
+      this.extensionId_ = extensionId;
+
+      // The <extensionoptions> content's size needs to be restricted to the
+      // bounds of the overlay window. The overlay gives a minWidth and
+      // maxHeight, but the maxHeight does not include our header height (title
+      // and close button), so we need to subtract that to get the maxHeight
+      // for the extension options.
+      var maxHeight = parseInt(overlayStyle.maxHeight, 10) -
+                      overlayHeader.offsetHeight;
+      var minWidth = parseInt(overlayStyle.minWidth, 10);
+
+      extensionoptions.onclose = function() {
+        cr.dispatchSimpleEvent($('overlay'), 'cancelOverlay');
+      }.bind(this);
+
+      // Track the current animation (used to grow/shrink the overlay content),
+      // if any. Preferred size changes can fire more rapidly than the
+      // animation speed, and multiple animations running at the same time has
+      // undesirable effects.
+      var animation = null;
+
+      /**
+       * Resize the overlay if the <extensionoptions> changes preferred size.
+       * @param {{width: number, height: number}} evt
+       */
+      extensionoptions.onpreferredsizechanged = function(evt) {
+        var oldOverlayWidth = parseInt(overlayStyle.width, 10);
+        var oldOverlayHeight = parseInt(overlayStyle.height, 10);
+        var newOverlayWidth = evt.width;
+        // |evt.height| is just the new overlay guest height, and does not
+        // include the overlay header height, so it needs to be added.
+        var newOverlayHeight = evt.height + overlayHeader.offsetHeight;
+
+        // Make room for the vertical scrollbar, if there is one.
+        if (newOverlayHeight > maxHeight) {
+          newOverlayWidth += getScrollbarWidth();
+        }
+
+        // Enforce |minWidth| and |maxHeight|.
+        newOverlayWidth = Math.max(newOverlayWidth, minWidth);
+        newOverlayHeight = Math.min(newOverlayHeight, maxHeight);
+
+        // animationTime is the amount of time in ms that will be used to resize
+        // the overlay. It is calculated by multiplying the pythagorean distance
+        // between old and the new size (in px) with a constant speed of
+        // 0.25 ms/px.
+        var loading = document.documentElement.classList.contains('loading');
+        var animationTime = loading ? 0 :
+            0.25 * Math.sqrt(Math.pow(newOverlayWidth - oldOverlayWidth, 2) +
+                             Math.pow(newOverlayHeight - oldOverlayHeight, 2));
+
+        if (animation)
+          animation.cancel();
+
+        // The header height must be added to the (old and new) preferred
+        // heights to get the full overlay heights.
+        animation = overlay.animate([
+          {width: oldOverlayWidth + 'px', height: oldOverlayHeight + 'px'},
+          {width: newOverlayWidth + 'px', height: newOverlayHeight + 'px'}
+        ], {
+          duration: animationTime,
+          delay: 0
+        });
+
+        animation.onfinish = function(e) {
+          animation = null;
+
+          // The <extensionoptions> element is ready to place back in the
+          // overlay. Make sure that it's sized to take up the full width/height
+          // of the overlay.
+          overlayGuest.style.position = '';
+          overlayGuest.style.left = '';
+          overlayGuest.style.width = newOverlayWidth + 'px';
+          // |newOverlayHeight| includes the header height, so it needs to be
+          // subtracted to get the new guest height.
+          overlayGuest.style.height =
+              (newOverlayHeight - overlayHeader.offsetHeight) + 'px';
+
+          if (shownCallback) {
+            shownCallback();
+            shownCallback = null;
+          }
+        };
+      }.bind(this);
+
+      // Move the <extensionoptions> off screen until the overlay is ready.
+      overlayGuest.style.position = 'fixed';
+      overlayGuest.style.left = window.outerWidth + 'px';
+      // Begin rendering at the default dimensions. This is also necessary to
+      // cancel any width/height set on a previous render.
+      // TODO(kalman): This causes a visual jag where the overlay guest shows
+      // up briefly. It would be better to render this off-screen first, then
+      // swap it in place. See crbug.com/408274.
+      // This may also solve crbug.com/431001 (width is 0 on initial render).
+      overlayGuest.style.width = '';
+      overlayGuest.style.height = '';
+
+      overlayGuest.appendChild(extensionoptions);
+    },
+
+    /**
+     * Dispatches a 'cancelOverlay' event on the $('overlay') element.
+     */
+    close: function() {
+      cr.dispatchSimpleEvent($('overlay'), 'cancelOverlay');
+    },
+
+    /**
+     * Returns extension id that this options page set.
+     * @return {string}
+     */
+    getExtensionId: function() {
+      return this.extensionId_;
+    },
+
+    /**
+     * Toggles the visibility of the ExtensionOptionsOverlay.
+     * @param {boolean} isVisible Whether the overlay should be visible.
+     * @private
+     */
+    setVisible_: function(isVisible) {
+      this.showOverlay_(isVisible ?
+          /** @type {HTMLDivElement} */($('extension-options-overlay')) :
+          null);
+    }
+  };
+
+  // Export
+  return {
+    ExtensionOptionsOverlay: ExtensionOptionsOverlay
+  };
+});
+
+
+// Copyright 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('extensions', function() {
+  /**
+   * Encapsulated handling of ChromeOS kiosk apps options page.
+   * @constructor
+   */
+  function KioskAppsOverlay() {
+  }
+
+  cr.addSingletonGetter(KioskAppsOverlay);
+
+  KioskAppsOverlay.prototype = {
+    /**
+     * Clear error timer id.
+     * @type {?number}
+     */
+    clearErrorTimer_: null,
+
+    /**
+     * Initialize the page.
+     */
+    initialize: function() {
+      chrome.send('initializeKioskAppSettings');
+      extensions.KioskAppList.decorate($('kiosk-app-list'));
+
+      var overlay = $('kiosk-apps-page');
+      cr.ui.overlay.setupOverlay(overlay);
+      cr.ui.overlay.globalInitialization();
+      overlay.addEventListener('cancelOverlay', this.handleDismiss_.bind(this));
+
+      $('kiosk-options-overlay-confirm').onclick =
+          this.handleDismiss_.bind(this);
+      $('kiosk-app-id-edit').addEventListener('keypress',
+          this.handleAppIdInputKeyPressed_.bind(this));
+      $('kiosk-app-add').onclick = this.handleAddButtonClick_.bind(this);
+    },
+
+    /*
+     * Invoked when the page is shown.
+     */
+    didShowPage: function() {
+      chrome.send('getKioskAppSettings');
+      $('kiosk-app-id-edit').focus();
+    },
+
+    /**
+     * Shows error for given app name/id and schedules it to cleared.
+     * @param {!string} appName App name/id to show in error banner.
+     */
+    showError: function(appName) {
+      var errorBanner = $('kiosk-apps-error-banner');
+      var appNameElement = errorBanner.querySelector('.kiosk-app-name');
+      appNameElement.textContent = appName;
+      errorBanner.classList.add('visible');
+
+      if (this.clearErrorTimer_)
+        window.clearTimeout(this.clearErrorTimer_);
+
+      // Sets a timer to clear out error banner after 5 seconds.
+      this.clearErrorTimer_ = window.setTimeout(function() {
+        errorBanner.classList.remove('visible');
+        this.clearErrorTimer_ = null;
+      }.bind(this), 5000);
+    },
+
+    /**
+     * Handles keypressed event in the app id input element.
+     * @private
+     */
+    handleAppIdInputKeyPressed_: function(e) {
+      if (e.keyIdentifier == 'Enter' && e.target.value)
+        this.handleAddButtonClick_();
+    },
+
+    /**
+     * Handles click event on the add button.
+     * @private
+     */
+    handleAddButtonClick_: function() {
+      var appId = $('kiosk-app-id-edit').value;
+      if (!appId)
+        return;
+
+      chrome.send('addKioskApp', [appId]);
+      $('kiosk-app-id-edit').value = '';
+    },
+
+    /**
+     * Handles the overlay being dismissed.
+     * @private
+     */
+    handleDismiss_: function() {
+      this.handleAddButtonClick_();
+      extensions.ExtensionSettings.showOverlay(null);
+    }
+  };
+
+  /**
+   * Sets apps to be displayed in kiosk-app-list.
+   * @param {!Object<{apps: !Array<AppDict>, disableBailout: boolean,
+   *     hasAutoLaunchApp: boolean}>} settings An object containing an array of
+   *     app info objects and disable bailout shortcut flag.
+   */
+  KioskAppsOverlay.setSettings = function(settings) {
+    $('kiosk-app-list').setApps(settings.apps);
+    $('kiosk-disable-bailout-shortcut').checked = settings.disableBailout;
+    $('kiosk-disable-bailout-shortcut').disabled = !settings.hasAutoLaunchApp;
+  };
+
+  /**
+   * Update an app in kiosk-app-list.
+   * @param {!Object} app App info to be updated.
+   */
+  KioskAppsOverlay.updateApp = function(app) {
+    $('kiosk-app-list').updateApp(app);
+  };
+
+  /**
+   * Shows error for given app name/id.
+   * @param {!string} appName App name/id to show in error banner.
+   */
+  KioskAppsOverlay.showError = function(appName) {
+    KioskAppsOverlay.getInstance().showError(appName);
+  };
+
+  /**
+   * Enables consumer kiosk.
+   * @param {!{kioskEnabled: boolean, autoLaunchEnabled: boolean}} params
+   */
+  KioskAppsOverlay.enableKiosk = function(params) {
+    $('add-kiosk-app').hidden = !params.kioskEnabled;
+    $('kiosk-disable-bailout-shortcut').parentNode.hidden =
+        !params.autoLaunchEnabled;
+    $('kiosk-app-list').setAutoLaunchEnabled(params.autoLaunchEnabled);
+  };
+
+  // Export
+  return {
+    KioskAppsOverlay: KioskAppsOverlay
+  };
+});
+
+// Copyright 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * The type of the app data object. The definition is based on
+ * chrome/browser/ui/webui/extensions/chromeos/kiosk_apps_handler.cc:
+ *     PopulateAppDict()
+ * @typedef {{id: string,
+ *            name: string,
+ *            iconURL: string,
+ *            autoLaunch: boolean,
+ *            isLoading: boolean}}
+ */
+var AppDict;
+
+cr.define('extensions', function() {
+  /** @const */ var List = cr.ui.List;
+  /** @const */ var ListItem = cr.ui.ListItem;
+  /** @const */ var ArrayDataModel = cr.ui.ArrayDataModel;
+
+  /**
+   * Creates a list for showing kiosk apps.
+   * @constructor
+   * @extends {cr.ui.List}
+   */
+  var KioskAppList = cr.ui.define('list');
+
+  KioskAppList.prototype = {
+    __proto__: List.prototype,
+
+    /**
+     * True if auto launch feature can be configured.
+     * @type {?boolean}
+     */
+    autoLaunchEnabled_: false,
+
+    /** @override */
+    createItem: function(app) {
+      var item = new KioskAppListItem();
+      item.data = app;
+      item.autoLaunchEnabled = this.autoLaunchEnabled_;
+      return item;
+    },
+
+    /**
+     * Sets auto launch enabled flag.
+     * @param {boolean} enabled True if auto launch should be enabled.
+     */
+    setAutoLaunchEnabled: function(enabled) {
+      this.autoLaunchEnabled_ = enabled;
+    },
+
+    /**
+     * Loads the given list of apps.
+     * @param {!Array<!Object>} apps An array of app info objects.
+     */
+    setApps: function(apps) {
+      this.dataModel = new ArrayDataModel(apps);
+    },
+
+    /**
+     * Updates the given app.
+     * @param {!AppDict} app An app info object.
+     */
+    updateApp: function(app) {
+      for (var i = 0; i < this.items.length; ++i) {
+        if (this.items[i].data.id == app.id) {
+          this.items[i].data = app;
+          break;
+        }
+      }
+    }
+  };
+
+  /**
+   * Creates a list item for a kiosk app.
+   * @constructor
+   * @extends {cr.ui.ListItem}
+   */
+  var KioskAppListItem = cr.ui.define(function() {
+    var el = $('kiosk-app-list-item-template').cloneNode(true);
+    el.removeAttribute('id');
+    el.hidden = false;
+    return el;
+  });
+
+  KioskAppListItem.prototype = {
+    __proto__: ListItem.prototype,
+
+    /**
+     * Data object to hold app info.
+     * @type {Object}
+     * @private
+     */
+    data_: null,
+
+    get data() {
+      assert(this.data_);
+      return this.data_;
+    },
+
+    set data(data) {
+      this.data_ = data;
+      this.redraw();
+    },
+
+    set autoLaunchEnabled(enabled) {
+      this.querySelector('.enable-auto-launch-button').hidden = !enabled;
+      this.querySelector('.disable-auto-launch-button').hidden = !enabled;
+    },
+
+    /**
+     * Getter for the icon element.
+     * @type {Element}
+     */
+    get icon() {
+      return this.querySelector('.kiosk-app-icon');
+    },
+
+    /**
+     * Getter for the name element.
+     * @type {Element}
+     */
+    get name() {
+      return this.querySelector('.kiosk-app-name');
+    },
+
+    /**
+     * Getter for the status text element.
+     * @type {Element}
+     */
+    get status() {
+      return this.querySelector('.kiosk-app-status');
+    },
+
+    /** @override */
+    decorate: function() {
+      ListItem.prototype.decorate.call(this);
+
+      var sendMessageWithId = function(msg) {
+        return function() {
+          chrome.send(msg, [this.data.id]);
+        }.bind(this);
+      }.bind(this);
+
+      this.querySelector('.enable-auto-launch-button').onclick =
+        sendMessageWithId('enableKioskAutoLaunch');
+      this.querySelector('.disable-auto-launch-button').onclick =
+        sendMessageWithId('disableKioskAutoLaunch');
+      this.querySelector('.row-delete-button').onclick =
+          sendMessageWithId('removeKioskApp');
+    },
+
+    /**
+     * Updates UI from app info data.
+     */
+    redraw: function() {
+      this.icon.classList.toggle('spinner', this.data.isLoading);
+      this.icon.style.backgroundImage = 'url(' + this.data.iconURL + ')';
+
+      this.name.textContent = this.data.name || this.data.id;
+      this.status.textContent = this.data.autoLaunch ?
+          loadTimeData.getString('autoLaunch') : '';
+
+      this.autoLaunch = this.data.autoLaunch;
+    }
+  };
+
+  /**
+   * True if the app represented by this item will auto launch.
+   */
+  cr.defineProperty(KioskAppListItem, 'autoLaunch', cr.PropertyKind.BOOL_ATTR);
+
+  // Export
+  return {
+    KioskAppList: KioskAppList
+  };
+});
+
+// Copyright 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('extensions', function() {
+  /**
+   * A confirmation overlay for disabling kiosk app bailout shortcut.
+   * @constructor
+   */
+  function KioskDisableBailoutConfirm() {
+  }
+
+  cr.addSingletonGetter(KioskDisableBailoutConfirm);
+
+  KioskDisableBailoutConfirm.prototype = {
+    /**
+     * Initialize the page.
+     */
+    initialize: function() {
+      var overlay = $('kiosk-disable-bailout-confirm-overlay');
+      cr.ui.overlay.setupOverlay(overlay);
+      cr.ui.overlay.globalInitialization();
+      overlay.addEventListener('cancelOverlay', this.handleCancel);
+
+      var el = $('kiosk-disable-bailout-shortcut');
+      el.addEventListener('change', this.handleDisableBailoutShortcutChange_);
+
+      $('kiosk-disable-bailout-confirm-button').onclick = function(e) {
+        extensions.ExtensionSettings.showOverlay($('kiosk-apps-page'));
+        chrome.send('setDisableBailoutShortcut', [true]);
+      };
+      $('kiosk-disable-bailout-cancel-button').onclick = this.handleCancel;
+    },
+
+    /** Handles overlay being canceled. */
+    handleCancel: function() {
+      extensions.ExtensionSettings.showOverlay($('kiosk-apps-page'));
+      $('kiosk-disable-bailout-shortcut').checked = false;
+    },
+
+    /**
+     * Custom change handler for the disable bailout shortcut checkbox.
+     * It blocks the underlying pref being changed and brings up confirmation
+     * alert to user.
+     * @private
+     */
+    handleDisableBailoutShortcutChange_: function() {
+      // Just set the pref if user un-checks the box.
+      if (!$('kiosk-disable-bailout-shortcut').checked) {
+        chrome.send('setDisableBailoutShortcut', [false]);
+        return false;
+      }
+
+      // Otherwise, show the confirmation overlay.
+      extensions.ExtensionSettings.showOverlay($(
+          'kiosk-disable-bailout-confirm-overlay'));
+      return true;
+    }
+  };
+
+  // Export
+  return {
+    KioskDisableBailoutConfirm: KioskDisableBailoutConfirm
+  };
+});
+
+
+
+
+// Used for observing function of the backend datasource for this page by
+// tests.
+var webuiResponded = false;
+
+cr.define('extensions', function() {
+  var ExtensionList = extensions.ExtensionList;
+
+  // Implements the DragWrapper handler interface.
+  var dragWrapperHandler = {
+    /** @override */
+    shouldAcceptDrag: function(e) {
+      // External Extension installation can be disabled globally, e.g. while a
+      // different overlay is already showing.
+      if (!ExtensionSettings.getInstance().dragEnabled_)
+        return false;
+
+      // We can't access filenames during the 'dragenter' event, so we have to
+      // wait until 'drop' to decide whether to do something with the file or
+      // not.
+      // See: http://www.w3.org/TR/2011/WD-html5-20110113/dnd.html#concept-dnd-p
+      return (e.dataTransfer.types &&
+              e.dataTransfer.types.indexOf('Files') > -1);
+    },
+    /** @override */
+    doDragEnter: function() {
+      chrome.send('startDrag');
+      ExtensionSettings.showOverlay($('drop-target-overlay'));
+    },
+    /** @override */
+    doDragLeave: function() {
+      this.hideDropTargetOverlay_();
+      chrome.send('stopDrag');
+    },
+    /** @override */
+    doDragOver: function(e) {
+      e.preventDefault();
+    },
+    /** @override */
+    doDrop: function(e) {
+      this.hideDropTargetOverlay_();
+      if (e.dataTransfer.files.length != 1)
+        return;
+
+      var toSend = null;
+      // Files lack a check if they're a directory, but we can find out through
+      // its item entry.
+      for (var i = 0; i < e.dataTransfer.items.length; ++i) {
+        if (e.dataTransfer.items[i].kind == 'file' &&
+            e.dataTransfer.items[i].webkitGetAsEntry().isDirectory) {
+          toSend = 'installDroppedDirectory';
+          break;
+        }
+      }
+      // Only process files that look like extensions. Other files should
+      // navigate the browser normally.
+      if (!toSend &&
+          /\.(crx|user\.js|zip)$/i.test(e.dataTransfer.files[0].name)) {
+        toSend = 'installDroppedFile';
+      }
+
+      if (toSend) {
+        e.preventDefault();
+        chrome.send(toSend);
+      }
+    },
+
+    /**
+     * Hide the current overlay if it is the drop target overlay.
+     * @private
+     */
+    hideDropTargetOverlay_: function() {
+      var currentOverlay = ExtensionSettings.getCurrentOverlay();
+      if (currentOverlay && currentOverlay.id === 'drop-target-overlay')
+        ExtensionSettings.showOverlay(null);
+    }
+  };
+
+  /**
+   * ExtensionSettings class
+   * @class
+   * @constructor
+   * @implements {extensions.ExtensionListDelegate}
+   */
+  function ExtensionSettings() {}
+
+  cr.addSingletonGetter(ExtensionSettings);
+
+  ExtensionSettings.prototype = {
+    __proto__: HTMLDivElement.prototype,
+
+    /**
+     * The drag-drop wrapper for installing external Extensions, if available.
+     * null if external Extension installation is not available.
+     * @type {cr.ui.DragWrapper}
+     * @private
+     */
+    dragWrapper_: null,
+
+    /**
+     * True if drag-drop is both available and currently enabled - it can be
+     * temporarily disabled while overlays are showing.
+     * @type {boolean}
+     * @private
+     */
+    dragEnabled_: false,
+
+    /**
+     * True if the page has finished the initial load.
+     * @private {boolean}
+     */
+    hasLoaded_: false,
+
+    /**
+     * Perform initial setup.
+     */
+    initialize: function() {
+      this.setLoading_(true);
+      uber.onContentFrameLoaded();
+      cr.ui.FocusOutlineManager.forDocument(document);
+      measureCheckboxStrings();
+
+      // Set the title.
+      uber.setTitle(loadTimeData.getString('extensionSettings'));
+
+      var extensionList = new ExtensionList(this);
+      extensionList.id = 'extension-settings-list';
+      var wrapper = $('extension-list-wrapper');
+      wrapper.insertBefore(extensionList, wrapper.firstChild);
+
+      // Get the initial profile state, and register to be notified of any
+      // future changes.
+      chrome.developerPrivate.getProfileConfiguration(
+          this.update_.bind(this));
+      chrome.developerPrivate.onProfileStateChanged.addListener(
+          this.update_.bind(this));
+
+      var extensionLoader = extensions.ExtensionLoader.getInstance();
+
+      $('toggle-dev-on').addEventListener('change', function(e) {
+        this.updateDevControlsVisibility_(true);
+        chrome.developerPrivate.updateProfileConfiguration(
+            {inDeveloperMode: e.target.checked});
+        var suffix = $('toggle-dev-on').checked ? 'Enabled' : 'Disabled';
+        chrome.send('metricsHandler:recordAction',
+                    ['Options_ToggleDeveloperMode_' + suffix]);
+      }.bind(this));
+
+      window.addEventListener('resize', function() {
+        this.updateDevControlsVisibility_(false);
+      }.bind(this));
+
+      // Set up the three dev mode buttons (load unpacked, pack and update).
+      $('load-unpacked').addEventListener('click', function(e) {
+        chrome.send('metricsHandler:recordAction',
+                    ['Options_LoadUnpackedExtension']);
+        extensionLoader.loadUnpacked();
+      });
+      $('pack-extension').addEventListener('click',
+          this.handlePackExtension_.bind(this));
+      $('update-extensions-now').addEventListener('click',
+          this.handleUpdateExtensionNow_.bind(this));
+
+      if (!loadTimeData.getBoolean('offStoreInstallEnabled')) {
+        this.dragWrapper_ = new cr.ui.DragWrapper(document.documentElement,
+                                                  dragWrapperHandler);
+        this.dragEnabled_ = true;
+      }
+
+      extensions.PackExtensionOverlay.getInstance().initializePage();
+
+      // Hook up the configure commands link to the overlay.
+      var link = document.querySelector('.extension-commands-config');
+      link.addEventListener('click',
+          this.handleExtensionCommandsConfig_.bind(this));
+
+      // Initialize the Commands overlay.
+      extensions.ExtensionCommandsOverlay.getInstance().initializePage();
+
+      extensions.ExtensionErrorOverlay.getInstance().initializePage(
+          extensions.ExtensionSettings.showOverlay);
+
+      extensions.ExtensionOptionsOverlay.getInstance().initializePage(
+          extensions.ExtensionSettings.showOverlay);
+
+      // Add user action logging for bottom links.
+      var moreExtensionLink =
+          document.getElementsByClassName('more-extensions-link');
+      for (var i = 0; i < moreExtensionLink.length; i++) {
+        moreExtensionLink[i].addEventListener('click', function(e) {
+          chrome.send('metricsHandler:recordAction',
+                      ['Options_GetMoreExtensions']);
+        });
+      }
+
+      // Initialize the kiosk overlay.
+      if (cr.isChromeOS) {
+        var kioskOverlay = extensions.KioskAppsOverlay.getInstance();
+        kioskOverlay.initialize();
+
+        $('add-kiosk-app').addEventListener('click', function() {
+          ExtensionSettings.showOverlay($('kiosk-apps-page'));
+          kioskOverlay.didShowPage();
+        });
+
+        extensions.KioskDisableBailoutConfirm.getInstance().initialize();
+      }
+
+      cr.ui.overlay.setupOverlay($('drop-target-overlay'));
+      cr.ui.overlay.globalInitialization();
+
+      extensions.ExtensionFocusManager.getInstance().initialize();
+
+      var path = document.location.pathname;
+      if (path.length > 1) {
+        // Skip starting slash and remove trailing slash (if any).
+        var overlayName = path.slice(1).replace(/\/$/, '');
+        if (overlayName == 'configureCommands')
+          this.showExtensionCommandsConfigUi_();
+      }
+    },
+
+    /**
+     * [Re]-Populates the page with data representing the current state of
+     * installed extensions.
+     * @param {chrome.developerPrivate.ProfileInfo} profileInfo
+     * @private
+     */
+    update_: function(profileInfo) {
+      // We only set the page to be loading if we haven't already finished an
+      // initial load, because otherwise the updates are all incremental and
+      // don't need to display the interstitial spinner.
+      if (!this.hasLoaded_)
+        this.setLoading_(true);
+      webuiResponded = true;
+
+      /** @const */
+      var supervised = profileInfo.isSupervised;
+
+      var pageDiv = $('extension-settings');
+      pageDiv.classList.toggle('profile-is-supervised', supervised);
+      pageDiv.classList.toggle('showing-banner', supervised);
+
+      var devControlsCheckbox = $('toggle-dev-on');
+      devControlsCheckbox.checked = profileInfo.inDeveloperMode;
+      devControlsCheckbox.disabled = supervised;
+
+      $('load-unpacked').disabled = !profileInfo.canLoadUnpacked;
+      var extensionList = $('extension-settings-list');
+      extensionList.updateExtensionsData(
+          profileInfo.isIncognitoAvailable,
+          profileInfo.appInfoDialogEnabled).then(function() {
+        if (!this.hasLoaded_) {
+          this.hasLoaded_ = true;
+          this.setLoading_(false);
+        }
+        this.onExtensionCountChanged();
+      }.bind(this));
+    },
+
+    /**
+     * Shows the loading spinner and hides elements that shouldn't be visible
+     * while loading.
+     * @param {boolean} isLoading
+     * @private
+     */
+    setLoading_: function(isLoading) {
+      document.documentElement.classList.toggle('loading', isLoading);
+      $('loading-spinner').hidden = !isLoading;
+      $('dev-controls').hidden = isLoading;
+      this.updateDevControlsVisibility_(false);
+
+      // The extension list is already hidden/shown elsewhere and shouldn't be
+      // updated here because it can be hidden if there are no extensions.
+    },
+
+    /**
+     * Handles the Pack Extension button.
+     * @param {Event} e Change event.
+     * @private
+     */
+    handlePackExtension_: function(e) {
+      ExtensionSettings.showOverlay($('pack-extension-overlay'));
+      chrome.send('metricsHandler:recordAction', ['Options_PackExtension']);
+    },
+
+    /**
+     * Shows the Extension Commands configuration UI.
+     * @private
+     */
+    showExtensionCommandsConfigUi_: function() {
+      ExtensionSettings.showOverlay($('extension-commands-overlay'));
+      chrome.send('metricsHandler:recordAction',
+                  ['Options_ExtensionCommands']);
+    },
+
+    /**
+     * Handles the Configure (Extension) Commands link.
+     * @param {Event} e Change event.
+     * @private
+     */
+    handleExtensionCommandsConfig_: function(e) {
+      this.showExtensionCommandsConfigUi_();
+    },
+
+    /**
+     * Handles the Update Extension Now button.
+     * @param {Event} e Change event.
+     * @private
+     */
+    handleUpdateExtensionNow_: function(e) {
+      chrome.developerPrivate.autoUpdate();
+      chrome.send('metricsHandler:recordAction',
+                  ['Options_UpdateExtensions']);
+    },
+
+    /**
+     * Updates the visibility of the developer controls based on whether the
+     * [x] Developer mode checkbox is checked.
+     * @param {boolean} animated Whether to animate any updates.
+     * @private
+     */
+    updateDevControlsVisibility_: function(animated) {
+      var showDevControls = $('toggle-dev-on').checked;
+      $('extension-settings').classList.toggle('dev-mode', showDevControls);
+
+      var devControls = $('dev-controls');
+      devControls.classList.toggle('animated', animated);
+
+      var buttons = devControls.querySelector('.button-container');
+      Array.prototype.forEach.call(buttons.querySelectorAll('a, button'),
+                                   function(control) {
+        control.tabIndex = showDevControls ? 0 : -1;
+      });
+      buttons.setAttribute('aria-hidden', !showDevControls);
+
+      window.requestAnimationFrame(function() {
+        devControls.style.height = !showDevControls ? '' :
+            buttons.offsetHeight + 'px';
+
+        document.dispatchEvent(new Event('devControlsVisibilityUpdated'));
+      }.bind(this));
+    },
+
+    /** @override */
+    onExtensionCountChanged: function() {
+      /** @const */
+      var hasExtensions = $('extension-settings-list').getNumExtensions() != 0;
+      $('no-extensions').hidden = hasExtensions;
+      $('extension-list-wrapper').hidden = !hasExtensions;
+    },
+  };
+
+  /**
+   * Returns the current overlay or null if one does not exist.
+   * @return {Element} The overlay element.
+   */
+  ExtensionSettings.getCurrentOverlay = function() {
+    return document.querySelector('#overlay .page.showing');
+  };
+
+  /**
+   * Sets the given overlay to show. If the overlay is already showing, this is
+   * a no-op; otherwise, hides any currently-showing overlay.
+   * @param {HTMLElement} node The overlay page to show. If null, all overlays
+   *     are hidden.
+   */
+  ExtensionSettings.showOverlay = function(node) {
+    var pageDiv = $('extension-settings');
+    pageDiv.style.width = node ? window.getComputedStyle(pageDiv).width : '';
+    document.body.classList.toggle('no-scroll', !!node);
+
+    var currentlyShowingOverlay = ExtensionSettings.getCurrentOverlay();
+    if (currentlyShowingOverlay) {
+      if (currentlyShowingOverlay == node)  // Already displayed.
+        return;
+      currentlyShowingOverlay.classList.remove('showing');
+    }
+
+    if (node) {
+      var lastFocused;
+
+      var focusOutlineManager = cr.ui.FocusOutlineManager.forDocument(document);
+      if (focusOutlineManager.visible)
+        lastFocused = document.activeElement;
+
+      $('overlay').addEventListener('cancelOverlay', function f() {
+        if (lastFocused && focusOutlineManager.visible)
+          lastFocused.focus();
+
+        $('overlay').removeEventListener('cancelOverlay', f);
+        uber.replaceState({}, '');
+      });
+      node.classList.add('showing');
+    }
+
+    var pages = document.querySelectorAll('.page');
+    for (var i = 0; i < pages.length; i++) {
+      pages[i].setAttribute('aria-hidden', node ? 'true' : 'false');
+    }
+
+    $('overlay').hidden = !node;
+
+    if (node)
+      ExtensionSettings.focusOverlay();
+
+    // If drag-drop for external Extension installation is available, enable
+    // drag-drop when there is any overlay showing other than the usual overlay
+    // shown when drag-drop is started.
+    var settings = ExtensionSettings.getInstance();
+    if (settings.dragWrapper_)
+      settings.dragEnabled_ = !node || node == $('drop-target-overlay');
+
+    uber.invokeMethodOnParent(node ? 'beginInterceptingEvents' :
+                                     'stopInterceptingEvents');
+  };
+
+  ExtensionSettings.focusOverlay = function() {
+    var currentlyShowingOverlay = ExtensionSettings.getCurrentOverlay();
+    assert(currentlyShowingOverlay);
+
+    if (cr.ui.FocusOutlineManager.forDocument(document).visible)
+      cr.ui.setInitialFocus(currentlyShowingOverlay);
+
+    if (!currentlyShowingOverlay.contains(document.activeElement)) {
+      // Make sure focus isn't stuck behind the overlay.
+      document.activeElement.blur();
+    }
+  };
+
+  /**
+   * Utility function to find the width of various UI strings and synchronize
+   * the width of relevant spans. This is crucial for making sure the
+   * Enable/Enabled checkboxes align, as well as the Developer Mode checkbox.
+   */
+  function measureCheckboxStrings() {
+    var trashWidth = 30;
+    var measuringDiv = $('font-measuring-div');
+    measuringDiv.textContent =
+        loadTimeData.getString('extensionSettingsEnabled');
+    measuringDiv.className = 'enabled-text';
+    var pxWidth = measuringDiv.clientWidth + trashWidth;
+    measuringDiv.textContent =
+        loadTimeData.getString('extensionSettingsEnable');
+    measuringDiv.className = 'enable-text';
+    pxWidth = Math.max(measuringDiv.clientWidth + trashWidth, pxWidth);
+    measuringDiv.textContent =
+        loadTimeData.getString('extensionSettingsDeveloperMode');
+    measuringDiv.className = '';
+    pxWidth = Math.max(measuringDiv.clientWidth, pxWidth);
+
+    var style = document.createElement('style');
+    style.type = 'text/css';
+    style.textContent =
+        '.enable-checkbox-text {' +
+        '  min-width: ' + (pxWidth - trashWidth) + 'px;' +
+        '}' +
+        '#dev-toggle span {' +
+        '  min-width: ' + pxWidth + 'px;' +
+        '}';
+    document.querySelector('head').appendChild(style);
+  };
+
+  // Export
+  return {
+    ExtensionSettings: ExtensionSettings
+  };
+});
+
+window.addEventListener('load', function(e) {
+  extensions.ExtensionSettings.getInstance().initialize();
+});

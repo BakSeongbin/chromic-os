@@ -1,0 +1,1 @@
+Enables running extensions on chrome:// URLs, where extensions explicitly request this permission.

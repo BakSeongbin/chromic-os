@@ -1,0 +1,1 @@
+Anumite pagini web folosesc extensii JavaScript vechi sau non-standard care pot intra în conflict cu cele mai recente funcții JavaScript. Pentru compatibilitatea cu astfel de pagini, acest semnalizator permite dezactivarea acceptării acelor funcții.

@@ -1,0 +1,1 @@
+Erősen kísérleti támogatás webhelyek közti iframe-ek megjelenítéséhez külön folyamatban. Ebben a módban csak akkor osztják meg a dokumentumok a megjelenítő folyamatot, ha ugyanarról a webhelyről származnak.

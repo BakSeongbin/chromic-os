@@ -1,0 +1,1 @@
+Enables fast tab/window closing - runs a tab's onunload js handler independently of the GUI.

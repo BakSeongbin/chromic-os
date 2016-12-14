@@ -1,0 +1,7 @@
+overall type: $1
+    server type: $2
+    heuristic type: $3
+    label: $4
+    parseable name: $5
+    field signature: $6
+    form signature: $7

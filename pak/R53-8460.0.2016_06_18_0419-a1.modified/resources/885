@@ -1,0 +1,1085 @@
+<!-- Copyright 2015 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icons/iron-icons.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/polymer/polymer.html">
+
+<!--
+  Material design buttons that mimic GAIA's buttons.
+
+  Example:
+    <gaia-button type="dialog"></gaia-button>
+
+  Attributes:
+    'type' - there are three kinds of button: regular blue button (none type
+             provided), dialog button (type="dialog") and a button that looks
+             more like a link (type="link").
+    'disabled' - button is disabled when the attribute is set.
+-->
+<dom-module id="gaia-button">
+  <style>/* Copyright 2015 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+:host {
+  display: inline-block;
+}
+
+paper-button {
+  background-color: var(--google-blue-500);
+  color: white;
+  font-size: 14px;
+  min-width: 90px;
+}
+
+:host([type='link']) paper-button,
+:host([type='dialog']) paper-button {
+  background-color: transparent;
+  color: var(--google-blue-500);
+  margin: 0;
+  min-width: 0;
+}
+
+:host([type='link']) paper-button[focused],
+:host([type='dialog']) paper-button[focused] {
+  background-color: rgba(66, 133, 244, 0.12);
+}
+
+:host([type='link']) paper-button[disabled],
+:host([type='dialog']) paper-button[disabled] {
+  color: rgb(168,168,168);
+}
+
+:host([type='dialog']) paper-button {
+  padding: 8px 12px;
+}
+
+:host([type='link']) paper-button {
+  border-radius: 0;
+  margin-left: -0.57em;
+  margin-right: -0.57em;
+  text-transform: none;
+}
+</style>
+
+  <template>
+    <div on-click="onClick_" on-tap="onClick_">
+      <paper-button id="button" disabled="[[disabled]]"
+          on-focused-changed="focusedChanged_">
+        <content></content>
+      </paper-button>
+    </div>
+  </template>
+</dom-module>
+
+<!--
+  Material desing icon button with a special styling.
+
+  Example:
+    <gaia-icon-button icon="close"></gaia-icon>
+
+  Attributes:
+    'icon' - a name of icon from material design set to show on button.
+    'disabled' - button is disabled when the attribute is set.
+    'aria-label' - accessibility label.
+-->
+<dom-module id="gaia-icon-button">
+  <style>/* Copyright 2015 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#iconButton {
+  height: 24px;
+  padding: 0;
+  width: 24px;
+}
+</style>
+
+  <template>
+    <div on-click="onClick_" on-tap="onClick_">
+      <paper-icon-button id="iconButton" icon="[[icon]]" disabled="[[disabled]]"
+          aria-label="[[ariaLabel]]">
+      </paper-icon-button>
+    </div>
+  </template>
+</dom-module>
+
+
+<!-- Copyright 2015 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-progress/paper-progress.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/polymer/polymer.html">
+
+<!--
+  Simple Gaia card which should be used for local UI elements that look like
+  GAIA. It has blue header and grey footer.
+
+  Example:
+    <gaia-card>
+      <div class="header" flex vertical layout end-justified start>
+        ...
+      </div>
+      <gaia-input-form class="footer" ...>
+      </gaia-input-form>
+    </gaia-card>
+
+  Add class |header| to all which you want to go inside blue header.  Similar
+  with class |footer|.
+-->
+<dom-module name="gaia-card">
+  <style>/* Copyright 2015 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.gaia-header {
+  background-color: var(--google-blue-500);
+  color: white;
+  height: 198px;
+}
+
+:host(:not(.disabled)) .gaia-header {
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.17);
+  /* z-index is needed to make shadow visible. */
+  z-index: 1;
+}
+
+.gaia-footer {
+  background-color: white;
+}
+
+.gaia-footer {
+  position: relative;
+}
+
+.header-container {
+  padding: 50px 40px 18px;
+}
+
+.footer-container {
+  padding: 24px 40px 34px;
+}
+
+::content div.gaia-body-text {
+  margin-bottom: 24px;
+}
+
+::content div.gaia-body-text p {
+  color: rgba(0, 0, 0, 0.87);
+  font-size: 14px;
+  line-height: 20px;
+  margin: 0;
+}
+
+::content p.enterprise-info {
+  color: white;
+  font-size: 15px;
+  margin: 8px 0 0 0;
+}
+
+::content h1.welcome-message {
+  color: white;
+  font-size: 20px;
+  font-weight: normal;
+  margin-bottom: 0;
+}
+
+.overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  height: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100%;
+  z-index: 11;
+}
+
+paper-progress#progress-bar {
+  --paper-progress-active-color: var(--google-yellow-500);
+  --paper-progress-container-color: var(--google-yellow-100);
+  bottom: 0;
+  display: none;
+  height: 3px;
+  position: absolute;
+  width: 100%;
+}
+
+:host(.full-disabled) #full-overlay,
+:host(.disabled) #bottom-overlay,
+:host(.disabled) #progress-bar {
+  display: block;
+}
+</style>
+
+  <template>
+    <div class="gaia-header vertical layout relative">
+      <div class="header-container flex vertical layout relative">
+        <content select=".header"></content>
+      </div>
+      <paper-progress id="progress-bar" indeterminate></paper-progress>
+    </div>
+    <div class="gaia-footer flex vertical layout">
+      <div class="footer-container flex vertical layout">
+        <content select=".footer"></content>
+      </div>
+      <div id="bottom-overlay" class="overlay"></div>
+    </div>
+    <div id="full-overlay" class="overlay"></div>
+  </template>
+</dom-module>
+
+
+<!-- Copyright 2015 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/polymer/polymer.html">
+
+<!--
+  Blue header for New Gaia UI, contains blue avatar logo and user email.
+
+  Example:
+    <gaia-header email="user@example.com">
+    </gaia-header>
+
+  Attributes:
+   'email' - displayed email.
+-->
+<dom-module name="gaia-header">
+  <style>/* Copyright 2015 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#email {
+  font-size: 20px;
+}
+</style>
+
+  <template>
+    <img src="chrome://theme/IDR_LOGO_AVATAR_CIRCLE_BLUE_COLOR" alt
+        class="self-start" style="content: -webkit-image-set(url('chrome://theme/IDR_LOGO_AVATAR_CIRCLE_BLUE_COLOR') 1x, url('chrome://theme/IDR_LOGO_AVATAR_CIRCLE_BLUE_COLOR@2x') 2x);">
+    <div id="email"><span>[[email]]<span></div>
+  </template>
+</dom-module>
+
+
+<!-- Copyright 2015 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/polymer/polymer.html">
+
+<!--
+  A simple input form with a button. Being used for typing email or password.
+  User should put one or more <gaia-input>s inside.
+
+  Example:
+    <gaia-input-form button-text="Submit">
+      <gaia-input label="Email" type="email"></gaia-input>
+      <gaia-input label="Password" type="password"></gaia-input>
+      <gaia-input label="OTP"></gaia-input>
+    </gaia-input-form>
+
+  Attributes:
+    'button-text' - text on the button.
+
+  Events:
+    'submit' - fired on button click or "Enter" press inside input field.
+
+-->
+<dom-module name="gaia-input-form">
+  <style>/* Copyright 2015 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+:host {
+  display: block;
+  font-size: 16px;
+}
+
+#inputs::content gaia-input {
+  margin-bottom: 24px;
+}
+
+#inputs::content gaia-input:last-of-type {
+  margin-bottom: 28px;
+}
+</style>
+
+  <template>
+    <div on-keydown="onKeyDown_">
+      <content id="inputs" select="gaia-input"></content>
+      <div class="horizontal-reverse justified layout center">
+        <gaia-button id="button" on-tap="onButtonClicked_" class="self-end">
+          <span>[[buttonText]]</span>
+        </gaia-button>
+        <content> </content>
+      </div>
+    </div>
+  </template>
+</dom-module>
+
+
+<!-- Copyright 2015 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-input/iron-input.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-input/paper-input-container.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-input/paper-input-error.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/polymer/polymer.html">
+
+<!--
+  Material desing input field, that supports different input types and email
+  validation and matches GAIA's visual style.
+
+  Examples:
+    <gaia-input value="Simple text input" required></gaia-input>
+    <gaia-input type="email" domain="example.com"></gaia-input>
+
+  Attributes:
+    'label' - same as <paper-input>'s 'label'.
+    'value' - same as <input>'s 'value'.
+    'type' - same as <input>'s 'type'.
+    'domain' - optional attribute for email input. The domain is displayed in
+               the end of input field, if user is not provided any.
+    'error' - error message displayed in case if 'isInvalid' is true.
+    'isInvalid' - whether input data is invalid. Note: it is not changed
+                  automatically. Can be changed manually or with checkValidity()
+                  method.
+    'required' - whether empty field is invalid.
+
+  Methods:
+    'focus'         - focuses input field.
+    'checkValidity' - returns current validity state of the input form. Updates
+                      'isInvalid' at the end.
+-->
+<dom-module name="gaia-input">
+  <style>/* Copyright 2015 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+:host {
+  display: block;
+}
+
+paper-input-container {
+  --paper-input-container-color: rgb(212, 212, 212);
+  --paper-input-container-focus-color: var(--google-blue-500);
+  --paper-input-container-input {
+    font-size: 15px;
+  };
+  --paper-input-container-input-color: rgba(0, 0, 0, 0.87);
+  --paper-input-container-label: {
+    color: rgba(0, 0, 0, 0.54);
+    font-size: 15px;
+  };
+}
+
+paper-input-container {
+  padding: 0;
+}
+
+:host-context(html[dir=rtl]) input {
+  flex-direction: row-reverse;
+}
+
+#domainLabel {
+  direction: ltr;
+  width: auto;
+}
+
+</style>
+
+  <template>
+    <paper-input-container id="decorator" on-tap="onTap"
+        invalid="[[isInvalid]]" disabled$="[[disabled]]">
+      <label><span>[[label]]</span></label>
+      <div id="container" class="horizontal layout">
+        <input id="input" is="iron-input" on-keydown="onKeyDown"
+            bind-value="{{value}}" invalid="[[isInvalid]]"
+            required$="[[required]]" disabled$="[[disabled]]" class="flex">
+        <span id="domainLabel">[[domain]]</span>
+      </div>
+      <template is="dom-if" if="[[error]]">
+        <paper-input-error>[[error]]</paper-input-error>
+      </template>
+    </paper-input-container>
+  </template>
+</dom-module>
+
+
+<!-- Copyright 2015 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icons/iron-icons.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/neon-animation/neon-animatable.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/neon-animation/neon-animated-pages.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/polymer/polymer.html">
+
+<!--
+  Password changed UI for the New Gaia flow.
+  Contains two cards with a fade transition between them:
+    1. Old password input form.
+    2. Warning about data loss
+    3. Spinner with notice "Please wait";
+
+  Example:
+    <gaia-password-changed id="gaia-password-changed" hidden>
+    </gaia-password-changed>
+
+  Attributes:
+   'email' - displayed email in header.
+
+  Events:
+    'passwordEnter' - fired when user enters password. Fires with an argument
+                     |password|.
+    'proceedAnyway' - fired when user decides to skip old password and
+                      lose all the data in cryptohome.
+    'cancel'        - fired when user press X-button.
+
+  Methods:
+    'invalidate' - mark password input as invalid.
+    'reset'      - reset element, sets in on the first screen and enables
+                   buttons.
+    'focus'      - if current card is the first one it focuses password input.
+
+-->
+<dom-module name="gaia-password-changed">
+  <style>/* Copyright 2015 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+:host {
+  display: block;
+  position: relative;
+}
+
+iron-icon[icon='warning'] {
+  -webkit-margin-end: 15px;
+  -webkit-margin-start: 0;
+  color: var(--google-yellow-500);
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+#navigation {
+  color: white;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1;
+}
+</style>
+
+  <template>
+    <neon-animated-pages id="animatedPages" class="fit"
+        entry-animation="fade-in-animation" exit-animation="fade-out-animation"
+        on-neon-animation-finish="onAnimationFinish_" selected="0">
+      <neon-animatable class="fit">
+        <gaia-card id="oldPasswordCard" class="fit">
+          <gaia-header class="header" email="[[email]]">
+          </gaia-header>
+          <div class="footer gaia-body-text" class="horizontal layout center">
+            <p i18n-content="passwordChangedTitle">
+            </p>
+          </div>
+          <gaia-input-form class="footer" id="oldPasswordInputForm"
+              disabled="[[disabled]]" on-submit="onPasswordSubmitted_"
+              i18n-values="button-text:nextButtonText">
+            <gaia-input id="oldPasswordInput" type="password" required
+                i18n-values="error:oldPasswordIncorrect;
+                             label:oldPasswordHint">
+            </gaia-input>
+            <gaia-button type="link" on-tap="onForgotPasswordClicked_"
+                i18n-content="forgotOldPasswordButtonText">
+            </gaia-button>
+          </gaia-input-form>
+        </gaia-card>
+      </neon-animatable>
+      <neon-animatable class="fit">
+        <gaia-card class="fit">
+          <gaia-header class="header" email="[[email]]">
+          </gaia-header>
+          <div class="footer">
+            <div class="gaia-body-text horizontal layout center">
+              <iron-icon icon="warning"></iron-icon>
+              <p i18n-content="passwordChangedProceedAnywayTitle" class="flex">
+              </p>
+            </div>
+            <div class="horizontal layout justified center">
+              <gaia-button type="link" on-tap="onTryAgainClicked_"
+                  i18n-content="passwordChangedTryAgain">
+              </gaia-button>
+              <gaia-button id="proceedAnywayBtn" on-tap="onProceedClicked_"
+                  i18n-content="proceedAnywayButton">
+              </gaia-button>
+            </div>
+          </div>
+        </gaia-card>
+      </neon-animatable>
+      <neon-animatable class="fit">
+        <throbber-notice class="fit" i18n-values="text:gaiaLoading">
+        </throbber-notice>
+      </neon-animatable>
+    </neon-animated-pages>
+    <navigation-bar id="navigation" disabled="[[disabled]]" close-visible
+        on-close="onClose_">
+    </navigation-bar>
+  </template>
+</dom-module>
+
+
+<!-- Copyright 2015 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/polymer/v1_0/polymer/polymer.html">
+
+<!--
+  The <html-echo> injects given |content| into its innerHTML, bypassing HTML
+  escaping, which is always made by Polymer when we insert the result of an
+  Polymer expression into element's body.
+
+  Example:
+
+  <html-echo content="<div>Hello</div>"></html-element>
+
+  will be equivalent to:
+
+  <span><div>Hello</div></span>
+-->
+<dom-module name="html-echo"></dom-module>
+
+
+<!-- Copyright 2015 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/neon-animation/animations/slide-from-left-animation.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/neon-animation/animations/slide-from-right-animation.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/neon-animation/animations/slide-left-animation.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/neon-animation/animations/slide-right-animation.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/neon-animation/neon-animatable.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/neon-animation/neon-animated-pages.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-dialog/paper-dialog.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/polymer/polymer.html">
+
+<!--
+  Offline UI for the New Gaia flow.
+  Contains two cards with a slide transition between them:
+    1. Email input form.
+    2. Password input form.
+
+  Example:
+    <offline-gaia></offline-gaia>
+
+  Attributes:
+    'showEnterpriseMessage' - If the "manged by" message should be shown.
+    'domain' - The enterprise domain the device is managed by.
+    'emailDomain' - autocomplete domain for the email input.
+
+  Events:
+    'authCompleted' - fired when user enters login and password. Fires with an
+                      argument |credentials| which contains.
+                      |credentials| = { 'useOffline': true,
+                                        'email': <email>,
+                                        'password': <typed password> }
+                      If user did not type domain |email| will be added by
+                      "@gmail.com" or by 'emailDomain' if it is set.
+  Methods:
+    'focus' - focuses current screen (email input or password input);
+    'setEmail' - accepts an argument |email|. If |email| is empty it sets
+                 current screen to the email input, otherwise it sets current
+                 screen to password input and shows error that previously
+                 entered password is incorrect.
+-->
+<dom-module name="offline-gaia">
+  <style>/* Copyright 2015 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  font-size: 18px;
+  overflow: hidden;
+  position: relative;
+}
+
+paper-dialog {
+  --paper-dialog-title: {
+    font-size: 15px;
+  };
+
+  width: 384px;
+}
+
+#forgotPasswordDlg .buttons {
+  padding: 15px 24px 24px;
+}
+
+</style>
+
+  <template>
+    <neon-animated-pages id="animatedPages" class="fit" attr-for-selected="id"
+        entry-animation="slide-from-right-animation"
+        exit-animation="slide-to-left-animation"
+        on-neon-animation-finish="onAnimationFinish_" selected="emailSection">
+
+      <neon-animatable id="emailSection" class="fit">
+        <gaia-card class="fit">
+          <div class="header flex vertical layout end-justified start">
+            <h1 class="welcome-message" i18n-content="loginWelcomeMessage"></h1>
+            <p id="managedBy" class="enterprise-info"
+               hidden$="[[!showEnterpriseMessage]]">
+            </p>
+          </div>
+          <div class="footer flex vertical layout justified">
+            <gaia-input-form on-submit="onEmailSubmitted_"
+                disabled="[[disabled]]"
+                i18n-values="button-text:offlineLoginNextBtn">
+              <gaia-input id="emailInput" type="email" required
+                  domain="[[emailDomain]]"
+                  i18n-values="error:offlineLoginInvalidEmail;
+                               label:offlineLoginEmail">
+              </gaia-input>
+            </gaia-input-form>
+            <img src="chrome://theme/IDR_LOGO_GOOGLE_COLOR_90"
+                class="self-center" alt="" style="content: -webkit-image-set(url('chrome://theme/IDR_LOGO_GOOGLE_COLOR_90') 1x, url('chrome://theme/IDR_LOGO_GOOGLE_COLOR_90@2x') 2x);">
+          </div>
+        </gaia-card>
+      </neon-animatable>
+
+      <neon-animatable id="passwordSection" class="fit">
+        <gaia-card id="passwordCard" class="fit">
+          <gaia-header class="header flex" id="passwordHeader">
+          </gaia-header>
+          <gaia-input-form class="footer" disabled="[[disabled]]"
+              on-submit="onPasswordSubmitted_"
+              i18n-values="button-text:offlineLoginNextBtn">
+            <gaia-input id="passwordInput" type="password" required
+                i18n-values="error:offlineLoginInvalidPassword;
+                             label:offlineLoginPassword">
+            </gaia-input>
+            <gaia-button type="link" on-tap="onForgotPasswordClicked_"
+                i18n-content="offlineLoginForgotPasswordBtn">
+            </gaia-button>
+          </gaia-input-form>
+        </gaia-card>
+      </neon-animatable>
+    </neon-animated-pages>
+
+    <paper-dialog id="forgotPasswordDlg" no-cancel-on-outside-click
+        on-iron-overlay-closed="onDialogOverlayClosed_">
+      <p i18n-content="offlineLoginForgotPasswordDlg"></p>
+      <div class="buttons">
+        <gaia-button type="dialog" dialog-confirm autofocus
+            i18n-content="offlineLoginCloseBtn">
+        </gaia-button>
+      </div>
+    </paper-dialog>
+  </template>
+</dom-module>
+
+
+<!-- Copyright 2015 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/neon-animation/neon-animatable.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/neon-animation/neon-animated-pages.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-dialog/paper-dialog.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/polymer/polymer.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/polymer/polymer.html">
+
+<!--
+  SAML password confirmation UI for the New Gaia flow.
+  Contains two cards with a fade transition between them:
+    1. Password input form.
+    2. Spinner with notice "Please wait";
+
+  Example:
+    <saml-confirm-password id="saml-confirm-password" hidden>
+    </saml-confirm-password>
+
+  Attributes:
+   'email' - Displayed email in header.
+
+  Events:
+    'passwordEnter' - Fired when user enters password. Fires with an argument
+                      |password|.
+    'cancel'        - Fired when user presses the X-button and then presses YES
+                      in the cancel confirmation dialog.
+
+  Methods:
+    'invalidate' - Mark password input as invalid.
+    'reset'      - Reset element, switches to the first screen, closes
+                   the confirm dialog, displays the close button,
+                   empties password field and enables buttons.
+    'focus'      - If the current card is the first one, focuses password input.
+-->
+<dom-module name="saml-confirm-password">
+  <style>/* Copyright 2015 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+:host {
+  display: block;
+  position: relative;
+}
+
+#navigation {
+  color: white;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1;
+}
+
+paper-dialog {
+  --paper-dialog-title: {
+    font-size: 15px;
+  };
+
+  width: 384px;
+}
+
+#cancelConfirmDlg .buttons {
+  padding: 15px 24px 24px;
+}
+
+</style>
+
+  <template>
+    <neon-animated-pages id="animatedPages" class="fit"
+        entry-animation="fade-in-animation" exit-animation="fade-out-animation"
+        on-neon-animation-finish="onAnimationFinish_" selected="0">
+      <neon-animatable class="fit">
+        <gaia-card id="confirmPasswordCard" class="fit">
+          <gaia-header class="header flex" email="[[email]]">
+          </gaia-header>
+          <div class="footer gaia-body-text horizontal layout center">
+            <p i18n-content="confirmPasswordTitle">
+            </p>
+          </div>
+          <gaia-input-form id="inputForm" class="footer"
+              on-submit="onPasswordSubmitted_" disabled="[[disabled]]"
+              i18n-values="button-text:nextButtonText">
+            <gaia-input id="passwordInput" type="password" required
+              i18n-values="error:confirmPasswordIncorrectPassword;
+                           label:confirmPasswordLabel;">
+            </gaia-input>
+          </gaia-input-form>
+        </gaia-card>
+      </neon-animatable>
+      <neon-animatable class="fit">
+        <throbber-notice i18n-values="text:gaiaLoading" class="fit">
+        </throbber-notice>
+      </neon-animatable>
+    </neon-animated-pages>
+
+    <navigation-bar id="navigation" close-visible on-close="onClose_"
+        disabled="[[disabled]]">
+    </navigation-bar>
+
+    <paper-dialog id="cancelConfirmDlg" no-cancel-on-outside-click
+        on-iron-overlay-closed="onDialogOverlayClosed_">
+      <h2 i18n-content="accountSetupCancelDialogTitle"></h2>
+      <div class="buttons">
+        <gaia-button type="dialog" dialog-dismiss autofocus
+            i18n-content="accountSetupCancelDialogNo">
+        </gaia-button>
+        <gaia-button type="dialog" dialog-confirm on-tap="onConfirmCancel_"
+            i18n-content="accountSetupCancelDialogYes">
+        </gaia-button>
+      </div>
+    </paper-dialog>
+
+  </template>
+</dom-module>
+
+
+<link rel="import" href="chrome://resources/polymer/v1_0/polymer/polymer.html">
+
+<!--
+UI for the SAML interstitial page.
+Example:
+  <saml-interstitial></saml-interstitial>
+
+Attributes:
+  'domain' - The enterprise domain the device is enrolled to.
+  'showDomainMessages' - If true, the messages showing the enrollment domain
+                         will be shown. Its value is set automatically when
+                         'domain' is set, and is true as long as 'domain' is
+                         not empty.
+  'changeAccountLink' - A reference to the change account link so that it can be
+                        used in testing.
+
+Functions:
+  'submit' - Submits the saml interstitial form for tests. Equivalent to the
+             user clicking next.
+
+Events:
+  'samlPageNextClicked' - Fired when the "Next" button is clicked indicating
+                          that the user would like to proceed with
+                          authentication via his enrollement SAML IdP.
+  'samlPageChangeAccountClicked' - Fired when the user clicks the sign in with
+                                   a differnt account link. GAIA Minute Maid
+                                   screen will be shown.
+-->
+<dom-module name="saml-interstitial">
+
+<template>
+  <style>
+    :host {
+      display: block;
+      line-height: 150%;
+    }
+  </style>
+
+  <gaia-card id="samlInterstitialCard" class="fit">
+    <div id="samlInterstitialHeader"
+        class="header flex vertical layout end-justified start">
+      <h1 class="welcome-message" i18n-content="loginWelcomeMessage">
+      </h1>
+      <p id="managedBy" class="enterprise-info"
+         hidden$="[[!showDomainMessages_]]">
+      </p>
+    </div>
+
+    <div class="footer flex vertical layout justified">
+      <!-- This message contains a <strong> tag inside. -->
+      <html-echo id="message" hidden$="[[!showDomainMessages_]]"></html-echo>
+
+      <gaia-input-form id="samlInterstitialForm"
+                       on-submit="onSamlPageNextClicked_"
+                       i18n-values="button-text:samlInterstitialNextBtn">
+        <gaia-button id="changeAccountLink" type="link"
+                     on-tap="onSamlPageChangeAccountClicked_"
+                     i18n-content="samlInterstitialChangeAccountLink">
+        </gaia-button>
+      </gaia-input-form>
+
+      <img id="logo-img" src="chrome://theme/IDR_LOGO_GOOGLE_COLOR_90"
+           class="self-center" alt="" style="content: -webkit-image-set(url('chrome://theme/IDR_LOGO_GOOGLE_COLOR_90') 1x, url('chrome://theme/IDR_LOGO_GOOGLE_COLOR_90@2x') 2x);">
+    </div>
+  </gaia-card>
+
+</template>
+
+</dom-module>
+
+<!-- Copyright 2015 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/polymer/polymer.html">
+
+<dom-module name="throbber-notice">
+  <style>/* Copyright 2015 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+:host {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+paper-spinner {
+  --paper-spinner-layer-1-color: var(--google-blue-500);
+  --paper-spinner-layer-2-color: var(--google-blue-500);
+  --paper-spinner-layer-3-color: var(--google-blue-500);
+  --paper-spinner-layer-4-color: var(--google-blue-500);
+}
+
+paper-spinner {
+  height: 38px;
+  margin-bottom: 28px;
+  width: 38px;
+}
+
+#spinner-comment {
+  color: #747474;
+  font-size: 13px;
+}
+</style>
+  <template>
+    <paper-spinner dir="ltr" active></paper-spinner>
+    <div id="spinner-comment"><span>[[text]]</span></div>
+  </template>
+</dom-module>
+
+
+<!-- Copyright 2015 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/classes/iron-flex-layout.html">
+
+
+<!--
+  A navigation panel with back, refresh, and/or close buttons.
+  ┌─────────────────────────────────┐
+  │ <-                         ↻  X │
+  └─────────────────────────────────┘
+
+  Example:
+    <navigation-bar close-visible back-visible></navigation-bar>
+
+  Propertites:
+     '{back,refresh,close}Visible' - change visiblility of corresponding
+                                     buttons.
+     'disable' - if true, all the buttons are disabled.
+
+  Events:
+     'back', 'refresh', 'close' - fired when corresponding buttons are clicked.
+
+-->
+<dom-module id="navigation-bar">
+  <style>/* Copyright 2015 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+:host {
+  display: block;
+  height: calc(2 * 10px + 24px); /* Buttons' height is 24px. */
+  min-width: 100px;
+  position: relative;
+}
+
+gaia-icon-button {
+  margin: 0 10px;
+}
+
+:host-context(html[dir='rtl']) #backButton {
+  transform: scaleX(-1);
+}
+
+</style>
+
+  <template>
+    <div class="fit layout horizontal center">
+      <gaia-icon-button id="backButton" icon="arrow-back"
+          hidden="[[!backVisible]]" disabled="[[disabled]]" on-tap="onBack_"
+          i18n-values="aria-label:backButton">
+      </gaia-icon-button>
+      <div class="flex"></div>
+      <gaia-icon-button id="refreshButton" icon="refresh"
+          hidden="[[!refreshVisible]]" disabled="[[disabled]]"
+          on-tap="onRefresh_" i18n-values="aria-label:closeButton">
+      </gaia-icon-button>
+      <gaia-icon-button id="closeButton" icon="close" hidden="[[!closeVisible]]"
+          disabled="[[disabled]]" on-tap="onClose_"
+          i18n-values="aria-label:closeButton">
+      </gaia-icon-button>
+    </div>
+  </template>
+</dom-module>
+
+<!-- Copyright 2016 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/polymer/polymer.html">
+
+<!--
+  Unrecoverable cryptohome error card that shows to use when an unrecoverable
+  cryptohome error happens. It asks user to help us debugging the issue by
+  sending us a feedback and allows user to re-create the cryptohome so that
+  the device could still be used.
+
+  Events:
+    'done' - fired when user clicks on continue button.
+-->
+<dom-module name="unrecoverable-cryptohome-error-card">
+  <style>/* Copyright 2016 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+:host .content {
+  padding: 24px 24px 16px;
+}
+
+:host .title {
+  font-weight: bold;
+  white-space: nowrap;
+  word-wrap: normal;
+}
+
+:host .message {
+  margin-bottom: 25px;
+  margin-top: 20px;
+}
+</style>
+
+  <template>
+    <div class="content">
+      <div i18n-content="unrecoverableCryptohomeErrorMessageTitle" class="title">
+      </div>
+      <div class="message"
+          i18n-values=".innerHTML:unrecoverableCryptohomeErrorMessage">
+      </div>
+      <div class="horizontal-reverse layout justified center">
+        <gaia-button on-tap="onContinueClicked_"
+            i18n-content="unrecoverableCryptohomeErrorContinue">
+        </gaia-button>
+      </div>
+    </div>
+  </template>
+</dom-module>
+
+
+<script src="chrome://oobe/custom_elements.js"></script>

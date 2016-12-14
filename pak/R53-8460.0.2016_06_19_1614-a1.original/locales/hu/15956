@@ -1,0 +1,1 @@
+Korlátozza a natív kliensalkalmazás GDB-alapú, jegyzékfájl-URL szerinti hibakeresését. Hogy a lehetőség működhessen, engedélyezni kell a natív kliens GDB-alapú hibakeresését.

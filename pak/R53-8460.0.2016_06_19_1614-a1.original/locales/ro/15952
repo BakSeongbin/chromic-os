@@ -1,0 +1,1 @@
+Activați rutina de depanare GDB. Aceasta va opri aplicația Client nativ la pornire și va aștepta ca nacl-gdb (din NaCl SDK) să se atașeze la aceasta.

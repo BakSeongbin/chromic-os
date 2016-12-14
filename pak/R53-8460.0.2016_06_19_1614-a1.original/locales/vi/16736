@@ -1,0 +1,1 @@
+{COUNT,plural, =0{không có}=1{1 ứng dụng ($1)}=2{2 ứng dụng ($1, $2)}other{# ứng dụng ($1, $2, $3)}}

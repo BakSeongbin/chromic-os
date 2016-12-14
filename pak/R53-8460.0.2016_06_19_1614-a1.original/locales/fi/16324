@@ -1,0 +1,1 @@
+Palauta sovelluksien käynnistysohjelman asennustila jokaisessa uudelleenkäynnistyksessä. Kun tämä asetus on käytössä, Chrome unohtaa jokaisen selaimen käynnistyskerran yhteydessä, että käynnistysohjelma on asennettu. Tätä käytetään sovelluksien käynnistysohjelman asennuskulun testaamiseen.

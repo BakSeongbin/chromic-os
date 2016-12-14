@@ -1,0 +1,1 @@
+{HOURS,plural, =1{Před 1 hodinou}few{Před # hodinami}many{Před # hodiny}other{Před # hodinami}}

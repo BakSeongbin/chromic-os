@@ -1,0 +1,1 @@
+{COUNT,plural, =0{ingen}=1{1 element}one{# element}other{# elementer}}

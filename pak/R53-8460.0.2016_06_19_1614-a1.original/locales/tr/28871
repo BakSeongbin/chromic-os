@@ -1,0 +1,1 @@
+<strong>$1</strong> adresine erişme girişiminde bulundunuz ancak sunucu zayıf bir imza algoritması kullanılarak imzalanmış bir sertifika sağladı. Bu, sunucunun sağladığı güvenlik bilgilerinin sahte olabileceği anlamına gelir ve sunucu sizin beklediğiniz sunucu olmayabilir (bir saldırgan ile irtibat kuruyor olabilirsiniz).

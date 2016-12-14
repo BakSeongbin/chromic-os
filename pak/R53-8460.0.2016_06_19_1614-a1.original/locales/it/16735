@@ -1,0 +1,1 @@
+{COUNT,plural, =0{nessuno}=1{1 elemento}other{# elementi}}

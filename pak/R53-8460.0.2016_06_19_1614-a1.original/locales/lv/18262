@@ -1,0 +1,1 @@
+Eksperimentāls atbalsts iframe tagu renderēšanai vairākās vietnēs, izmantojot atsevišķus procesus. Šajā režīmā dokumentiem tiks izmantots renderēts process tikai tad, ja tie ir no vienas vietnes.

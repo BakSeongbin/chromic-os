@@ -1,0 +1,1 @@
+Deneysel "Cache-Control: stale-while-revalidate" yönergesini uygulamayı etkinleştir. Bu, sunucunun gecikme süresini iyileştirmek üzere bazı kaynakların arka planda tekrar doğrulanabileceğini belirtmeye izin verir.

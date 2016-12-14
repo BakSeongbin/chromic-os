@@ -1,0 +1,1 @@
+Iespējo GDB atkļūdošanas pasakni. Tas startēšanas brīdī apturēs lietojumprogrammu Native Client un gaidīs nacl-gdb (no NaCl SDK) pievienošanu tam.

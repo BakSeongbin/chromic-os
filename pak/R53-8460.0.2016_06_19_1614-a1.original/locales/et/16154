@@ -1,0 +1,1 @@
+Lubab mitu turvafunktsiooni, mis tõenäoliselt rikuvad ühe või mitu lehte, mida igapäevaselt külastate. Aktiveeritakse näiteks range segasisu kontrollimine ja kontekstide turvalisuse tagamiseks lukustatakse võimekad funktsioonid. Tõenäoliselt see märgistamine häirib teid.

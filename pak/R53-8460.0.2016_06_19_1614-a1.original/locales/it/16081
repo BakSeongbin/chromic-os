@@ -1,0 +1,1 @@
+Se attivi questa opzione gli elementi con posizione fissa avranno i propri livelli compositi. Tieni presente che, perché questo funzioni, gli elementi con posizione fissa devono creare anche contesti di impilamento.

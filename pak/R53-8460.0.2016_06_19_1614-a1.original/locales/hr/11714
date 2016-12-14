@@ -1,0 +1,1 @@
+{SECONDS,plural, =1{Chromium će se ponovo pokrenuti za 1 sekundu.}one{Chromium će se ponovo pokrenuti za # sekundu.}few{Chromium će se ponovo pokrenuti za # sekunde.}other{Chromium će se ponovo pokrenuti za # sekundi.}}

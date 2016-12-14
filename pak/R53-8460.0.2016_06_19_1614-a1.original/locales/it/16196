@@ -1,0 +1,1 @@
+Consente all'utente di richiedere il sito per il tablet. I contenuti web vengono spesso ottimizzati per i tablet. Se viene selezionata questa opzione, la stringa dello user-agent viene modificata per indicare che il dispositivo è un tablet. Dopodiché per la scheda corrente vengono ricevuti i contenuti web ottimizzati per il tablet.

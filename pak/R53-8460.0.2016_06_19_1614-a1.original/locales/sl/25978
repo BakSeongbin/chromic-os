@@ -1,0 +1,1 @@
+{0,select, single{Aplikacija »{1}« zahteva dostop do ene od vaših naprav.}multiple{Aplikacija »{1}« zahteva dostop do ene ali več vaših naprav.}other{UNUSED}}

@@ -1,0 +1,1 @@
+Cet indicateur nuit à la sécurité de Chrome. Utilisez-le uniquement si vous comprenez ce que cela implique. Notez que cet indicateur peut être supprimé sans préavis. S'il est activé, les cadres d'origine https peuvent utiliser WebSockets avec une URL non sécurisée (ws://).

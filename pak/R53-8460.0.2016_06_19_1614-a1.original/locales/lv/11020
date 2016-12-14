@@ -1,0 +1,1 @@
+{HOURS,plural, =1{Pirms 1 stundas}zero{Pirms # stundām}one{Pirms # stundas}other{Pirms # stundām}}

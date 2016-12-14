@@ -1,0 +1,1 @@
+Heu provat d'accedir a <strong>$1</strong>, però el servidor ha presentat un certificat que conté una clau dèbil. És possible que un atacant hagi accedit a la clau privada i que aquest servidor no sigui el que espereu (pot ser que us estigueu comunicant amb un atacant).

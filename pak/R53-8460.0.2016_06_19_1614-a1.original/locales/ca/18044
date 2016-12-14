@@ -1,0 +1,3 @@
+<p>Quan $1 s'executa en un entorn d'escriptori compatible, s'utilitza la configuració del servidor intermediari del sistema. No obstant això, o bé el vostre sistema no és compatible o bé s'ha produït un problema en iniciar la configuració del sistema.</p>
+
+          <p>Encara podeu configurar-lo mitjançant la línia d'ordres. Consulteu <code>man $2</code> per obtenir més informació sobre indicadors i sobre variables d'entorn.</p>

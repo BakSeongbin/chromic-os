@@ -1,0 +1,1 @@
+Minden újraindításkor visszaállítja az Alkalmazásindító telepítési állapotát. Ha be van állítva ez a jelölő, a Chrome minden egyes indításakor elfelejti, hogy az indító telepítve van. Ez a beállítás az Alkalmazásindító telepítési folyamatának tesztelésére szolgál.

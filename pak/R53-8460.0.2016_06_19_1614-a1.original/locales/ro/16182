@@ -1,0 +1,1 @@
+Dacă o pagină nu are configurată o politică explicită privind antetul „referer”, setarea acestui semnalizator va reduce volumul de informații din antetul „referer” pentru solicitările din mai multe surse.

@@ -1,0 +1,1 @@
+Nezobrazovať informačný panel, keď sa rozšírenie pripája k stránke prostredníctvom rozhrania chrome.debugger API. Tento príznak sa vyžaduje na ladenie stránok rozšírenia na pozadí.

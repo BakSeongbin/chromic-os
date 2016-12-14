@@ -1,0 +1,1 @@
+Una alternativa de TLS 1.0 ha pogut establir un protocol d'enllaç amb el servidor, però ja no acceptem alternatives de TLS 1.0. Cal actualitzar el servidor perquè s'hi implementi correctament la negociació de versions i sigui compatible, idealment, amb TLS 1.2.

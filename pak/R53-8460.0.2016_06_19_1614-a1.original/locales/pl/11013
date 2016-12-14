@@ -1,0 +1,1 @@
+{SECONDS,plural, =1{Pozostała 1 sekunda}few{Pozostały # sekundy}many{Pozostało # sekund}other{Pozostało # sekundy}}

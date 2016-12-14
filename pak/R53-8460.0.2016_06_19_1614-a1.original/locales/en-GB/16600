@@ -1,0 +1,1 @@
+{NUM_PAGES,plural, =1{The following page has become unresponsive. You can wait for it to become responsive or kill it.}other{The following pages have become unresponsive. You can wait for them to become responsive or kill them.}}

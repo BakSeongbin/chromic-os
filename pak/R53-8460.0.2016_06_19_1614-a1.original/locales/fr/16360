@@ -1,0 +1,1 @@
+Gestion de threads d'événements d'entrée liés à des défilements. Si vous désactivez cette option, la gestion de tous ces événements de défilement sera effectuée sur le thread principal. Notez que cela peut avoir une incidence considérable sur les performances de défilement de la plupart des sites Web. Cette option est prévue uniquement à des fins de test.

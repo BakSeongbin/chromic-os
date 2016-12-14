@@ -1,0 +1,2 @@
+Tento príznak je určený na použitie v spojení s príznakom trace-upload-url.
+        UPOZORNENIE: Keď ho povolíte, Chrome bude zaznamenávať údaje o výkonnosti každej navigácie a nahrá ich na webovú adresu určenú príznakom trace-upload-url. Sledovací záznam môže zahrnovať informácie umožňujúce identifikáciu osôb, ako sú názvy a webové adresy stránok, ktoré navštívite.

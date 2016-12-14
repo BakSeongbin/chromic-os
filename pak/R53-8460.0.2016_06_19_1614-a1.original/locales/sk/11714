@@ -1,0 +1,1 @@
+{SECONDS,plural, =1{Chromium sa reštartuje o 1 sekundu.}few{Chromium sa reštartujte o # sekundy.}many{Chromium sa reštartujte o # sekundy.}other{Chromium sa reštartujte o # sekúnd.}}

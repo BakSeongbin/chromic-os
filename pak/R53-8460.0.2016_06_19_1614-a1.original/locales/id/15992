@@ -1,0 +1,1 @@
+Mengabaikan pemeriksaan keterlibatan pengguna untuk menampilkan spanduk aplikasi, seperti mewajibkan pengguna untuk sudah mengunjungi situs sebelumnya dan bahwa spanduk belum ditampilkan baru-baru ini. Hal ini memungkinkan pengembang menguji persyaratan kelayakan lain untuk menampilkan spanduk aplikasi, seperti apakah syarat untuk memiliki manifes telah dipenuhi.

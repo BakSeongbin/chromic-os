@@ -1,0 +1,1 @@
+Pokusili jste se přejít na web <strong>$1</strong>, server však předložil certifikát obsahující slabý klíč. Útočník možná prolomil soukromý klíč a může se jednat o jiný server, než předpokládáte (můžete komunikovat s útočníkem).

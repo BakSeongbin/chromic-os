@@ -1,0 +1,1 @@
+Wenn für eine Seite keine explizite Verweisrichtlinie festgelegt ist, wird durch diese Einstellung die Menge an Informationen im "Referer"-Header bei ursprungsübergreifenden Anforderungen reduziert.

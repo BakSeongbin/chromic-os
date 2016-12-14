@@ -1,0 +1,1 @@
+{COUNT,plural, =0{senkronize edilmiş cihazlarda en az 1 öğe}=1{1 öğe (ve senkronize edilmiş cihazlarda daha fazlası)}other{# öğe (ve senkronize edilmiş cihazlarda daha fazlası)}}

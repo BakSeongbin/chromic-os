@@ -1,0 +1,1 @@
+{0,select, single{Die Anwendung "{1}" fordert Zugriff auf eines Ihrer Geräte an.}multiple{Die Anwendung "{1}" fordert Zugriff auf eines oder mehrere Ihrer Geräte an.}other{UNUSED}}

@@ -1,0 +1,1 @@
+Isa itong lubos na pang-eksperimentong suporta para sa pagre-render ng mga cross-site na iframe sa magkakahiwalay na proseso. Sa mode na ito, magsasabay lang ang mga dokumento sa iisang proseso ng pag-render kung nasa iisang web site ang mga ito.

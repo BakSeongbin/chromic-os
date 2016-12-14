@@ -1,0 +1,1 @@
+{0,select, single{Aplikace {1} žádá o přístup k jednomu z vašich zařízení.}multiple{Aplikace {1} žádá o přístup k jednomu nebo několika vašim zařízením.}other{UNUSED}}

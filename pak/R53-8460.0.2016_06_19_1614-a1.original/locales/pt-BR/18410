@@ -1,0 +1,1 @@
+Esta sinalização torna o Google Chrome inseguro. Use-a apenas se você entender o que ela faz. Essa sinalização pode ser removida sem qualquer aviso prévio. Se ela estiver ativada, quadros com origem https podem usar WebSockets com um URL inseguro (ws://).

@@ -1,0 +1,1 @@
+TLS 1.0 fallback dapat menghubungi server, namun kami tidak lagi menerima TLS 1.0 fallback. Server perlu diperbarui agar dapat menerapkan versi negosiasi dengan benar dan lebih mendukung TLS 1.2.

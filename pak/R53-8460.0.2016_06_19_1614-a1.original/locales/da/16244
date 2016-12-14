@@ -1,0 +1,1 @@
+Gennemtvinger genindlæsning uden validering ved genindlæsning af brugerflader (hvor det normalt betyder almindelig genindlæsning med cachevalidering, når indstillingen er deaktiveret).

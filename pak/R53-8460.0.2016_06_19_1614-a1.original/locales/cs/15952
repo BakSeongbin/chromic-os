@@ -1,0 +1,1 @@
+Povolit ladicí program GDB. Tato možnost zastaví aplikaci Native Client při spuštění a počká, dokud se k ní nepřipojí ladicí nástroj nacl-gdb (ze sady SDK NaCl).

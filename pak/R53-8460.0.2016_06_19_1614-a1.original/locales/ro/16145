@@ -1,0 +1,1 @@
+Folosește firul de execuție secundar pentru rasterizarea la nivel de GPU a conținutului web. Pentru aceasta trebuie să fie activată rasterizarea la nivel de GPU.

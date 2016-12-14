@@ -1,0 +1,1 @@
+Désactiver l'affichage de la barre d'informations lorsqu'une extension est associée à une page via l'API chrome.debugger. Cette option est requise pour déboguer les pages en arrière-plan des extensions.

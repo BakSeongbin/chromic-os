@@ -1,0 +1,1 @@
+Quando a opção está ativada, é incluído um par de codificador/descodificador de vídeo de software H.246. Se também estiver disponível um codificador/descodificador de hardware, esse pode ser utilizado em vez deste codificador/descodificador.

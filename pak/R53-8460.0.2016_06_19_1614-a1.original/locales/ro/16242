@@ -1,0 +1,2 @@
+Se folosește în combinație cu semnalizatorul trace-upload-url.
+        AVERTISMENT: când este activat, Chrome va înregistra datele privind performanța pentru fiecare navigare și va încărca înregistrarea la o adresă URL specificată de semnalizatorul trace-upload-url. Este posibil ca urmărirea execuției să includă informații de identificare personală (IIP), cum ar fi numele și adresele URL ale site-urilor pe care le accesezi.

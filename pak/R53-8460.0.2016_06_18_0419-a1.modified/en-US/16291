@@ -1,0 +1,1 @@
+If disabled, text is rendered with grayscale antialiasing instead of LCD (subpixel) when doing accelerated compositing.

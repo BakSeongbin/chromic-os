@@ -1,0 +1,1 @@
+Activează Rezolvitorul proxy-ului V8 în afara procesului. Rulează Rezolvitorul proxy-ului V8 într-un proces utilitar, și nu în cadrul unui proces din browser.

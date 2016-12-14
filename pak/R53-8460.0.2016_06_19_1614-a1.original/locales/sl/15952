@@ -1,0 +1,1 @@
+Omogočanje slepe procedure za iskanje napak na podlagi GBD. S tem se tehnologija Native Client ob zagonu ustavi in čaka, da se ji priloži nacl-gbd (iz kompleta za razvoj programske opreme tehnologije Native Client).

@@ -1,0 +1,1 @@
+Do not show the infobar when an extension attaches to a page via chrome.debugger API. This is required to debug extension background pages.

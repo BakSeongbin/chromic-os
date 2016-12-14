@@ -1,0 +1,1 @@
+Rezervni TLS 1.0 uspio se rukovati s poslužiteljem, ali više ne prihvaćamo rezervne protokole TLS 1.0. Poslužitelj se mora ažurirati da bi pravilno primjenjivao pregovaranje o verziji i po mogućnosti podržavao TLS 1.2.

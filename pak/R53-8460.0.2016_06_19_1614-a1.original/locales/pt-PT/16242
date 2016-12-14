@@ -1,0 +1,2 @@
+Destina-se a ser utilizado em conjunto com o sinalizador trace-upload-url.
+        AVISO: quando está ativado, o Chrome regista dados de desempenho de todas as navegações e carrega-os para o URL especificado pelo sinalizador trace-upload-url. O rastreio pode incluir informações de identificação pessoal (PII) como os títulos e os URLs dos Websites visitados por si.

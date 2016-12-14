@@ -1,0 +1,1 @@
+No permite la obtención de secuencias de comandos para bloquear analizadores de terceros insertados en el marco principal mediante document.write.

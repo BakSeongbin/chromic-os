@@ -1,0 +1,3 @@
+<p>When running $1 under a supported desktop environment, the system proxy settings will be used. However, either your system is not supported or there was a problem launching your system configuration.</p>
+
+          <p>But you can still configure via the command line. Please see <code>man $2</code> for more information on flags and environment variables.</p>

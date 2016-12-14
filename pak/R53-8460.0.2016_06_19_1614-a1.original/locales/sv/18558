@@ -1,0 +1,1 @@
+Lägg till en frågeparameter i webbadressen för att automatiskt uppdatera sidan: chrome://device-log/?refresh=<sec>

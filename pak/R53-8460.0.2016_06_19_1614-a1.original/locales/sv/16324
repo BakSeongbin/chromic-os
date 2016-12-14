@@ -1,0 +1,1 @@
+Återställ installationstillståndet för startprogrammet för appar vid varje omstart. När den här flaggan har markerats glömmer Chrome att startprogrammet har varit installerat varje gång det startas. Detta används för att testa startprogrammets installationsflöde.

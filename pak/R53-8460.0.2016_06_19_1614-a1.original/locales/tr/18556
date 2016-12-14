@@ -1,0 +1,1 @@
+Geçersiz bir sertifika sunulsa dahi HTTPS üzerinden localhost'a yönelik isteklere izin verir.

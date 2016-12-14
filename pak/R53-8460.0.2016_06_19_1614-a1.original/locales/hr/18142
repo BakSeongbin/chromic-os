@@ -1,0 +1,9 @@
+Nadzirani korisnik može istraživati web uz vaše vođenje. Kao upravitelj nadziranog korisnika u Chromeu možete:
+
+ • dopustiti ili zabraniti određene web-lokacije
+ • pregledati web-lokacije koje je nadzirani korisnik posjetio
+ • upravljati drugim postavkama.
+
+Izradom nadziranog korisnika ne izrađuje se Google račun, pa ga njegove oznake, povijest pregledavanja i druge postavke neće slijediti na druge uređaje putem Chrome sinkronizacije.
+
+Nakon izrade novog nadziranog korisnika možete upravljati njegovim postavkama u bilo kojem trenutku, s bilo kojeg uređaja, na stranici $1. <a target="_blank" href="https://support.google.com/chrome/?p=ui_supervised_users&hl=hr">Saznajte više o nadziranim korisnicima</a>

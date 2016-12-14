@@ -1,0 +1,3 @@
+<p>Quando esegui $1 in un ambiente desktop supportato, vengono utilizzate le impostazioni proxy del sistema. Tuttavia, il tuo sistema non è supportato o si è verificato un problema durante l'avvio della tua configurazione di sistema.</p>
+
+          <p>Puoi comunque eseguire la configurazione tramite la riga di comando. Consulta <code>man $2</code> per avere ulteriori informazioni su contrassegni e variabili di ambiente.</p>

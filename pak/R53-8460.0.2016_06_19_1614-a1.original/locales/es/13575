@@ -1,0 +1,20 @@
+<h3>Funciones de depuración</h3>
+    <br>
+    Puedes habilitar las funciones de depuración en tu dispositivo Chrome OS para instalar y probar código personalizado en el dispositivo. Esto te permitirá:<br>
+    <ul>
+      <li>Eliminar la verificación de rootfs para poder modificar archivos del
+sistema operativo
+      <li>Habilitar el acceso SSH al dispositivo mediante las claves de prueba de tipo estándar para poder utilizar herramientas como <span style="color:grey;font-family:monospace">cros flash</span> para acceder al dispositivo
+      <li>Habilitar el arranque desde USB para poder instalar una imagen del
+sistema operativo desde una unidad USB
+      <li>Establecer un valor personalizado para las contraseñas de inicio de sesión de raíz del sistema y dev para poder acceder al dispositivo manualmente mediante SSH
+    </ul>
+    <br>
+    Una vez habilitadas, la mayoría de las funciones de depuración seguirán estando activadas incluso después de realizar un Powerwash o borrar los datos en dispositivos administrados por la empresa. Para inhabilitar por completo todas las funciones de depuración, debes realizar el proceso de recuperación de Chrome OS (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Para obtener más información sobre las funciones de depuración, consulta la siguiente página:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Nota:</b> El sistema se reiniciará durante el proceso.

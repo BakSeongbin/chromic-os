@@ -1,0 +1,1 @@
+Tvingar avlyssnare av touchstart-, touchmove-, mousewheel- och wheel-händelser (som det inte har begärts annat för) att behandlas som passiva. Detta bryter beteendet för musplattan eller mushjulet på en del webbplatser men är användbart om du vill demonstrera potentiella prestandafördelar med att använda passiva händelseavlyssnare.

@@ -1,0 +1,1 @@
+Consente di attivare l'implementazione delle barre di scorrimento overlay sperimentali. Devi attivare anche la composizione in thread per consentire l'animazione della barre di scorrimento.

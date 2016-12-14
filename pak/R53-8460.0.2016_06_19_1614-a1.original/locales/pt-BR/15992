@@ -1,0 +1,1 @@
+Ignora verificações de envolvimento dos usuários para a exibição de banners de aplicativos, como a exigência de que os usuários tenham visitado o site antes e que o banner não tenha sido exibido recentemente. Isso permite aos desenvolvedores testar se outros requisitos de elegibilidade para exibição de banners de aplicativos, como a ocorrência de manifesto, estão sendo atendidos.

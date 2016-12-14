@@ -1,0 +1,1 @@
+Hai tentato di accedere a <strong>$1</strong> ma il server ha presentato un certificato firmato utilizzando un algoritmo di firma debole. Ciò significa che le credenziali di sicurezza presentate dal server potrebbero essere state falsificate e il server potrebbe non essere quello previsto (è possibile che tu stia comunicando con un utente malintenzionato).

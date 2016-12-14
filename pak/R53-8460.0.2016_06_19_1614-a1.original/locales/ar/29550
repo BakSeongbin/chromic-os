@@ -1,0 +1,8 @@
+‏انتقل إلى
+        قائمة Chromium >
+        <span jscontent="settingsTitle"></span>
+        >
+        <span jscontent="advancedTitle"></span>
+        وألغ تحديد "<span jscontent="noNetworkPredictionTitle"></span>"
+        في حالة ما إذا لم يؤد ذلك إلى حل المشكلة، نوصي بتحديد هذا الخيار
+        مرة أخرى من أجل أداء أفضل.

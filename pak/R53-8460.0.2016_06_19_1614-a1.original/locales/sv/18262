@@ -1,0 +1,1 @@
+Mycket experimentellt stöd för att rendera iframe från olika webbplatser i separata processer. I det här läget delar dokumenten bara renderarprocess om de kommer från samma webbplats.

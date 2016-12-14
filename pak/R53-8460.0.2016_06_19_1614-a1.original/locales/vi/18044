@@ -1,0 +1,3 @@
+<p>Khi chạy $1 trong môi trường màn hình được hỗ trợ, cài đặt proxy hệ thống sẽ được sử dụng.  Tuy nhiên, hệ thống của bạn không được hỗ trợ hoặc đã xảy ra sự cố khi khởi chạy cấu hình hệ thống của bạn.</p>
+
+          <p>Tuy nhiên, bạn vẫn có thể định cấu hình qua dòng lệnh.  Hãy xem  <code>man $2</code> để biết thêm thông tin về cờ và biến môi trường.</p>

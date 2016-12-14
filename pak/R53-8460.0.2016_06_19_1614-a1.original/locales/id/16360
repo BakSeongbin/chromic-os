@@ -1,0 +1,1 @@
+Untaian penanganan aktivitas masukan terkait pengguliran. Bila dinonaktifkan, semua aktivitas pengguliran akan dipaksa untuk ditangani di untaian utama. Perlu diperhatikan bahwa tindakan ini dapat mengganggu performa pengguliran sebagian besar situs web secara drastis dan hanya untuk tujuan pengujian saja.

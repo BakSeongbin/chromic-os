@@ -1,0 +1,1 @@
+Ograničava otklanjanje pogrešaka na lokalnom klijentu na temelju GDB-a po URL-u u datoteci manifesta. Otklanjanje pogrešaka na lokalnom klijentu na temelju GDB-a mora biti omogućeno da bi ova opcija funkcionirala.

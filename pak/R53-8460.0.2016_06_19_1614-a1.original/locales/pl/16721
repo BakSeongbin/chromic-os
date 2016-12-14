@@ -1,0 +1,1 @@
+{COUNT,plural, =0{co najmniej 1 element na synchronizowanych urządzeniach}=1{1 element (i więcej na synchronizowanych urządzeniach)}few{# elementy (i więcej na synchronizowanych urządzeniach)}many{# elementów (i więcej na synchronizowanych urządzeniach)}other{# elementu (i więcej na synchronizowanych urządzeniach)}}

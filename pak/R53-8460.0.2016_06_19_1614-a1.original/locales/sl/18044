@@ -1,0 +1,3 @@
+<p>Ko se $1 izvaja v podprtem namiznem okolju, se uporabijo sistemske nastavitve strežnika proxy. Morda vaš sistem ni podprt ali pa je med zagonom sistemske konfiguracije prišlo do težave.</p>
+
+          <p>Kljub temu ga lahko nastavite z ukazno vrstico. Glejte <code>man $2</code> za več informacij o zastavicah in spremenljivkah okolja.</p>

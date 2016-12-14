@@ -1,0 +1,1 @@
+Esta opción hace que Chrome no sea seguro. Utilízala únicamente si entiendes su función. Ten en cuenta que esta opción se puede eliminar sin previo aviso. Si se habilita, los marcos con un origen https pueden utilizar WebSockets con una URL no segura (ws://).

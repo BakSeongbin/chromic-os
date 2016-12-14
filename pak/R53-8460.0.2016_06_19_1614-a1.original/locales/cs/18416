@@ -1,0 +1,1 @@
+Pomocí tohoto příznaku můžete zapnout ověřování, že soubory rozšíření z internetového obchodu uložené na disku mají předpokládaný obsah. Funkci lze tímto způsobem zapnout, pokud nebyla již dříve zapnutá, avšak nelze ji vypnout (jinak by tímto nastavením mohl neoprávněně manipulovat malware).

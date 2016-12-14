@@ -1,0 +1,1 @@
+If proxy is configured, it usually prevents from authorisation on different captive portals. This enables opening captive portal authorisation dialogue in a separate window, which ignores proxy settings.

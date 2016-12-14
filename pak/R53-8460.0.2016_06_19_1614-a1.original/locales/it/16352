@@ -1,0 +1,1 @@
+Consente di visualizzare le finestre delle app dopo il primo avvio. Le finestre vengono visualizzate con un ritardo notevole per le app pesanti che caricano le risorse in modo sincrono, mentre il ritardo è irrilevante per le app che caricano gran parte delle loro risorse in modo asincrono.

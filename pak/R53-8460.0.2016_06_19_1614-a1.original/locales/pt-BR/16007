@@ -1,0 +1,1 @@
+Tenta fazer com que todas as APIs espelhem a janela de visualização de layout. Isso faz com que as propriedades window.scroll correspondam à janela de visualização de layout.

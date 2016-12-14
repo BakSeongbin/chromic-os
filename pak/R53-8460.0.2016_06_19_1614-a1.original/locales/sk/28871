@@ -1,0 +1,1 @@
+Pokúsili ste sa o prístup na stránky <strong>$1</strong>, server však predložil certifikát podpísaný slabým algoritmom podpisu. Znamená to, že predložené poverenia zabezpečenia mohli byť sfalšované a môže ísť o úplne iný server, než ste očakávali (môžete komunikovať s útočníkom).

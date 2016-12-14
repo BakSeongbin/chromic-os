@@ -1,0 +1,1 @@
+Aktiver muligheten til å sende ekstra autentiseringsinformasjon med den første SYN-pakken for en klient som har vært tilkoblet tidligere. Dette gjør at datasending kan starte raskere.

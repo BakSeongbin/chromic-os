@@ -1,0 +1,1 @@
+Umgeht Nutzerinteraktionsprüfungen zur Anzeige von App-Bannern, zum Beispiel, ob Nutzer die Website bereits besucht haben und das Banner nicht bereits vor Kurzem angezeigt wurde. So können Entwickler testen, ob andere Berechtigungsvoraussetzungen zur Anzeige von App-Bannern, wie etwa das Vorhandensein eines Manifests, erfüllt sind.

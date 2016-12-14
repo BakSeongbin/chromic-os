@@ -1,0 +1,1 @@
+Forbigår kontroller av brukerengasjement for visning av appbannere. Eksempler på dette kan være krav til at brukere har besøkt nettstedet før, eller at banneret ikke er vist i det siste. Dette gir utviklere muligheten til å teste at andre kvalifiseringskrav for visning av appbannere oppfylles, for eksempel krav om å ha et manifest.

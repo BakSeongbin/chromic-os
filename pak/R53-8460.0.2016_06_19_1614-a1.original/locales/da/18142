@@ -1,0 +1,9 @@
+En administreret bruger kan søge på nettet med din vejledning. Som administrator for en administreret bruger i Chrome kan du
+
+ • tillade eller forbyde visse websites,
+ • gennemse websites, som den administrerede bruger besøgt samt
+ • administrere andre indstillinger.
+
+Når du opretter en administreret bruger, oprettes der ikke en Google-konto, og brugerens bogmærker, browserhistorik og andre indstillinger synkroniseres ikke til andre enheder med Chrome-synkronisering.
+
+Når du har oprettet en ny administreret bruger, kan du til enhver tid administrere vedkommendes indstillinger fra en hvilken som helst enhed på $1. <a target="_blank" href="https://support.google.com/chrome/?p=ui_supervised_users&hl=da">Få flere oplysninger om administrerede brugere</a>

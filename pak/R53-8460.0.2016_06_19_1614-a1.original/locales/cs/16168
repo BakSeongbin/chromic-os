@@ -1,0 +1,1 @@
+Nezobrazovat informační panel, pokud se rozšíření připojuje ke stránce prostřednictvím rozhraní API chrome.debugger. Toto chování je potřeba k ladění stránek na pozadí rozšíření.

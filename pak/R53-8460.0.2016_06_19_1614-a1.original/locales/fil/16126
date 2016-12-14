@@ -1,0 +1,1 @@
+Ang ilang web page ay gumagamit ng mga legacy o hindi karaniwang extension ng JavaScript na maaaring hindi tugma sa mga pinakabagong feature ng JavaScript. Pinapayagan ng flag na ito ang pagdi-disable ng suporta sa mga feature na iyon upang maging compatible sa mga nasabing page.

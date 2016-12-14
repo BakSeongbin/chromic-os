@@ -1,0 +1,1 @@
+Añade un parámetro de consulta en la URL para actualizar la página automáticamente: chrome://device-log/?refresh=<sec>

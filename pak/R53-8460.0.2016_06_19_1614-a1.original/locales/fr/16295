@@ -1,0 +1,1 @@
+Les threads de rastérisation sont écrits directement dans la mémoire GPU associée aux tuiles.

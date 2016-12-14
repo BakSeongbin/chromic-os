@@ -1,0 +1,1 @@
+Pot ser que el servidor on s'allotja la pàgina web estigui sobrecarregat o bé que s'hi estiguin realitzant tasques de manteniment. Per evitar que es generi massa trànsit i la situació empitjori, no es permet enviar sol·licituds a aquest URL de manera temporal.

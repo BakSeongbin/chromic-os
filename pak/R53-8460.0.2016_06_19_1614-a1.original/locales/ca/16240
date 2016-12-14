@@ -1,0 +1,1 @@
+Activa la implementació experimental de Cache-Control: directiva d'inactivitat durant la revalidació. Això permet que els servidors especifiquin que alguns recursos es puguin revalidar en segon pla per millorar la latència.

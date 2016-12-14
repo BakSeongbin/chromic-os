@@ -1,0 +1,1 @@
+A jelző következtében a Chrome nem lesz biztonságos. Csak akkor használja, ha tudja, hogy mit csinál. Felhívjuk figyelmét, hogy ezt a jelzőt értesítés nélkül, bármikor eltávolíthatjuk. Ha engedélyezve van, akkor a https-eredetű keretek használhatnak WebSocketeket nem biztonságos URL-lel (ws://).

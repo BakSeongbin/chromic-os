@@ -1,0 +1,1 @@
+Izmantojot TLS 1.0 atkāpšanās protokolu, izdevās izveidot savienojumu ar serveri, taču TLS 1.0 atkāpšanās protokoli vairs netiek pieņemti. Lai pareizi veiktu versiju saskaņošanu, serveris ir jāatjaunina (ieteicams nodrošināt protokola TLS versijas 1.2 atbalstu).

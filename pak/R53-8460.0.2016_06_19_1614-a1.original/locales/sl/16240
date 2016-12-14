@@ -1,0 +1,1 @@
+Omogoči poskusno izvedbo direktive »Cache-Control: stale-while-revalidate«. To strežnikom omogoča določanje, da se lahko nekatera sredstva znova preverijo v ozadju in s tem zmanjšajo zamude.

@@ -1,0 +1,1 @@
+Força as interfaces de usuário de atualização a acionar a atualização de não validação, embora isso geralmente signifique uma atualização normal de validação de cache quando a sinalização está desativada.

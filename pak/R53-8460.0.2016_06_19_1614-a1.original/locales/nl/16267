@@ -1,0 +1,1 @@
+V8 Proxy Resolver inschakelen die buiten het proces wordt uitgevoerd. Hiermee wordt de V8 Proxy Resolver uitgevoerd in een proces van een hulpprogramma in plaats van in het browserproces.

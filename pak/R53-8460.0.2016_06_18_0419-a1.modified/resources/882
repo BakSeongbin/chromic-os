@@ -1,0 +1,1215 @@
+// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This inclusion should go first, as <{controller,host}-paring-screen> depend
+// of it.
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('login', function() {
+  /** @const */ var CALLBACK_USER_ACTED = 'userActed';
+
+  var OobeScreenBehavior = {
+    properties: {
+      /**
+       * Internal storage of |this.context|. Short name has been choosen for
+       * reason: such name doesn't take much space in HTML data bindings, which
+       * are used very often.
+       * C binded to the native part of the context, that means that all the
+       * changes in the native part appear in C automatically. Reverse is not
+       * true, you should use:
+       *    this.context.set(...);
+       *    this.context.commitContextChanges();
+       * to send updates to the native part.
+       * TODO(dzhioev): make binding two-way.
+       */
+      C: Object,
+
+      name: String
+    },
+
+    /**
+     * The login.Screen which is hosting |this|.
+     */
+    screen_: null,
+
+    /**
+     * Dictionary of context observers that are methods of |this| bound to
+     * |this|.
+     */
+    contextObservers_: null,
+
+    /**
+     * login.ScreenContext used for sharing data with native backend.
+     */
+    context: null,
+
+    /**
+     * Called when the screen is being registered.
+     */
+    initialize: function() {},
+
+    ready: function() {
+      if (this.decorate_) {
+        this.initialize();
+      } else {
+        this.ready_ = true;
+      }
+    },
+
+    userActed: function(e) {
+      this.send(CALLBACK_USER_ACTED,
+                e.detail.sourceEvent.target.getAttribute('action'));
+    },
+
+    i18n: function(args) {
+      if (!(args instanceof Array))
+        args = [args];
+      args[0] = 'login_' + this.name + '_' + args[0];
+      return loadTimeData.getStringF.apply(loadTimeData, args);
+    },
+
+    /**
+     * Called by login.Screen when the screen is beeing registered.
+     */
+    decorate: function(screen) {
+      this.screen_ = screen;
+      this.context = screen.screenContext_;
+      this.C = this.context.storage_;
+      this.contextObservers_ = {};
+      var self = this;
+      if (this.ready_) {
+        this.initialize();
+      } else {
+        this.decorate_ = true;
+      }
+    },
+
+    /**
+     * Should be called for every context field which is used in Polymer
+     * declarative data bindings (e.g. {{C.fieldName}}).
+     */
+    registerBoundContextField: function(fieldName) {
+      this.addContextObserver(fieldName, this.onContextFieldChanged_);
+    },
+
+    onContextFieldChanged_: function(_, _, fieldName) {
+      this.notifyPath('C.' + fieldName, this.C[fieldName]);
+    },
+
+    /**
+     * @final
+     */
+    send: function() {
+      return this.sendImpl_.apply(this, arguments);
+    },
+
+    /**
+     * @final
+     */
+    addContextObserver: function() {
+      return this.addContextObserverImpl_.apply(this, arguments);
+    },
+
+    /**
+     * @final
+     */
+    removeContextObserver: function() {
+      return this.removeContextObserverImpl_.apply(this, arguments);
+    },
+
+    /**
+     * @final
+     */
+    commitContextChanges: function() {
+      return this.commitContextChangesImpl_.apply(this, arguments);
+    },
+
+    /**
+     * @override
+     * @final
+     */
+    querySelector: function() {
+      return this.querySelectorImpl_.apply(this, arguments);
+    },
+
+    /**
+     * @override
+     * @final
+     */
+    querySelectorAll: function() {
+      return this.querySelectorAllImpl_.apply(this, arguments);
+    },
+
+    /**
+     * See login.Screen.send.
+     * @private
+     */
+    sendImpl_: function() {
+      return this.screen_.send.apply(this.screen_, arguments);
+    },
+
+    /**
+     * Starts observation of property with |key| of the context attached to
+     * current screen. This method differs from "login.ScreenContext" in that
+     * it automatically detects if observer is method of |this| and make
+     * all needed actions to make it work correctly. So it's no need for client
+     * to bind methods to |this| and keep resulting callback for
+     * |removeObserver| call:
+     *
+     *   this.addContextObserver('key', this.onKeyChanged_);
+     *   ...
+     *   this.removeContextObserver('key', this.onKeyChanged_);
+     * @private
+     */
+    addContextObserverImpl_: function(key, observer) {
+      var realObserver = observer;
+      var propertyName = this.getPropertyNameOf_(observer);
+      if (propertyName) {
+        if (!this.contextObservers_.hasOwnProperty(propertyName))
+          this.contextObservers_[propertyName] = observer.bind(this);
+        realObserver = this.contextObservers_[propertyName];
+      }
+      this.context.addObserver(key, realObserver);
+    },
+
+    /**
+     * Removes |observer| from the list of context observers. Supports not only
+     * regular functions but also screen methods (see comment to
+     * |addContextObserver|).
+     * @private
+     */
+    removeContextObserverImpl_: function(observer) {
+      var realObserver = observer;
+      var propertyName = this.getPropertyNameOf_(observer);
+      if (propertyName) {
+        if (!this.contextObservers_.hasOwnProperty(propertyName))
+          return;
+        realObserver = this.contextObservers_[propertyName];
+        delete this.contextObservers_[propertyName];
+      }
+      this.context.removeObserver(realObserver);
+    },
+
+    /**
+     * See login.Screen.commitContextChanges.
+     * @private
+     */
+    commitContextChangesImpl_: function() {
+      return this.screen_.commitContextChanges.apply(this.screen_, arguments);
+    },
+
+    /**
+     * Calls |querySelector| method of the shadow dom and returns the result.
+     * @private
+     */
+    querySelectorImpl_: function(selector) {
+      return this.shadowRoot.querySelector(selector);
+    },
+
+
+    /**
+     * Calls standart |querySelectorAll| method of the shadow dom and returns
+     * the result converted to Array.
+     * @private
+     */
+    querySelectorAllImpl_: function(selector) {
+      var list = this.shadowRoot.querySelectorAll(selector);
+      return Array.prototype.slice.call(list);
+    },
+
+    /**
+     * If |value| is the value of some property of |this| returns property's
+     * name. Otherwise returns empty string.
+     * @private
+     */
+    getPropertyNameOf_: function(value) {
+      for (var key in this)
+        if (this[key] === value)
+          return key;
+      return '';
+    }
+  };
+
+  return {
+    OobeScreenBehavior: OobeScreenBehavior
+  };
+});
+
+
+
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+Polymer((function() {
+  /** @const */ var ICON_COLORS = ['#F0B9CB', '#F0ACC3', '#F098B6', '#F084A9',
+                                   '#F06D99', '#F05287', '#F0467F', '#F03473',
+                                   '#F01E65', '#F00051'];
+  return {
+    is: 'pairing-device-list',
+
+    properties: {
+      devices: Array,
+
+      selected: {
+        type: String,
+        notify: true
+      },
+
+      connecting: {
+        type: Boolean,
+        reflectToAttribute: true
+      }
+    },
+
+    getStyleForDeviceIcon_: function(deviceName) {
+      return 'color: ' + this.colorByName_(deviceName);
+    },
+
+    /* Returns pseudo-random color depending of hash of the |name|. */
+    colorByName_: function(name) {
+      var hash = 0;
+      for (var i = 0; i < name.length; ++i)
+        hash = (name.charCodeAt(i) + 31 * hash) | 0;
+      return ICON_COLORS[hash % ICON_COLORS.length];
+    }
+  };
+})());
+
+Polymer({
+  is: 'controller-pairing-page',
+
+  behaviors: [Polymer.NeonAnimatableBehavior],
+
+  properties: {
+    animationConfig: {
+      value: function() {
+        return {
+          'entry': [{
+            name: 'fade-in-animation',
+            node: this
+          }],
+
+          'exit': [{
+            name: 'fade-out-animation',
+            node: this
+          }]
+        };
+      }
+    }
+  }
+});
+
+Polymer((function() {
+  'use strict';
+
+  // Keep these constants synced with corresponding constants defined in
+  // controller_pairing_screen_actor.{h,cc}.
+  /** @const */ var CONTEXT_KEY_CONTROLS_DISABLED = 'controlsDisabled';
+  /** @const */ var CONTEXT_KEY_SELECTED_DEVICE = 'selectedDevice';
+  /** @const */ var CONTEXT_KEY_ACCOUNT_ID = 'accountId';
+
+  /** @const */ var ACTION_ENROLL = 'enroll';
+
+  /** @const */ var PAGE_AUTHENTICATION = 'authentication';
+
+  return {
+    is: 'controller-pairing-screen',
+
+    behaviors: [
+      login.OobeScreenBehavior
+    ],
+
+    properties: {
+      selectedDevice: {
+        type: String,
+        observer: 'selectedDeviceChanged_'
+      }
+    },
+
+    observers: [
+      'deviceListChanged_(C.devices)'
+    ],
+
+    ready: function() {
+      /**
+       * Workaround for
+       * https://github.com/PolymerElements/neon-animation/issues/32
+       * TODO(dzhioev): Remove when fixed in Polymer.
+       */
+      var pages = this.$.pages;
+      delete pages._squelchNextFinishEvent;
+      Object.defineProperty(pages, '_squelchNextFinishEvent',
+          { get: function() { return false; } });
+    },
+
+    /** @override */
+    initialize: function() {
+      ['code',
+       'controlsDisabled',
+       'devices',
+       'enrollmentDomain',
+       'page'].forEach(this.registerBoundContextField, this);
+      this.context.set(CONTEXT_KEY_CONTROLS_DISABLED, true);
+      this.commitContextChanges();
+    },
+
+    i18n: function(args) {
+      return loadTimeData.getStringF.apply(loadTimeData, args);
+    },
+
+    deviceListChanged_: function() {
+      this.selectedDevice = this.context.get(CONTEXT_KEY_SELECTED_DEVICE, null);
+    },
+
+    selectedDeviceChanged_: function(selectedDevice) {
+      this.context.set(CONTEXT_KEY_SELECTED_DEVICE,
+          selectedDevice ? selectedDevice : '');
+      this.commitContextChanges();
+    },
+
+    helpButtonClicked_: function() {
+      console.error('Help is not implemented yet.');
+    },
+
+    getHostEnrollmentStepTitle_: function(domain) {
+      return this.i18n(['loginControllerPairingScreenEnrollmentInProgress',
+                       domain]);
+    },
+
+    getSuccessMessage_: function(selectedDevice) {
+      return this.i18n(['loginControllerPairingScreenSuccessText',
+                       selectedDevice]);
+    }
+  };
+})());
+
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+Polymer({
+  is: 'gaia-button',
+
+  properties: {
+    disabled: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true
+    },
+
+    type: {
+      type: String,
+      value: '',
+      reflectToAttribute: true,
+      observer: 'typeChanged_'
+    }
+  },
+
+  focus: function() {
+   this.$.button.focus();
+  },
+
+  focusedChanged_: function() {
+    if (this.type == 'link' || this.type == 'dialog')
+      return;
+    this.$.button.raised = this.$.button.focused;
+  },
+
+  typeChanged_: function() {
+    if (this.type == 'link')
+      this.$.button.setAttribute('noink', '');
+    else
+      this.$.button.removeAttribute('noink');
+  },
+
+  onClick_: function(e) {
+    if (this.disabled)
+      e.stopPropagation();
+  }
+});
+
+Polymer({
+  is: 'gaia-icon-button',
+
+  properties: {
+    disabled: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true
+    },
+
+    icon: String,
+
+    ariaLabel: String
+  },
+
+  focus: function() {
+    this.$.iconButton.focus();
+  },
+
+  onClick_: function(e) {
+    if (this.disabled)
+      e.stopPropagation();
+  }
+});
+
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+Polymer({
+  is: 'gaia-card'
+});
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+Polymer({
+  is: 'gaia-header',
+
+  properties: {
+    email: String
+  }
+});
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+Polymer({
+  is: 'gaia-input-form',
+
+  properties: {
+    disabled: {
+      type: Boolean,
+      observer: 'onDisabledChanged_',
+    },
+
+    buttonText: String
+  },
+
+  submit: function() {
+    this.fire('submit');
+  },
+
+  onButtonClicked_: function() {
+    this.submit();
+  },
+
+  getInputs_: function() {
+    return Polymer.dom(this.$.inputs).getDistributedNodes();
+  },
+
+  onKeyDown_: function(e) {
+    if (e.keyCode != 13 || this.$.button.disabled)
+      return;
+    if (this.getInputs_().indexOf(e.target) == -1)
+      return;
+    this.onButtonClicked_();
+  },
+
+  getControls_: function() {
+    var controls = this.getInputs_();
+    controls.push(this.$.button);
+    return controls.concat(Polymer.dom(this).querySelectorAll('gaia-button'));
+  },
+
+  onDisabledChanged_: function(disabled) {
+    this.getControls_().forEach(function(control) {
+      control.disabled = disabled;
+    });
+  }
+});
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+Polymer((function() {
+  var INPUT_EMAIL_PATTERN = "^[a-zA-Z0-9.!#$%&'*+=?^_`{|}~-]+(@[^\\s@]+)?$";
+
+  return {
+    is: 'gaia-input',
+
+    properties: {
+      label: String,
+      value: {
+        notify: true,
+        observer: 'updateDomainVisibility_',
+        type: String
+      },
+
+      type: {
+        observer: 'typeChanged_',
+        type: String
+      },
+
+      domain: {
+        observer: 'updateDomainVisibility_',
+        type: String
+      },
+
+      disabled: Boolean,
+
+      required: Boolean,
+
+      error: String,
+
+      isInvalid: Boolean
+    },
+
+    attached: function() {
+      this.typeChanged_();
+    },
+
+    onKeyDown: function(e) {
+      this.isInvalid = false;
+    },
+
+    updateDomainVisibility_: function() {
+      this.$.domainLabel.hidden = (this.type !== 'email') || !this.domain ||
+          (this.value && this.value.indexOf('@') !== -1);
+    },
+
+    onTap: function() {
+      this.isInvalid = false;
+    },
+
+    focus: function() {
+      this.$.input.focus();
+    },
+
+    checkValidity: function() {
+      var valid = this.$.input.validate();
+      this.isInvalid = !valid;
+      return valid;
+    },
+
+    typeChanged_: function() {
+      if (this.type == 'email') {
+        this.$.input.pattern = INPUT_EMAIL_PATTERN;
+        this.$.input.type = 'text';
+      } else {
+        this.$.input.removeAttribute('pattern');
+        this.$.input.type = this.type;
+      }
+      this.updateDomainVisibility_();
+    }
+  };
+})());
+
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+Polymer({
+  is: 'gaia-password-changed',
+
+  properties: {
+    email: String,
+
+    disabled: {
+      type: Boolean,
+      value: false
+    }
+  },
+
+  ready: function() {
+    /**
+     * Workaround for
+     * https://github.com/PolymerElements/neon-animation/issues/32
+     * TODO(dzhioev): Remove when fixed in Polymer.
+     */
+    var pages = this.$.animatedPages;
+    delete pages._squelchNextFinishEvent;
+    Object.defineProperty(pages, '_squelchNextFinishEvent',
+        { get: function() { return false; } });
+  },
+
+  invalidate: function() {
+    this.$.oldPasswordInput.isInvalid = true;
+  },
+
+  reset: function() {
+    this.$.animatedPages.selected = 0;
+    this.clearPassword();
+    this.$.oldPasswordInput.isInvalid = false;
+    this.disabled = false;
+    this.$.navigation.closeVisible = true;
+    this.$.oldPasswordCard.classList.remove('disabled');
+  },
+
+
+  focus: function() {
+    if (this.$.animatedPages.selected == 0)
+      this.$.oldPasswordInput.focus();
+  },
+
+  onPasswordSubmitted_: function() {
+    if (!this.$.oldPasswordInput.checkValidity())
+      return;
+    this.$.oldPasswordCard.classList.add('disabled');
+    this.disabled = true;
+    this.fire('passwordEnter', {password: this.$.oldPasswordInput.value});
+  },
+
+  onForgotPasswordClicked_: function() {
+    this.clearPassword();
+    this.$.animatedPages.selected += 1;
+  },
+
+  onTryAgainClicked_: function() {
+    this.$.oldPasswordInput.isInvalid = false;
+    this.$.animatedPages.selected -= 1;
+  },
+
+  onAnimationFinish_: function() {
+    this.focus();
+  },
+
+  clearPassword: function() {
+    this.$.oldPasswordInput.value = '';
+  },
+
+  onProceedClicked_: function() {
+    this.disabled = true;
+    this.$.navigation.closeVisible = false;
+    this.$.animatedPages.selected = 2;
+    this.fire('proceedAnyway');
+  },
+
+  onClose_: function() {
+    this.fire('cancel');
+  }
+});
+
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+Polymer({
+  is: 'host-pairing-page',
+
+  behaviors: [Polymer.NeonAnimatableBehavior]
+});
+
+Polymer((function() {
+  'use strict';
+
+  /** @const */ var CALLBACK_CONTEXT_READY = 'contextReady';
+
+  return {
+    is: 'host-pairing-screen',
+
+    behaviors: [login.OobeScreenBehavior],
+
+    onBeforeShow: function() {
+      Oobe.getInstance().headerHidden = true;
+    },
+
+    /** @override */
+    initialize: function() {
+      ['code',
+       'deviceName',
+       'enrollmentDomain',
+       'page'].forEach(this.registerBoundContextField, this);
+      this.send(CALLBACK_CONTEXT_READY);
+    },
+
+    i18n: function(args) {
+      return loadTimeData.getStringF.apply(loadTimeData, args);
+    },
+
+    getEnrollmentStepTitle_: function(enrollmentDomain) {
+      return this.i18n(['loginHostPairingScreenEnrollingTitle',
+                       enrollmentDomain]);
+    }
+  };
+})());
+
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+Polymer({
+  is: 'html-echo',
+
+  properties: {
+    content: {
+      type: String,
+      observer: 'contentChanged_'
+    }
+  },
+
+  contentChanged_: function(content) {
+    this.innerHTML = content;
+  }
+});
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+Polymer({
+  is: 'notification-card',
+
+  properties: {
+    buttonLabel: {
+      type: String,
+      value: ''
+    },
+
+    linkLabel: {
+      type: String,
+      value: ''
+    },
+
+    type: {
+      type: String,
+      value: ''
+    }
+  },
+
+  iconNameByType_: function(type) {
+    if (type == 'fail')
+      return 'warning';
+    if (type == 'success')
+      return 'done';
+    console.error('Unknown type "' + type + '".');
+    return '';
+  },
+
+  buttonClicked_: function() {
+    this.fire('buttonclick');
+  },
+
+  linkClicked_: function(e) {
+    this.fire('linkclick');
+    e.preventDefault();
+  },
+
+  get submitButton() {
+    return this.$.submitButton;
+  }
+});
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+Polymer((function() {
+  var DEFAULT_EMAIL_DOMAIN = '@gmail.com';
+
+  var TRANSITION_TYPE = {
+    FORWARD: 0,
+    BACKWARD: 1,
+    NONE: 2
+  };
+
+  return {
+    is: 'offline-gaia',
+
+    properties: {
+      disabled: {
+        type: Boolean,
+        value: false
+      },
+
+      showEnterpriseMessage: {
+        type: Boolean,
+        value: false
+      },
+
+      domain: {
+        type: String,
+        observer: 'onDomainChanged_'
+      },
+
+      emailDomain: String
+    },
+
+    ready: function() {
+      /**
+       * Workaround for
+       * https://github.com/PolymerElements/neon-animation/issues/32
+       * TODO(dzhioev): Remove when fixed in Polymer.
+       */
+      var pages = this.$.animatedPages;
+      delete pages._squelchNextFinishEvent;
+      Object.defineProperty(pages, '_squelchNextFinishEvent',
+          { get: function() { return false; } });
+    },
+
+    focus: function() {
+      if (this.isEmailSectionActive_())
+        this.$.emailInput.focus();
+      else
+        this.$.passwordInput.focus();
+    },
+
+    back: function() {
+      this.switchToEmailCard(true /* animated */);
+    },
+
+    onDomainChanged_: function() {
+      this.$.managedBy.textContent =
+        loadTimeData.getStringF('enterpriseInfoMessage', this.domain);
+      this.showEnterpriseMessage = !!this.domain.length;
+    },
+
+    onAnimationFinish_: function() {
+      this.fire('backButton', !this.isEmailSectionActive_());
+      this.focus();
+    },
+
+    onForgotPasswordClicked_: function() {
+      this.$.forgotPasswordDlg.fitInto = this;
+      this.disabled = true;
+      this.fire('dialogShown');
+      this.$.forgotPasswordDlg.open();
+      this.$.passwordCard.classList.add('full-disabled');
+      this.$.forgotPasswordDlg.focus();
+    },
+
+    onDialogOverlayClosed_: function() {
+      this.fire('dialogHidden');
+      this.disabled = false;
+      this.$.passwordCard.classList.remove('full-disabled');
+    },
+
+    setEmail: function(email) {
+      if (email) {
+        if (this.emailDomain)
+          email = email.replace(this.emailDomain, '');
+        this.switchToPasswordCard(email, false /* animated */);
+        this.$.passwordInput.isInvalid = true;
+        this.fire('backButton', true);
+      } else {
+        this.$.emailInput.value = '';
+        this.switchToEmailCard(false /* animated */);
+      }
+    },
+
+    isRTL_: function() {
+      return !!document.querySelector('html[dir=rtl]');
+    },
+
+    isEmailSectionActive_: function() {
+      return this.$.animatedPages.selected == 'emailSection';
+    },
+
+    switchToEmailCard(animated) {
+      this.$.passwordInput.value = '';
+      this.$.passwordInput.isInvalid = false;
+      this.$.emailInput.isInvalid = false;
+      if (this.isEmailSectionActive_())
+        return;
+      this.setUpPageTransitions_(
+          animated ? TRANSITION_TYPE.BACKWARD : TRANSITION_TYPE.NONE);
+      this.$.animatedPages.selected = 'emailSection';
+    },
+
+    switchToPasswordCard(email, animated) {
+      this.$.emailInput.value = email;
+      if (email.indexOf('@') === -1) {
+        if (this.emailDomain)
+          email = email + this.emailDomain;
+        else
+          email = email + DEFAULT_EMAIL_DOMAIN;
+      }
+      this.$.passwordHeader.email = email;
+      if (!this.isEmailSectionActive_())
+        return;
+      this.setUpPageTransitions_(
+          animated ? TRANSITION_TYPE.FORWARD : TRANSITION_TYPE.NONE);
+      this.$.animatedPages.selected = 'passwordSection';
+    },
+
+    onEmailSubmitted_: function() {
+      if (this.$.emailInput.checkValidity())
+        this.switchToPasswordCard(this.$.emailInput.value, true /* animated */);
+      else
+        this.$.emailInput.focus();
+    },
+
+    onPasswordSubmitted_: function() {
+      if (!this.$.passwordInput.checkValidity())
+        return;
+      var msg = {
+        'useOffline': true,
+        'email': this.$.passwordHeader.email,
+        'password': this.$.passwordInput.value
+      };
+      this.$.passwordInput.value = '';
+      this.fire('authCompleted', msg);
+    },
+
+    setUpPageTransitions_: function(transitionType) {
+      if (transitionType === TRANSITION_TYPE.NONE) {
+        this.$.animatedPages.entryAnimation = '';
+        this.$.animatedPages.exitAnimation = '';
+        return;
+      }
+      var isForward = transitionType === TRANSITION_TYPE.FORWARD;
+      var isRTL = this.isRTL_();
+      this.$.animatedPages.entryAnimation =
+          'slide-from-' + (isForward === isRTL ? 'left' : 'right') +
+          '-animation';
+      this.$.animatedPages.exitAnimation =
+          'slide-' + (isForward === isRTL ? 'right' : 'left') + '-animation';
+    }
+  };
+})());
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+Polymer({
+  is: 'saml-confirm-password',
+
+  properties: {
+    email: String,
+
+    disabled: {
+      type: Boolean,
+      value: false,
+      observer: 'disabledChanged_'
+    }
+  },
+
+  ready: function() {
+    /**
+     * Workaround for
+     * https://github.com/PolymerElements/neon-animation/issues/32
+     * TODO(dzhioev): Remove when fixed in Polymer.
+     */
+    var pages = this.$.animatedPages;
+    delete pages._squelchNextFinishEvent;
+    Object.defineProperty(pages, '_squelchNextFinishEvent',
+        { get: function() { return false; } });
+  },
+
+  reset: function() {
+    this.$.cancelConfirmDlg.close();
+    this.disabled = false;
+    this.$.navigation.closeVisible = true;
+    if (this.$.animatedPages.selected != 0)
+      this.$.animatedPages.selected = 0;
+    this.$.passwordInput.value = '';
+  },
+
+  invalidate: function() {
+    this.$.passwordInput.isInvalid = true;
+  },
+
+  focus: function() {
+    if (this.$.animatedPages.selected == 0)
+      this.$.passwordInput.focus();
+  },
+
+  onClose_: function() {
+    this.disabled = true;
+    this.$.cancelConfirmDlg.fitInto = this;
+    this.$.cancelConfirmDlg.open();
+  },
+
+  onConfirmCancel_: function() {
+    this.fire('cancel');
+  },
+
+  onPasswordSubmitted_: function() {
+    if (!this.$.passwordInput.checkValidity())
+      return;
+    this.$.animatedPages.selected = 1;
+    this.$.navigation.closeVisible = false;
+    this.fire('passwordEnter', {password: this.$.passwordInput.value});
+  },
+
+  onDialogOverlayClosed_: function() {
+    this.disabled = false;
+  },
+
+  disabledChanged_: function(disabled) {
+    this.$.confirmPasswordCard.classList.toggle('full-disabled', disabled);
+  },
+
+  onAnimationFinish_: function() {
+    if (this.$.animatedPages.selected == 1)
+      this.$.passwordInput.value = '';
+  }
+});
+
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+Polymer({
+  is: 'saml-interstitial',
+
+  properties: {
+    changeAccountLink: {
+      type: HTMLElement,
+    },
+
+    domain: {
+      type: String,
+      observer: 'onDomainChanged_'
+    },
+
+    showDomainMessages_: {
+      type: Boolean,
+      value: false
+    }
+  },
+  ready: function() {
+    this.changeAccountLink = this.$.changeAccountLink;
+  },
+  submit: function() {
+    this.$.samlInterstitialForm.submit();
+  },
+  onDomainChanged_: function() {
+    this.$.managedBy.textContent =
+      loadTimeData.getStringF('enterpriseInfoMessage', this.domain);
+    this.$.message.content =
+      loadTimeData.getStringF('samlInterstitialMessage', this.domain);
+    this.showDomainMessages_ = !!this.domain.length;
+  },
+  onSamlPageNextClicked_: function() {
+    this.fire('samlPageNextClicked');
+  },
+  onSamlPageChangeAccountClicked_: function() {
+    this.fire('samlPageChangeAccountClicked');
+  }
+});
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+Polymer({
+  is: 'throbber-notice',
+
+  properties: {
+    text: String
+  }
+});
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+Polymer({
+  is: 'navigation-bar',
+
+  properties: {
+    backVisible: {
+      type: Boolean,
+      value: false
+    },
+    closeVisible: {
+      type: Boolean,
+      value: false
+    },
+    refreshVisible: {
+      type: Boolean,
+      value: false
+    },
+    disabled: {
+      type: Boolean,
+      value: false
+    }
+  },
+
+  onBack_: function() { this.fire('back'); },
+  onClose_: function() { this.fire('close'); },
+  onRefresh_: function() { this.fire('refresh'); }
+});
+
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+Polymer({
+  is: 'oobe-next-button',
+
+  properties: {
+    disabled: {
+      type: Boolean,
+      value: false,
+    }
+  },
+
+  onClick_: function(e) {
+    if (this.disabled)
+      e.stopPropagation();
+  }
+});
+
+Polymer({
+  is: 'oobe-icon-button',
+
+  properties: {
+    disabled: {type: Boolean, value: false, reflectToAttribute: true},
+
+    icon: String,
+
+    ariaLabel: String
+  },
+
+  focus: function() {
+    this.$.iconButton.focus();
+  },
+
+  onClick_: function(e) {
+    if (this.disabled)
+      e.stopPropagation();
+  }
+});
+
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+Polymer({is: 'oobe-card'});
+
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+Polymer({
+  is: 'oobe-welcome-md',
+
+  properties: {
+    disabled: {
+      type: Boolean,
+      value: false,
+    },
+    currentLanguage: {
+      type: String,
+      value: 'English (US)',
+    },
+  },
+
+  focus: function() {
+    this.$.welcomeNextButton.focus();
+  },
+
+  onAnimationFinish_: function() {
+    this.focus();
+  },
+
+  onWelcomeNextButtonClicked_: function() {
+    $('oobe-connect').hidden = false;
+    $('oobe-welcome-md').hidden = true;
+  }
+});
+

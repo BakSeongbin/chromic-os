@@ -1,0 +1,1 @@
+{NUM_FILES,plural, =1{Tem acesso permanente a um arquivo.}one{Tem acesso permanente a # arquivos.}other{Tem acesso permanente a # arquivos.}}

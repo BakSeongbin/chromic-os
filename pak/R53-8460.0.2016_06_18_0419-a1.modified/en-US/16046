@@ -1,0 +1,1 @@
+Enable the option to send extra authentication information in the initial SYN packet for a previously connected client, allowing faster data send start.

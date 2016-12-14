@@ -1,0 +1,1 @@
+Resetează starea de instalare a Lansatorului de aplicații la fiecare repornire. Dacă setați acest marcaj, Chrome nu va reține că lansatorul a fost deja instalat, la fiecare pornire. Opțiunea este utilizată pentru testarea fluxului de instalare a Lansatorului de aplicații.

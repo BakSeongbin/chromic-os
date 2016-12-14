@@ -1,0 +1,1 @@
+Pokušali ste doseći domenu <strong>$1</strong>, ali poslužitelj je predstavio certifikat potpisan slabim algoritmom potpisa. Znači da su sigurnosne vjerodajnice koje je poslužitelj predstavio možda krivotvorene, a poslužitelj možda nije poslužitelj koji očekujete (možda ste u komunikaciji s napadačem).

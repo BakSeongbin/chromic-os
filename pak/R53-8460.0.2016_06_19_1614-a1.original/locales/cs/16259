@@ -1,0 +1,1 @@
+Aktivuje experimentální implementaci direktivy Cache-Control: stale-while-revalidate. Tato direktiva serverům umožňuje určit, že lze z důvodu zlepšení latence u některých zdrojů provést opětovné ověření na pozadí.

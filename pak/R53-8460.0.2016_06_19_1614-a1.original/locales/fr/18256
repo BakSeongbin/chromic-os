@@ -1,0 +1,1 @@
+Le cache simple pour HTTP est un nouveau cache. Il dépend du système de fichiers pour l'allocation d'espace disque.

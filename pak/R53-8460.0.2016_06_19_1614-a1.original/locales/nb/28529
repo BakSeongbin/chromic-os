@@ -1,0 +1,1 @@
+En TLS 1.0-reserve greide å utveksle håndtrykk med tjeneren, men vi godtar ikke TLS 1.0-reserver lenger. Tjeneren må oppdateres slik at den implementerer versjonsbehandling riktig, og den bør støtte TLS 1.2.

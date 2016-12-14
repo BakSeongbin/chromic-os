@@ -1,0 +1,1 @@
+Povoluje požadavky na hostitele localhost prostřednictvím protokolu HTTPS i v případě, že je poskytnut neplatný certifikát.

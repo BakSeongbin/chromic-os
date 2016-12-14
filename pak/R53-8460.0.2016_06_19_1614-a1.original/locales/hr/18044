@@ -1,0 +1,3 @@
+<p>Kada se $1 izvodi u podržanom okruženju radne površine, upotrebljavaju se proxy postavke sustava. Međutim, vaš sustav nije podržan ili je došlo do problema pri pokretanju konfiguracije sustava.</p>
+
+        <p>Još uvijek možete konfigurirati putem naredbenog retka. Pogledajte <code>man $2</code> za više informacija o oznakama i varijablama okruženja.</p>

@@ -1,0 +1,1 @@
+Ota GDB-perusvianetsintä käyttöön. Tämä pysäyttää asiakassovelluksen sen käynnistyessä ja odottaa nacl-gdb:n (NaCl SDK:sta) liittämistä siihen.

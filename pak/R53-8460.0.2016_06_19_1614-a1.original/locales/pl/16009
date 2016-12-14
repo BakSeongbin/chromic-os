@@ -1,0 +1,1 @@
+Korzysta z dodatkowego wątku, by wykonać kompozycję stron WWW. Pozwala to na płynne przewijanie, nawet gdy główny wątek nie odpowiada.

@@ -1,0 +1,1 @@
+Wenn ein Proxy konfiguriert ist, wird die Autorisierung bei verschiedenen Captive Portals in der Regel verhindert. Diese Option ermöglicht das Öffnen eines Dialogfelds zur Captive Portal-Autorisierung in einem neuen Fenster. Dabei werden die Proxyeinstellungen ignoriert.

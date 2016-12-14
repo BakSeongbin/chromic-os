@@ -1,0 +1,1 @@
+Vysoko experimentálny výkonnostný režim, v ktorom sú prvky iframe na viacerých stránkach uchovávané v samostatnom procese oddelenom od hlavného dokumentu. V tomto režime budú mať prvky iframe z webových stránok iných tretích strán povolené zdieľať procesy.

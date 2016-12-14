@@ -1,0 +1,1 @@
+Dayakan pelaksanaan arahan "Cache-Control: stale-while-revalidate". Pelaksanaan ini membenarkan pelayan untuk menentukan bahawa sesetengah sumber boleh disahkan semula di latar belakang untuk menambah baik kependaman.

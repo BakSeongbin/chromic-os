@@ -1,0 +1,2 @@
+Mehrere unterschiedliche "Content-Disposition"-Header wurden empfangen. Dies ist
+    zum Schutz vor HTTP Response Splitting-Angriffen unzulässig.

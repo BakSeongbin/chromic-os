@@ -1,0 +1,1 @@
+Aktivér GDB-fejlfindingsstub. Dette vil stoppe en Native Client-applikationen ved opstart og vente på, at nacl-gdb (fra NaCl SDK) knytter sig til den.

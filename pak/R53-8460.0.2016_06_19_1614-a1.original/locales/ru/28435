@@ -1,0 +1,1 @@
+Открыть <a jsvalues="href:urlCorrection;.jstdata:$this" onmousedown="linkClicked(this.jstdata)">кешированную версию</a> страницы <span jscontent="originalUrlForDisplay"></span>

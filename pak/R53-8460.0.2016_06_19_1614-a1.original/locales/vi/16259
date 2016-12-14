@@ -1,0 +1,1 @@
+Cho phép triển khai thử nghiệm Kiểm soát bộ nhớ cache: chỉ thị cũ trong khi xác thực lại. Điều này cho phép các máy chủ chỉ định một số tài nguyên có thể được xác thực lại trong nền để cải thiện độ trễ.

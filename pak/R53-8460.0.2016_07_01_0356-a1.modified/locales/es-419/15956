@@ -1,0 +1,1 @@
+Restringe la depuración con GDB de la aplicación Native Client por URL del archivo de manifiesto. La depuración con GDB de Native Client debe estar habilitada para que esta opción funcione.

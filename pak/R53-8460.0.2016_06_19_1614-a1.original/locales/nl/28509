@@ -1,0 +1,1 @@
+Er zijn meerdere, verschillende Location-headers ontvangen. Dit is niet toegestaan als bescherming tegen aanvallen die HTTP-reacties splitsen.

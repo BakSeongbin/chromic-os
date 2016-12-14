@@ -1,0 +1,7 @@
+Chromium મેનૂ >
+        <span jscontent="settingsTitle"></span>
+        >
+        <span jscontent="advancedTitle"></span>
+        પર જાઓ અને "<span jscontent="noNetworkPredictionTitle"></span>" પસંદગીને હટાવો.
+        જો આનાથી સમસ્યા ઉકેલાતી નથી, તો અમે સુધારેલ પ્રદર્શન માટે ફરીથી આ વિકલ્પને પસંદ કરવાની 
+        ભલામણ કરીએ છીએ.

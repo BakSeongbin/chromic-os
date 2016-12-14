@@ -1,0 +1,3 @@
+<p>$1, desteklenen bir masaüstü ortamında çalışırken sistem proxy ayarları kullanılır. Ancak, ya sisteminiz desteklenmiyor ya da sistem yapılandırmanız başlatılırken bir hata oluştu.</p>
+
+        <p>Yine de, yapılandırmayı komut satırını kullanarak yapabilirsiniz. Bayraklar ve ortam değişkenleri için lütfen <code>man $2</code> içeriğine bakın.</p>

@@ -1,0 +1,1 @@
+Permite cerrar rápidamente ventanas o pestañas, ya que ejecuta el controlador onunload de JavaScript de forma independiente de la interfaz gráfica de usuario.

@@ -1,0 +1,1 @@
+Attiva la modalità background per l'API Push. Ciò permette a Chrome di rimanere in esecuzione dopo la chiusura dell'ultima finestra e di attivarsi all'avvio del sistema operativo, se l'API Push lo richiede.

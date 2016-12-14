@@ -1,0 +1,1 @@
+Iespējojiet eksperimentālu kešatmiņas pārvaldību — direktīvu “stale-while-revalidate”. Tā ļauj serveriem norādīt, ka dažus resursus var atkārtoti pārbaudīt fonā, lai uzlabotu latentumu.

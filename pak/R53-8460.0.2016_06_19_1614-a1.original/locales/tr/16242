@@ -1,0 +1,2 @@
+Bu, trace-upload-url (yükleme URL'sini izle) işaretiyle birlikte kullanılmak içindir.
+        UYARI: Bu politika etkinleştirildiğinde, Chrome her gezinme için performans verilerini kaydeder ve onları trace-upload-url (yükleme URL'sini izle) işaretinin belirttiği URL'ye yükler. İz; ziyaret ettiğiniz web sitelerin başlıkları ve URL'leri gibi kimlik bilgilerini (PII) içerebilir.

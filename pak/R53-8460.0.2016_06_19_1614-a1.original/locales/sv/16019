@@ -1,0 +1,1 @@
+Gör det möjligt att använda visningslistor för att spara kommandon för 2D canvas. Tack vare detta kan 2D canvas rastrera på en separat tråd.

@@ -1,0 +1,1 @@
+Nu afișa bara de informații când se atașează o extensie unei pagini folosind API-ul chrome.debugger. Acest marcaj este necesar pentru a remedia erorile paginilor de fundal ale extensiei.

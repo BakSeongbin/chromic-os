@@ -1,0 +1,1 @@
+Begrenser Native Client GDB-basert feilsøking etter nettadresser til manifestfiler. Native Client GDB-basert feilsøking må være aktivert for at dette skal virke.

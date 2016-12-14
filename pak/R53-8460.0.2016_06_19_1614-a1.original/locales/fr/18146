@@ -1,0 +1,3 @@
+Le compte d'utilisateur supervisé "$1" a bien été créé. Pour définir les sites Web que cet utilisateur peut consulter, vous pouvez configurer des restrictions et des paramètres sur le site <a target="_blank" href="$3">$4</a>. Si vous conservez les paramètres par défaut, $1 peut parcourir l'ensemble des sites du Web.
+
+Pour vérifier ce point et en savoir plus, veuillez consulter votre compte de messagerie ($2).

@@ -1,0 +1,2 @@
+Mottok flere distinkte Content-Length-overskrifter. Dette er forbudt, for
+    å beskytte mot angrep som splitter HTTP-svar.

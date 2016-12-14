@@ -1,0 +1,1 @@
+{COUNT,plural, =0{al menos 1 elemento en dispositivos sincronizados}=1{1 elemento (y más en dispositivos sincronizados)}other{# elementos (y más en dispositivos sincronizados)}}

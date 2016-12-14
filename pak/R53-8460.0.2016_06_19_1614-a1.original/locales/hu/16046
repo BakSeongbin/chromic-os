@@ -1,0 +1,1 @@
+Lehetővé teszi plusz hitelesítési információk küldését a kezdeti SYN csomagban korábban kapcsolódott ügyfelek esetén, amivel az adatküldés gyorsabb elindítása válik lehetővé.

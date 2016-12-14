@@ -1,0 +1,3 @@
+<p>Po uruchomieniu programu $1 w obsługiwanym środowisku pulpitu są używane systemowe ustawienia serwera proxy. Jednak ten system nie jest obsługiwany lub wystąpił problem z zastosowaniem konfiguracji systemu.</p>
+
+          <p>Serwer proxy można jeszcze skonfigurować za pomocą wiersza poleceń. Więcej informacji na temat flag i zmiennych środowiskowych zawiera instrukcja <code>man $2</code>.</p>

@@ -1,0 +1,1 @@
+Seadmetes WiFi-võrkude sünkroonimise lubamine. Kui see on lubatud, siis registreeritakse funktsioonis Chrome'i sünkroonimine WiFi-mandaadi andmetüüp ja WiFi-mandaadid sünkroonitakse kasutaja eelistuste järgi. (Vaadake ka: chrome://settings/syncSetup.)

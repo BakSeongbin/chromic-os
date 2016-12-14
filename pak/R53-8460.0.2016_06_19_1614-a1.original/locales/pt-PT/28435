@@ -1,0 +1,1 @@
+Aceda a uma <a jsvalues="href:urlCorrection;.jstdata:$this" onmousedown="linkClicked(this.jstdata)">cópia em cache</a> de <span jscontent="originalUrlForDisplay"></span>

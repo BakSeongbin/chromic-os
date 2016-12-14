@@ -1,0 +1,1 @@
+{COUNT,plural, =0{almenys 1 element als dispositius sincronitzats}=1{1 element (i més als dispositius sincronitzats)}other{# elements (i més als dispositius sincronitzats)}}

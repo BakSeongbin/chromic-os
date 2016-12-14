@@ -1,0 +1,1 @@
+Infoleiste nicht anzeigen, wenn eine Erweiterung über die chrome.debugger API mit einer Webseite verbunden ist. Dies ist zur Fehlerbehebung auf Hintergrundseiten von Erweiterungen erforderlich.

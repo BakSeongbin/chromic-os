@@ -1,0 +1,8 @@
+Accesează
+          meniul Chromium >
+          <span jscontent="settingsTitle"></span>
+          >
+          <span jscontent="advancedTitle"></span>
+          și debifează „<span jscontent="noNetworkPredictionTitle"></span>”.
+          Dacă această acțiune nu rezolvă problema, îți recomandăm să selectezi din nou
+          această opțiune pentru performanță îmbunătățită.

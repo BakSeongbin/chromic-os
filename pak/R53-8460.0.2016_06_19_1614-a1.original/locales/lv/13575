@@ -1,0 +1,18 @@
+<h3>Atkļūdošanas funkcijas</h3>
+    <br>
+    Varat iespējot atkļūdošanas funkcijas savā Chrome OS ierīcē, lai tajā instalētu un testētu pielāgotu kodu. Tādējādi varēsiet:<br>
+    <ul>
+      <li>noņemt “rootfs” verifikāciju, lai varētu mainīt OS failus;
+      <li>iespējot SSH piekļuvi ierīcei ar standarta testa atslēgām un tādējādi izmantot tādus rīkus kā <span style="color:grey;font-family:monospace">cros flash</span>, lai piekļūtu ierīcei;
+      <li>iespējot palaišanu no USB, lai jūs varētu instalēt OS attēlu no USB diska;
+      <li>iestatīt pielāgotu vērtību kā izstrādātāja un sistēmas saknes pieteikšanās paroli, lai varētu manuāli piekļūt ierīcei, izmantojot SSH.
+    </ul>
+    <br>
+    Kad atkļūdošanas funkcijas būs iespējotas, to lielākā daļa paliks iespējotas arī pēc funkcijas Powerwash izmantošanas vai datu notīrīšanas uzņēmuma pārvaldītā ierīcē. Lai pilnībā atspējotu visas atkļūdošanas funkcijas, izpildiet Chrome OS atkopšanas procesu (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Lai iegūtu plašāku informāciju par atkļūdošanas funkcijām, skatiet vietni<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Piezīme.</b> Procesa laikā sistēma tiks palaista atkārtoti.

@@ -1,0 +1,1 @@
+Restricționează depanarea bazată pe GDB a aplicației Client nativ în funcție de adresa URL a fișierului de manifest. Pentru ca această opțiune să funcționeze, trebuie să fie activată depanarea bazată pe GDB a Clientului nativ.

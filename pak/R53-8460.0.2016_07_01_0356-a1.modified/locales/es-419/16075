@@ -1,0 +1,1 @@
+Cuando esta opción está habilitada, se incluye un códec del estándar H.264 para videos de software. Si también existe un decodificador de hardware, se puede usar en lugar de este decodificador.

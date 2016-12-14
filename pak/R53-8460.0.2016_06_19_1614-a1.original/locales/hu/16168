@@ -1,0 +1,1 @@
+Ne jelenítse meg az információs sávot, ha egy bővítmény a chrome.debugger API segítségével csatlakozik egy oldalhoz. Ez szükséges a bővítmények háttéroldalainak hibakereséséhez.

@@ -1,0 +1,1 @@
+Wygląda na to, że profil jest używany przez inny proces Chromium ($1) na innym komputerze ($2). Chromium zablokowało profil, by zapobiec jego uszkodzeniu. Jeśli masz pewność, że żadne inne procesy nie używają tego profilu, możesz go odblokować i ponownie uruchomić Chromium.

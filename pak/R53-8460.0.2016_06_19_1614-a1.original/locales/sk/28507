@@ -1,0 +1,1 @@
+Bolo prijatých viacero rozdielnych hlavičiek typu Content-Length. Je to zakázané z dôvodu ochrany proti útokom rozdeľujúcim odpoveď HTTP.

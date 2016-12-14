@@ -1,0 +1,1 @@
+Przejdź do <a jsvalues="href:urlCorrection;.jstdata:$this" onmousedown="linkClicked(this.jstdata)">kopii</a> <span jscontent="originalUrlForDisplay"></span> w pamięci podręcznej

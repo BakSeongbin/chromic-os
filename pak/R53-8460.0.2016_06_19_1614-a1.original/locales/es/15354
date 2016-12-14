@@ -1,0 +1,1 @@
+Si eliminas el certificado de CA, el navegador ya no podrá confiar en ningún certificado emitido por esa entidad emisora de certificados.

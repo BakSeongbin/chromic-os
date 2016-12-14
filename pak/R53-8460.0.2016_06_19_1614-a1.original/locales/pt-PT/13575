@@ -1,0 +1,18 @@
+<h3>Funcionalidades de depuração</h3>
+    <br>
+    Pode ativar as funcionalidade de depuração no seu dispositivo SO Chrome para instalar e testar código personalizado no seu dispositivo. Isto permite:<br>
+    <ul>
+      <li>Remover a verificação de rootfs para que possa modificar ficheiros do SO
+      <li>Ativar o acesso SSH para o dispositivo utilizando as chaves de teste padrão para que possa utilizar ferramentas como <span style="color:grey;font-family:monospace">"cros flash"</span> para aceder ao dispositivo
+      <li>Ativar o arranque a partir de USB para que possa instalar uma imagem do SO a partir de uma unidade USB
+      <li>Definir a palavra-passe de início de sessão do programador e da raiz do sistema para um valor predefinido para que possa executar manualmente o SSH no dispositivo
+    </ul>
+    <br>
+    Após a ativação, a maioria das funcionalidades de depuração permanece ativada mesmo depois de um powerwash ou de uma limpeza dos dados num dispositivo gerido por uma empresa. Para desativar completamente, conclua o processo de recuperação do SO Chrome (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Para mais informações acerca das funcionalidades de depuração, consulte:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Nota:</b> o sistema é reiniciado durante o processo.

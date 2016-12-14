@@ -1,0 +1,2566 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview
+ * Provides a HTML5 postMessage channel to the injected JS to talk back
+ * to Authenticator.
+ */
+'use strict';
+
+// Copyright 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * Channel to the background script.
+ */
+function Channel() {
+  this.messageCallbacks_ = {};
+  this.internalRequestCallbacks_ = {};
+}
+
+/** @const */
+Channel.INTERNAL_REQUEST_MESSAGE = 'internal-request-message';
+
+/** @const */
+Channel.INTERNAL_REPLY_MESSAGE = 'internal-reply-message';
+
+Channel.prototype = {
+  // Message port to use to communicate with background script.
+  port_: null,
+
+  // Registered message callbacks.
+  messageCallbacks_: null,
+
+  // Internal request id to track pending requests.
+  nextInternalRequestId_: 0,
+
+  // Pending internal request callbacks.
+  internalRequestCallbacks_: null,
+
+  /**
+   * Initialize the channel with given port for the background script.
+   */
+  init: function(port) {
+    this.port_ = port;
+    this.port_.onMessage.addListener(this.onMessage_.bind(this));
+  },
+
+  /**
+   * Connects to the background script with the given name.
+   */
+  connect: function(name) {
+    this.port_ = chrome.runtime.connect({name: name});
+    this.port_.onMessage.addListener(this.onMessage_.bind(this));
+  },
+
+  /**
+   * Associates a message name with a callback. When a message with the name
+   * is received, the callback will be invoked with the message as its arg.
+   * Note only the last registered callback will be invoked.
+   */
+  registerMessage: function(name, callback) {
+    this.messageCallbacks_[name] = callback;
+  },
+
+  /**
+   * Sends a message to the other side of the channel.
+   */
+  send: function(msg) {
+    this.port_.postMessage(msg);
+  },
+
+  /**
+   * Sends a message to the other side and invokes the callback with
+   * the replied object. Useful for message that expects a returned result.
+   */
+  sendWithCallback: function(msg, callback) {
+    var requestId = this.nextInternalRequestId_++;
+    this.internalRequestCallbacks_[requestId] = callback;
+    this.send({
+      name: Channel.INTERNAL_REQUEST_MESSAGE,
+      requestId: requestId,
+      payload: msg
+    });
+  },
+
+  /**
+   * Invokes message callback using given message.
+   * @return {*} The return value of the message callback or null.
+   */
+  invokeMessageCallbacks_: function(msg) {
+    var name = msg.name;
+    if (this.messageCallbacks_[name])
+      return this.messageCallbacks_[name](msg);
+
+    console.error('Error: Unexpected message, name=' + name);
+    return null;
+  },
+
+  /**
+   * Invoked when a message is received.
+   */
+  onMessage_: function(msg) {
+    var name = msg.name;
+    if (name == Channel.INTERNAL_REQUEST_MESSAGE) {
+      var payload = msg.payload;
+      var result = this.invokeMessageCallbacks_(payload);
+      this.send({
+        name: Channel.INTERNAL_REPLY_MESSAGE,
+        requestId: msg.requestId,
+        result: result
+      });
+    } else if (name == Channel.INTERNAL_REPLY_MESSAGE) {
+      var callback = this.internalRequestCallbacks_[msg.requestId];
+      delete this.internalRequestCallbacks_[msg.requestId];
+      if (callback)
+        callback(msg.result);
+    } else {
+      this.invokeMessageCallbacks_(msg);
+    }
+  }
+};
+
+/**
+ * Class factory.
+ * @return {Channel}
+ */
+Channel.create = function() {
+  return new Channel();
+};
+
+
+var PostMessageChannel = (function() {
+  /**
+   * Allowed origins of the hosting page.
+   * @type {Array<string>}
+   */
+  var ALLOWED_ORIGINS = [
+    'chrome://oobe',
+    'chrome://chrome-signin'
+  ];
+
+  /** @const */
+  var PORT_MESSAGE = 'post-message-port-message';
+
+  /** @const */
+  var CHANNEL_INIT_MESSAGE = 'post-message-channel-init';
+
+  /** @const */
+  var CHANNEL_CONNECT_MESSAGE = 'post-message-channel-connect';
+
+  /**
+   * Whether the script runs in a top level window.
+   */
+  function isTopLevel() {
+    return window === window.top;
+  }
+
+  /**
+   * A simple event target.
+   */
+  function EventTarget() {
+    this.listeners_ = [];
+  }
+
+  EventTarget.prototype = {
+    /**
+     * Add an event listener.
+     */
+    addListener: function(listener) {
+      this.listeners_.push(listener);
+    },
+
+    /**
+     * Dispatches a given event to all listeners.
+     */
+    dispatch: function(e) {
+      for (var i = 0; i < this.listeners_.length; ++i) {
+        this.listeners_[i].call(undefined, e);
+      }
+    }
+  };
+
+  /**
+   * ChannelManager handles window message events by dispatching them to
+   * PostMessagePorts or forwarding to other windows (up/down the hierarchy).
+   * @constructor
+   */
+  function ChannelManager() {
+    /**
+     * Window and origin to forward message up the hierarchy. For subframes,
+     * they defaults to window.parent and any origin. For top level window,
+     * this would be set to the hosting webview on CHANNEL_INIT_MESSAGE.
+     */
+    this.upperWindow = isTopLevel() ? null : window.parent;
+    this.upperOrigin = isTopLevel() ? '' : '*';
+
+    /**
+     * Channle Id to port map.
+     * @type {Object<number, PostMessagePort>}
+     */
+    this.channels_ = {};
+
+    /**
+     * Deferred messages to be posted to |upperWindow|.
+     * @type {Array}
+     */
+    this.deferredUpperWindowMessages_ = [];
+
+    /**
+     * Ports that depend on upperWindow and need to be setup when its available.
+     */
+    this.deferredUpperWindowPorts_ = [];
+
+    /**
+     * Whether the ChannelManager runs in daemon mode and accepts connections.
+     */
+    this.isDaemon = false;
+
+    /**
+     * Fires when ChannelManager is in listening mode and a
+     * CHANNEL_CONNECT_MESSAGE is received.
+     */
+    this.onConnect = new EventTarget();
+
+    window.addEventListener('message', this.onMessage_.bind(this));
+  }
+
+  ChannelManager.prototype = {
+    /**
+     * Gets a global unique id to use.
+     * @return {number}
+     */
+    createChannelId_: function() {
+      return (new Date()).getTime();
+    },
+
+    /**
+     * Posts data to upperWindow. Queue it if upperWindow is not available.
+     */
+    postToUpperWindow: function(data) {
+      if (this.upperWindow == null) {
+        this.deferredUpperWindowMessages_.push(data);
+        return;
+      }
+
+      this.upperWindow.postMessage(data, this.upperOrigin);
+    },
+
+    /**
+     * Creates a port and register it in |channels_|.
+     * @param {number} channelId
+     * @param {string} channelName
+     * @param {DOMWindow=} opt_targetWindow
+     * @param {string=} opt_targetOrigin
+     */
+    createPort: function(
+        channelId, channelName, opt_targetWindow, opt_targetOrigin) {
+      var port = new PostMessagePort(channelId, channelName);
+      if (opt_targetWindow)
+        port.setTarget(opt_targetWindow, opt_targetOrigin);
+      this.channels_[channelId] = port;
+      return port;
+    },
+
+    /*
+     * Returns a message forward handler for the given proxy port.
+     * @private
+     */
+    getProxyPortForwardHandler_: function(proxyPort) {
+      return function(msg) { proxyPort.postMessage(msg); };
+    },
+
+    /**
+     * Creates a forwarding porxy port.
+     * @param {number} channelId
+     * @param {string} channelName
+     * @param {!DOMWindow} targetWindow
+     * @param {!string} targetOrigin
+     */
+    createProxyPort: function(
+        channelId, channelName, targetWindow, targetOrigin) {
+      var port = this.createPort(
+          channelId, channelName, targetWindow, targetOrigin);
+      port.onMessage.addListener(this.getProxyPortForwardHandler_(port));
+      return port;
+    },
+
+    /**
+     * Creates a connecting port to the daemon and request connection.
+     * @param {string} name
+     * @return {PostMessagePort}
+     */
+    connectToDaemon: function(name) {
+      if (this.isDaemon) {
+        console.error(
+            'Error: Connecting from the daemon page is not supported.');
+        return;
+      }
+
+      var port = this.createPort(this.createChannelId_(), name);
+      if (this.upperWindow) {
+        port.setTarget(this.upperWindow, this.upperOrigin);
+      } else {
+        this.deferredUpperWindowPorts_.push(port);
+      }
+
+      this.postToUpperWindow({
+        type: CHANNEL_CONNECT_MESSAGE,
+        channelId: port.channelId,
+        channelName: port.name
+      });
+      return port;
+    },
+
+    /**
+     * Dispatches a 'message' event to port.
+     * @private
+     */
+    dispatchMessageToPort_: function(e) {
+      var channelId = e.data.channelId;
+      var port = this.channels_[channelId];
+      if (!port) {
+        console.error('Error: Unable to dispatch message. Unknown channel.');
+        return;
+      }
+
+      port.handleWindowMessage(e);
+    },
+
+    /**
+     * Window 'message' handler.
+     */
+    onMessage_: function(e) {
+      if (typeof e.data != 'object' ||
+          !e.data.hasOwnProperty('type')) {
+        return;
+      }
+
+      if (e.data.type === PORT_MESSAGE) {
+        // Dispatch port message to ports if this is the daemon page or
+        // the message is from upperWindow. In case of null upperWindow,
+        // the message is assumed to be forwarded to upperWindow and queued.
+        if (this.isDaemon ||
+            (this.upperWindow && e.source === this.upperWindow)) {
+          this.dispatchMessageToPort_(e);
+        } else {
+          this.postToUpperWindow(e.data);
+        }
+      } else if (e.data.type === CHANNEL_CONNECT_MESSAGE) {
+        var channelId = e.data.channelId;
+        var channelName = e.data.channelName;
+
+        if (this.isDaemon) {
+          var port = this.createPort(
+              channelId, channelName, e.source, e.origin);
+          this.onConnect.dispatch(port);
+        } else {
+          this.createProxyPort(channelId, channelName, e.source, e.origin);
+          this.postToUpperWindow(e.data);
+        }
+      } else if (e.data.type === CHANNEL_INIT_MESSAGE) {
+        if (ALLOWED_ORIGINS.indexOf(e.origin) == -1)
+          return;
+
+        this.upperWindow = e.source;
+        this.upperOrigin = e.origin;
+
+        for (var i = 0; i < this.deferredUpperWindowMessages_.length; ++i) {
+          this.upperWindow.postMessage(this.deferredUpperWindowMessages_[i],
+                                       this.upperOrigin);
+        }
+        this.deferredUpperWindowMessages_ = [];
+
+        for (var i = 0; i < this.deferredUpperWindowPorts_.length; ++i) {
+          this.deferredUpperWindowPorts_[i].setTarget(this.upperWindow,
+                                                      this.upperOrigin);
+        }
+        this.deferredUpperWindowPorts_ = [];
+      }
+    }
+  };
+
+  /**
+   * Singleton instance of ChannelManager.
+   * @type {ChannelManager}
+   */
+  var channelManager = new ChannelManager();
+
+  /**
+   * A HTML5 postMessage based port that provides the same port interface
+   * as the messaging API port.
+   * @param {number} channelId
+   * @param {string} name
+   */
+  function PostMessagePort(channelId, name) {
+    this.channelId = channelId;
+    this.name = name;
+    this.targetWindow = null;
+    this.targetOrigin = '';
+    this.deferredMessages_ = [];
+
+    this.onMessage = new EventTarget();
+  };
+
+  PostMessagePort.prototype = {
+    /**
+     * Sets the target window and origin.
+     * @param {DOMWindow} targetWindow
+     * @param {string} targetOrigin
+     */
+    setTarget: function(targetWindow, targetOrigin) {
+      this.targetWindow = targetWindow;
+      this.targetOrigin = targetOrigin;
+
+      for (var i = 0; i < this.deferredMessages_.length; ++i) {
+        this.postMessage(this.deferredMessages_[i]);
+      }
+      this.deferredMessages_ = [];
+    },
+
+    postMessage: function(msg) {
+      if (!this.targetWindow) {
+        this.deferredMessages_.push(msg);
+        return;
+      }
+
+      this.targetWindow.postMessage({
+        type: PORT_MESSAGE,
+        channelId: this.channelId,
+        payload: msg
+      }, this.targetOrigin);
+    },
+
+    handleWindowMessage: function(e) {
+      this.onMessage.dispatch(e.data.payload);
+    }
+  };
+
+  /**
+   * A message channel based on PostMessagePort.
+   * @extends {Channel}
+   * @constructor
+   */
+  function PostMessageChannel() {
+    Channel.apply(this, arguments);
+  };
+
+  PostMessageChannel.prototype = {
+    __proto__: Channel.prototype,
+
+    /** @override */
+    connect: function(name) {
+      this.port_ = channelManager.connectToDaemon(name);
+      this.port_.onMessage.addListener(this.onMessage_.bind(this));
+    },
+  };
+
+  /**
+   * Initialize webview content window for postMessage channel.
+   * @param {DOMWindow} webViewContentWindow Content window of the webview.
+   */
+  PostMessageChannel.init = function(webViewContentWindow) {
+    webViewContentWindow.postMessage({
+      type: CHANNEL_INIT_MESSAGE
+    }, '*');
+  };
+
+  /**
+   * Run in daemon mode and listen for incoming connections. Note that the
+   * current implementation assumes the daemon runs in the hosting page
+   * at the upper layer of the DOM tree. That is, all connect requests go
+   * up the DOM tree instead of going into sub frames.
+   * @param {function(PostMessagePort)} callback Invoked when a connection is
+   *     made.
+   */
+  PostMessageChannel.runAsDaemon = function(callback) {
+    channelManager.isDaemon = true;
+
+    var onConnect = function(port) {
+      callback(port);
+    };
+    channelManager.onConnect.addListener(onConnect);
+  };
+
+  return PostMessageChannel;
+})();
+
+/** @override */
+Channel.create = function() {
+  return new PostMessageChannel();
+};
+
+
+/**
+ * @fileoverview Saml support for webview based auth.
+ */
+
+cr.define('cr.login', function() {
+  'use strict';
+
+  /**
+   * The lowest version of the credentials passing API supported.
+   * @type {number}
+   */
+  var MIN_API_VERSION_VERSION = 1;
+
+  /**
+   * The highest version of the credentials passing API supported.
+   * @type {number}
+   */
+  var MAX_API_VERSION_VERSION = 1;
+
+  /**
+   * The key types supported by the credentials passing API.
+   * @type {Array} Array of strings.
+   */
+  var API_KEY_TYPES = [
+    'KEY_TYPE_PASSWORD_PLAIN',
+  ];
+
+  /** @const */
+  var SAML_HEADER = 'google-accounts-saml';
+
+  /**
+   * The script to inject into webview and its sub frames.
+   * @type {string}
+   */
+  var injectedJs = String.raw`
+      // Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview
+ * Provides a HTML5 postMessage channel to the injected JS to talk back
+ * to Authenticator.
+ */
+'use strict';
+
+// Copyright 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * Channel to the background script.
+ */
+function Channel() {
+  this.messageCallbacks_ = {};
+  this.internalRequestCallbacks_ = {};
+}
+
+/** @const */
+Channel.INTERNAL_REQUEST_MESSAGE = 'internal-request-message';
+
+/** @const */
+Channel.INTERNAL_REPLY_MESSAGE = 'internal-reply-message';
+
+Channel.prototype = {
+  // Message port to use to communicate with background script.
+  port_: null,
+
+  // Registered message callbacks.
+  messageCallbacks_: null,
+
+  // Internal request id to track pending requests.
+  nextInternalRequestId_: 0,
+
+  // Pending internal request callbacks.
+  internalRequestCallbacks_: null,
+
+  /**
+   * Initialize the channel with given port for the background script.
+   */
+  init: function(port) {
+    this.port_ = port;
+    this.port_.onMessage.addListener(this.onMessage_.bind(this));
+  },
+
+  /**
+   * Connects to the background script with the given name.
+   */
+  connect: function(name) {
+    this.port_ = chrome.runtime.connect({name: name});
+    this.port_.onMessage.addListener(this.onMessage_.bind(this));
+  },
+
+  /**
+   * Associates a message name with a callback. When a message with the name
+   * is received, the callback will be invoked with the message as its arg.
+   * Note only the last registered callback will be invoked.
+   */
+  registerMessage: function(name, callback) {
+    this.messageCallbacks_[name] = callback;
+  },
+
+  /**
+   * Sends a message to the other side of the channel.
+   */
+  send: function(msg) {
+    this.port_.postMessage(msg);
+  },
+
+  /**
+   * Sends a message to the other side and invokes the callback with
+   * the replied object. Useful for message that expects a returned result.
+   */
+  sendWithCallback: function(msg, callback) {
+    var requestId = this.nextInternalRequestId_++;
+    this.internalRequestCallbacks_[requestId] = callback;
+    this.send({
+      name: Channel.INTERNAL_REQUEST_MESSAGE,
+      requestId: requestId,
+      payload: msg
+    });
+  },
+
+  /**
+   * Invokes message callback using given message.
+   * @return {*} The return value of the message callback or null.
+   */
+  invokeMessageCallbacks_: function(msg) {
+    var name = msg.name;
+    if (this.messageCallbacks_[name])
+      return this.messageCallbacks_[name](msg);
+
+    console.error('Error: Unexpected message, name=' + name);
+    return null;
+  },
+
+  /**
+   * Invoked when a message is received.
+   */
+  onMessage_: function(msg) {
+    var name = msg.name;
+    if (name == Channel.INTERNAL_REQUEST_MESSAGE) {
+      var payload = msg.payload;
+      var result = this.invokeMessageCallbacks_(payload);
+      this.send({
+        name: Channel.INTERNAL_REPLY_MESSAGE,
+        requestId: msg.requestId,
+        result: result
+      });
+    } else if (name == Channel.INTERNAL_REPLY_MESSAGE) {
+      var callback = this.internalRequestCallbacks_[msg.requestId];
+      delete this.internalRequestCallbacks_[msg.requestId];
+      if (callback)
+        callback(msg.result);
+    } else {
+      this.invokeMessageCallbacks_(msg);
+    }
+  }
+};
+
+/**
+ * Class factory.
+ * @return {Channel}
+ */
+Channel.create = function() {
+  return new Channel();
+};
+
+
+var PostMessageChannel = (function() {
+  /**
+   * Allowed origins of the hosting page.
+   * @type {Array<string>}
+   */
+  var ALLOWED_ORIGINS = [
+    'chrome://oobe',
+    'chrome://chrome-signin'
+  ];
+
+  /** @const */
+  var PORT_MESSAGE = 'post-message-port-message';
+
+  /** @const */
+  var CHANNEL_INIT_MESSAGE = 'post-message-channel-init';
+
+  /** @const */
+  var CHANNEL_CONNECT_MESSAGE = 'post-message-channel-connect';
+
+  /**
+   * Whether the script runs in a top level window.
+   */
+  function isTopLevel() {
+    return window === window.top;
+  }
+
+  /**
+   * A simple event target.
+   */
+  function EventTarget() {
+    this.listeners_ = [];
+  }
+
+  EventTarget.prototype = {
+    /**
+     * Add an event listener.
+     */
+    addListener: function(listener) {
+      this.listeners_.push(listener);
+    },
+
+    /**
+     * Dispatches a given event to all listeners.
+     */
+    dispatch: function(e) {
+      for (var i = 0; i < this.listeners_.length; ++i) {
+        this.listeners_[i].call(undefined, e);
+      }
+    }
+  };
+
+  /**
+   * ChannelManager handles window message events by dispatching them to
+   * PostMessagePorts or forwarding to other windows (up/down the hierarchy).
+   * @constructor
+   */
+  function ChannelManager() {
+    /**
+     * Window and origin to forward message up the hierarchy. For subframes,
+     * they defaults to window.parent and any origin. For top level window,
+     * this would be set to the hosting webview on CHANNEL_INIT_MESSAGE.
+     */
+    this.upperWindow = isTopLevel() ? null : window.parent;
+    this.upperOrigin = isTopLevel() ? '' : '*';
+
+    /**
+     * Channle Id to port map.
+     * @type {Object<number, PostMessagePort>}
+     */
+    this.channels_ = {};
+
+    /**
+     * Deferred messages to be posted to |upperWindow|.
+     * @type {Array}
+     */
+    this.deferredUpperWindowMessages_ = [];
+
+    /**
+     * Ports that depend on upperWindow and need to be setup when its available.
+     */
+    this.deferredUpperWindowPorts_ = [];
+
+    /**
+     * Whether the ChannelManager runs in daemon mode and accepts connections.
+     */
+    this.isDaemon = false;
+
+    /**
+     * Fires when ChannelManager is in listening mode and a
+     * CHANNEL_CONNECT_MESSAGE is received.
+     */
+    this.onConnect = new EventTarget();
+
+    window.addEventListener('message', this.onMessage_.bind(this));
+  }
+
+  ChannelManager.prototype = {
+    /**
+     * Gets a global unique id to use.
+     * @return {number}
+     */
+    createChannelId_: function() {
+      return (new Date()).getTime();
+    },
+
+    /**
+     * Posts data to upperWindow. Queue it if upperWindow is not available.
+     */
+    postToUpperWindow: function(data) {
+      if (this.upperWindow == null) {
+        this.deferredUpperWindowMessages_.push(data);
+        return;
+      }
+
+      this.upperWindow.postMessage(data, this.upperOrigin);
+    },
+
+    /**
+     * Creates a port and register it in |channels_|.
+     * @param {number} channelId
+     * @param {string} channelName
+     * @param {DOMWindow=} opt_targetWindow
+     * @param {string=} opt_targetOrigin
+     */
+    createPort: function(
+        channelId, channelName, opt_targetWindow, opt_targetOrigin) {
+      var port = new PostMessagePort(channelId, channelName);
+      if (opt_targetWindow)
+        port.setTarget(opt_targetWindow, opt_targetOrigin);
+      this.channels_[channelId] = port;
+      return port;
+    },
+
+    /*
+     * Returns a message forward handler for the given proxy port.
+     * @private
+     */
+    getProxyPortForwardHandler_: function(proxyPort) {
+      return function(msg) { proxyPort.postMessage(msg); };
+    },
+
+    /**
+     * Creates a forwarding porxy port.
+     * @param {number} channelId
+     * @param {string} channelName
+     * @param {!DOMWindow} targetWindow
+     * @param {!string} targetOrigin
+     */
+    createProxyPort: function(
+        channelId, channelName, targetWindow, targetOrigin) {
+      var port = this.createPort(
+          channelId, channelName, targetWindow, targetOrigin);
+      port.onMessage.addListener(this.getProxyPortForwardHandler_(port));
+      return port;
+    },
+
+    /**
+     * Creates a connecting port to the daemon and request connection.
+     * @param {string} name
+     * @return {PostMessagePort}
+     */
+    connectToDaemon: function(name) {
+      if (this.isDaemon) {
+        console.error(
+            'Error: Connecting from the daemon page is not supported.');
+        return;
+      }
+
+      var port = this.createPort(this.createChannelId_(), name);
+      if (this.upperWindow) {
+        port.setTarget(this.upperWindow, this.upperOrigin);
+      } else {
+        this.deferredUpperWindowPorts_.push(port);
+      }
+
+      this.postToUpperWindow({
+        type: CHANNEL_CONNECT_MESSAGE,
+        channelId: port.channelId,
+        channelName: port.name
+      });
+      return port;
+    },
+
+    /**
+     * Dispatches a 'message' event to port.
+     * @private
+     */
+    dispatchMessageToPort_: function(e) {
+      var channelId = e.data.channelId;
+      var port = this.channels_[channelId];
+      if (!port) {
+        console.error('Error: Unable to dispatch message. Unknown channel.');
+        return;
+      }
+
+      port.handleWindowMessage(e);
+    },
+
+    /**
+     * Window 'message' handler.
+     */
+    onMessage_: function(e) {
+      if (typeof e.data != 'object' ||
+          !e.data.hasOwnProperty('type')) {
+        return;
+      }
+
+      if (e.data.type === PORT_MESSAGE) {
+        // Dispatch port message to ports if this is the daemon page or
+        // the message is from upperWindow. In case of null upperWindow,
+        // the message is assumed to be forwarded to upperWindow and queued.
+        if (this.isDaemon ||
+            (this.upperWindow && e.source === this.upperWindow)) {
+          this.dispatchMessageToPort_(e);
+        } else {
+          this.postToUpperWindow(e.data);
+        }
+      } else if (e.data.type === CHANNEL_CONNECT_MESSAGE) {
+        var channelId = e.data.channelId;
+        var channelName = e.data.channelName;
+
+        if (this.isDaemon) {
+          var port = this.createPort(
+              channelId, channelName, e.source, e.origin);
+          this.onConnect.dispatch(port);
+        } else {
+          this.createProxyPort(channelId, channelName, e.source, e.origin);
+          this.postToUpperWindow(e.data);
+        }
+      } else if (e.data.type === CHANNEL_INIT_MESSAGE) {
+        if (ALLOWED_ORIGINS.indexOf(e.origin) == -1)
+          return;
+
+        this.upperWindow = e.source;
+        this.upperOrigin = e.origin;
+
+        for (var i = 0; i < this.deferredUpperWindowMessages_.length; ++i) {
+          this.upperWindow.postMessage(this.deferredUpperWindowMessages_[i],
+                                       this.upperOrigin);
+        }
+        this.deferredUpperWindowMessages_ = [];
+
+        for (var i = 0; i < this.deferredUpperWindowPorts_.length; ++i) {
+          this.deferredUpperWindowPorts_[i].setTarget(this.upperWindow,
+                                                      this.upperOrigin);
+        }
+        this.deferredUpperWindowPorts_ = [];
+      }
+    }
+  };
+
+  /**
+   * Singleton instance of ChannelManager.
+   * @type {ChannelManager}
+   */
+  var channelManager = new ChannelManager();
+
+  /**
+   * A HTML5 postMessage based port that provides the same port interface
+   * as the messaging API port.
+   * @param {number} channelId
+   * @param {string} name
+   */
+  function PostMessagePort(channelId, name) {
+    this.channelId = channelId;
+    this.name = name;
+    this.targetWindow = null;
+    this.targetOrigin = '';
+    this.deferredMessages_ = [];
+
+    this.onMessage = new EventTarget();
+  };
+
+  PostMessagePort.prototype = {
+    /**
+     * Sets the target window and origin.
+     * @param {DOMWindow} targetWindow
+     * @param {string} targetOrigin
+     */
+    setTarget: function(targetWindow, targetOrigin) {
+      this.targetWindow = targetWindow;
+      this.targetOrigin = targetOrigin;
+
+      for (var i = 0; i < this.deferredMessages_.length; ++i) {
+        this.postMessage(this.deferredMessages_[i]);
+      }
+      this.deferredMessages_ = [];
+    },
+
+    postMessage: function(msg) {
+      if (!this.targetWindow) {
+        this.deferredMessages_.push(msg);
+        return;
+      }
+
+      this.targetWindow.postMessage({
+        type: PORT_MESSAGE,
+        channelId: this.channelId,
+        payload: msg
+      }, this.targetOrigin);
+    },
+
+    handleWindowMessage: function(e) {
+      this.onMessage.dispatch(e.data.payload);
+    }
+  };
+
+  /**
+   * A message channel based on PostMessagePort.
+   * @extends {Channel}
+   * @constructor
+   */
+  function PostMessageChannel() {
+    Channel.apply(this, arguments);
+  };
+
+  PostMessageChannel.prototype = {
+    __proto__: Channel.prototype,
+
+    /** @override */
+    connect: function(name) {
+      this.port_ = channelManager.connectToDaemon(name);
+      this.port_.onMessage.addListener(this.onMessage_.bind(this));
+    },
+  };
+
+  /**
+   * Initialize webview content window for postMessage channel.
+   * @param {DOMWindow} webViewContentWindow Content window of the webview.
+   */
+  PostMessageChannel.init = function(webViewContentWindow) {
+    webViewContentWindow.postMessage({
+      type: CHANNEL_INIT_MESSAGE
+    }, '*');
+  };
+
+  /**
+   * Run in daemon mode and listen for incoming connections. Note that the
+   * current implementation assumes the daemon runs in the hosting page
+   * at the upper layer of the DOM tree. That is, all connect requests go
+   * up the DOM tree instead of going into sub frames.
+   * @param {function(PostMessagePort)} callback Invoked when a connection is
+   *     made.
+   */
+  PostMessageChannel.runAsDaemon = function(callback) {
+    channelManager.isDaemon = true;
+
+    var onConnect = function(port) {
+      callback(port);
+    };
+    channelManager.onConnect.addListener(onConnect);
+  };
+
+  return PostMessageChannel;
+})();
+
+/** @override */
+Channel.create = function() {
+  return new PostMessageChannel();
+};
+
+// Copyright 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview
+ * Script to be injected into SAML provider pages, serving three main purposes:
+ * 1. Signal hosting extension that an external page is loaded so that the
+ *    UI around it should be changed accordingly;
+ * 2. Provide an API via which the SAML provider can pass user credentials to
+ *    Chrome OS, allowing the password to be used for encrypting user data and
+ *    offline login.
+ * 3. Scrape password fields, making the password available to Chrome OS even if
+ *    the SAML provider does not support the credential passing API.
+ */
+
+(function() {
+  function APICallForwarder() {
+  }
+
+  /**
+   * The credential passing API is used by sending messages to the SAML page's
+   * |window| object. This class forwards API calls from the SAML page to a
+   * background script and API responses from the background script to the SAML
+   * page. Communication with the background script occurs via a |Channel|.
+   */
+  APICallForwarder.prototype = {
+    // Channel to which API calls are forwarded.
+    channel_: null,
+
+    /**
+     * Initialize the API call forwarder.
+     * @param {!Object} channel Channel to which API calls should be forwarded.
+     */
+    init: function(channel) {
+      this.channel_ = channel;
+      this.channel_.registerMessage('apiResponse',
+                                    this.onAPIResponse_.bind(this));
+
+      window.addEventListener('message', this.onMessage_.bind(this));
+    },
+
+    onMessage_: function(event) {
+      if (event.source != window ||
+          typeof event.data != 'object' ||
+          !event.data.hasOwnProperty('type') ||
+          event.data.type != 'gaia_saml_api') {
+        return;
+      }
+      // Forward API calls to the background script.
+      this.channel_.send({name: 'apiCall', call: event.data.call});
+    },
+
+    onAPIResponse_: function(msg) {
+      // Forward API responses to the SAML page.
+      window.postMessage({type: 'gaia_saml_api_reply', response: msg.response},
+                         '/');
+    }
+  };
+
+  /**
+   * A class to scrape password from type=password input elements under a given
+   * docRoot and send them back via a Channel.
+   */
+  function PasswordInputScraper() {
+  }
+
+  PasswordInputScraper.prototype = {
+    // URL of the page.
+    pageURL_: null,
+
+    // Channel to send back changed password.
+    channel_: null,
+
+    // An array to hold password fields.
+    passwordFields_: null,
+
+    // An array to hold cached password values.
+    passwordValues_: null,
+
+    // A MutationObserver to watch for dynamic password field creation.
+    passwordFieldsObserver: null,
+
+    /**
+     * Initialize the scraper with given channel and docRoot. Note that the
+     * scanning for password fields happens inside the function and does not
+     * handle DOM tree changes after the call returns.
+     * @param {!Object} channel The channel to send back password.
+     * @param {!string} pageURL URL of the page.
+     * @param {!HTMLElement} docRoot The root element of the DOM tree that
+     *     contains the password fields of interest.
+     */
+    init: function(channel, pageURL, docRoot) {
+      this.pageURL_ = pageURL;
+      this.channel_ = channel;
+
+      this.passwordFields_ = [];
+      this.passwordValues_ = [];
+
+      this.findAndTrackChildren(docRoot);
+
+      this.passwordFieldsObserver = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          Array.prototype.forEach.call(
+            mutation.addedNodes,
+            function(addedNode) {
+              if (addedNode.nodeType != Node.ELEMENT_NODE)
+                return;
+
+              if (addedNode.matches('input[type=password]')) {
+                this.trackPasswordField(addedNode);
+              } else {
+                this.findAndTrackChildren(addedNode);
+              }
+            }.bind(this));
+        }.bind(this));
+      }.bind(this));
+      this.passwordFieldsObserver.observe(docRoot,
+                                          {subtree: true, childList: true});
+    },
+
+    /**
+     * Find and track password fields that are descendants of the given element.
+     * @param {!HTMLElement} element The parent element to search from.
+     */
+    findAndTrackChildren: function(element) {
+      Array.prototype.forEach.call(
+          element.querySelectorAll('input[type=password]'), function(field) {
+            this.trackPasswordField(field);
+          }.bind(this));
+    },
+
+    /**
+     * Start tracking value changes of the given password field if it is
+     * not being tracked yet.
+     * @param {!HTMLInputElement} passworField The password field to track.
+     */
+    trackPasswordField: function(passwordField) {
+      var existing = this.passwordFields_.filter(function(element) {
+        return element === passwordField;
+      });
+      if (existing.length != 0)
+        return;
+
+      var index = this.passwordFields_.length;
+      var fieldId = passwordField.id || passwordField.name || '';
+      passwordField.addEventListener(
+          'input', this.onPasswordChanged_.bind(this, index, fieldId));
+      this.passwordFields_.push(passwordField);
+      this.passwordValues_.push(passwordField.value);
+    },
+
+    /**
+     * Check if the password field at |index| has changed. If so, sends back
+     * the updated value.
+     */
+    maybeSendUpdatedPassword: function(index, fieldId) {
+      var newValue = this.passwordFields_[index].value;
+      if (newValue == this.passwordValues_[index])
+        return;
+
+      this.passwordValues_[index] = newValue;
+
+      // Use an invalid char for URL as delimiter to concatenate page url,
+      // password field index and id to construct a unique ID for the password
+      // field.
+      var passwordId = this.pageURL_.split('#')[0].split('?')[0] +
+          '|' + index + '|' + fieldId;
+      this.channel_.send({
+        name: 'updatePassword',
+        id: passwordId,
+        password: newValue
+      });
+    },
+
+    /**
+     * Handles 'change' event in the scraped password fields.
+     * @param {number} index The index of the password fields in
+     *     |passwordFields_|.
+     * @param {string} fieldId The id or name of the password field or blank.
+     */
+    onPasswordChanged_: function(index, fieldId) {
+      this.maybeSendUpdatedPassword(index, fieldId);
+    }
+  };
+
+  function onGetSAMLFlag(channel, isSAMLPage) {
+    if (!isSAMLPage)
+      return;
+    var pageURL = window.location.href;
+
+    channel.send({name: 'pageLoaded', url: pageURL});
+
+    var initPasswordScraper = function() {
+      var passwordScraper = new PasswordInputScraper();
+      passwordScraper.init(channel, pageURL, document.documentElement);
+    };
+
+    if (document.readyState == 'loading') {
+      window.addEventListener('readystatechange', function listener(event) {
+        if (document.readyState == 'loading')
+          return;
+        initPasswordScraper();
+        window.removeEventListener(event.type, listener, true);
+      }, true);
+    } else {
+      initPasswordScraper();
+    }
+  }
+
+  var channel = Channel.create();
+  channel.connect('injected');
+  channel.sendWithCallback({name: 'getSAMLFlag'},
+                           onGetSAMLFlag.bind(undefined, channel));
+
+  var apiCallForwarder = new APICallForwarder();
+  apiCallForwarder.init(channel);
+})();
+
+
+  `;
+
+  /**
+   * Creates a new URL by striping all query parameters.
+   * @param {string} url The original URL.
+   * @return {string} The new URL with all query parameters stripped.
+   */
+  function stripParams(url) {
+    return url.substring(0, url.indexOf('?')) || url;
+  }
+
+  /**
+   * Extract domain name from an URL.
+   * @param {string} url An URL string.
+   * @return {string} The host name of the URL.
+   */
+  function extractDomain(url) {
+    var a = document.createElement('a');
+    a.href = url;
+    return a.hostname;
+  }
+
+  /**
+   * A handler to provide saml support for the given webview that hosts the
+   * auth IdP pages.
+   * @extends {cr.EventTarget}
+   * @param {webview} webview
+   * @constructor
+   */
+  function SamlHandler(webview) {
+    /**
+     * The webview that serves IdP pages.
+     * @type {webview}
+     */
+    this.webview_ = webview;
+
+    /**
+     * Whether a Saml IdP page is display in the webview.
+     * @type {boolean}
+     */
+    this.isSamlPage_ = false;
+
+    /**
+     * Pending Saml IdP page flag that is set when a SAML_HEADER is received
+     * and is copied to |isSamlPage_| in loadcommit.
+     * @type {boolean}
+     */
+    this.pendingIsSamlPage_ = false;
+
+    /**
+     * The last aborted top level url. It is recorded in loadabort event and
+     * used to skip injection into Chrome's error page in the following
+     * loadcommit event.
+     * @type {string}
+     */
+    this.abortedTopLevelUrl_ = null;
+
+    /**
+     * The domain of the Saml IdP.
+     * @type {string}
+     */
+    this.authDomain = '';
+
+    /**
+     * Scraped password stored in an id to password field value map.
+     * @type {Object<string, string>}
+     * @private
+     */
+    this.passwordStore_ = {};
+
+    /**
+     * Whether Saml API is initialized.
+     * @type {boolean}
+     */
+    this.apiInitialized_ = false;
+
+    /**
+     * Saml API version to use.
+     * @type {number}
+     */
+    this.apiVersion_ = 0;
+
+    /**
+     * Saml API token received.
+     * @type {string}
+     */
+    this.apiToken_ = null;
+
+    /**
+     * Saml API password bytes.
+     * @type {string}
+     */
+    this.apiPasswordBytes_ = null;
+
+    /*
+     * Whether to abort the authentication flow and show an error messagen when
+     * content served over an unencrypted connection is detected.
+     * @type {boolean}
+     */
+    this.blockInsecureContent = false;
+
+    this.webview_.addEventListener(
+        'contentload', this.onContentLoad_.bind(this));
+    this.webview_.addEventListener(
+        'loadabort', this.onLoadAbort_.bind(this));
+    this.webview_.addEventListener(
+        'loadcommit', this.onLoadCommit_.bind(this));
+    this.webview_.addEventListener(
+        'permissionrequest', this.onPermissionRequest_.bind(this));
+
+    this.webview_.request.onBeforeRequest.addListener(
+        this.onInsecureRequest.bind(this),
+        {urls: ['http://*/*', 'file://*/*', 'ftp://*/*']},
+        ['blocking']);
+    this.webview_.request.onHeadersReceived.addListener(
+        this.onHeadersReceived_.bind(this),
+        {urls: ['<all_urls>'], types: ['main_frame', 'xmlhttprequest']},
+        ['blocking', 'responseHeaders']);
+
+    this.webview_.addContentScripts([{
+      name: 'samlInjected',
+      matches: ['http://*/*', 'https://*/*'],
+      js: {
+        code: injectedJs
+      },
+      all_frames: true,
+      run_at: 'document_start'
+    }]);
+
+    PostMessageChannel.runAsDaemon(this.onConnected_.bind(this));
+  }
+
+  SamlHandler.prototype = {
+    __proto__: cr.EventTarget.prototype,
+
+    /**
+     * Whether Saml API is used during auth.
+     * @return {boolean}
+     */
+    get samlApiUsed() {
+      return !!this.apiPasswordBytes_;
+    },
+
+    /**
+     * Returns the Saml API password bytes.
+     * @return {string}
+     */
+    get apiPasswordBytes() {
+      return this.apiPasswordBytes_;
+    },
+
+    /**
+     * Returns the first scraped password if any, or an empty string otherwise.
+     * @return {string}
+     */
+    get firstScrapedPassword() {
+      var scraped = this.getConsolidatedScrapedPasswords_();
+      return scraped.length ? scraped[0] : '';
+    },
+
+    /**
+     * Returns the number of scraped passwords.
+     * @return {number}
+     */
+    get scrapedPasswordCount() {
+      return this.getConsolidatedScrapedPasswords_().length;
+    },
+
+    /**
+     * Gets the de-duped scraped passwords.
+     * @return {Array<string>}
+     * @private
+     */
+    getConsolidatedScrapedPasswords_: function() {
+      var passwords = {};
+      for (var property in this.passwordStore_) {
+        passwords[this.passwordStore_[property]] = true;
+      }
+      return Object.keys(passwords);
+    },
+
+    /**
+     * Resets all auth states
+     */
+    reset: function() {
+      this.isSamlPage_ = false;
+      this.pendingIsSamlPage_ = false;
+      this.passwordStore_ = {};
+
+      this.apiInitialized_ = false;
+      this.apiVersion_ = 0;
+      this.apiToken_ = null;
+      this.apiPasswordBytes_ = null;
+    },
+
+    /**
+     * Check whether the given |password| is in the scraped passwords.
+     * @return {boolean} True if the |password| is found.
+     */
+    verifyConfirmedPassword: function(password) {
+      return this.getConsolidatedScrapedPasswords_().indexOf(password) >= 0;
+    },
+
+    /**
+     * Invoked on the webview's contentload event.
+     * @private
+     */
+    onContentLoad_: function(e) {
+      PostMessageChannel.init(this.webview_.contentWindow);
+    },
+
+    /**
+     * Invoked on the webview's loadabort event.
+     * @private
+     */
+    onLoadAbort_: function(e) {
+      if (e.isTopLevel)
+        this.abortedTopLevelUrl_ = e.url;
+    },
+
+    /**
+     * Invoked on the webview's loadcommit event for both main and sub frames.
+     * @private
+     */
+    onLoadCommit_: function(e) {
+      // Skip this loadcommit if the top level load is just aborted.
+      if (e.isTopLevel && e.url === this.abortedTopLevelUrl_) {
+        this.abortedTopLevelUrl_ = null;
+        return;
+      }
+
+      // Skip for none http/https url.
+      if (e.url.indexOf('https://') != 0 &&
+          e.url.indexOf('http://') != 0) {
+        return;
+      }
+
+      this.isSamlPage_ = this.pendingIsSamlPage_;
+    },
+
+    /**
+     * Handler for webRequest.onBeforeRequest, invoked when content served over
+     * an unencrypted connection is detected. Determines whether the request
+     * should be blocked and if so, signals that an error message needs to be
+     * shown.
+     * @param {Object} details
+     * @return {!Object} Decision whether to block the request.
+     */
+    onInsecureRequest: function(details) {
+      if (!this.blockInsecureContent)
+        return {};
+      var strippedUrl = stripParams(details.url);
+      this.dispatchEvent(new CustomEvent('insecureContentBlocked',
+                                         {detail: {url: strippedUrl}}));
+      return {cancel: true};
+    },
+
+    /**
+     * Invoked when headers are received for the main frame.
+     * @private
+     */
+    onHeadersReceived_: function(details) {
+      var headers = details.responseHeaders;
+
+      // Check whether GAIA headers indicating the start or end of a SAML
+      // redirect are present. If so, synthesize cookies to mark these points.
+      for (var i = 0; headers && i < headers.length; ++i) {
+        var header = headers[i];
+        var headerName = header.name.toLowerCase();
+
+        if (headerName == SAML_HEADER) {
+          var action = header.value.toLowerCase();
+          if (action == 'start') {
+            this.pendingIsSamlPage_ = true;
+
+            // GAIA is redirecting to a SAML IdP. Any cookies contained in the
+            // current |headers| were set by GAIA. Any cookies set in future
+            // requests will be coming from the IdP. Append a cookie to the
+            // current |headers| that marks the point at which the redirect
+            // occurred.
+            headers.push({name: 'Set-Cookie',
+                          value: 'google-accounts-saml-start=now'});
+            return {responseHeaders: headers};
+          } else if (action == 'end') {
+            this.pendingIsSamlPage_ = false;
+
+            // The SAML IdP has redirected back to GAIA. Add a cookie that marks
+            // the point at which the redirect occurred occurred. It is
+            // important that this cookie be prepended to the current |headers|
+            // because any cookies contained in the |headers| were already set
+            // by GAIA, not the IdP. Due to limitations in the webRequest API,
+            // it is not trivial to prepend a cookie:
+            //
+            // The webRequest API only allows for deleting and appending
+            // headers. To prepend a cookie (C), three steps are needed:
+            // 1) Delete any headers that set cookies (e.g., A, B).
+            // 2) Append a header which sets the cookie (C).
+            // 3) Append the original headers (A, B).
+            //
+            // Due to a further limitation of the webRequest API, it is not
+            // possible to delete a header in step 1) and append an identical
+            // header in step 3). To work around this, a trailing semicolon is
+            // added to each header before appending it. Trailing semicolons are
+            // ignored by Chrome in cookie headers, causing the modified headers
+            // to actually set the original cookies.
+            var otherHeaders = [];
+            var cookies = [{name: 'Set-Cookie',
+                            value: 'google-accounts-saml-end=now'}];
+            for (var j = 0; j < headers.length; ++j) {
+              if (headers[j].name.toLowerCase().indexOf('set-cookie') == 0) {
+                var header = headers[j];
+                header.value += ';';
+                cookies.push(header);
+              } else {
+                otherHeaders.push(headers[j]);
+              }
+            }
+            return {responseHeaders: otherHeaders.concat(cookies)};
+          }
+        }
+      }
+
+      return {};
+    },
+
+    /**
+     * Invoked when the injected JS makes a connection.
+     */
+    onConnected_: function(port) {
+      if (port.targetWindow != this.webview_.contentWindow)
+        return;
+
+      var channel = Channel.create();
+      channel.init(port);
+
+      channel.registerMessage(
+          'apiCall', this.onAPICall_.bind(this, channel));
+      channel.registerMessage(
+          'updatePassword', this.onUpdatePassword_.bind(this, channel));
+      channel.registerMessage(
+          'pageLoaded', this.onPageLoaded_.bind(this, channel));
+      channel.registerMessage(
+          'getSAMLFlag', this.onGetSAMLFlag_.bind(this, channel));
+    },
+
+    sendInitializationSuccess_: function(channel) {
+      channel.send({name: 'apiResponse', response: {
+        result: 'initialized',
+        version: this.apiVersion_,
+        keyTypes: API_KEY_TYPES
+      }});
+    },
+
+    sendInitializationFailure_: function(channel) {
+      channel.send({
+        name: 'apiResponse',
+        response: {result: 'initialization_failed'}
+      });
+    },
+
+    /**
+     * Handlers for channel messages.
+     * @param {Channel} channel A channel to send back response.
+     * @param {Object} msg Received message.
+     * @private
+     */
+    onAPICall_: function(channel, msg) {
+      var call = msg.call;
+      if (call.method == 'initialize') {
+        if (!Number.isInteger(call.requestedVersion) ||
+            call.requestedVersion < MIN_API_VERSION_VERSION) {
+          this.sendInitializationFailure_(channel);
+          return;
+        }
+
+        this.apiVersion_ = Math.min(call.requestedVersion,
+                                    MAX_API_VERSION_VERSION);
+        this.apiInitialized_ = true;
+        this.sendInitializationSuccess_(channel);
+        return;
+      }
+
+      if (call.method == 'add') {
+        if (API_KEY_TYPES.indexOf(call.keyType) == -1) {
+          console.error('SamlHandler.onAPICall_: unsupported key type');
+          return;
+        }
+        // Not setting |email_| and |gaiaId_| because this API call will
+        // eventually be followed by onCompleteLogin_() which does set it.
+        this.apiToken_ = call.token;
+        this.apiPasswordBytes_ = call.passwordBytes;
+      } else if (call.method == 'confirm') {
+        if (call.token != this.apiToken_)
+          console.error('SamlHandler.onAPICall_: token mismatch');
+      } else {
+        console.error('SamlHandler.onAPICall_: unknown message');
+      }
+    },
+
+    onUpdatePassword_: function(channel, msg) {
+      if (this.isSamlPage_)
+        this.passwordStore_[msg.id] = msg.password;
+    },
+
+    onPageLoaded_: function(channel, msg) {
+      this.authDomain = extractDomain(msg.url);
+      this.dispatchEvent(new CustomEvent(
+          'authPageLoaded',
+          {detail: {url: url,
+                    isSAMLPage: this.isSamlPage_,
+                    domain: this.authDomain}}));
+    },
+
+    onPermissionRequest_: function(permissionEvent) {
+      if (permissionEvent.permission === 'media') {
+        // The actual permission check happens in
+        // WebUILoginView::RequestMediaAccessPermission().
+        this.dispatchEvent(new CustomEvent('videoEnabled'));
+        permissionEvent.request.allow();
+      }
+    },
+
+    onGetSAMLFlag_: function(channel, msg) {
+      return this.isSamlPage_;
+    },
+  };
+
+  return {
+    SamlHandler: SamlHandler
+  };
+});
+
+
+/**
+ * @fileoverview An UI component to authenciate to Chrome. The component hosts
+ * IdP web pages in a webview. A client who is interested in monitoring
+ * authentication events should pass a listener object of type
+ * cr.login.GaiaAuthHost.Listener as defined in this file. After initialization,
+ * call {@code load} to start the authentication flow.
+ */
+
+cr.define('cr.login', function() {
+  'use strict';
+
+  // TODO(rogerta): should use gaia URL from GaiaUrls::gaia_url() instead
+  // of hardcoding the prod URL here.  As is, this does not work with staging
+  // environments.
+  var IDP_ORIGIN = 'https://accounts.google.com/';
+  var IDP_PATH = 'ServiceLogin?skipvpage=true&sarp=1&rm=hide';
+  var CONTINUE_URL =
+      'chrome-extension://mfffpogegjflfpflabcdkioaeobkgjik/success.html';
+  var SIGN_IN_HEADER = 'google-accounts-signin';
+  var EMBEDDED_FORM_HEADER = 'google-accounts-embedded';
+  var LOCATION_HEADER = 'location';
+  var COOKIE_HEADER = 'cookie';
+  var SET_COOKIE_HEADER = 'set-cookie';
+  var OAUTH_CODE_COOKIE = 'oauth_code';
+  var GAPS_COOKIE = 'GAPS';
+  var SERVICE_ID = 'chromeoslogin';
+  var EMBEDDED_SETUP_CHROMEOS_ENDPOINT = 'embedded/setup/chromeos';
+  var SAML_REDIRECTION_PATH = 'samlredirect';
+  var BLANK_PAGE_URL = 'about:blank';
+
+  /**
+   * The source URL parameter for the constrained signin flow.
+   */
+  var CONSTRAINED_FLOW_SOURCE = 'chrome';
+
+  /**
+   * Enum for the authorization mode, must match AuthMode defined in
+   * chrome/browser/ui/webui/inline_login_ui.cc.
+   * @enum {number}
+   */
+  var AuthMode = {
+    DEFAULT: 0,
+    OFFLINE: 1,
+    DESKTOP: 2
+  };
+
+  /**
+   * Enum for the authorization type.
+   * @enum {number}
+   */
+  var AuthFlow = {
+    DEFAULT: 0,
+    SAML: 1
+  };
+
+  /**
+   * Supported Authenticator params.
+   * @type {!Array<string>}
+   * @const
+   */
+  var SUPPORTED_PARAMS = [
+    'gaiaId',        // Obfuscated GAIA ID to skip the email prompt page
+                     // during the re-auth flow.
+    'gaiaUrl',       // Gaia url to use.
+    'gaiaPath',      // Gaia path to use without a leading slash.
+    'hl',            // Language code for the user interface.
+    'service',       // Name of Gaia service.
+    'continueUrl',   // Continue url to use.
+    'frameUrl',      // Initial frame URL to use. If empty defaults to
+                     // gaiaUrl.
+    'constrained',   // Whether the extension is loaded in a constrained
+                     // window.
+    'clientId',      // Chrome client id.
+    'useEafe',       // Whether to use EAFE.
+    'needPassword',  // Whether the host is interested in getting a password.
+                     // If this set to |false|, |confirmPasswordCallback| is
+                     // not called before dispatching |authCopleted|.
+                     // Default is |true|.
+    'flow',          // One of 'default', 'enterprise', or 'theftprotection'.
+    'enterpriseDomain',    // Domain in which hosting device is (or should be)
+                           // enrolled.
+    'emailDomain',         // Value used to prefill domain for email.
+    'chromeType',          // Type of Chrome OS device, e.g. "chromebox".
+    'clientVersion',       // Version of the Chrome build.
+    'platformVersion',     // Version of the OS build.
+    'releaseChannel',      // Installation channel.
+    'endpointGen',         // Current endpoint generation.
+    'gapsCookie',          // GAPS cookie
+
+    // The email fields allow for the following possibilities:
+    //
+    // 1/ If 'email' is not supplied, then the email text field is blank and the
+    // user must type an email to proceed.
+    //
+    // 2/ If 'email' is supplied, and 'readOnlyEmail' is truthy, then the email
+    // is hardcoded and the user cannot change it.  The user is asked for
+    // password.  This is useful for re-auth scenarios, where chrome needs the
+    // user to authenticate for a specific account and only that account.
+    //
+    // 3/ If 'email' is supplied, and 'readOnlyEmail' is falsy, gaia will
+    // prefill the email text field using the given email address, but the user
+    // can still change it and then proceed.  This is used on desktop when the
+    // user disconnects their profile then reconnects, to encourage them to use
+    // the same account.
+    'email',
+    'readOnlyEmail',
+  ];
+
+  /**
+   * Initializes the authenticator component.
+   * @param {webview|string} webview The webview element or its ID to host IdP
+   *     web pages.
+   * @constructor
+   */
+  function Authenticator(webview) {
+    this.webview_ = typeof webview == 'string' ? $(webview) : webview;
+    assert(this.webview_);
+
+    this.isLoaded_ = false;
+    this.email_ = null;
+    this.password_ = null;
+    this.gaiaId_ = null,
+    this.sessionIndex_ = null;
+    this.chooseWhatToSync_ = false;
+    this.skipForNow_ = false;
+    this.authFlow = AuthFlow.DEFAULT;
+    this.authDomain = '';
+    this.videoEnabled = false;
+    this.idpOrigin_ = null;
+    this.continueUrl_ = null;
+    this.continueUrlWithoutParams_ = null;
+    this.initialFrameUrl_ = null;
+    this.reloadUrl_ = null;
+    this.trusted_ = true;
+    this.oauthCode_ = null;
+    this.gapsCookie_ = null;
+    this.gapsCookieSent_ = false;
+    this.newGapsCookie_ = null;
+    this.readyFired_ = false;
+
+    this.useEafe_ = false;
+    this.clientId_ = null;
+
+    this.samlHandler_ = new cr.login.SamlHandler(this.webview_);
+    this.confirmPasswordCallback = null;
+    this.noPasswordCallback = null;
+    this.insecureContentBlockedCallback = null;
+    this.samlApiUsedCallback = null;
+    this.missingGaiaInfoCallback = null;
+    this.needPassword = true;
+    this.samlHandler_.addEventListener(
+        'insecureContentBlocked',
+        this.onInsecureContentBlocked_.bind(this));
+    this.samlHandler_.addEventListener(
+        'authPageLoaded',
+        this.onAuthPageLoaded_.bind(this));
+    this.samlHandler_.addEventListener(
+        'videoEnabled',
+        this.onVideoEnabled_.bind(this));
+
+    this.webview_.addEventListener('droplink', this.onDropLink_.bind(this));
+    this.webview_.addEventListener(
+        'newwindow', this.onNewWindow_.bind(this));
+    this.webview_.addEventListener(
+        'contentload', this.onContentLoad_.bind(this));
+    this.webview_.addEventListener(
+        'loadabort', this.onLoadAbort_.bind(this));
+    this.webview_.addEventListener(
+        'loadstop', this.onLoadStop_.bind(this));
+    this.webview_.addEventListener(
+        'loadcommit', this.onLoadCommit_.bind(this));
+    this.webview_.request.onCompleted.addListener(
+        this.onRequestCompleted_.bind(this),
+        {urls: ['<all_urls>'], types: ['main_frame']},
+        ['responseHeaders']);
+    this.webview_.request.onHeadersReceived.addListener(
+        this.onHeadersReceived_.bind(this),
+        {urls: ['<all_urls>'], types: ['main_frame', 'xmlhttprequest']},
+        ['responseHeaders']);
+    window.addEventListener(
+        'message', this.onMessageFromWebview_.bind(this), false);
+    window.addEventListener(
+        'focus', this.onFocus_.bind(this), false);
+    window.addEventListener(
+        'popstate', this.onPopState_.bind(this), false);
+  }
+
+  Authenticator.prototype = Object.create(cr.EventTarget.prototype);
+
+  /**
+   * Reinitializes authentication parameters so that a failed login attempt
+   * would not result in an infinite loop.
+   */
+  Authenticator.prototype.resetStates = function() {
+    this.isLoaded_ = false;
+    this.email_ = null;
+    this.gaiaId_ = null;
+    this.password_ = null;
+    this.oauthCode_ = null;
+    this.gapsCookie_ = null;
+    this.gapsCookieSent_ = false;
+    this.newGapsCookie_ = null;
+    this.readyFired_ = false;
+    this.chooseWhatToSync_ = false;
+    this.skipForNow_ = false;
+    this.sessionIndex_ = null;
+    this.trusted_ = true;
+    this.authFlow = AuthFlow.DEFAULT;
+    this.samlHandler_.reset();
+    this.videoEnabled = false;
+  };
+
+  /**
+   * Resets the webview to the blank page.
+   */
+  Authenticator.prototype.resetWebview = function() {
+    this.webview_.src = BLANK_PAGE_URL;
+  };
+
+  /**
+   * Loads the authenticator component with the given parameters.
+   * @param {AuthMode} authMode Authorization mode.
+   * @param {Object} data Parameters for the authorization flow.
+   */
+  Authenticator.prototype.load = function(authMode, data) {
+    this.authMode = authMode;
+    this.resetStates();
+    // gaiaUrl parameter is used for testing. Once defined, it is never changed.
+    this.idpOrigin_ = data.gaiaUrl || IDP_ORIGIN;
+    this.continueUrl_ = data.continueUrl || CONTINUE_URL;
+    this.continueUrlWithoutParams_ =
+        this.continueUrl_.substring(0, this.continueUrl_.indexOf('?')) ||
+        this.continueUrl_;
+    this.isConstrainedWindow_ = data.constrained == '1';
+    this.isNewGaiaFlow = data.isNewGaiaFlow;
+    this.useEafe_ = data.useEafe || false;
+    this.clientId_ = data.clientId;
+    this.gapsCookie_ = data.gapsCookie;
+    this.gapsCookieSent_ = false;
+    this.newGapsCookie_ = null;
+    this.dontResizeNonEmbeddedPages = data.dontResizeNonEmbeddedPages;
+
+    this.initialFrameUrl_ = this.constructInitialFrameUrl_(data);
+    this.reloadUrl_ = data.frameUrl || this.initialFrameUrl_;
+    // Don't block insecure content for desktop flow because it lands on
+    // http. Otherwise, block insecure content as long as gaia is https.
+    this.samlHandler_.blockInsecureContent = authMode != AuthMode.DESKTOP &&
+        this.idpOrigin_.indexOf('https://') == 0;
+    this.needPassword = !('needPassword' in data) || data.needPassword;
+
+    if (this.isNewGaiaFlow) {
+      this.webview_.contextMenus.onShow.addListener(function(e) {
+        e.preventDefault();
+      });
+
+      if (!this.onBeforeSetHeadersSet_) {
+        this.onBeforeSetHeadersSet_ = true;
+        var filterPrefix = this.idpOrigin_ + EMBEDDED_SETUP_CHROMEOS_ENDPOINT;
+        // This depends on gaiaUrl parameter, that is why it is here.
+        this.webview_.request.onBeforeSendHeaders.addListener(
+            this.onBeforeSendHeaders_.bind(this),
+            {urls: [filterPrefix + '?*', filterPrefix + '/*']},
+            ['requestHeaders', 'blocking']);
+      }
+    }
+
+    this.webview_.src = this.reloadUrl_;
+    this.isLoaded_ = true;
+  };
+
+  /**
+   * Reloads the authenticator component.
+   */
+  Authenticator.prototype.reload = function() {
+    this.resetStates();
+    this.webview_.src = this.reloadUrl_;
+    this.isLoaded_ = true;
+  };
+
+  Authenticator.prototype.constructInitialFrameUrl_ = function(data) {
+    if (data.doSamlRedirect) {
+      var url = this.idpOrigin_ + SAML_REDIRECTION_PATH;
+      url = appendParam(url, 'domain', data.enterpriseDomain);
+      url = appendParam(url, 'continue', data.gaiaUrl +
+          'o/oauth2/programmatic_auth?hl=' + data.hl +
+          '&scope=https%3A%2F%2Fwww.google.com%2Faccounts%2FOAuthLogin&' +
+          'client_id=' + encodeURIComponent(data.clientId) +
+          '&access_type=offline');
+
+      return url;
+    }
+
+    var path = data.gaiaPath;
+    if (!path && this.isNewGaiaFlow)
+      path = EMBEDDED_SETUP_CHROMEOS_ENDPOINT;
+    if (!path)
+      path = IDP_PATH;
+    var url = this.idpOrigin_ + path;
+
+    if (this.isNewGaiaFlow) {
+      if (data.chromeType)
+        url = appendParam(url, 'chrometype', data.chromeType);
+      if (data.clientId)
+        url = appendParam(url, 'client_id', data.clientId);
+      if (data.enterpriseDomain)
+        url = appendParam(url, 'manageddomain', data.enterpriseDomain);
+      if (data.clientVersion)
+        url = appendParam(url, 'client_version', data.clientVersion);
+      if (data.platformVersion)
+        url = appendParam(url, 'platform_version', data.platformVersion);
+      if (data.releaseChannel)
+        url = appendParam(url, 'release_channel', data.releaseChannel);
+      if (data.endpointGen)
+        url = appendParam(url, 'endpoint_gen', data.endpointGen);
+    } else {
+      url = appendParam(url, 'continue', this.continueUrl_);
+      url = appendParam(url, 'service', data.service || SERVICE_ID);
+    }
+    if (data.hl)
+      url = appendParam(url, 'hl', data.hl);
+    if (data.gaiaId)
+      url = appendParam(url, 'user_id', data.gaiaId);
+    if (data.email) {
+      if (data.readOnlyEmail) {
+        url = appendParam(url, 'Email', data.email);
+      } else {
+        url = appendParam(url, 'email_hint', data.email);
+      }
+    }
+    if (this.isConstrainedWindow_)
+      url = appendParam(url, 'source', CONSTRAINED_FLOW_SOURCE);
+    if (data.flow)
+      url = appendParam(url, 'flow', data.flow);
+    if (data.emailDomain)
+      url = appendParam(url, 'emaildomain', data.emailDomain);
+    return url;
+  };
+
+  /**
+   * Dispatches the 'ready' event if it hasn't been dispatched already for the
+   * current content.
+   * @private
+   */
+  Authenticator.prototype.fireReadyEvent_ = function() {
+    if (!this.readyFired_) {
+      this.dispatchEvent(new Event('ready'));
+      this.readyFired_ = true;
+    }
+  };
+
+  /**
+   * Invoked when a main frame request in the webview has completed.
+   * @private
+   */
+  Authenticator.prototype.onRequestCompleted_ = function(details) {
+    var currentUrl = details.url;
+
+    if (!this.isNewGaiaFlow &&
+        currentUrl.lastIndexOf(this.continueUrlWithoutParams_, 0) == 0) {
+      if (currentUrl.indexOf('ntp=1') >= 0)
+        this.skipForNow_ = true;
+
+      this.maybeCompleteAuth_();
+      return;
+    }
+
+    if (currentUrl.indexOf('https') != 0)
+      this.trusted_ = false;
+
+    if (this.isConstrainedWindow_) {
+      var isEmbeddedPage = false;
+      if (this.idpOrigin_ && currentUrl.lastIndexOf(this.idpOrigin_) == 0) {
+        var headers = details.responseHeaders;
+        for (var i = 0; headers && i < headers.length; ++i) {
+          if (headers[i].name.toLowerCase() == EMBEDDED_FORM_HEADER) {
+            isEmbeddedPage = true;
+            break;
+          }
+        }
+      }
+
+      // In some cases, non-embedded pages should not be resized.  For
+      // example, on desktop when reauthenticating for purposes of unlocking
+      // a profile, resizing would cause a browser window to open in the
+      // system profile, which is not allowed.
+      if (!isEmbeddedPage && !this.dontResizeNonEmbeddedPages) {
+        this.dispatchEvent(new CustomEvent('resize', {detail: currentUrl}));
+        return;
+      }
+    }
+
+    this.updateHistoryState_(currentUrl);
+  };
+
+  /**
+    * Manually updates the history. Invoked upon completion of a webview
+    * navigation.
+    * @param {string} url Request URL.
+    * @private
+    */
+  Authenticator.prototype.updateHistoryState_ = function(url) {
+    if (history.state && history.state.url != url)
+      history.pushState({url: url}, '');
+    else
+      history.replaceState({url: url}, '');
+  };
+
+  /**
+   * Invoked when the sign-in page takes focus.
+   * @param {object} e The focus event being triggered.
+   * @private
+   */
+  Authenticator.prototype.onFocus_ = function(e) {
+    if (this.authMode == AuthMode.DESKTOP)
+      this.webview_.focus();
+  };
+
+  /**
+   * Invoked when the history state is changed.
+   * @param {object} e The popstate event being triggered.
+   * @private
+   */
+  Authenticator.prototype.onPopState_ = function(e) {
+    var state = e.state;
+    if (state && state.url)
+      this.webview_.src = state.url;
+  };
+
+  /**
+   * Invoked when headers are received in the main frame of the webview. It
+   * 1) reads the authenticated user info from a signin header,
+   * 2) signals the start of a saml flow upon receiving a saml header.
+   * @return {!Object} Modified request headers.
+   * @private
+   */
+  Authenticator.prototype.onHeadersReceived_ = function(details) {
+    var currentUrl = details.url;
+    if (currentUrl.lastIndexOf(this.idpOrigin_, 0) != 0)
+      return;
+
+    var headers = details.responseHeaders;
+    for (var i = 0; headers && i < headers.length; ++i) {
+      var header = headers[i];
+      var headerName = header.name.toLowerCase();
+      if (headerName == SIGN_IN_HEADER) {
+        var headerValues = header.value.toLowerCase().split(',');
+        var signinDetails = {};
+        headerValues.forEach(function(e) {
+          var pair = e.split('=');
+          signinDetails[pair[0].trim()] = pair[1].trim();
+        });
+        // Removes "" around.
+        this.email_ = signinDetails['email'].slice(1, -1);
+        this.gaiaId_ = signinDetails['obfuscatedid'].slice(1, -1);
+        this.sessionIndex_ = signinDetails['sessionindex'];
+      } else if (headerName == LOCATION_HEADER) {
+        // If the "choose what to sync" checkbox was clicked, then the continue
+        // URL will contain a source=3 field.
+        var location = decodeURIComponent(header.value);
+        this.chooseWhatToSync_ = !!location.match(/(\?|&)source=3($|&)/);
+      } else if (
+          this.isNewGaiaFlow && headerName == SET_COOKIE_HEADER) {
+        var headerValue = header.value;
+        if (headerValue.indexOf(OAUTH_CODE_COOKIE + '=', 0) == 0) {
+          this.oauthCode_ =
+              headerValue.substring(OAUTH_CODE_COOKIE.length + 1).split(';')[0];
+        }
+        if (headerValue.indexOf(GAPS_COOKIE + '=', 0) == 0) {
+          this.newGapsCookie_ =
+              headerValue.substring(GAPS_COOKIE.length + 1).split(';')[0];
+        }
+      }
+    }
+  };
+
+  /**
+   * This method replaces cookie value in cookie header.
+   * @param@ {string} header_value Original string value of Cookie header.
+   * @param@ {string} cookie_name Name of cookie to be replaced.
+   * @param@ {string} cookie_value New cookie value.
+   * @return {string} New Cookie header value.
+   * @private
+   */
+  Authenticator.prototype.updateCookieValue_ = function(
+      header_value, cookie_name, cookie_value) {
+    var cookies = header_value.split(/\s*;\s*/);
+    var found = false;
+    for (var i = 0; i < cookies.length; ++i) {
+      if (cookies[i].indexOf(cookie_name + '=', 0) == 0) {
+        found = true;
+        cookies[i] = cookie_name + '=' + cookie_value;
+        break;
+      }
+    }
+    if (!found) {
+      cookies.push(cookie_name + '=' + cookie_value);
+    }
+    return cookies.join('; ');
+  };
+
+  /**
+   * Handler for webView.request.onBeforeSendHeaders .
+   * @return {!Object} Modified request headers.
+   * @private
+   */
+  Authenticator.prototype.onBeforeSendHeaders_ = function(details) {
+    // We should re-send cookie if first request was unsuccessful (i.e. no new
+    // GAPS cookie was received).
+    if (this.isNewGaiaFlow && this.gapsCookie_ &&
+        (!this.gapsCookieSent_ || !this.newGapsCookie_)) {
+      var headers = details.requestHeaders;
+      var found = false;
+      var gapsCookie = this.gapsCookie_;
+
+      for (var i = 0, l = headers.length; i < l; ++i) {
+        if (headers[i].name == COOKIE_HEADER) {
+          headers[i].value = this.updateCookieValue_(headers[i].value,
+                                                     GAPS_COOKIE, gapsCookie);
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        details.requestHeaders.push(
+            {name: COOKIE_HEADER, value: GAPS_COOKIE + '=' + gapsCookie});
+      }
+      this.gapsCookieSent_ = true;
+    }
+    return {
+      requestHeaders: details.requestHeaders
+    };
+  };
+
+  /**
+   * Returns true if given HTML5 message is received from the webview element.
+   * @param {object} e Payload of the received HTML5 message.
+   */
+  Authenticator.prototype.isGaiaMessage = function(e) {
+    if (!this.isWebviewEvent_(e))
+      return false;
+
+    // The event origin does not have a trailing slash.
+    if (e.origin != this.idpOrigin_.substring(0, this.idpOrigin_.length - 1)) {
+      return false;
+    }
+
+    // EAFE passes back auth code via message.
+    if (this.useEafe_ &&
+        typeof e.data == 'object' &&
+        e.data.hasOwnProperty('authorizationCode')) {
+      assert(!this.oauthCode_);
+      this.oauthCode_ = e.data.authorizationCode;
+      this.dispatchEvent(
+          new CustomEvent('authCompleted',
+                          {
+                            detail: {
+                              authCodeOnly: true,
+                              authCode: this.oauthCode_
+                            }
+                          }));
+      return;
+    }
+
+    // Gaia messages must be an object with 'method' property.
+    if (typeof e.data != 'object' || !e.data.hasOwnProperty('method')) {
+      return false;
+    }
+    return true;
+  };
+
+  /**
+   * Invoked when an HTML5 message is received from the webview element.
+   * @param {object} e Payload of the received HTML5 message.
+   * @private
+   */
+  Authenticator.prototype.onMessageFromWebview_ = function(e) {
+    if (!this.isGaiaMessage(e))
+      return;
+
+    var msg = e.data;
+    if (msg.method == 'attemptLogin') {
+      this.email_ = msg.email;
+      if (this.authMode == AuthMode.DESKTOP)
+        this.password_ = msg.password;
+
+      this.chooseWhatToSync_ = msg.chooseWhatToSync;
+      // We need to dispatch only first event, before user enters password.
+      this.dispatchEvent(
+          new CustomEvent('attemptLogin', {detail: msg.email}));
+    } else if (msg.method == 'dialogShown') {
+      this.dispatchEvent(new Event('dialogShown'));
+    } else if (msg.method == 'dialogHidden') {
+      this.dispatchEvent(new Event('dialogHidden'));
+    } else if (msg.method == 'backButton') {
+      this.dispatchEvent(new CustomEvent('backButton', {detail: msg.show}));
+    } else if (msg.method == 'showView') {
+      this.dispatchEvent(new Event('showView'));
+    } else if (msg.method == 'identifierEntered') {
+      this.dispatchEvent(new CustomEvent(
+          'identifierEntered',
+          {detail: {accountIdentifier: msg.accountIdentifier}}));
+    } else {
+      console.warn('Unrecognized message from GAIA: ' + msg.method);
+    }
+  };
+
+  /**
+   * Invoked by the hosting page to verify the Saml password.
+   */
+  Authenticator.prototype.verifyConfirmedPassword = function(password) {
+    if (!this.samlHandler_.verifyConfirmedPassword(password)) {
+      // Invoke confirm password callback asynchronously because the
+      // verification was based on messages and caller (GaiaSigninScreen)
+      // does not expect it to be called immediately.
+      // TODO(xiyuan): Change to synchronous call when iframe based code
+      // is removed.
+      var invokeConfirmPassword = (function() {
+        this.confirmPasswordCallback(this.email_,
+                                     this.samlHandler_.scrapedPasswordCount);
+      }).bind(this);
+      window.setTimeout(invokeConfirmPassword, 0);
+      return;
+    }
+
+    this.password_ = password;
+    this.onAuthCompleted_();
+  };
+
+  /**
+   * Check Saml flow and start password confirmation flow if needed. Otherwise,
+   * continue with auto completion.
+   * @private
+   */
+  Authenticator.prototype.maybeCompleteAuth_ = function() {
+    var missingGaiaInfo = !this.email_ || !this.gaiaId_ || !this.sessionIndex_;
+    if (missingGaiaInfo && !this.skipForNow_) {
+      if (this.missingGaiaInfoCallback)
+        this.missingGaiaInfoCallback();
+
+      this.webview_.src = this.initialFrameUrl_;
+      return;
+    }
+
+    if (this.samlHandler_.samlApiUsed) {
+      if (this.samlApiUsedCallback) {
+        this.samlApiUsedCallback();
+      }
+      this.password_ = this.samlHandler_.apiPasswordBytes;
+      this.onAuthCompleted_();
+      return;
+    }
+
+    if (this.samlHandler_.scrapedPasswordCount == 0) {
+      if (this.noPasswordCallback) {
+        this.noPasswordCallback(this.email_);
+        return;
+      }
+
+      // Fall through to finish the auth flow even if this.needPassword
+      // is true. This is because the flag is used as an intention to get
+      // password when it is available but not a mandatory requirement.
+      console.warn('Authenticator: No password scraped for SAML.');
+    } else if (this.needPassword) {
+      if (this.samlHandler_.scrapedPasswordCount == 1) {
+        // If we scraped exactly one password, we complete the authentication
+        // right away.
+        this.password_ = this.samlHandler_.firstScrapedPassword;
+        this.onAuthCompleted_();
+        return;
+      }
+
+      if (this.confirmPasswordCallback) {
+        // Confirm scraped password. The flow follows in
+        // verifyConfirmedPassword.
+        this.confirmPasswordCallback(this.email_,
+                                     this.samlHandler_.scrapedPasswordCount);
+        return;
+      }
+    }
+
+    this.onAuthCompleted_();
+  };
+
+  /**
+   * Invoked to process authentication completion.
+   * @private
+   */
+  Authenticator.prototype.onAuthCompleted_ = function() {
+    assert(this.skipForNow_ ||
+           (this.email_ && this.gaiaId_ && this.sessionIndex_));
+    this.dispatchEvent(new CustomEvent(
+        'authCompleted',
+        // TODO(rsorokin): get rid of the stub values.
+        {
+          detail: {
+            email: this.email_ || '',
+            gaiaId: this.gaiaId_ || '',
+            password: this.password_ || '',
+            authCode: this.oauthCode_,
+            usingSAML: this.authFlow == AuthFlow.SAML,
+            chooseWhatToSync: this.chooseWhatToSync_,
+            skipForNow: this.skipForNow_,
+            sessionIndex: this.sessionIndex_ || '',
+            trusted: this.trusted_,
+            gapsCookie: this.newGapsCookie_ || this.gapsCookie_ || '',
+          }
+        }));
+    this.resetStates();
+  };
+
+  /**
+   * Invoked when |samlHandler_| fires 'insecureContentBlocked' event.
+   * @private
+   */
+  Authenticator.prototype.onInsecureContentBlocked_ = function(e) {
+    if (!this.isLoaded_)
+      return;
+
+    if (this.insecureContentBlockedCallback)
+      this.insecureContentBlockedCallback(e.detail.url);
+    else
+      console.error('Authenticator: Insecure content blocked.');
+  };
+
+  /**
+   * Invoked when |samlHandler_| fires 'authPageLoaded' event.
+   * @private
+   */
+  Authenticator.prototype.onAuthPageLoaded_ = function(e) {
+    if (!this.isLoaded_)
+      return;
+
+    if (!e.detail.isSAMLPage)
+      return;
+
+    this.authDomain = this.samlHandler_.authDomain;
+    this.authFlow = AuthFlow.SAML;
+
+    this.fireReadyEvent_();
+  };
+
+  /**
+   * Invoked when |samlHandler_| fires 'videoEnabled' event.
+   * @private
+   */
+  Authenticator.prototype.onVideoEnabled_ = function(e) {
+    this.videoEnabled = true;
+  };
+
+  /**
+   * Invoked when a link is dropped on the webview.
+   * @private
+   */
+  Authenticator.prototype.onDropLink_ = function(e) {
+    this.dispatchEvent(new CustomEvent('dropLink', {detail: e.url}));
+  };
+
+  /**
+   * Invoked when the webview attempts to open a new window.
+   * @private
+   */
+  Authenticator.prototype.onNewWindow_ = function(e) {
+    this.dispatchEvent(new CustomEvent('newWindow', {detail: e}));
+  };
+
+  /**
+   * Invoked when a new document is loaded.
+   * @private
+   */
+  Authenticator.prototype.onContentLoad_ = function(e) {
+    if (this.isConstrainedWindow_) {
+      // Signin content in constrained windows should not zoom. Isolate the
+      // webview from the zooming of other webviews using the 'per-view' zoom
+      // mode, and then set it to 100% zoom.
+      this.webview_.setZoomMode('per-view');
+      this.webview_.setZoom(1);
+    }
+
+    // Posts a message to IdP pages to initiate communication.
+    var currentUrl = this.webview_.src;
+    if (currentUrl.lastIndexOf(this.idpOrigin_) == 0) {
+      var msg = {
+        'method': 'handshake',
+      };
+
+      this.webview_.contentWindow.postMessage(msg, currentUrl);
+
+      this.fireReadyEvent_();
+      // Focus webview after dispatching event when webview is already visible.
+      this.webview_.focus();
+    } else if (currentUrl == BLANK_PAGE_URL) {
+      this.fireReadyEvent_();
+    }
+  };
+
+  /**
+   * Invoked when the webview fails loading a page.
+   * @private
+   */
+  Authenticator.prototype.onLoadAbort_ = function(e) {
+    this.dispatchEvent(new CustomEvent('loadAbort',
+        {detail: {error: e.reason, src: e.url}}));
+  };
+
+  /**
+   * Invoked when the webview finishes loading a page.
+   * @private
+   */
+  Authenticator.prototype.onLoadStop_ = function(e) {
+    // Sends client id to EAFE on every loadstop after a small timeout. This is
+    // needed because EAFE sits behind SSO and initialize asynchrounouly
+    // and we don't know for sure when it is loaded and ready to listen
+    // for message. The postMessage is guarded by EAFE's origin.
+    if (this.useEafe_) {
+      // An arbitrary small timeout for delivering the initial message.
+      var EAFE_INITIAL_MESSAGE_DELAY_IN_MS = 500;
+      window.setTimeout((function() {
+        var msg = {
+          'clientId': this.clientId_
+        };
+        this.webview_.contentWindow.postMessage(msg, this.idpOrigin_);
+      }).bind(this), EAFE_INITIAL_MESSAGE_DELAY_IN_MS);
+    }
+  };
+
+  /**
+   * Invoked when the webview navigates withing the current document.
+   * @private
+   */
+  Authenticator.prototype.onLoadCommit_ = function(e) {
+    if (this.oauthCode_)
+      this.maybeCompleteAuth_();
+  };
+
+  /**
+   * Returns |true| if event |e| was sent from the hosted webview.
+   * @private
+   */
+  Authenticator.prototype.isWebviewEvent_ = function(e) {
+    // Note: <webview> prints error message to console if |contentWindow| is not
+    // defined.
+    // TODO(dzhioev): remove the message. http://crbug.com/469522
+    var webviewWindow = this.webview_.contentWindow;
+    return !!webviewWindow && webviewWindow === e.source;
+  };
+
+  /**
+   * The current auth flow of the hosted auth page.
+   * @type {AuthFlow}
+   */
+  cr.defineProperty(Authenticator, 'authFlow');
+
+  /**
+   * The domain name of the current auth page.
+   * @type {string}
+   */
+  cr.defineProperty(Authenticator, 'authDomain');
+
+  /**
+   * True if the page has requested media access.
+   * @type {boolean}
+   */
+  cr.defineProperty(Authenticator, 'videoEnabled');
+
+  Authenticator.AuthFlow = AuthFlow;
+  Authenticator.AuthMode = AuthMode;
+  Authenticator.SUPPORTED_PARAMS = SUPPORTED_PARAMS;
+
+  return {
+    // TODO(guohui, xiyuan): Rename GaiaAuthHost to Authenticator once the old
+    // iframe-based flow is deprecated.
+    GaiaAuthHost: Authenticator,
+    Authenticator: Authenticator
+  };
+});

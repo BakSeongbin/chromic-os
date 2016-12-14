@@ -1,0 +1,8 @@
+Pumunta
+          sa menu ng Chromium >
+          <span jscontent="settingsTitle"></span>
+          >
+          <span jscontent="advancedTitle"></span>
+          at alisin sa pagkakapili ang "<span jscontent="noNetworkPredictionTitle"></span>."
+          Kung hindi nito malulutas ang isyu, inirerekomenda naming piliing muli ang opsyong ito
+          para sa pinahusay na pagganap.

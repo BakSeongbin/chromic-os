@@ -1,0 +1,1 @@
+{NUM_FILES,plural, =1{Přístup k souboru uložené v počítači}few{Přístup k # souborům uložené v počítači}many{Přístup k # souboru uloženého v počítači}other{Přístup k # souborům uložené v počítači}}

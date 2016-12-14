@@ -1,0 +1,1 @@
+Пропускает все ресурсы с HTTP-заголовком Cache-Control: no-store.

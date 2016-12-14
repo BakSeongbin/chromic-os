@@ -1,0 +1,1 @@
+No mostrar la barra de información cuando una extensión se vincule a una página a través del API de chrome.debugger. Esto es necesario para depurar las páginas de fondo de las extensiones.

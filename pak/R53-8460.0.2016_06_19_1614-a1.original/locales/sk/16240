@@ -1,0 +1,1 @@
+Povoľte experimentálnu implementáciu funkcie Cache-Control: smernica typu stale-while-revalidate. Umožňuje serverom určiť, ktoré zdroje môžu byť opätovne overené na pozadí s cieľom zlepšiť latenciu.

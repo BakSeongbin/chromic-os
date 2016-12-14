@@ -1,0 +1,8 @@
+Отворите
+          Chromium мени >
+          <span jscontent="settingsTitle"></span>
+          >
+          <span jscontent="advancedTitle"></span>
+          и опозовите избор опције „<span jscontent="noNetworkPredictionTitle"></span>“.
+          Ако вам то не реши проблем, препоручујемо да поново изаберете
+          ову опцију ради бољих перформанси.

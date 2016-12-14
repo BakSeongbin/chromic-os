@@ -1,0 +1,1 @@
+{NUM_DOWNLOAD,plural, =1{Der er et download i gang i øjeblikket. Vil du at annullere dit download og lukke Chromium?}one{Der er # downloads i gang i øjeblikket. Vil du at annullere dine downloads og lukke Chromium?}other{Der er # downloads i gang i øjeblikket. Vil du at annullere dine downloads og lukke Chromium?}}

@@ -1,0 +1,1 @@
+Zakazuje načítání skriptů třetích stran, které blokují analyzátor a jsou do hlavního rámce vloženy metodou document.write.

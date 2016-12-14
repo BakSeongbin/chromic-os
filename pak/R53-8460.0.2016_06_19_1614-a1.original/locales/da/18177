@@ -1,0 +1,2 @@
+Alle filer og lokale data, der er knyttet til den administrerede bruger, 
+slettes permanent, når den administrerede bruger fjernes. Besøgte websites og indstillinger for denne administrerede bruger er muligvis stadig synlige for administratoren på $1.

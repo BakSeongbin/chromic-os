@@ -1,0 +1,1 @@
+Enable GDB debug stub. This will stop a Native Client application on startup and wait for nacl-gdb (from the NaCl SDK) to attach to it.

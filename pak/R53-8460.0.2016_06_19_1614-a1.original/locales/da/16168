@@ -1,0 +1,1 @@
+Vis ikke oplysningsbjælken, når en udvidelse tilknyttes en side via chrome.debugger-API. Dette er nødvendigt for at udføre fejlretning på baggrundsider for udvidelser.

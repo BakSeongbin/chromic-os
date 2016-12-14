@@ -1,0 +1,1 @@
+Scrollen van threads voor invoergebeurtenissen. Als dit wordt uitgeschakeld, vinden al deze scrolgebeurtenissen plaats op de hoofdthread. Dit kan ernstige gevolgen hebben voor de scrolprestaties van de meeste websites en is uitsluitend bedoeld voor testdoeleinden.

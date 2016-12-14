@@ -1,0 +1,166 @@
+<!doctype html>
+<html i18n-values="dir:textdirection;lang:language">
+  <head>
+    <meta charset=utf-8>
+    <title i18n-content="introTitle"></title>
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+    <link type="text/css" rel="stylesheet" href="style.css">
+    <script src="chrome://resources/js/action_link.js"></script>
+    <script src="chrome://resources/js/cr.js"></script>
+    <script src="chrome://resources/js/cr/ui/node_utils.js"></script>
+    <script src="chrome://resources/js/load_time_data.js"></script>
+    <script src="chrome://resources/js/util.js"></script>
+    <script src="chrome://resources/js/i18n_template_no_process.js"></script>
+    <script src="flow.js"></script>
+    <script src="main.js"></script>
+  </head>
+  <body>
+    <div id="steps">
+      <div id="start-container" hidden>
+  <div class="container">
+    <span class="close" tabindex="0" role="button"
+        i18n-values="aria-label:close"></span>
+    <div class="intro-image"></div>
+    <div class="intro-text">
+      <h1 i18n-content="introTitle"></h1>
+      <h2 i18n-content="introSubtitle"></h2>
+      <h3 id="intro-description" i18n-content="introDescription" hidden></h3>
+      <h3 id="intro-description-audio-history-enabled"
+          i18n-content="introDescriptionAudioHistoryEnabled" hidden></h3>
+    </div>
+    <div class="buttonbar">
+      <button id="hotword-start" i18n-content="introStart"></button>
+    </div>
+  </div>
+</div>
+
+      <div id="audio-history-container" hidden>
+  <div class="container">
+    <span class="close" tabindex="0" role="button"
+        i18n-values="aria-label:close"></span>
+    <div class="header">
+      <h1 i18n-content="audioHistoryTitle" aria-live="polite"></h1>
+    </div>
+    <div class="content">
+      <div i18n-content="audioHistoryDescription1"></div>
+      <div class="v-spacing"></div>
+      <div i18n-values=".innerHTML:audioHistoryDescription2"></div>
+      <div class="v-spacing"></div>
+      <div i18n-values=".innerHTML:audioHistoryDescription3"></div>
+    </div>
+    <div class="buttonbar">
+      <div class="right">
+        <div>
+          <button id="audio-history-agree" i18n-content="audioHistoryAgree"
+              class="primary">
+          </button>
+          <button id="audio-history-cancel" i18n-content="cancel"
+              class="finish-button">
+          </button>
+        </div>
+      </div>
+      <div class="left">
+        <div id="audio-history-wait" class="message wait" hidden>
+          <span class="icon"></span>
+          <span i18n-content="audioHistoryWait" class="text"></span>
+        </div>
+        <div id="audio-history-error" class="message error" role="alert" hidden>
+          <span class="icon"></span>
+          <span i18n-content="error" class="text"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      <div id="speech-training-container" hidden>
+  <div class="container">
+    <span class="close" tabindex="0" role="button"
+        i18n-values="aria-label:close"></span>
+    <div class="header">
+      <h1 i18n-content="trainingTitle" aria-live="polite"></h1>
+    </div>
+    <div id="speech-training-training" class="content">
+      <div class="col-2">
+        <div i18n-content="trainingDescription"></div>
+        <br>
+        <h3 i18n-content="trainingSpeak"></h3>
+      </div>
+      <div class="col-spacing"></div>
+      <div class="col-2">
+        <div class="train listening">
+          <span class="icon"></span>
+          <span i18n-content="trainingFirstPrompt"
+              class="text"></span>
+        </div>
+        <div class="train not-started">
+          <span class="icon"></span>
+          <span i18n-content="trainingMiddlePrompt"
+              class="text"></span>
+        </div>
+        <div class="train not-started">
+          <span class="icon"></span>
+          <span i18n-content="trainingLastPrompt"
+              class="text"></span>
+        </div>
+      </div>
+    </div>
+    <div id="speech-training-toast" class="toast" hidden>
+      <span i18n-content="trainingTimeout" class="message" role="alert"></span>
+      <button i18n-content="trainingRetry" class="retry-button" tabindex="0">
+      </button>
+    </div>
+    <div id="speech-training-processing" class="buttonbar" hidden>
+      <div id="speech-training-retry" class="right" hidden>
+        <button i18n-content="trainingRetry" class="primary retry-button">
+        </button>
+      </div>
+      <div class="left">
+        <div id="speech-training-wait" class="message wait">
+          <span class="icon"></span>
+          <span i18n-content="finishedWait" class="text"></span>
+        </div>
+        <div id="speech-training-error" class="message error"
+            role="alert" hidden>
+          <span class="icon"></span>
+          <span i18n-content="error" class="text"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      <div id="finish-container" hidden>
+  <div class="container">
+    <span class="close" tabindex="0" role="button"
+        i18n-values="aria-label:close"></span>
+    <div class="header">
+      <h1 i18n-content="finishedTitle" aria-live="polite"></h1>
+    </div>
+    <div class="content">
+      <h3 i18n-content="finishedListIntro"></h3>
+      <div class="check">
+        <span class="icon"></span>
+        <span i18n-content="finishedListItem1" class="text">
+        </span>
+      </div>
+      <div class="check">
+        <span class="icon"></span>
+        <span i18n-content="finishedListItem2" class="text">
+        </span>
+      </div>
+      <div i18n-values=".innerHTML:finishedSettings"></div>
+      <div i18n-values=".innerHTML:finishedAudioHistory"></div>
+    </div>
+    <div class="buttonbar">
+      <div class="right">
+        <button id="done-button" i18n-content="finish"
+            class="primary finish-button"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    </div>
+  </body>
+</html>

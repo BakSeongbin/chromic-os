@@ -1,0 +1,2 @@
+Treba se koristiti zajedno s oznakom "trace-upload-url".
+        UPOZORENJE: kada je omogućeno, Chrome će zapisivati podatke o izvedbi za svako kretanje i prenijeti ih na URL naveden oznakom "trace-upload-url". Praćenje može uključivati podatke koji otkrivaju identitet, primjerice, naslove i URL-ove web-lokacija koje posjećujete.

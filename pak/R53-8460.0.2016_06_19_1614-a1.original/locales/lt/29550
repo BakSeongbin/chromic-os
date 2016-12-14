@@ -1,0 +1,8 @@
+Eikite į
+        „Chromium“ meniu >
+        „<span jscontent="settingsTitle"></span>“
+        >
+        „<span jscontent="advancedTitle"></span>“
+        ir panaikinkite „<span jscontent="noNetworkPredictionTitle"></span>“ pasirinkimą.
+        Jei tai atlikus problema išlieka, rekomenduojame vėl pasirinkti šią parinktį,
+        kad pagerėtų našumas.

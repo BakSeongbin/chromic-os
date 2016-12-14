@@ -1,0 +1,1 @@
+{HOURS,plural, =1{1 час}one{# час}few{# часа}many{# часов}other{# часа}}

@@ -1,0 +1,1 @@
+Hiermit wird die Synchronisierung von WLAN-Einstellungen zwischen Geräten ermöglicht. Wenn die Funktion aktiviert ist, wird der WLAN-Anmeldedatentyp bei der Chrome-Synchronisierung registriert und die WLAN-Anmeldedaten werden gemäß den Nutzereinstellungen synchronisiert. Siehe auch chrome://settings/syncSetup

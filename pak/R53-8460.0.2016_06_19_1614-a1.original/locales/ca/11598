@@ -1,0 +1,1 @@
+{NUM_DOWNLOAD,plural, =1{Hi ha una baixada en curs. Voleu cancel·lar-la i sortir de Chromium?}other{Hi ha # baixades en curs. Voleu cancel·lar-les i sortir de Chromium?}}

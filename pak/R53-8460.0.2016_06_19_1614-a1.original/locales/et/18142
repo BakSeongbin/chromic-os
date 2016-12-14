@@ -1,0 +1,9 @@
+Jälgitav kasutaja saab veebi sirvida teie järelevalve all. Jälgitava kasutaja haldurina Chrome'is saate:
+
+ • lubada või keelata teatud veebisaite;
+ • vaadata üle veebisaite, mida jälgitav kasutaja on külastanud; ja
+ • hallata teisi seadeid.
+
+Jälgitava kasutaja loomine ei loo Google'i kontot ja Chrome ei sünkrooni kasutaja järjehoidjaid, sirvimisajalugu ega muid eelistusi muude seadmetega.
+
+Kui olete loonud uue jälgitava kasutaja, saate tema seadeid mis tahes ajal ja seadmes hallata lehel $1. <a target="_blank" href="https://support.google.com/chrome/?p=ui_supervised_users&hl=et">Lisateave jälgitavate kasutajate kohta</a>

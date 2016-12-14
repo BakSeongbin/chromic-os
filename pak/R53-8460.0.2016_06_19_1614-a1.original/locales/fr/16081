@@ -1,0 +1,1 @@
+Si vous activez cette option, les éléments fixes auront leurs propres couches composées. Sachez que ces éléments doivent également créer des contextes de superposition pour que cette option fonctionne.

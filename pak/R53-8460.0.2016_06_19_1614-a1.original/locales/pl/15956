@@ -1,0 +1,1 @@
+Ogranicza debugowanie aplikacji klienta natywnego oparte na GDB zgodnie z URL-em pliku manifestu. Aby ta opcja działała, debugowanie klienta natywnego oparte na GDB musi być włączone.

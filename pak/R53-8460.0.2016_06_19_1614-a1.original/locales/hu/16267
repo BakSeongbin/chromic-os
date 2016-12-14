@@ -1,0 +1,1 @@
+Folyamaton kívüli V8 Proxy Resolverek engedélyezése. A V8 Proxy Resolvert segédprogram-folyamatként futtatja a böngészőn belüli folyamat helyett.

@@ -1,0 +1,1 @@
+Rect-based targeting uses a heuristic to determine the most probable target of a gesture, where the touch region is represented by a rectangle.

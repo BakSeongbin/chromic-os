@@ -1,0 +1,18 @@
+<h3>Functies voor foutopsporing</h3>
+    <br>
+    Je kunt de functies voor foutopsporing op je Chrome OS-apparaat inschakelen om aangepaste code op je apparaat te installeren en te testen. Hiermee kun je het volgende doen:<br>
+    <ul>
+      <li>Rootfs-verificatie verwijderen zodat je OS-bestanden kunt aanpassen
+      <li>SSH-toegang tot het apparaat inschakelen met de standaardtestsleutels, zodat je tools zoals <span style="color:grey;font-family:monospace">'cros flash'</span> kunt gebruiken voor toegang tot het apparaat
+      <li>Opstarten via USB inschakelen zodat je een OS-image vanaf een USB-drive kunt installeren
+      <li>Het inlogwachtwoord voor ontwikkeling en het systeem instellen op een aangepaste waarde zodat je SSH handmatig kunt toepassen op het apparaat
+    </ul>
+    <br>
+    Na inschakeling blijven de meeste functies voor foutopsporing ingeschakeld, ook nadat je een Powerwash hebt uitgevoerd of de gegevens op een beheerd bedrijfsapparaat hebt gewist. Als je alle functies voor foutopsporing volledig wilt uitschakelen, voltooi je het Chrome OS-herstelproces (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Voor meer informatie over de functies voor foutopsporing ga je naar:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Opmerking:</b> Het systeem wordt opnieuw opgestart tijdens het proces.

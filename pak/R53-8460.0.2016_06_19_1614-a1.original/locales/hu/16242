@@ -1,0 +1,2 @@
+A trace-upload-url jelölővel együtt kell használni.
+        FIGYELEM: Ha engedélyezve van, a Chrome minden navigációs teljesítményadatot rögzít, és feltölti a trace-upload-url jelölő által meghatározott URL-re. A nyom személyazonosításra alkalmas adatokat is tartalmazhat, így például a felkeresett webhelyek címét és URL-jét.

@@ -1,0 +1,1 @@
+{COUNT,plural, =0{niciuna}=1{1 aplicație ($1)}=2{2 aplicații ($1, $2)}few{# aplicații ($1, $2, $3)}other{# de aplicații ($1, $2, $3)}}

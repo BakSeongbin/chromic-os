@@ -1,0 +1,1 @@
+Laiendustel lubatakse luua paneelaknad, mis avanevad brauserist väljaspool. Kui seade on keelatud, ilmub paneeli avamisel selle asemel hüpik. Vaikekäitumisel lubatakse see ainult lubatute loendisse lisatud laienduste puhul. Lubatud käitumisel lubatakse see kõigi laienduste puhul. Keelatud käitumise puhul keelatakse kõikide laienduste paneelid.

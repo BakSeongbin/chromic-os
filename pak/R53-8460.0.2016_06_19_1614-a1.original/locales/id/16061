@@ -1,0 +1,1 @@
+Mengizinkan ekstensi untuk membuat jendela panel yang dibuka di luar bingkai browser. Upaya membuka panel akan membuka munculan jika tidak diaktifkan. Perilaku default hanya mengizinkan ekstensi yang dimasukkan ke daftar putih. Perilaku yang diaktifkan adalah mengizinkan semua ekstensi. Sementara perilaku yang melarang panel untuk ekstensi apa pun dinonaktifkan.

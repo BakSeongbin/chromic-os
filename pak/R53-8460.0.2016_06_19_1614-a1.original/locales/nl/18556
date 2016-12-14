@@ -1,0 +1,1 @@
+Hiermee worden verzoeken aan localhost via HTTPS toegestaan, ook als er een ongeldig certificaat wordt gepresenteerd.

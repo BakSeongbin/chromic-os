@@ -1,0 +1,1 @@
+Match Autofill suggestions based on substrings (token prefixes) rather than just prefixes.

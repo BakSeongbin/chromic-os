@@ -1,0 +1,1 @@
+Arra kényszeríti a húzással történő frissítés funkciót, hogy nem érvényesítő újratöltést indítson (míg ha a jelölő le van tiltva, akkor általában a megszokott, a gyorsítótárat érvényesítő újratöltés következik be).

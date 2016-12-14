@@ -1,0 +1,1 @@
+{NUM_DEVICES,plural, =1{Kommunikation mit einem USB-Gerät}other{Kommunikation mit # USB-Geräten}}

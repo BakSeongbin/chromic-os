@@ -1,0 +1,1 @@
+Restringe a depuração GDB da aplicação Native Client por URL do ficheiro de manifesto. Para que esta opção funcione, a depuração GDB Native Client deve ser ativada.

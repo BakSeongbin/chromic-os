@@ -1,0 +1,1 @@
+Your account details are out of date. <a is="action-link" id="reauth" data-user-email="$1">Sign in again</a>.

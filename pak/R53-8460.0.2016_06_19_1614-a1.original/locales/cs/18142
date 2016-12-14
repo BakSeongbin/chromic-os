@@ -1,0 +1,8 @@
+Dozorovaný uživatel může procházet web podle vašich pravidel. Jako správce dozorovaného uživatele v Chromu můžete:
+ • povolit nebo zakázat některé weby,
+ • kontrolovat weby, které dozorovaný uživatel navštívil, a
+ • spravovat jiná nastavení..
+
+Vytvořením dozorovaného uživatele nebude vytvořen účet Google. Záložky, historie procházení a další nastavení uživatele nebudou přenesena do dalších zařízení využívajících synchronizaci Chrome.
+
+Po vytvoření nového dozorovaného uživatele můžete jeho nastavení spravovat na adrese $1, a to kdykoli a z libovolného zařízení. <a target="_blank" href="https://support.google.com/chrome/?p=ui_supervised_users&hl=cs">Další informace o dozorovaných uživatelích</a>

@@ -1,0 +1,1 @@
+{COUNT,plural, =0{nėra}=1{1 elementas}one{# elementas}few{# elementai}many{# elemento}other{# elementų}}

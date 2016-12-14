@@ -1,0 +1,4 @@
+<p>Når $1 kører i et understøttet computermiljø, anvendes systemets proxyindstillinger. Dit system understøttes imidlertid ikke, eller også er der opstået et problem ved opstart af din systemkonfiguration.
+</p>
+
+        <p>Du kan dog stadig konfigurere via kommandolinjen. Se <code>man $2</code> for at få flere oplysninger om flag og miljøvariabler.</p>

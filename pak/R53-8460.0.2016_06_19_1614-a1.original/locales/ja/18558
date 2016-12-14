@@ -1,0 +1,1 @@
+ページを自動更新するには URL にクエリ パラメータを追加します: chrome://device-log/?refresh=<sec>

@@ -1,0 +1,18 @@
+<h3>Silumisfunktsioonid</h3>
+    <br>
+    Saate lubada Chrome OS-i seadmes silumisfunktsioonid, et installida ja testida seadmes kohandatud koodi. See pakub järgmiseid võimalusi.<br>
+    <ul>
+      <li>Saate eemaldada kinnituse rootfs, mis võimaldab muuta OS-i faile.
+      <li>Saate lubada seadmele SSH-juurdepääsu, kasutades standardseid testvõtmeid, mis võimaldavad kasutada seadmele juurdepääsu saamiseks selliseid tööriistu nagu <span style="color:grey;font-family:monospace">„cros flash”</span>.
+      <li>Saate lubada käivitamise USB-lt, mis võimaldab installida OS-kujutise USB-kettalt.
+      <li>Võite määrata nii arendaja kui ka süsteemi juursisselogimisparooli kohandatud väärtusele, et kasutada seadmesse käsitsi pääsemiseks SSH-d.
+    </ul>
+    <br>
+    Kui see on lubatud, jääb enamik silumisfunktsioone ettevõtte hallatud seadmes lubatuks isegi pärast Powerwashi kasutamist või andmete kustutamist. Silumisfunktsioonide täielikuks keelamiseks tehke Chrome OS-i taastamisprotsessi toimingud (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Lisateavet silumisfunktsioonide kohta vaadake aadressilt<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Märkus.</b> Protsessi ajal süsteem taaskäivitub.

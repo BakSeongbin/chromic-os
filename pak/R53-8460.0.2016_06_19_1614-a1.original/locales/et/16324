@@ -1,0 +1,1 @@
+Lähtestage rakenduse käivitaja installiolek igal taaskäivitamisel. Kui see märgistus on seatud, unustab Chrome käivitaja installi igal käivitamisel. Seda kasutatakse rakenduse käivitaja installivoo testimiseks.

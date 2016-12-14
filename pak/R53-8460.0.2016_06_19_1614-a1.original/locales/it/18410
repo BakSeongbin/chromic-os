@@ -1,0 +1,1 @@
+Questo flag rende Chrome non sicuro. Utilizzalo soltanto se ne conosci la funzione. Tieni presente che questo flag potrebbe essere rimosso senza preavviso. Se viene attivato, i frame con un'origine https possono utilizzare WebSocket con un URL non sicuro (ws://).

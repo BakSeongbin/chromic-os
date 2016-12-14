@@ -1,0 +1,1 @@
+{HOURS,plural, =1{1 h in }one{# h in }two{# h in }few{# h in }other{# h in }}

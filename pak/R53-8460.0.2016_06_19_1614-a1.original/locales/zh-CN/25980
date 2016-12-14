@@ -1,0 +1,1 @@
+{0,select, single{选择 1 部 HID 设备}multiple{选择多部 HID 设备}other{UNUSED}}

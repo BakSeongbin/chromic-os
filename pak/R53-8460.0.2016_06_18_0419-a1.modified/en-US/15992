@@ -1,0 +1,1 @@
+Bypasses user engagement checks for displaying app banners, such as requiring that users have visited the site before and that the banner hasn't been shown recently. This allows developers to test that other eligibility requirements for showing app banners, such as having a manifest, are met.

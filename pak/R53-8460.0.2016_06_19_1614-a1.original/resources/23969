@@ -1,0 +1,1 @@
+{"capabilities": {"required": {"mojo:mus": {"interfaces": ["mus::mojom::Gpu"]}}}, "display_name": "Content Renderer", "name": "exe:content_renderer", "manifest_version": 1}

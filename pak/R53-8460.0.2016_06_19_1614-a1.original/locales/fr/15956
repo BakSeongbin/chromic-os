@@ -1,0 +1,1 @@
+Restreint le débogage GDB de l'application Native Client en fonction de l'URL du fichier manifeste. Le débogage GDB de l'application Native Client doit être activé pour que cette option fonctionne.

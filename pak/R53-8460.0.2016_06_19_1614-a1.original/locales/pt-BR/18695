@@ -1,0 +1,1 @@
+Reutilize uma fonte armazenada em cache no renderizador para oferecer diferentes tamanhos de fonte para um layout mais rápido.

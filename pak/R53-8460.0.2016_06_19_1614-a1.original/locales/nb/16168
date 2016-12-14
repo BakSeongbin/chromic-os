@@ -1,0 +1,1 @@
+Ikke vis informasjonsraden når en utvidelse festes til en side via chrome.debugger API. Dette er nødvendig for å feilsøke bakgrunnssider i utvidelser.

@@ -1,0 +1,1 @@
+Włącza tryb działania interfejsu API Push w tle. To pozwala Chrome dalej działać po zamknięciu ostatniego okna oraz uruchamiać się przy starcie systemu operacyjnego, jeśli interfejs API Push tego wymaga.

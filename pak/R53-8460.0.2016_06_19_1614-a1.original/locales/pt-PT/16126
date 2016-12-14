@@ -1,0 +1,1 @@
+Algumas páginas Web utilizam extensões de JavaScript antigas ou fora do padrão, que podem entrar em conflito com as mais recentes funcionalidades de JavaScript. Este sinalizador permite desativar o suporte para estas funcionalidades, para permitir a compatibilidade com aquelas páginas.

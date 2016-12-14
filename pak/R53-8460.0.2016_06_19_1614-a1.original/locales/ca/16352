@@ -1,0 +1,1 @@
+Mostra les finestres de les aplicacions després de la primera càrrega. Les finestres es mostraran considerablement més tard en el cas d'aplicacions grans que carreguin els recursos de manera síncrona, però aquesta característica resultarà insignificant per a les aplicacions que carreguin la majoria dels seus recursos de manera asíncrona.

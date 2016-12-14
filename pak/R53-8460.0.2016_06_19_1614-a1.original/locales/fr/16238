@@ -1,0 +1,1 @@
+Active le mode arrière-plan pour l'API Push. Chrome continue de s'exécuter après la fermeture de la dernière fenêtre et se lance au démarrage du système d'exploitation (en fonction des besoins de l'API Push).

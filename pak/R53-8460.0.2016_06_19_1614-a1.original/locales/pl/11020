@@ -1,0 +1,1 @@
+{HOURS,plural, =1{1 godzinę temu}few{# godziny temu}many{# godzin temu}other{# godziny temu}}

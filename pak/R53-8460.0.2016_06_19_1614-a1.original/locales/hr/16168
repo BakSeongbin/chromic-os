@@ -1,0 +1,1 @@
+Informacijska traka ne prikazuje ne kada se proširenje poveže sa stranicom putem chrome.debugger API-ja. To je potrebno za otklanjanje pogrešaka na pozadinskim stranicama proširenja.

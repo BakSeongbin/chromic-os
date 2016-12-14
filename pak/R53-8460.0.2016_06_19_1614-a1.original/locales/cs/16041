@@ -1,0 +1,1 @@
+Aktivuje implementaci experimentálních překryvných posuvníků. Aby se posuvníky animovaly, je nutné aktivovat také skládání ve vláknu.

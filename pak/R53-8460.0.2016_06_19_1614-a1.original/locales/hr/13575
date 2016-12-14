@@ -1,0 +1,18 @@
+<h3>Značajke za otklanjanje pogrešaka</h3>
+    <br>
+    Možete omogućiti značajke za otklanjanje pogrešaka na svojem uređaju s OS-om Chrome kako biste instalirali i testirali prilagođeni kôd na uređaju. To će vam omogućiti sljedeće:<br>
+    <ul>
+      <li>uklanjanje potvrde rootfs radi izmjene datoteka OS-a
+      <li>omogućivanje SSH pristupa uređaju pomoću standardnih testnih ključeva kako biste mogli upotrebljavati alate kao što su <span style="color:grey;font-family:monospace">"cros flash"</span> za pristup uređaju
+      <li>omogućivanje pokretanja s USB-a kako biste mogli instalirati sliku OS-a s USB pogona
+      <li>postavljanje dev i sistemske korijenske zaporke za prijavu na prilagođenu vrijednost kako biste ručno unosili SSH na uređaj.
+    </ul>
+    <br>
+    Kada ih omogućite, većina značajki za otklanjanje pogrešaka ostat će omogućene čak i nakon izvršavanja Powerwasha ili brisanja podataka na uređaju kojim upravlja tvrtka. Da biste potpuno onemogućili značajke za otklanjanje pogrešaka, izvršite postupak oporavka OS-a Chrome (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Više informacija o značajkama za otklanjanje pogrešaka potražite na stranici:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Napomena:</b> sustav će se ponovo pokrenuti tijekom postupka.

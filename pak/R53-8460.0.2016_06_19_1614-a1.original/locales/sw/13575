@@ -1,0 +1,18 @@
+<h3>Vipengele vya Kutatua</h3>
+    <br>
+    Unaweza kuwasha vipengele vya kutatua kwenye Kifaa chako cha Chrome OS ili kusakinisha na kujaribu nambari maalum kwenye kifaa chako. Hii itakuruhusu:<br>
+    <ul>
+      <li>Kuondoa uthibitishaji wa rootfs ili urekebishe faili za OS
+      <li>Kuwasha uwezo wa SSH kufikia kifaa kwa kutumia vitufe wastani vya majaribio ili utumie zana kama vile <span style="color:grey;font-family:monospace">'cros flash'</span> kufikia kifaa
+      <li>Kuwasha utatuaji kutoka kwenye USB ili usakinishe picha ya OS kutoka hifadhi ya USB
+      <li>Weka dev na nenosiri la kuingia katika akaunti msingi ya mfumo kuwa nambari maalum ili uweke SSH kwa njia ya kawaida katika kifaa
+    </ul>
+    <br>
+    Pindi tu inapowashwa, vipengele vingi vya kutatua vitasalia vikiwa vimewashwa hata baada ya kutekeleza powerwash au kufuta data kwenye kifaa kinachodhibitiwa na biashara.  Ili kuzima vipengele vyote vya kutatua kabisa, kamilisha mchakato wa kurejesha Chrome OS (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Kwa maelezo zaidi kuhusu vipengele vya kutatua angalia:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Dokezo:</b>  Mfumo utawashwa tena wakati wa mchakato.

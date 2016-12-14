@@ -1,0 +1,1 @@
+Prin revenirea la TLS 1.0, dialogul de confirmare cu serverul a fost a efectuat, dar alternativele TLS 1.0 nu mai sunt acceptate. Serverul trebuie să fie actualizat pentru a implementa corect negocierea versiunilor și, de preferință, pentru a fi compatibil cu TLS 1.2.

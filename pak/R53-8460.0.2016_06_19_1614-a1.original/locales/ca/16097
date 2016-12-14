@@ -1,0 +1,1 @@
+Força que els detectors d'esdeveniment de toc a l'inici, toc per moure, roda del ratolí i roda (que no hagin sol·licitat una altra opció) es tractin com a passius. Això interromprà el comportament tàctil o de la roda en alguns llocs web, però és útil per demostrar els possibles avantatges quant a rendiment si s'adopten detectors d'esdeveniments passius.

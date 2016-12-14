@@ -1,0 +1,1 @@
+Ottaa käyttöön välimuistin hallinnan komennon stale-while-revalidate kokeellisen version. Tämä antaa palvelimille luvan määrittää jotkin resurssit todentumaan uudelleen taustalla, mikä vähentää viivettä.

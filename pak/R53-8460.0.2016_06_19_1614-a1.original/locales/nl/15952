@@ -1,0 +1,1 @@
+Schakel stub voor GDB-foutopsporing in. Een Native Client-app wordt bij het opstarten gestopt en wacht op nacl-gdb (van de NaCl-SDK) om hieraan te koppelen.

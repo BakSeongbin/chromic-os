@@ -1,0 +1,9 @@
+Valvottu käyttäjä voi selata verkkoa opastuksellasi. Valvotun Chrome-käyttäjän hallinnoijana voit
+
+ • sallia tai kieltää tiettyjen sivustojen käytön
+ • tarkistaa, millä sivustoilla valvottu käyttäjä on käynyt
+ • hallinnoida muita asetuksia.
+
+Valvotun käyttäjän luominen ei luo Google-tiliä, eikä valvottu käyttäjä voi käyttää kirjanmerkkejään, selaushistoriaansa ja muita asetuksiaan muilla laitteilla Chrome-synkronoinnin kautta.
+
+Luotuasi uuden valvotun käyttäjän voit hallinnoida käyttäjän asetuksia milloin tahansa ja millä tahansa laitteella osoitteessa $1. <a target="_blank" href="https://support.google.com/chrome/?p=ui_supervised_users&hl=fi">Lue lisätietoja valvotuista käyttäjistä.</a>

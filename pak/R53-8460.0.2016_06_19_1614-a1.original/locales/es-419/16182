@@ -1,0 +1,1 @@
+Si una página no estableció una política de referencia explícita, configurar esta opción reducirá la cantidad de información en el encabezado "de referencia" para las solicitudes de origen cruzado.

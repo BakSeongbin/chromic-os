@@ -1,0 +1,1 @@
+Si une page ne définit aucune stratégie explicite en matière d'URL de provenance, le fait de définir cet indicateur réduit la quantité d'informations dans l'en-tête "referer" des requêtes multi-domaines.

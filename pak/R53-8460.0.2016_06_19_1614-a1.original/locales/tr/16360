@@ -1,0 +1,1 @@
+Kaydırmayla ilgili giriş etkinliklerinin dizinde işlenmesi. Bu seçenek devre dışı bırakıldığında, bu tür kaydırma etkinliklerinin tümü ana dizide işlenir. Bunun, çoğu web sitesinin kaydırma performansını önemli ölçüde azaltabileceğini ve sadece test amacıyla tasarlandığını unutmayın.

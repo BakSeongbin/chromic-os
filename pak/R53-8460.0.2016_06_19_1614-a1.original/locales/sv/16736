@@ -1,0 +1,1 @@
+{COUNT,plural, =0{inga}=1{1 app ($1)}=2{2 appar ($1, $2)}other{# appar ($1, $2, $3)}}

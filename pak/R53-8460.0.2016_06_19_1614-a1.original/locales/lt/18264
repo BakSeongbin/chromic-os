@@ -1,0 +1,1 @@
+Eksperimentinis našumo režimas, kuriam veikiant atskirų svetainių „iframe“ elementai apdorojami taikant kitokį procesą nei apdorojant pagrindinį dokumentą. Kai veikia šis režimas, „iframe“ elementai iš skirtingų trečiųjų šalių svetainių galės būti apdorojami vykdant tą patį procesą.

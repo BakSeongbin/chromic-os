@@ -1,0 +1,1 @@
+Habilita el uso de listas de presentación para registrar comandos de lienzo 2D. Esto permite que la rasterización de lienzo 2D se realice en un subproceso independiente.

@@ -1,0 +1,1 @@
+Intentaste acceder a <strong>$1</strong>, pero el emisor anuló el certificado que presentó el servidor. Esto significa que no se debe confiar en absoluto en las credenciales de seguridad que presentó el servidor. Te puedes estar comunicando con un atacante.

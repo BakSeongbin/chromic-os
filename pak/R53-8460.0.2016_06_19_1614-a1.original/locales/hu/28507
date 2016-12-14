@@ -1,0 +1,2 @@
+Több különböző Content-Length (tartalom-hossz) fejlécet kapott. Ez nem megengedett
+    a HTTP-válaszok felosztására irányuló támadások elleni védelem miatt.

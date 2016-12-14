@@ -1,0 +1,1 @@
+Huwag ipakita ang infobar kapag na-attach ang isang extension sa isang page sa pamamagitan ng chrome.debugger API. Kinakailangan ito upang mag-debug ng mga page sa background ng extension.

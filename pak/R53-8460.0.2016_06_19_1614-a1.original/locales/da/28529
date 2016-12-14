@@ -1,0 +1,1 @@
+Et TLS 1.0-alternativ kunne udveksle data med serveren. Vi accepterer dog ikke længere TLS 1.0-alternativer. Serveren skal opdateres, før den kan implementere versionsforhandling korrekt og så vidt muligt understøtte TLS 1.2.

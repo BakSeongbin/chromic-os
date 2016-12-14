@@ -1,0 +1,1 @@
+Não permite a obtenção de scripts de bloqueio do analisador de terceiros inseridos no frame principal através de document.write.

@@ -1,0 +1,77 @@
+<!doctype html>
+<html i18n-values="dir:textdirection;lang:language">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0,
+                               maximum-scale=1.0, user-scalable=no">
+<link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+<link rel="stylesheet" href="chrome://resources/css/widgets.css">
+<style>/* Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+body {
+  background-color: #E6E6E6;
+  font-size: 12pt;
+  margin: 50px 40px 20px 40px;
+  text-align: center;
+}
+
+#container {
+  background-color: #fbfbfb;
+  border: 1px solid #AAA;
+  border-bottom: 1px solid #888;
+  border-radius: 3px;
+  box-shadow: 0 2px 2px #AAA;
+  color: #666;
+  margin: auto;
+  max-width: 540px;
+  min-height: 29px;
+  min-width: 200px;
+  padding: 20px 60px;
+  text-align: start;
+}
+
+#container-inner {
+  background-color: #fbfbfb;
+  margin-top: 25px;
+  text-align: center;
+}
+
+button {
+  -webkit-user-select: none;
+  background-image: -webkit-linear-gradient(#ededed, #ededed 38%, #dedede);
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 2px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08),
+    inset 0 1px 2px rgba(255, 255, 255, 0.75);
+  margin-top: 10px;
+  min-height: 29px;
+  min-width: 65px;
+  padding: 8px 13px;
+  text-shadow: 0 1px 0 rgb(240, 240, 240);
+}
+
+</style>
+<script src="chrome://resources/js/load_time_data.js"></script>
+<script src="chrome://resources/js/cr.js"></script>
+<script src="chrome://resources/js/cr/event_target.js"></script>
+<script src="chrome://resources/js/util.js"></script>
+<script src="chrome://slow/slow.js"></script>
+<script src="chrome://slow/strings.js"></script>
+</head>
+<body>
+  <div id="container" class="container">
+    <div i18n-content="slowDescription"></div>
+    <br>
+    <div i18n-values=".innerHTML:slowWarning"></div>
+    <div id="container-inner" width=100% class="container-inner">
+      <button id="slow-disable" i18n-content="slowDisable" hidden></button>
+      <button id="slow-enable" i18n-content="slowEnable" hidden></button>
+    </div>
+  </div>
+<script src="chrome://resources/js/i18n_template.js"></script>
+<script src="chrome://resources/js/jstemplate_compiled.js"></script>
+</body>
+</html>

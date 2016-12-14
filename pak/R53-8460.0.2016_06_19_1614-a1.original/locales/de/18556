@@ -1,0 +1,1 @@
+Anfragen an localhost über HTTPS sind zulässig, auch wenn ein ungültiges Zertifikat übermittelt wird.

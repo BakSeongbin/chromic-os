@@ -1,0 +1,8 @@
+Avage
+        Chromiumi menüü >
+        <span jscontent="settingsTitle"></span>
+        >
+        <span jscontent="advancedTitle"></span>
+        ja tühistage valik „<span jscontent="noNetworkPredictionTitle"></span>”.
+        Kui see probleemi ei lahenda, soovitame selle valiku
+        toimivuse parandamiseks uuesti teha.

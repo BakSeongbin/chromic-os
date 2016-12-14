@@ -1,0 +1,1 @@
+Simple Cache for HTTP er en ny buffer. Den er avhengig av filsystemet for å bli tildelt lagringsplass.

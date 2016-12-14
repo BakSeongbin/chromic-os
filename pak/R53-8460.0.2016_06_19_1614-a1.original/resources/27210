@@ -1,0 +1,6359 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * The global object.
+ * @type {!Object}
+ * @const
+ */
+var global = this;
+
+/** @typedef {{eventName: string, uid: number}} */
+var WebUIListener;
+
+/** Platform, package, object property, and Event support. **/
+var cr = cr || function() {
+  'use strict';
+
+  /**
+   * Builds an object structure for the provided namespace path,
+   * ensuring that names that already exist are not overwritten. For
+   * example:
+   * "a.b.c" -> a = {};a.b={};a.b.c={};
+   * @param {string} name Name of the object that this file defines.
+   * @param {*=} opt_object The object to expose at the end of the path.
+   * @param {Object=} opt_objectToExportTo The object to add the path to;
+   *     default is {@code global}.
+   * @return {!Object} The last object exported (i.e. exportPath('cr.ui')
+   *     returns a reference to the ui property of window.cr).
+   * @private
+   */
+  function exportPath(name, opt_object, opt_objectToExportTo) {
+    var parts = name.split('.');
+    var cur = opt_objectToExportTo || global;
+
+    for (var part; parts.length && (part = parts.shift());) {
+      if (!parts.length && opt_object !== undefined) {
+        // last part and we have an object; use it
+        cur[part] = opt_object;
+      } else if (part in cur) {
+        cur = cur[part];
+      } else {
+        cur = cur[part] = {};
+      }
+    }
+    return cur;
+  }
+
+  /**
+   * Fires a property change event on the target.
+   * @param {EventTarget} target The target to dispatch the event on.
+   * @param {string} propertyName The name of the property that changed.
+   * @param {*} newValue The new value for the property.
+   * @param {*} oldValue The old value for the property.
+   */
+  function dispatchPropertyChange(target, propertyName, newValue, oldValue) {
+    var e = new Event(propertyName + 'Change');
+    e.propertyName = propertyName;
+    e.newValue = newValue;
+    e.oldValue = oldValue;
+    target.dispatchEvent(e);
+  }
+
+  /**
+   * Converts a camelCase javascript property name to a hyphenated-lower-case
+   * attribute name.
+   * @param {string} jsName The javascript camelCase property name.
+   * @return {string} The equivalent hyphenated-lower-case attribute name.
+   */
+  function getAttributeName(jsName) {
+    return jsName.replace(/([A-Z])/g, '-$1').toLowerCase();
+  }
+
+  /**
+   * The kind of property to define in {@code defineProperty}.
+   * @enum {string}
+   * @const
+   */
+  var PropertyKind = {
+    /**
+     * Plain old JS property where the backing data is stored as a "private"
+     * field on the object.
+     * Use for properties of any type. Type will not be checked.
+     */
+    JS: 'js',
+
+    /**
+     * The property backing data is stored as an attribute on an element.
+     * Use only for properties of type {string}.
+     */
+    ATTR: 'attr',
+
+    /**
+     * The property backing data is stored as an attribute on an element. If the
+     * element has the attribute then the value is true.
+     * Use only for properties of type {boolean}.
+     */
+    BOOL_ATTR: 'boolAttr'
+  };
+
+  /**
+   * Helper function for defineProperty that returns the getter to use for the
+   * property.
+   * @param {string} name The name of the property.
+   * @param {PropertyKind} kind The kind of the property.
+   * @return {function():*} The getter for the property.
+   */
+  function getGetter(name, kind) {
+    switch (kind) {
+      case PropertyKind.JS:
+        var privateName = name + '_';
+        return function() {
+          return this[privateName];
+        };
+      case PropertyKind.ATTR:
+        var attributeName = getAttributeName(name);
+        return function() {
+          return this.getAttribute(attributeName);
+        };
+      case PropertyKind.BOOL_ATTR:
+        var attributeName = getAttributeName(name);
+        return function() {
+          return this.hasAttribute(attributeName);
+        };
+    }
+
+    // TODO(dbeam): replace with assertNotReached() in assert.js when I can coax
+    // the browser/unit tests to preprocess this file through grit.
+    throw 'not reached';
+  }
+
+  /**
+   * Helper function for defineProperty that returns the setter of the right
+   * kind.
+   * @param {string} name The name of the property we are defining the setter
+   *     for.
+   * @param {PropertyKind} kind The kind of property we are getting the
+   *     setter for.
+   * @param {function(*, *):void=} opt_setHook A function to run after the
+   *     property is set, but before the propertyChange event is fired.
+   * @return {function(*):void} The function to use as a setter.
+   */
+  function getSetter(name, kind, opt_setHook) {
+    switch (kind) {
+      case PropertyKind.JS:
+        var privateName = name + '_';
+        return function(value) {
+          var oldValue = this[name];
+          if (value !== oldValue) {
+            this[privateName] = value;
+            if (opt_setHook)
+              opt_setHook.call(this, value, oldValue);
+            dispatchPropertyChange(this, name, value, oldValue);
+          }
+        };
+
+      case PropertyKind.ATTR:
+        var attributeName = getAttributeName(name);
+        return function(value) {
+          var oldValue = this[name];
+          if (value !== oldValue) {
+            if (value == undefined)
+              this.removeAttribute(attributeName);
+            else
+              this.setAttribute(attributeName, value);
+            if (opt_setHook)
+              opt_setHook.call(this, value, oldValue);
+            dispatchPropertyChange(this, name, value, oldValue);
+          }
+        };
+
+      case PropertyKind.BOOL_ATTR:
+        var attributeName = getAttributeName(name);
+        return function(value) {
+          var oldValue = this[name];
+          if (value !== oldValue) {
+            if (value)
+              this.setAttribute(attributeName, name);
+            else
+              this.removeAttribute(attributeName);
+            if (opt_setHook)
+              opt_setHook.call(this, value, oldValue);
+            dispatchPropertyChange(this, name, value, oldValue);
+          }
+        };
+    }
+
+    // TODO(dbeam): replace with assertNotReached() in assert.js when I can coax
+    // the browser/unit tests to preprocess this file through grit.
+    throw 'not reached';
+  }
+
+  /**
+   * Defines a property on an object. When the setter changes the value a
+   * property change event with the type {@code name + 'Change'} is fired.
+   * @param {!Object} obj The object to define the property for.
+   * @param {string} name The name of the property.
+   * @param {PropertyKind=} opt_kind What kind of underlying storage to use.
+   * @param {function(*, *):void=} opt_setHook A function to run after the
+   *     property is set, but before the propertyChange event is fired.
+   */
+  function defineProperty(obj, name, opt_kind, opt_setHook) {
+    if (typeof obj == 'function')
+      obj = obj.prototype;
+
+    var kind = /** @type {PropertyKind} */ (opt_kind || PropertyKind.JS);
+
+    if (!obj.__lookupGetter__(name))
+      obj.__defineGetter__(name, getGetter(name, kind));
+
+    if (!obj.__lookupSetter__(name))
+      obj.__defineSetter__(name, getSetter(name, kind, opt_setHook));
+  }
+
+  /**
+   * Counter for use with createUid
+   */
+  var uidCounter = 1;
+
+  /**
+   * @return {number} A new unique ID.
+   */
+  function createUid() {
+    return uidCounter++;
+  }
+
+  /**
+   * Returns a unique ID for the item. This mutates the item so it needs to be
+   * an object
+   * @param {!Object} item The item to get the unique ID for.
+   * @return {number} The unique ID for the item.
+   */
+  function getUid(item) {
+    if (item.hasOwnProperty('uid'))
+      return item.uid;
+    return item.uid = createUid();
+  }
+
+  /**
+   * Dispatches a simple event on an event target.
+   * @param {!EventTarget} target The event target to dispatch the event on.
+   * @param {string} type The type of the event.
+   * @param {boolean=} opt_bubbles Whether the event bubbles or not.
+   * @param {boolean=} opt_cancelable Whether the default action of the event
+   *     can be prevented. Default is true.
+   * @return {boolean} If any of the listeners called {@code preventDefault}
+   *     during the dispatch this will return false.
+   */
+  function dispatchSimpleEvent(target, type, opt_bubbles, opt_cancelable) {
+    var e = new Event(type, {
+      bubbles: opt_bubbles,
+      cancelable: opt_cancelable === undefined || opt_cancelable
+    });
+    return target.dispatchEvent(e);
+  }
+
+  /**
+   * Calls |fun| and adds all the fields of the returned object to the object
+   * named by |name|. For example, cr.define('cr.ui', function() {
+   *   function List() {
+   *     ...
+   *   }
+   *   function ListItem() {
+   *     ...
+   *   }
+   *   return {
+   *     List: List,
+   *     ListItem: ListItem,
+   *   };
+   * });
+   * defines the functions cr.ui.List and cr.ui.ListItem.
+   * @param {string} name The name of the object that we are adding fields to.
+   * @param {!Function} fun The function that will return an object containing
+   *     the names and values of the new fields.
+   */
+  function define(name, fun) {
+    var obj = exportPath(name);
+    var exports = fun();
+    for (var propertyName in exports) {
+      // Maybe we should check the prototype chain here? The current usage
+      // pattern is always using an object literal so we only care about own
+      // properties.
+      var propertyDescriptor = Object.getOwnPropertyDescriptor(exports,
+                                                               propertyName);
+      if (propertyDescriptor)
+        Object.defineProperty(obj, propertyName, propertyDescriptor);
+    }
+  }
+
+  /**
+   * Adds a {@code getInstance} static method that always return the same
+   * instance object.
+   * @param {!Function} ctor The constructor for the class to add the static
+   *     method to.
+   */
+  function addSingletonGetter(ctor) {
+    ctor.getInstance = function() {
+      return ctor.instance_ || (ctor.instance_ = new ctor());
+    };
+  }
+
+  /**
+   * Forwards public APIs to private implementations.
+   * @param {Function} ctor Constructor that have private implementations in its
+   *     prototype.
+   * @param {Array<string>} methods List of public method names that have their
+   *     underscored counterparts in constructor's prototype.
+   * @param {string=} opt_target Selector for target node.
+   */
+  function makePublic(ctor, methods, opt_target) {
+    methods.forEach(function(method) {
+      ctor[method] = function() {
+        var target = opt_target ? document.getElementById(opt_target) :
+                     ctor.getInstance();
+        return target[method + '_'].apply(target, arguments);
+      };
+    });
+  }
+
+  /**
+   * The mapping used by the sendWithPromise mechanism to tie the Promise
+   * returned to callers with the corresponding WebUI response. The mapping is
+   * from ID to the PromiseResolver helper; the ID is generated by
+   * sendWithPromise and is unique across all invocations of said method.
+   * @type {!Object<!PromiseResolver>}
+   */
+  var chromeSendResolverMap = {};
+
+  /**
+   * The named method the WebUI handler calls directly in response to a
+   * chrome.send call that expects a response. The handler requires no knowledge
+   * of the specific name of this method, as the name is passed to the handler
+   * as the first argument in the arguments list of chrome.send. The handler
+   * must pass the ID, also sent via the chrome.send arguments list, as the
+   * first argument of the JS invocation; additionally, the handler may
+   * supply any number of other arguments that will be included in the response.
+   * @param {string} id The unique ID identifying the Promise this response is
+   *     tied to.
+   * @param {boolean} isSuccess Whether the request was successful.
+   * @param {*} response The response as sent from C++.
+   */
+  function webUIResponse(id, isSuccess, response) {
+    var resolver = chromeSendResolverMap[id];
+    delete chromeSendResolverMap[id];
+
+    if (isSuccess)
+      resolver.resolve(response);
+    else
+      resolver.reject(response);
+  }
+
+  /**
+   * A variation of chrome.send, suitable for messages that expect a single
+   * response from C++.
+   * @param {string} methodName The name of the WebUI handler API.
+   * @param {...*} var_args Varibale number of arguments to be forwarded to the
+   *     C++ call.
+   * @return {!Promise}
+   */
+  function sendWithPromise(methodName, var_args) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    var promiseResolver = new PromiseResolver();
+    var id = methodName + '_' + createUid();
+    chromeSendResolverMap[id] = promiseResolver;
+    chrome.send(methodName, [id].concat(args));
+    return promiseResolver.promise;
+  }
+
+  /**
+   * A map of maps associating event names with listeners. The 2nd level map
+   * associates a listener ID with the callback function, such that individual
+   * listeners can be removed from an event without affecting other listeners of
+   * the same event.
+   * @type {!Object<!Object<!Function>>}
+   */
+  var webUIListenerMap = {};
+
+  /**
+   * The named method the WebUI handler calls directly when an event occurs.
+   * The WebUI handler must supply the name of the event as the first argument
+   * of the JS invocation; additionally, the handler may supply any number of
+   * other arguments that will be forwarded to the listener callbacks.
+   * @param {string} event The name of the event that has occurred.
+   * @param {...*} var_args Additional arguments passed from C++.
+   */
+  function webUIListenerCallback(event, var_args) {
+    var eventListenersMap = webUIListenerMap[event];
+    if (!eventListenersMap) {
+      // C++ event sent for an event that has no listeners.
+      // TODO(dpapad): Should a warning be displayed here?
+      return;
+    }
+
+    var args = Array.prototype.slice.call(arguments, 1);
+    for (var listenerId in eventListenersMap) {
+      eventListenersMap[listenerId].apply(null, args);
+    }
+  }
+
+  /**
+   * Registers a listener for an event fired from WebUI handlers. Any number of
+   * listeners may register for a single event.
+   * @param {string} eventName The event to listen to.
+   * @param {!Function} callback The callback run when the event is fired.
+   * @return {!WebUIListener} An object to be used for removing a listener via
+   *     cr.removeWebUIListener. Should be treated as read-only.
+   */
+  function addWebUIListener(eventName, callback) {
+    webUIListenerMap[eventName] = webUIListenerMap[eventName] || {};
+    var uid = createUid();
+    webUIListenerMap[eventName][uid] = callback;
+    return {eventName: eventName, uid: uid};
+  }
+
+  /**
+   * Removes a listener. Does nothing if the specified listener is not found.
+   * @param {!WebUIListener} listener The listener to be removed (as returned by
+   *     addWebUIListener).
+   * @return {boolean} Whether the given listener was found and actually
+   *     removed.
+   */
+  function removeWebUIListener(listener) {
+    var listenerExists = webUIListenerMap[listener.eventName] &&
+        webUIListenerMap[listener.eventName][listener.uid];
+    if (listenerExists) {
+      delete webUIListenerMap[listener.eventName][listener.uid];
+      return true;
+    }
+    return false;
+  }
+
+  return {
+    addSingletonGetter: addSingletonGetter,
+    createUid: createUid,
+    define: define,
+    defineProperty: defineProperty,
+    dispatchPropertyChange: dispatchPropertyChange,
+    dispatchSimpleEvent: dispatchSimpleEvent,
+    exportPath: exportPath,
+    getUid: getUid,
+    makePublic: makePublic,
+    PropertyKind: PropertyKind,
+
+    // C++ <-> JS communication related methods.
+    addWebUIListener: addWebUIListener,
+    removeWebUIListener: removeWebUIListener,
+    sendWithPromise: sendWithPromise,
+    webUIListenerCallback: webUIListenerCallback,
+    webUIResponse: webUIResponse,
+
+    get doc() {
+      return document;
+    },
+
+    /** Whether we are using a Mac or not. */
+    get isMac() {
+      return /Mac/.test(navigator.platform);
+    },
+
+    /** Whether this is on the Windows platform or not. */
+    get isWindows() {
+      return /Win/.test(navigator.platform);
+    },
+
+    /** Whether this is on chromeOS or not. */
+    get isChromeOS() {
+      return /CrOS/.test(navigator.userAgent);
+    },
+
+    /** Whether this is on vanilla Linux (not chromeOS). */
+    get isLinux() {
+      return /Linux/.test(navigator.userAgent);
+    },
+
+    /** Whether this is on Android. */
+    get isAndroid() {
+      return /Android/.test(navigator.userAgent);
+    }
+  };
+}();
+
+// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview This contains an implementation of the EventTarget interface
+ * as defined by DOM Level 2 Events.
+ */
+
+/**
+ * @typedef {EventListener|function(!Event):*}
+ */
+var EventListenerType;
+
+cr.define('cr', function() {
+
+  /**
+   * Creates a new EventTarget. This class implements the DOM level 2
+   * EventTarget interface and can be used wherever those are used.
+   * @constructor
+   * @implements {EventTarget}
+   */
+  function EventTarget() {
+  }
+
+  EventTarget.prototype = {
+    /**
+     * Adds an event listener to the target.
+     * @param {string} type The name of the event.
+     * @param {EventListenerType} handler The handler for the event. This is
+     *     called when the event is dispatched.
+     */
+    addEventListener: function(type, handler) {
+      if (!this.listeners_)
+        this.listeners_ = Object.create(null);
+      if (!(type in this.listeners_)) {
+        this.listeners_[type] = [handler];
+      } else {
+        var handlers = this.listeners_[type];
+        if (handlers.indexOf(handler) < 0)
+          handlers.push(handler);
+      }
+    },
+
+    /**
+     * Removes an event listener from the target.
+     * @param {string} type The name of the event.
+     * @param {EventListenerType} handler The handler for the event.
+     */
+    removeEventListener: function(type, handler) {
+      if (!this.listeners_)
+        return;
+      if (type in this.listeners_) {
+        var handlers = this.listeners_[type];
+        var index = handlers.indexOf(handler);
+        if (index >= 0) {
+          // Clean up if this was the last listener.
+          if (handlers.length == 1)
+            delete this.listeners_[type];
+          else
+            handlers.splice(index, 1);
+        }
+      }
+    },
+
+    /**
+     * Dispatches an event and calls all the listeners that are listening to
+     * the type of the event.
+     * @param {!Event} event The event to dispatch.
+     * @return {boolean} Whether the default action was prevented. If someone
+     *     calls preventDefault on the event object then this returns false.
+     */
+    dispatchEvent: function(event) {
+      if (!this.listeners_)
+        return true;
+
+      // Since we are using DOM Event objects we need to override some of the
+      // properties and methods so that we can emulate this correctly.
+      var self = this;
+      event.__defineGetter__('target', function() {
+        return self;
+      });
+
+      var type = event.type;
+      var prevented = 0;
+      if (type in this.listeners_) {
+        // Clone to prevent removal during dispatch
+        var handlers = this.listeners_[type].concat();
+        for (var i = 0, handler; handler = handlers[i]; i++) {
+          if (handler.handleEvent)
+            prevented |= handler.handleEvent.call(handler, event) === false;
+          else
+            prevented |= handler.call(this, event) === false;
+        }
+      }
+
+      return !prevented && !event.defaultPrevented;
+    }
+  };
+
+  // Export
+  return {
+    EventTarget: EventTarget
+  };
+});
+
+// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview This is a data model representin
+ */
+
+// The include directives are put into Javascript-style comments to prevent
+// parsing errors in non-flattened mode. The flattener still sees them.
+// Note that this makes the flattener to comment out the first line of the
+// included file but that's all right since any javascript file should start
+// with a copyright comment anyway.
+
+//// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview Assertion support.
+ */
+
+/**
+ * Verify |condition| is truthy and return |condition| if so.
+ * @template T
+ * @param {T} condition A condition to check for truthiness.  Note that this
+ *     may be used to test whether a value is defined or not, and we don't want
+ *     to force a cast to Boolean.
+ * @param {string=} opt_message A message to show on failure.
+ * @return {T} A non-null |condition|.
+ */
+function assert(condition, opt_message) {
+  if (!condition) {
+    var message = 'Assertion failed';
+    if (opt_message)
+      message = message + ': ' + opt_message;
+    var error = new Error(message);
+    var global = function() { return this; }();
+    if (global.traceAssertionsForTesting)
+      console.warn(error.stack);
+    throw error;
+  }
+  return condition;
+}
+
+/**
+ * Call this from places in the code that should never be reached.
+ *
+ * For example, handling all the values of enum with a switch() like this:
+ *
+ *   function getValueFromEnum(enum) {
+ *     switch (enum) {
+ *       case ENUM_FIRST_OF_TWO:
+ *         return first
+ *       case ENUM_LAST_OF_TWO:
+ *         return last;
+ *     }
+ *     assertNotReached();
+ *     return document;
+ *   }
+ *
+ * This code should only be hit in the case of serious programmer error or
+ * unexpected input.
+ *
+ * @param {string=} opt_message A message to show when this is hit.
+ */
+function assertNotReached(opt_message) {
+  assert(false, opt_message || 'Unreachable code hit');
+}
+
+/**
+ * @param {*} value The value to check.
+ * @param {function(new: T, ...)} type A user-defined constructor.
+ * @param {string=} opt_message A message to show when this is hit.
+ * @return {T}
+ * @template T
+ */
+function assertInstanceof(value, type, opt_message) {
+  // We don't use assert immediately here so that we avoid constructing an error
+  // message if we don't have to.
+  if (!(value instanceof type)) {
+    assertNotReached(opt_message || 'Value ' + value +
+                     ' is not a[n] ' + (type.name || typeof type));
+  }
+  return value;
+}
+
+
+cr.define('cr.ui', function() {
+  /** @const */ var EventTarget = cr.EventTarget;
+
+  /**
+   * A data model that wraps a simple array and supports sorting by storing
+   * initial indexes of elements for each position in sorted array.
+   * @param {!Array} array The underlying array.
+   * @constructor
+   * @extends {cr.EventTarget}
+   */
+  function ArrayDataModel(array) {
+    this.array_ = array;
+    this.indexes_ = [];
+    this.compareFunctions_ = {};
+
+    for (var i = 0; i < array.length; i++) {
+      this.indexes_.push(i);
+    }
+  }
+
+  ArrayDataModel.prototype = {
+    __proto__: EventTarget.prototype,
+
+    /**
+     * The length of the data model.
+     * @type {number}
+     */
+    get length() {
+      return this.array_.length;
+    },
+
+    /**
+     * Returns the item at the given index.
+     * This implementation returns the item at the given index in the sorted
+     * array.
+     * @param {number} index The index of the element to get.
+     * @return {*} The element at the given index.
+     */
+    item: function(index) {
+      if (index >= 0 && index < this.length)
+        return this.array_[this.indexes_[index]];
+      return undefined;
+    },
+
+    /**
+     * Returns compare function set for given field.
+     * @param {string} field The field to get compare function for.
+     * @return {function(*, *): number} Compare function set for given field.
+     */
+    compareFunction: function(field) {
+      return this.compareFunctions_[field];
+    },
+
+    /**
+     * Sets compare function for given field.
+     * @param {string} field The field to set compare function.
+     * @param {function(*, *): number} compareFunction Compare function to set
+     *     for given field.
+     */
+    setCompareFunction: function(field, compareFunction) {
+      if (!this.compareFunctions_) {
+        this.compareFunctions_ = {};
+      }
+      this.compareFunctions_[field] = compareFunction;
+    },
+
+    /**
+     * Returns true if the field has a compare function.
+     * @param {string} field The field to check.
+     * @return {boolean} True if the field is sortable.
+     */
+    isSortable: function(field) {
+      return this.compareFunctions_ && field in this.compareFunctions_;
+    },
+
+    /**
+     * Returns current sort status.
+     * @return {!Object} Current sort status.
+     */
+    get sortStatus() {
+      if (this.sortStatus_) {
+        return this.createSortStatus(
+            this.sortStatus_.field, this.sortStatus_.direction);
+      } else {
+        return this.createSortStatus(null, null);
+      }
+    },
+
+    /**
+     * Returns the first matching item.
+     * @param {*} item The item to find.
+     * @param {number=} opt_fromIndex If provided, then the searching start at
+     *     the {@code opt_fromIndex}.
+     * @return {number} The index of the first found element or -1 if not found.
+     */
+    indexOf: function(item, opt_fromIndex) {
+      for (var i = opt_fromIndex || 0; i < this.indexes_.length; i++) {
+        if (item === this.item(i))
+          return i;
+      }
+      return -1;
+    },
+
+    /**
+     * Returns an array of elements in a selected range.
+     * @param {number=} opt_from The starting index of the selected range.
+     * @param {number=} opt_to The ending index of selected range.
+     * @return {Array} An array of elements in the selected range.
+     */
+    slice: function(opt_from, opt_to) {
+      var arr = this.array_;
+      return this.indexes_.slice(opt_from, opt_to).map(
+          function(index) { return arr[index] });
+    },
+
+    /**
+     * This removes and adds items to the model.
+     * This dispatches a splice event.
+     * This implementation runs sort after splice and creates permutation for
+     * the whole change.
+     * @param {number} index The index of the item to update.
+     * @param {number} deleteCount The number of items to remove.
+     * @param {...*} var_args The items to add.
+     * @return {!Array} An array with the removed items.
+     */
+    splice: function(index, deleteCount, var_args) {
+      var addCount = arguments.length - 2;
+      var newIndexes = [];
+      var deletePermutation = [];
+      var deletedItems = [];
+      var newArray = [];
+      index = Math.min(index, this.indexes_.length);
+      deleteCount = Math.min(deleteCount, this.indexes_.length - index);
+      // Copy items before the insertion point.
+      for (var i = 0; i < index; i++) {
+        newIndexes.push(newArray.length);
+        deletePermutation.push(i);
+        newArray.push(this.array_[this.indexes_[i]]);
+      }
+      // Delete items.
+      for (; i < index + deleteCount; i++) {
+        deletePermutation.push(-1);
+        deletedItems.push(this.array_[this.indexes_[i]]);
+      }
+      // Insert new items instead deleted ones.
+      for (var j = 0; j < addCount; j++) {
+        newIndexes.push(newArray.length);
+        newArray.push(arguments[j + 2]);
+      }
+      // Copy items after the insertion point.
+      for (; i < this.indexes_.length; i++) {
+        newIndexes.push(newArray.length);
+        deletePermutation.push(i - deleteCount + addCount);
+        newArray.push(this.array_[this.indexes_[i]]);
+      }
+
+      this.indexes_ = newIndexes;
+
+      this.array_ = newArray;
+
+      // TODO(arv): Maybe unify splice and change events?
+      var spliceEvent = new Event('splice');
+      spliceEvent.removed = deletedItems;
+      spliceEvent.added = Array.prototype.slice.call(arguments, 2);
+
+      var status = this.sortStatus;
+      // if sortStatus.field is null, this restores original order.
+      var sortPermutation = this.doSort_(this.sortStatus.field,
+                                         this.sortStatus.direction);
+      if (sortPermutation) {
+        var splicePermutation = deletePermutation.map(function(element) {
+          return element != -1 ? sortPermutation[element] : -1;
+        });
+        this.dispatchPermutedEvent_(splicePermutation);
+        spliceEvent.index = sortPermutation[index];
+      } else {
+        this.dispatchPermutedEvent_(deletePermutation);
+        spliceEvent.index = index;
+      }
+
+      this.dispatchEvent(spliceEvent);
+
+      // If real sorting is needed, we should first call prepareSort (data may
+      // change), and then sort again.
+      // Still need to finish the sorting above (including events), so
+      // list will not go to inconsistent state.
+      if (status.field)
+        this.delayedSort_(status.field, status.direction);
+
+      return deletedItems;
+    },
+
+    /**
+     * Appends items to the end of the model.
+     *
+     * This dispatches a splice event.
+     *
+     * @param {...*} var_args The items to append.
+     * @return {number} The new length of the model.
+     */
+    push: function(var_args) {
+      var args = Array.prototype.slice.call(arguments);
+      args.unshift(this.length, 0);
+      this.splice.apply(this, args);
+      return this.length;
+    },
+
+    /**
+     * Updates the existing item with the new item.
+     *
+     * The existing item and the new item are regarded as the same item and the
+     * permutation tracks these indexes.
+     *
+     * @param {*} oldItem Old item that is contained in the model. If the item
+     *     is not found in the model, the method call is just ignored.
+     * @param {*} newItem New item.
+     */
+    replaceItem: function(oldItem, newItem) {
+      var index = this.indexOf(oldItem);
+      if (index < 0)
+        return;
+      this.array_[this.indexes_[index]] = newItem;
+      this.updateIndex(index);
+    },
+
+    /**
+     * Use this to update a given item in the array. This does not remove and
+     * reinsert a new item.
+     * This dispatches a change event.
+     * This runs sort after updating.
+     * @param {number} index The index of the item to update.
+     */
+    updateIndex: function(index) {
+      this.updateIndexes([index]);
+    },
+
+    /**
+     * Notifies of update of the items in the array. This does not remove and
+     * reinsert new items.
+     * This dispatches one or more change events.
+     * This runs sort after updating.
+     * @param {Array<number>} indexes The index list of items to update.
+     */
+    updateIndexes: function(indexes) {
+      indexes.forEach(function(index) {
+        assert(index >= 0 && index < this.length, 'Invalid index');
+      }, this);
+
+      for (var i = 0; i < indexes.length; i++) {
+        var e = new Event('change');
+        e.index = indexes[i];
+        this.dispatchEvent(e);
+      }
+
+      if (this.sortStatus.field) {
+        var status = this.sortStatus;
+        var sortPermutation = this.doSort_(this.sortStatus.field,
+                                           this.sortStatus.direction);
+        if (sortPermutation)
+          this.dispatchPermutedEvent_(sortPermutation);
+        // We should first call prepareSort (data may change), and then sort.
+        // Still need to finish the sorting above (including events), so
+        // list will not go to inconsistent state.
+        this.delayedSort_(status.field, status.direction);
+      }
+    },
+
+    /**
+     * Creates sort status with given field and direction.
+     * @param {?string} field Sort field.
+     * @param {?string} direction Sort direction.
+     * @return {!Object} Created sort status.
+     */
+    createSortStatus: function(field, direction) {
+      return {
+        field: field,
+        direction: direction
+      };
+    },
+
+    /**
+     * Called before a sort happens so that you may fetch additional data
+     * required for the sort.
+     *
+     * @param {string} field Sort field.
+     * @param {function()} callback The function to invoke when preparation
+     *     is complete.
+     */
+    prepareSort: function(field, callback) {
+      callback();
+    },
+
+    /**
+     * Sorts data model according to given field and direction and dispathes
+     * sorted event with delay. If no need to delay, use sort() instead.
+     * @param {string} field Sort field.
+     * @param {string} direction Sort direction.
+     * @private
+     */
+    delayedSort_: function(field, direction) {
+      var self = this;
+      setTimeout(function() {
+        // If the sort status has been changed, sorting has already done
+        // on the change event.
+        if (field == self.sortStatus.field &&
+            direction == self.sortStatus.direction) {
+          self.sort(field, direction);
+        }
+      }, 0);
+    },
+
+    /**
+     * Sorts data model according to given field and direction and dispathes
+     * sorted event.
+     * @param {string} field Sort field.
+     * @param {string} direction Sort direction.
+     */
+    sort: function(field, direction) {
+      var self = this;
+
+      this.prepareSort(field, function() {
+        var sortPermutation = self.doSort_(field, direction);
+        if (sortPermutation)
+          self.dispatchPermutedEvent_(sortPermutation);
+        self.dispatchSortEvent_();
+      });
+    },
+
+    /**
+     * Sorts data model according to given field and direction.
+     * @param {string} field Sort field.
+     * @param {string} direction Sort direction.
+     * @private
+     */
+    doSort_: function(field, direction) {
+      var compareFunction = this.sortFunction_(field, direction);
+      var positions = [];
+      for (var i = 0; i < this.length; i++) {
+        positions[this.indexes_[i]] = i;
+      }
+      var sorted = this.indexes_.every(function(element, index, array) {
+        return index == 0 || compareFunction(element, array[index - 1]) >= 0;
+      });
+      if (!sorted)
+        this.indexes_.sort(compareFunction);
+      this.sortStatus_ = this.createSortStatus(field, direction);
+      var sortPermutation = [];
+      var changed = false;
+      for (var i = 0; i < this.length; i++) {
+        if (positions[this.indexes_[i]] != i)
+          changed = true;
+        sortPermutation[positions[this.indexes_[i]]] = i;
+      }
+      if (changed)
+        return sortPermutation;
+      return null;
+    },
+
+    dispatchSortEvent_: function() {
+      var e = new Event('sorted');
+      this.dispatchEvent(e);
+    },
+
+    dispatchPermutedEvent_: function(permutation) {
+      var e = new Event('permuted');
+      e.permutation = permutation;
+      e.newLength = this.length;
+      this.dispatchEvent(e);
+    },
+
+    /**
+     * Creates compare function for the field.
+     * Returns the function set as sortFunction for given field
+     * or default compare function
+     * @param {string} field Sort field.
+     * @return {function(*, *): number} Compare function.
+     * @private
+     */
+    createCompareFunction_: function(field) {
+      var compareFunction =
+          this.compareFunctions_ ? this.compareFunctions_[field] : null;
+      var defaultValuesCompareFunction = this.defaultValuesCompareFunction;
+      if (compareFunction) {
+        return compareFunction;
+      } else {
+        return function(a, b) {
+          return defaultValuesCompareFunction.call(null, a[field], b[field]);
+        }
+      }
+    },
+
+    /**
+     * Creates compare function for given field and direction.
+     * @param {string} field Sort field.
+     * @param {string} direction Sort direction.
+     * @private
+     */
+    sortFunction_: function(field, direction) {
+      var compareFunction = null;
+      if (field !== null)
+        compareFunction = this.createCompareFunction_(field);
+      var dirMultiplier = direction == 'desc' ? -1 : 1;
+
+      return function(index1, index2) {
+        var item1 = this.array_[index1];
+        var item2 = this.array_[index2];
+
+        var compareResult = 0;
+        if (typeof(compareFunction) === 'function')
+          compareResult = compareFunction.call(null, item1, item2);
+        if (compareResult != 0)
+          return dirMultiplier * compareResult;
+        return dirMultiplier * this.defaultValuesCompareFunction(index1,
+                                                                 index2);
+      }.bind(this);
+    },
+
+    /**
+     * Default compare function.
+     */
+    defaultValuesCompareFunction: function(a, b) {
+      // We could insert i18n comparisons here.
+      if (a < b)
+        return -1;
+      if (a > b)
+        return 1;
+      return 0;
+    }
+  };
+
+  return {
+    ArrayDataModel: ArrayDataModel
+  };
+});
+
+
+// Hack for polymer, notifying that CSP is enabled here.
+// TODO(yoshiki): Find a way to remove the hack.
+if (!('securityPolicy' in document))
+  document['securityPolicy'] = {};
+if (!('allowsEval' in document.securityPolicy))
+  document.securityPolicy['allowsEval'] = false;
+
+(function() {
+
+// 'strict mode' is invoked for this scope.
+'use strict';
+
+// Base classes.
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * Set of MetadataCacheItem.
+ * @param {!MetadataCacheSetStorage} items Storage object containing
+ *     MetadataCacheItem.
+ * @extends {cr.EventTarget}
+ * @constructor
+ * @struct
+ */
+function MetadataCacheSet(items) {
+  cr.EventTarget.call(this);
+
+  /**
+   * @private {!MetadataCacheSetStorage}
+   * @const
+   */
+  this.items_ = items;
+}
+
+MetadataCacheSet.prototype.__proto__ = cr.EventTarget.prototype;
+
+/**
+ * Creates list of MetadataRequest based on the cache state.
+ * @param {!Array<!Entry>} entries
+ * @param {!Array<string>} names
+ * @return {!Array<!MetadataRequest>}
+ */
+MetadataCacheSet.prototype.createRequests = function(entries, names) {
+  var urls = util.entriesToURLs(entries);
+  var requests = [];
+  for (var i = 0; i < entries.length; i++) {
+    var item = this.items_.peek(urls[i]);
+    var requestedNames = item ? item.createRequests(names) : names;
+    if (requestedNames.length)
+      requests.push(new MetadataRequest(entries[i], requestedNames));
+  }
+  return requests;
+};
+
+/**
+ * Updates cache states to start the given requests.
+ * @param {number} requestId
+ * @param {!Array<!MetadataRequest>} requests
+ */
+MetadataCacheSet.prototype.startRequests = function(requestId, requests) {
+  for (var i = 0; i < requests.length; i++) {
+    var request = requests[i];
+    var url = requests[i].entry['cachedUrl'] || requests[i].entry.toURL();
+    var item = this.items_.peek(url);
+    if (!item) {
+      item = new MetadataCacheItem();
+      this.items_.put(url, item);
+    }
+    item.startRequests(requestId, request.names);
+  }
+};
+
+/**
+ * Stores results from NewMetadataProvider with the request Id.
+ * @param {number} requestId Request ID. If a newer operation has already been
+ *     done, the results must be ingored.
+ * @param {!Array<!Entry>} entries
+ * @param {!Array<!MetadataItem>} results
+ * @return {boolean} Whether at least one result is stored or not.
+ */
+MetadataCacheSet.prototype.storeProperties = function(
+    requestId, entries, results) {
+  var changedEntries = [];
+  var urls = util.entriesToURLs(entries);
+  for (var i = 0; i < entries.length; i++) {
+    var url = urls[i];
+    var item = this.items_.peek(url);
+    if (item && item.storeProperties(requestId, results[i]))
+      changedEntries.push(entries[i]);
+  }
+  if (changedEntries.length) {
+    var event = new Event('update');
+    event.entries = changedEntries;
+    this.dispatchEvent(event);
+    return true;
+  } else {
+    return false;
+  }
+};
+
+/**
+ * Obtains cached properties for entries and names.
+ * Note that it returns invalidated properties also.
+ * @param {!Array<!Entry>} entries Entries.
+ * @param {!Array<string>} names Property names.
+ */
+MetadataCacheSet.prototype.get = function(entries, names) {
+  var results = [];
+  var urls = util.entriesToURLs(entries);
+  for (var i = 0; i < entries.length; i++) {
+    var item = this.items_.get(urls[i]);
+    results.push(item ? item.get(names) : {});
+  }
+  return results;
+};
+
+/**
+ * Marks the caches of entries as invalidates and forces to reload at the next
+ * time of startRequests.
+ * @param {number} requestId Request ID of the invalidation request. This must
+ *     be larger than other requets ID passed to the set before.
+ * @param {!Array<!Entry>} entries
+ */
+MetadataCacheSet.prototype.invalidate = function(requestId, entries) {
+  var urls = util.entriesToURLs(entries);
+  for (var i = 0; i < entries.length; i++) {
+    var item = this.items_.peek(urls[i]);
+    if (item)
+      item.invalidate(requestId);
+  }
+};
+
+/**
+ * Clears the caches of entries.
+ * @param {!Array<string>} urls
+ */
+MetadataCacheSet.prototype.clear = function(urls) {
+  for (var i = 0; i < urls.length; i++) {
+    this.items_.remove(urls[i]);
+  }
+};
+
+/**
+ * Clears all cache.
+ */
+MetadataCacheSet.prototype.clearAll = function() {
+  this.items_.removeAll();
+};
+
+/**
+ * Creates snapshot of the cache for entries.
+ * @param {!Array<!Entry>} entries
+ */
+MetadataCacheSet.prototype.createSnapshot = function(entries) {
+  var items = {};
+  var urls = util.entriesToURLs(entries);
+  for (var i = 0; i < entries.length; i++) {
+    var url = urls[i];
+    var item = this.items_.peek(url);
+    if (item)
+      items[url] = item.clone();
+  }
+  return new MetadataCacheSet(new MetadataCacheSetStorageForObject(items));
+};
+
+/**
+ * Returns whether all the given properties are fulfilled.
+ * @param {!Array<!Entry>} entries Entries.
+ * @param {!Array<string>} names Property names.
+ * @return {boolean}
+ */
+MetadataCacheSet.prototype.hasFreshCache = function(entries, names) {
+  if (!names.length)
+    return true;
+  var urls = util.entriesToURLs(entries);
+  for (var i = 0; i < entries.length; i++) {
+    var item = this.items_.peek(urls[i]);
+    if (!(item && item.hasFreshCache(names)))
+      return false;
+  }
+  return true;
+};
+
+/**
+ * Interface of raw strage for MetadataCacheItem.
+ * @interface
+ */
+function MetadataCacheSetStorage() {
+}
+
+/**
+ * Returns an item corresponding to the given URL.
+ * @param {string} url Entry URL.
+ * @return {MetadataCacheItem}
+ */
+MetadataCacheSetStorage.prototype.get = function(url) {};
+
+/**
+ * Returns an item corresponding to the given URL without changing orders in
+ * the cache list.
+ * @param {string} url Entry URL.
+ * @return {MetadataCacheItem}
+ */
+MetadataCacheSetStorage.prototype.peek = function(url) {};
+
+/**
+ * Saves an item corresponding to the given URL.
+ * @param {string} url Entry URL.
+ * @param {!MetadataCacheItem} item Item to be saved.
+ */
+MetadataCacheSetStorage.prototype.put = function(url, item) {};
+
+/**
+ * Removes an item from the cache.
+ * @param {string} url Entry URL.
+ */
+MetadataCacheSetStorage.prototype.remove = function(url) {};
+
+/**
+ * Remove all items from the cache.
+ */
+MetadataCacheSetStorage.prototype.removeAll = function() {};
+
+/**
+ * Implementation of MetadataCacheSetStorage by using raw object.
+ * @param {Object} items Map of URL and MetadataCacheItem.
+ * @constructor
+ * @implements {MetadataCacheSetStorage}
+ * @struct
+ */
+function MetadataCacheSetStorageForObject(items) {
+  this.items_ = items;
+}
+
+/**
+ * @override
+ */
+MetadataCacheSetStorageForObject.prototype.get = function(url) {
+  return this.items_[url];
+};
+
+/**
+ * @override
+ */
+MetadataCacheSetStorageForObject.prototype.peek = function(url) {
+  return this.items_[url];
+};
+
+/**
+ * @override
+ */
+MetadataCacheSetStorageForObject.prototype.put = function(url, item) {
+  this.items_[url] = item;
+};
+
+/**
+ * @override
+ */
+MetadataCacheSetStorageForObject.prototype.remove = function(url) {
+  delete this.items_[url];
+};
+
+/**
+ * @override
+ */
+MetadataCacheSetStorageForObject.prototype.removeAll = function() {
+  for (var url in this.items_) {
+    delete this.items_[url];
+  }
+};
+
+/**
+ * Implementation of MetadataCacheSetStorage by using LRUCache.
+ * TODO(hirono): Remove this class.
+ * @param {!LRUCache<!MetadataCacheItem>} cache LRUCache.
+ * @constructor
+ * @implements {MetadataCacheSetStorage}
+ * @struct
+ */
+function MetadataCacheSetStorageForLRUCache(cache) {
+  /**
+   * @private {!LRUCache<!MetadataCacheItem>}
+   * @const
+   */
+  this.cache_ = cache;
+}
+
+/**
+ * @override
+ */
+MetadataCacheSetStorageForLRUCache.prototype.get = function(url) {
+  return this.cache_.get(url);
+};
+
+/**
+ * @override
+ */
+MetadataCacheSetStorageForLRUCache.prototype.peek = function(url) {
+  return this.cache_.peek(url);
+};
+
+/**
+ * @override
+ */
+MetadataCacheSetStorageForLRUCache.prototype.put = function(url, item) {
+  this.cache_.put(url, item);
+};
+
+/**
+ * @override
+ */
+MetadataCacheSetStorageForLRUCache.prototype.remove = function(url) {
+  this.cache_.remove(url);
+};
+
+/**
+ * @override
+ */
+MetadataCacheSetStorageForLRUCache.prototype.removeAll = function() {
+  assertNotReached('Not implemented.');
+};
+
+/**
+ * @param {!Entry} entry Entry
+ * @param {!Array<string>} names Property name list to be requested.
+ * @constructor
+ * @struct
+ */
+function MetadataRequest(entry, names) {
+  /**
+   * @public {!Entry}
+   * @const
+   */
+  this.entry = entry;
+
+  /**
+   * @public {!Array<string>}
+   * @const
+   */
+  this.names = names;
+}
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * TODO(hirono): Remove 'New' from the name after removing old MetadataProvider.
+ * @param {!Array<string>} validPropertyNames
+ * @constructor
+ * @struct
+ */
+function NewMetadataProvider(validPropertyNames) {
+  /**
+   * Set of valid property names. Key is the name of property and value is
+   * always true.
+   * @private {!Object<boolean>}
+   * @const
+   */
+  this.validPropertyNames_ = {};
+  for (var i = 0; i < validPropertyNames.length; i++) {
+    this.validPropertyNames_[validPropertyNames[i]] = true;
+  }
+}
+
+NewMetadataProvider.prototype.checkPropertyNames = function(names) {
+  // Check if the property name is correct or not.
+  for (var i = 0; i < names.length; i++) {
+    assert(this.validPropertyNames_[names[i]]);
+  }
+};
+
+/**
+ * Obtains the metadata for the request.
+ * @param {!Array<!MetadataRequest>} requests
+ * @return {!Promise<!Array<!MetadataItem>>} Promise with obtained metadata. It
+ *     should not return rejected promise. Instead it should return undefined
+ *     property for property error, and should return empty MetadataItem for
+ *     entry error.
+ */
+NewMetadataProvider.prototype.get;
+
+
+// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * Namespace for async utility functions.
+ */
+var AsyncUtil = {};
+
+/**
+ * Asynchronous version of Array.forEach.
+ * This executes a provided function callback once per array element, then
+ * run completionCallback to notify the completion.
+ * The callback can be an asynchronous function, but the execution is
+ * sequentially done.
+ *
+ * @param {Array<T>} array The array to be iterated.
+ * @param {function(function(), T, number, Array<T>)} callback The iteration
+ *     callback. The first argument is a callback to notify the completion of
+ *     the iteration.
+ * @param {function()} completionCallback Called when all iterations are
+ *     completed.
+ * @param {Object=} opt_thisObject Bound to callback if given.
+ * @template T
+ */
+AsyncUtil.forEach = function(
+    array, callback, completionCallback, opt_thisObject) {
+  if (opt_thisObject)
+    callback = callback.bind(opt_thisObject);
+
+  var queue = new AsyncUtil.Queue();
+  for (var i = 0; i < array.length; i++) {
+    queue.run(function(element, index, iterationCompletionCallback) {
+      callback(iterationCompletionCallback, element, index, array);
+    }.bind(null, array[i], i));
+  }
+  queue.run(function(iterationCompletionCallback) {
+    completionCallback();  // Don't pass iteration completion callback.
+  });
+};
+
+/**
+ * Creates a class for executing several asynchronous closures in a fifo queue.
+ * Added tasks will be started in order they were added. Tasks are run
+ * concurrently. At most, |limit| jobs will be run at the same time.
+ *
+ * @param {number} limit The number of jobs to run at the same time.
+ * @constructor
+ * @struct
+ */
+AsyncUtil.ConcurrentQueue = function(limit) {
+  console.assert(limit > 0, '|limit| must be larger than 0');
+
+  this.limit_ = limit;
+  this.addedTasks_ = [];
+  this.pendingTasks_ = [];
+  this.isCancelled_ = false;
+};
+
+/**
+ * @return {boolean} True when a task is running, otherwise false.
+ */
+AsyncUtil.ConcurrentQueue.prototype.isRunning = function() {
+  return this.pendingTasks_.length !== 0;
+};
+
+/**
+ * @return {number} Number of waiting tasks.
+ */
+AsyncUtil.ConcurrentQueue.prototype.getWaitingTasksCount = function() {
+  return this.addedTasks_.length;
+};
+
+/**
+ * @return {number} Number of running tasks.
+ */
+AsyncUtil.ConcurrentQueue.prototype.getRunningTasksCount = function() {
+  return this.pendingTasks_.length;
+};
+
+/**
+ * Enqueues a closure to be executed.
+ * @param {function(function())} closure Closure with a completion
+ *     callback to be executed.
+ */
+AsyncUtil.ConcurrentQueue.prototype.run = function(closure) {
+  if (this.isCancelled_) {
+    console.error('Queue is cancelled. Cannot add a new task.');
+    return;
+  }
+
+  this.addedTasks_.push(closure);
+  this.continue_();
+};
+
+/**
+ * Cancels the queue. It removes all the not-run (yet) tasks. Note that this
+ * does NOT stop tasks currently running.
+ */
+AsyncUtil.ConcurrentQueue.prototype.cancel = function() {
+  this.isCancelled_ = true;
+  this.addedTasks_ = [];
+};
+
+/**
+ * @return {boolean} True when the queue have been requested to cancel or is
+ *      already cancelled. Otherwise false.
+ */
+AsyncUtil.ConcurrentQueue.prototype.isCancelled = function() {
+  return this.isCancelled_;
+};
+
+/**
+ * Runs the next tasks if available.
+ * @private
+ */
+AsyncUtil.ConcurrentQueue.prototype.continue_ = function() {
+  if (this.addedTasks_.length === 0)
+    return;
+
+  console.assert(
+      this.pendingTasks_.length <= this.limit_,
+      'Too many jobs are running (' + this.pendingTasks_.length + ')');
+
+  if (this.pendingTasks_.length >= this.limit_)
+    return;
+
+  // Run the next closure.
+  var closure = this.addedTasks_.shift();
+  this.pendingTasks_.push(closure);
+  closure(this.onTaskFinished_.bind(this, closure));
+
+  this.continue_();
+};
+
+/**
+ * Called when a task is finished. Removes the tasks from pending task list.
+ * @param {function()} closure Finished task, which has been bound in
+ *     |continue_|.
+ * @private
+ */
+AsyncUtil.ConcurrentQueue.prototype.onTaskFinished_ = function(closure) {
+  var index = this.pendingTasks_.indexOf(closure);
+  console.assert(index >= 0, 'Invalid task is finished');
+  this.pendingTasks_.splice(index, 1);
+
+  this.continue_();
+};
+
+/**
+ * Returns string representation of current AsyncUtil.ConcurrentQueue instance.
+ * @return {string} String representation of the instance.
+ */
+AsyncUtil.ConcurrentQueue.prototype.toString = function() {
+  return 'AsyncUtil.ConcurrentQueue\n' +
+      '- WaitingTasksCount: ' + this.getWaitingTasksCount() + '\n' +
+      '- RunningTasksCount: ' + this.getRunningTasksCount() + '\n' +
+      '- isCancelled: ' + this.isCancelled();
+};
+
+/**
+ * Creates a class for executing several asynchronous closures in a fifo queue.
+ * Added tasks will be executed sequentially in order they were added.
+ *
+ * @constructor
+ * @extends {AsyncUtil.ConcurrentQueue}
+ */
+AsyncUtil.Queue = function() {
+  AsyncUtil.ConcurrentQueue.call(this, 1);
+};
+
+AsyncUtil.Queue.prototype = {
+  __proto__: AsyncUtil.ConcurrentQueue.prototype
+};
+
+/**
+ * A task which is executed by AsyncUtil.Group.
+ *
+ * @param {!function(function())} closure Closure with a completion callback to
+ *     be executed.
+ * @param {!Array<string>} dependencies Array of dependencies.
+ * @param {!string} name Task identifier. Specify to use in dependencies.
+ *
+ * @constructor
+ */
+AsyncUtil.GroupTask = function(closure, dependencies, name) {
+  this.closure = closure;
+  this.dependencies = dependencies;
+  this.name = name;
+};
+
+/**
+ * Returns string representation of AsyncUtil.GroupTask instance.
+ * @return {string} String representation of the instance.
+ */
+AsyncUtil.GroupTask.prototype.toString = function() {
+  return 'AsyncUtil.GroupTask\n' +
+      '- name: ' + this.name + '\n' +
+      '- dependencies: ' + this.dependencies.join();
+};
+
+/**
+ * Creates a class for executing several asynchronous closures in a group in
+ * a dependency order.
+ *
+ * @constructor
+ */
+AsyncUtil.Group = function() {
+  this.addedTasks_ = {};
+  this.pendingTasks_ = {};
+  this.finishedTasks_ = {};
+  this.completionCallbacks_ = [];
+};
+
+AsyncUtil.Group.prototype = {
+  /**
+   * @return {!Object<AsyncUtil.GroupTask>} Pending tasks
+   */
+  get pendingTasks() {
+    return this.pendingTasks_;
+  }
+};
+
+/**
+ * Enqueues a closure to be executed after dependencies are completed.
+ *
+ * @param {function(function())} closure Closure with a completion callback to
+ *     be executed.
+ * @param {Array<string>=} opt_dependencies Array of dependencies. If no
+ *     dependencies, then the the closure will be executed immediately.
+ * @param {string=} opt_name Task identifier. Specify to use in dependencies.
+ */
+AsyncUtil.Group.prototype.add = function(closure, opt_dependencies, opt_name) {
+  var length = Object.keys(this.addedTasks_).length;
+  var name = opt_name || ('(unnamed#' + (length + 1) + ')');
+
+  var task = new AsyncUtil.GroupTask(closure, opt_dependencies || [], name);
+
+  this.addedTasks_[name] = task;
+  this.pendingTasks_[name] = task;
+};
+
+/**
+ * Runs the enqueued closured in order of dependencies.
+ *
+ * @param {function()=} opt_onCompletion Completion callback.
+ */
+AsyncUtil.Group.prototype.run = function(opt_onCompletion) {
+  if (opt_onCompletion)
+    this.completionCallbacks_.push(opt_onCompletion);
+  this.continue_();
+};
+
+/**
+ * Runs enqueued pending tasks whose dependencies are completed.
+ * @private
+ */
+AsyncUtil.Group.prototype.continue_ = function() {
+  // If all of the added tasks have finished, then call completion callbacks.
+  if (Object.keys(this.addedTasks_).length ==
+      Object.keys(this.finishedTasks_).length) {
+    for (var index = 0; index < this.completionCallbacks_.length; index++) {
+      var callback = this.completionCallbacks_[index];
+      callback();
+    }
+    this.completionCallbacks_ = [];
+    return;
+  }
+
+  for (var name in this.pendingTasks_) {
+    var task = this.pendingTasks_[name];
+    var dependencyMissing = false;
+    for (var index = 0; index < task.dependencies.length; index++) {
+      var dependency = task.dependencies[index];
+      // Check if the dependency has finished.
+      if (!this.finishedTasks_[dependency])
+        dependencyMissing = true;
+    }
+    // All dependences finished, therefore start the task.
+    if (!dependencyMissing) {
+      delete this.pendingTasks_[task.name];
+      task.closure(this.finish_.bind(this, task));
+    }
+  }
+};
+
+/**
+ * Finishes the passed task and continues executing enqueued closures.
+ *
+ * @param {Object} task Task object.
+ * @private
+ */
+AsyncUtil.Group.prototype.finish_ = function(task) {
+  this.finishedTasks_[task.name] = task;
+  this.continue_();
+};
+
+/**
+ * Aggregates consecutive calls and executes the closure only once instead of
+ * several times. The first call is always called immediately, and the next
+ * consecutive ones are aggregated and the closure is called only once once
+ * |delay| amount of time passes after the last call to run().
+ *
+ * @param {function()} closure Closure to be aggregated.
+ * @param {number=} opt_delay Minimum aggregation time in milliseconds. Default
+ *     is 50 milliseconds.
+ * @constructor
+ */
+AsyncUtil.Aggregator = function(closure, opt_delay) {
+  /**
+   * @type {number}
+   * @private
+   */
+  this.delay_ = opt_delay || 50;
+
+  /**
+   * @type {function()}
+   * @private
+   */
+  this.closure_ = closure;
+
+  /**
+   * @type {number?}
+   * @private
+   */
+  this.scheduledRunsTimer_ = null;
+
+  /**
+   * @type {number}
+   * @private
+   */
+  this.lastRunTime_ = 0;
+};
+
+/**
+ * Runs a closure. Skips consecutive calls. The first call is called
+ * immediately.
+ */
+AsyncUtil.Aggregator.prototype.run = function() {
+  // If recently called, then schedule the consecutive call with a delay.
+  if (Date.now() - this.lastRunTime_ < this.delay_) {
+    this.cancelScheduledRuns_();
+    this.scheduledRunsTimer_ = setTimeout(this.runImmediately_.bind(this),
+                                          this.delay_ + 1);
+    this.lastRunTime_ = Date.now();
+    return;
+  }
+
+  // Otherwise, run immediately.
+  this.runImmediately_();
+};
+
+/**
+ * Calls the schedule immediately and cancels any scheduled calls.
+ * @private
+ */
+AsyncUtil.Aggregator.prototype.runImmediately_ = function() {
+  this.cancelScheduledRuns_();
+  this.closure_();
+  this.lastRunTime_ = Date.now();
+};
+
+/**
+ * Cancels all scheduled runs (if any).
+ * @private
+ */
+AsyncUtil.Aggregator.prototype.cancelScheduledRuns_ = function() {
+  if (this.scheduledRunsTimer_) {
+    clearTimeout(this.scheduledRunsTimer_);
+    this.scheduledRunsTimer_ = null;
+  }
+};
+
+/**
+ * Samples calls so that they are not called too frequently.
+ * The first call is always called immediately, and the following calls may
+ * be skipped or delayed to keep each interval no less than |minInterval_|.
+ *
+ * @param {function()} closure Closure to be called.
+ * @param {number=} opt_minInterval Minimum interval between each call in
+ *     milliseconds. Default is 200 milliseconds.
+ * @constructor
+ * @struct
+ */
+AsyncUtil.RateLimiter = function(closure, opt_minInterval) {
+  /**
+   * @type {function()}
+   * @private
+   */
+  this.closure_ = closure;
+
+  /**
+   * @type {number}
+   * @private
+   */
+  this.minInterval_ = opt_minInterval || 200;
+
+  /**
+   * @type {number}
+   * @private
+   */
+  this.scheduledRunsTimer_ = 0;
+
+  /**
+   * This variable remembers the last time the closure is called.
+   * @type {number}
+   * @private
+   */
+  this.lastRunTime_ = 0;
+};
+
+/**
+ * Requests to run the closure.
+ * Skips or delays calls so that the intervals between calls are no less than
+ * |minInteval_| milliseconds.
+ */
+AsyncUtil.RateLimiter.prototype.run = function() {
+  var now = Date.now();
+  // If |minInterval| has not passed since the closure is run, skips or delays
+  // this run.
+  if (now - this.lastRunTime_ < this.minInterval_) {
+    // Delays this run only when there is no scheduled run.
+    // Otherwise, simply skip this run.
+    if (!this.scheduledRunsTimer_) {
+      this.scheduledRunsTimer_ = setTimeout(
+          this.runImmediately.bind(this),
+          this.lastRunTime_ + this.minInterval_ - now);
+    }
+    return;
+  }
+
+  // Otherwise, run immediately
+  this.runImmediately();
+};
+
+/**
+ * Calls the scheduled run immediately and cancels any scheduled calls.
+ */
+AsyncUtil.RateLimiter.prototype.runImmediately = function() {
+  this.cancelScheduledRuns_();
+  this.closure_();
+  this.lastRunTime_ = Date.now();
+};
+
+/**
+ * Cancels all scheduled runs (if any).
+ * @private
+ */
+AsyncUtil.RateLimiter.prototype.cancelScheduledRuns_ = function() {
+  if (this.scheduledRunsTimer_) {
+    clearTimeout(this.scheduledRunsTimer_);
+    this.scheduledRunsTimer_ = 0;
+  }
+};
+
+/**
+ * Slot to handle promise completion/error.
+ * It can track the last assigned promise. If another promise is
+ * reassigned before the first promise is fulfilled/rejected, the previous
+ * promise is detached from the slot and it no longer trigger the callbacks.
+ * If the detached promise has cancel method, it's called.
+ *
+ * @param {function(*)} onFulfill Callback function to be invoked when the
+ *     assigned promise is fulfilled.
+ * @param {function(*)} onReject Callback function to be invoked when the
+ *     assigned promise is rejected.
+ * @constructor
+ * @struct
+ */
+function PromiseSlot(onFulfill, onReject) {
+  /**
+   * @type {function(*)}
+   * @const
+   * @private
+   */
+  this.onFulfill_ = onFulfill;
+
+  /**
+   * @type {function(*)}
+   * @const
+   * @private
+   */
+  this.onReject_ = onReject;
+
+  /**
+   * Assigned promise.
+   * @type {Promise|{cancel:Function}}
+   */
+  this.promise_ = null;
+}
+
+/**
+ * Checks the promise is still set to the slot and invokes callback functions.
+ * @param {Promise} promise Fulfilled promise.
+ * @param {*} value
+ * @private
+ */
+PromiseSlot.prototype.invokeCallback_ = function(promise, callback, value) {
+  if (promise === this.promise_) {
+    this.promise_ = null;
+    callback(value);
+  }
+};
+
+/**
+ * Assigns the promise to the slot.
+ * If another promise has already been assigned, the previous promise is
+ * detached from the slot. If the previous promise has a cancel method, it's
+ * called.
+ * @param {Promise} promise May be null to detach previous promise.
+ */
+PromiseSlot.prototype.setPromise = function(promise) {
+  if (this.promise_ && this.promise_.cancel)
+    this.promise_.cancel();
+
+  this.promise_ = promise;
+  if (this.promise_) {
+    this.promise_.then(
+        this.invokeCallback_.bind(this, promise, this.onFulfill_),
+        this.invokeCallback_.bind(this, promise, this.onReject_));
+  }
+};
+
+// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * Namespace object for file type utility functions.
+ */
+var FileType = {};
+
+/**
+ * Description of known file types.
+ * Pair type-subtype defines order when sorted by file type.
+ */
+FileType.types = [
+  // Images
+  {
+    type: 'image', name: 'IMAGE_FILE_TYPE', subtype: 'JPEG',
+    pattern: /\.jpe?g$/i,
+    mimePattern: /image\/jpeg/i,
+  },
+  {
+    type: 'image', name: 'IMAGE_FILE_TYPE', subtype: 'BMP',
+    pattern: /\.bmp$/i,
+    mimePattern: /image\/bmp/i,
+  },
+  {
+    type: 'image', name: 'IMAGE_FILE_TYPE', subtype: 'GIF',
+    pattern: /\.gif$/i,
+    mimePattern: /image\/gif/i,
+  },
+  {
+    type: 'image', name: 'IMAGE_FILE_TYPE', subtype: 'ICO',
+    pattern: /\.ico$/i,
+    mimePattern: /image\/x\-icon/i,
+  },
+  {
+    type: 'image', name: 'IMAGE_FILE_TYPE', subtype: 'PNG',
+    pattern: /\.png$/i,
+    mimePattern: /image\/png/i
+  },
+  {
+    type: 'image', name: 'IMAGE_FILE_TYPE', subtype: 'WebP',
+    pattern: /\.webp$/i,
+    mimePattern: /image\/webp/i
+  },
+  {
+    type: 'image', name: 'IMAGE_FILE_TYPE', subtype: 'TIFF',
+    pattern: /\.tiff?$/i,
+    mimePattern: /image\/tiff/i
+  },
+  {
+    type: 'image', name: 'IMAGE_FILE_TYPE', subtype: 'SVG',
+    pattern: /\.svg$/i,
+    mimePattern: /image\/svg\+xml/i
+  },
+
+  // Raw
+  {
+    type: 'raw', name: 'IMAGE_FILE_TYPE', subtype: 'ARW',
+    pattern: /\.arw$/i, icon: 'image'
+  },
+  {
+    type: 'raw', name: 'IMAGE_FILE_TYPE', subtype: 'CR2',
+    pattern: /\.cr2$/i, icon: 'image'
+  },
+  {
+    type: 'raw', name: 'IMAGE_FILE_TYPE', subtype: 'DNG',
+    pattern: /\.dng$/i, icon: 'image'
+  },
+  {
+    type: 'raw', name: 'IMAGE_FILE_TYPE', subtype: 'NEF',
+    pattern: /\.nef$/i, icon: 'image'
+  },
+  {
+    type: 'raw', name: 'IMAGE_FILE_TYPE', subtype: 'NRW',
+    pattern: /\.nrw$/i, icon: 'image'
+  },
+  {
+    type: 'raw', name: 'IMAGE_FILE_TYPE', subtype: 'ORF',
+    pattern: /\.orf$/i, icon: 'image'
+  },
+  {
+    type: 'raw', name: 'IMAGE_FILE_TYPE', subtype: 'RAF',
+    pattern: /\.raf$/i, icon: 'image'
+  },
+  {
+    type: 'raw', name: 'IMAGE_FILE_TYPE', subtype: 'RW2',
+    pattern: /\.rw2$/i, icon: 'image'
+  },
+
+  // Video
+  {
+    type: 'video', name: 'VIDEO_FILE_TYPE', subtype: '3GP',
+    pattern: /\.3gp$/i,
+    mimePattern: /video\/3gpp/i
+  },
+  {
+    type: 'video', name: 'VIDEO_FILE_TYPE', subtype: 'AVI',
+    pattern: /\.avi$/i,
+    mimePattern: /video\/x\-msvideo/i
+  },
+  {
+    type: 'video', name: 'VIDEO_FILE_TYPE', subtype: 'QuickTime',
+    pattern: /\.mov$/i,
+    mimePattern: /video\/quicktime/i
+  },
+  {
+    type: 'video', name: 'VIDEO_FILE_TYPE', subtype: 'MKV',
+    pattern: /\.mkv$/i,
+    mimePattern: /video\/x\-matroska/i
+  },
+  {
+    type: 'video', name: 'VIDEO_FILE_TYPE', subtype: 'MPEG',
+    pattern: /\.m(p4|4v|pg|peg|pg4|peg4)$/i,
+    mimePattern: /video\/mp(4|eg)/i
+  },
+  {
+    type: 'video', name: 'VIDEO_FILE_TYPE', subtype: 'OGG',
+    pattern: /\.og(m|v|x)$/i,
+    mimePattern: /(application|video)\/ogg/i
+  },
+  {
+    type: 'video', name: 'VIDEO_FILE_TYPE', subtype: 'WebM',
+    pattern: /\.webm$/i,
+    mimePattern: /video\/webm/i
+  },
+
+  // Audio
+  {
+    type: 'audio', name: 'AUDIO_FILE_TYPE', subtype: 'AMR',
+    pattern: /\.amr$/i,
+    mimePattern: /audio\/amr/i
+  },
+  {
+    type: 'audio', name: 'AUDIO_FILE_TYPE', subtype: 'FLAC',
+    pattern: /\.flac$/i,
+    mimePattern: /audio\/flac/i
+  },
+  {
+    type: 'audio', name: 'AUDIO_FILE_TYPE', subtype: 'MP3',
+    pattern: /\.mp3$/i,
+    mimePattern: /audio\/mpeg/i
+  },
+  {
+    type: 'audio', name: 'AUDIO_FILE_TYPE', subtype: 'MPEG',
+    pattern: /\.m4a$/i,
+    mimePattern: /audio\/mp4a-latm/i
+  },
+  {
+    type: 'audio', name: 'AUDIO_FILE_TYPE', subtype: 'OGG',
+    pattern: /\.og(a|g)$/i,
+    mimePattern: /audio\/ogg/i
+  },
+  {
+    type: 'audio', name: 'AUDIO_FILE_TYPE', subtype: 'WAV',
+    pattern: /\.wav$/i,
+    mimePattern: /audio\/x\-wav/i
+  },
+
+  // Text
+  {
+    type: 'text', name: 'PLAIN_TEXT_FILE_TYPE', subtype: 'TXT',
+    pattern: /\.txt$/i,
+    mimePattern: /text\/plain/i
+  },
+
+  // Archive
+  {
+    type: 'archive', name: 'ZIP_ARCHIVE_FILE_TYPE', subtype: 'ZIP',
+    pattern: /\.zip$/i,
+    mimePattern: /application\/zip/i
+  },
+  {
+    type: 'archive', name: 'RAR_ARCHIVE_FILE_TYPE', subtype: 'RAR',
+    pattern: /\.rar$/i,
+    mimePattern: /application\/x\-rar\-compressed/i
+  },
+  {
+    type: 'archive', name: 'TAR_ARCHIVE_FILE_TYPE', subtype: 'TAR',
+    pattern: /\.tar$/i,
+    mimePattern: /application\/x\-tar/i
+  },
+  {
+    type: 'archive', name: 'TAR_BZIP2_ARCHIVE_FILE_TYPE', subtype: 'TBZ2',
+    pattern: /\.(tar\.bz2|tbz|tbz2)$/i,
+    mimePattern: /application\/x\-bzip2/i
+  },
+  {
+    type: 'archive', name: 'TAR_GZIP_ARCHIVE_FILE_TYPE', subtype: 'TGZ',
+    pattern: /\.(tar\.|t)gz$/i,
+    mimePattern: /application\/x\-gzip/i
+  },
+
+  // Hosted docs.
+  {
+    type: 'hosted', icon: 'gdoc', name: 'GDOC_DOCUMENT_FILE_TYPE',
+    subtype: 'doc', pattern: /\.gdoc$/i
+  },
+  {
+    type: 'hosted', icon: 'gsheet', name: 'GSHEET_DOCUMENT_FILE_TYPE',
+    subtype: 'sheet', pattern: /\.gsheet$/i
+  },
+  {
+    type: 'hosted', icon: 'gslides', name: 'GSLIDES_DOCUMENT_FILE_TYPE',
+    subtype: 'slides', pattern: /\.gslides$/i
+  },
+  {
+    type: 'hosted', icon: 'gdraw', name: 'GDRAW_DOCUMENT_FILE_TYPE',
+    subtype: 'draw', pattern: /\.gdraw$/i
+  },
+  {
+    type: 'hosted', icon: 'gtable', name: 'GTABLE_DOCUMENT_FILE_TYPE',
+    subtype: 'table', pattern: /\.gtable$/i
+  },
+  {
+    type: 'hosted', icon: 'glink', name: 'GLINK_DOCUMENT_FILE_TYPE',
+    subtype: 'glink', pattern: /\.glink$/i
+  },
+  {
+    type: 'hosted', icon: 'gform', name: 'GFORM_DOCUMENT_FILE_TYPE',
+    subtype: 'form', pattern: /\.gform$/i
+  },
+  {
+    // We use extension ".gmaps" to avoid conflict, but use singular form
+    // (gmap/map) in other parts to be consistent with other file type.
+    type: 'hosted', icon: 'gmap', name: 'GMAP_DOCUMENT_FILE_TYPE',
+    subtype: 'map', pattern: /\.gmaps$/i
+  },
+
+  // Others
+  {
+    type: 'document', icon: 'pdf', name: 'PDF_DOCUMENT_FILE_TYPE',
+    subtype: 'PDF', pattern: /\.pdf$/i,
+    mimePattern: /application\/pdf/i
+  },
+  {
+    type: 'document', name: 'HTML_DOCUMENT_FILE_TYPE',
+    subtype: 'HTML', pattern: /\.(html?|mht(ml)?|shtml|xht(ml)?)$/i,
+    mimePattern: /text\/html/i
+  },
+  {
+    type: 'document', icon: 'word', name: 'WORD_DOCUMENT_FILE_TYPE',
+    subtype: 'Word', pattern: /\.(doc|docx)$/i,
+    mimePattern: new RegExp('/application\/(msword|vnd\.openxmlformats\-' +
+          'officedocument\./wordprocessingml\.document)/i')
+  },
+  {
+    type: 'document', icon: 'ppt', name: 'POWERPOINT_PRESENTATION_FILE_TYPE',
+    subtype: 'PPT', pattern: /\.(ppt|pptx)$/i,
+    mimePattern: new RegExp('/application\/(vnd\.ms-powerpoint|\.' +
+          'openxmlformats\-/officedocument\.wordprocessingml\.presentation)/i')
+  },
+  {
+    type: 'document', icon: 'excel', name: 'EXCEL_FILE_TYPE',
+    subtype: 'Excel', pattern: /\.(xls|xlsx)$/i,
+    mimePattern: new RegExp('/application\/(vnd\.ms-excel|\.openxmlformats\-/' +
+        'officedocument\.wordprocessingml\.sheet)/i')
+  }
+];
+
+/**
+ * A special type for directory.
+ */
+FileType.DIRECTORY = {name: 'FOLDER', type: '.folder', icon: 'folder'};
+
+/**
+ * Returns the file path extension for a given file.
+ *
+ * @param {Entry} entry Reference to the file.
+ * @return {string} The extension including a leading '.', or empty string if
+ *     not found.
+ */
+FileType.getExtension = function(entry) {
+  // No extension for a directory.
+  if (entry.isDirectory)
+    return '';
+
+  var extensionStartIndex = entry.name.lastIndexOf('.');
+  if (extensionStartIndex === -1 ||
+      extensionStartIndex === entry.name.length - 1) {
+    return '';
+  }
+
+  return entry.name.substr(extensionStartIndex);
+};
+
+/**
+ * Gets the file type object for a given file name (base name). Use getType()
+ * if possible, since this method can't recognize directories.
+ *
+ * @param {string} name Name of the file.
+ * @return {!Object} The matching file type object or an empty object.
+ */
+FileType.getTypeForName = function(name) {
+  var types = FileType.types;
+  for (var i = 0; i < types.length; i++) {
+    if (types[i].pattern.test(name))
+      return types[i];
+  }
+
+  // Unknown file type.
+  var match = /\.[^\/\.]+$/.exec(name);
+  var extension = match ? match[0] : '';
+  if (extension === '') {
+    return { name: 'NO_EXTENSION_FILE_TYPE', type: 'UNKNOWN', icon: '' };
+  }
+  // subtype is the extension excluding the first dot.
+  return {
+    name: 'GENERIC_FILE_TYPE', type: 'UNKNOWN',
+    subtype: extension.substr(1).toUpperCase(), icon: ''
+  };
+};
+
+/**
+ * Gets the file type object for a given entry. If mime type is provided, then
+ * uses it with higher priority than the extension.
+ *
+ * @param {Entry} entry Reference to the entry.
+ * @param {string=} opt_mimeType Optional mime type for the entry.
+ * @return {!Object} The matching file type object or an empty object.
+ */
+FileType.getType = function(entry, opt_mimeType) {
+  if (entry.isDirectory)
+    return FileType.DIRECTORY;
+
+  if (opt_mimeType) {
+    for (var i = 0; i < FileType.types.length; i++) {
+      if (FileType.types[i].mimePattern &&
+          FileType.types[i].mimePattern.test(opt_mimeType)) {
+        return FileType.types[i];
+      }
+    }
+  }
+
+  for (var i = 0; i < FileType.types.length; i++) {
+    if (FileType.types[i].pattern.test(entry.name))
+      return FileType.types[i];
+  }
+
+  // Unknown file type.
+  var extension = FileType.getExtension(entry);
+  if (extension === '') {
+    return { name: 'NO_EXTENSION_FILE_TYPE', type: 'UNKNOWN', icon: '' };
+  }
+  // subtype is the extension excluding the first dot.
+  return {
+    name: 'GENERIC_FILE_TYPE', type: 'UNKNOWN',
+    subtype: extension.substr(1).toUpperCase(), icon: ''
+  };
+};
+
+/**
+ * Gets the media type for a given file.
+ *
+ * @param {Entry} entry Reference to the file.
+ * @param {string=} opt_mimeType Optional mime type for the file.
+ * @return {string} The value of 'type' property from one of the elements in
+ *     FileType.types or undefined.
+ */
+FileType.getMediaType = function(entry, opt_mimeType) {
+  return FileType.getType(entry, opt_mimeType).type;
+};
+
+/**
+ * @param {Entry} entry Reference to the file.
+ * @param {string=} opt_mimeType Optional mime type for the file.
+ * @return {boolean} True if audio file.
+ */
+FileType.isAudio = function(entry, opt_mimeType) {
+  return FileType.getMediaType(entry, opt_mimeType) === 'audio';
+};
+
+/**
+ * Returns whether the |entry| is image file that can be opened in browser.
+ * Note that it returns false for RAW images.
+ * @param {Entry} entry Reference to the file.
+ * @param {string=} opt_mimeType Optional mime type for the file.
+ * @return {boolean} True if image file.
+ */
+FileType.isImage = function(entry, opt_mimeType) {
+  return FileType.getMediaType(entry, opt_mimeType) === 'image';
+};
+
+/**
+ * @param {Entry} entry Reference to the file.
+ * @param {string=} opt_mimeType Optional mime type for the file.
+ * @return {boolean} True if video file.
+ */
+FileType.isVideo = function(entry, opt_mimeType) {
+  return FileType.getMediaType(entry, opt_mimeType) === 'video';
+};
+
+/**
+ * @param {Entry} entry Reference to the file.
+ * @param {string=} opt_mimeType Optional mime type for the file.
+ * @return {boolean} True if raw file.
+ */
+FileType.isRaw = function(entry, opt_mimeType) {
+  return FileType.getMediaType(entry, opt_mimeType) === 'raw';
+};
+
+/**
+ * Files with more pixels won't have preview.
+ * @param {!Array<string>} types
+ * @param {Entry} entry Reference to the file.
+ * @param {string=} opt_mimeType Optional mime type for the file.
+ * @return {boolean} True if type is in specified set
+ */
+FileType.isType = function(types, entry, opt_mimeType) {
+  var type = FileType.getMediaType(entry, opt_mimeType);
+  return !!type && types.indexOf(type) !== -1;
+};
+
+/**
+ * @param {Entry} entry Reference to the file.
+ * @param {string=} opt_mimeType Optional mime type for the file.
+ * @return {boolean} Returns true if the file is hosted.
+ */
+FileType.isHosted = function(entry, opt_mimeType) {
+  return FileType.getType(entry, opt_mimeType).type === 'hosted';
+};
+
+/**
+ * @param {Entry} entry Reference to the file.
+ * @param {string=} opt_mimeType Optional mime type for the file.
+ * @return {string} Returns string that represents the file icon.
+ *     It refers to a file 'images/filetype_' + icon + '.png'.
+ */
+FileType.getIcon = function(entry, opt_mimeType) {
+  var fileType = FileType.getType(entry, opt_mimeType);
+  return fileType.icon || fileType.type || 'unknown';
+};
+
+// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * Namespace for utility functions.
+ */
+var util = {};
+
+/**
+ * @param {string} name File error name.
+ * @return {string} Translated file error string.
+ */
+util.getFileErrorString = function(name) {
+  var candidateMessageFragment;
+  switch (name) {
+    case 'NotFoundError':
+      candidateMessageFragment = 'NOT_FOUND';
+      break;
+    case 'SecurityError':
+      candidateMessageFragment = 'SECURITY';
+      break;
+    case 'NotReadableError':
+      candidateMessageFragment = 'NOT_READABLE';
+      break;
+    case 'NoModificationAllowedError':
+      candidateMessageFragment = 'NO_MODIFICATION_ALLOWED';
+      break;
+    case 'InvalidStateError':
+      candidateMessageFragment = 'INVALID_STATE';
+      break;
+    case 'InvalidModificationError':
+      candidateMessageFragment = 'INVALID_MODIFICATION';
+      break;
+    case 'PathExistsError':
+      candidateMessageFragment = 'PATH_EXISTS';
+      break;
+    case 'QuotaExceededError':
+      candidateMessageFragment = 'QUOTA_EXCEEDED';
+      break;
+  }
+
+  return loadTimeData.getString('FILE_ERROR_' + candidateMessageFragment) ||
+      loadTimeData.getString('FILE_ERROR_GENERIC');
+};
+
+/**
+ * Mapping table for FileError.code style enum to DOMError.name string.
+ *
+ * @enum {string}
+ * @const
+ */
+util.FileError = {
+  ABORT_ERR: 'AbortError',
+  INVALID_MODIFICATION_ERR: 'InvalidModificationError',
+  INVALID_STATE_ERR: 'InvalidStateError',
+  NO_MODIFICATION_ALLOWED_ERR: 'NoModificationAllowedError',
+  NOT_FOUND_ERR: 'NotFoundError',
+  NOT_READABLE_ERR: 'NotReadable',
+  PATH_EXISTS_ERR: 'PathExistsError',
+  QUOTA_EXCEEDED_ERR: 'QuotaExceededError',
+  TYPE_MISMATCH_ERR: 'TypeMismatchError',
+  ENCODING_ERR: 'EncodingError',
+};
+Object.freeze(util.FileError);
+
+/**
+ * @param {string} str String to escape.
+ * @return {string} Escaped string.
+ */
+util.htmlEscape = function(str) {
+  return str.replace(/[<>&]/g, function(entity) {
+    switch (entity) {
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '&': return '&amp;';
+    }
+  });
+};
+
+/**
+ * @param {string} str String to unescape.
+ * @return {string} Unescaped string.
+ */
+util.htmlUnescape = function(str) {
+  return str.replace(/&(lt|gt|amp);/g, function(entity) {
+    switch (entity) {
+      case '&lt;': return '<';
+      case '&gt;': return '>';
+      case '&amp;': return '&';
+    }
+  });
+};
+
+/**
+ * Renames the entry to newName.
+ * @param {Entry} entry The entry to be renamed.
+ * @param {string} newName The new name.
+ * @param {function(Entry)} successCallback Callback invoked when the rename
+ *     is successfully done.
+ * @param {function(DOMError)} errorCallback Callback invoked when an error
+ *     is found.
+ */
+util.rename = function(entry, newName, successCallback, errorCallback) {
+  entry.getParent(function(parentEntry) {
+    var parent = /** @type {!DirectoryEntry} */ (parentEntry);
+
+    // Before moving, we need to check if there is an existing entry at
+    // parent/newName, since moveTo will overwrite it.
+    // Note that this way has some timing issue. After existing check,
+    // a new entry may be create on background. However, there is no way not to
+    // overwrite the existing file, unfortunately. The risk should be low,
+    // assuming the unsafe period is very short.
+    (entry.isFile ? parent.getFile : parent.getDirectory).call(
+        parent, newName, {create: false},
+        function(entry) {
+          // The entry with the name already exists.
+          errorCallback(util.createDOMError(util.FileError.PATH_EXISTS_ERR));
+        },
+        function(error) {
+          if (error.name != util.FileError.NOT_FOUND_ERR) {
+            // Unexpected error is found.
+            errorCallback(error);
+            return;
+          }
+
+          // No existing entry is found.
+          entry.moveTo(parent, newName, successCallback, errorCallback);
+        });
+  }, errorCallback);
+};
+
+/**
+ * Converts DOMError of util.rename to error message.
+ * @param {!DOMError} error
+ * @param {!Entry} entry
+ * @param {string} newName
+ * @return {string}
+ */
+util.getRenameErrorMessage = function(error, entry, newName) {
+  if (error.name == util.FileError.PATH_EXISTS_ERR ||
+      error.name == util.FileError.TYPE_MISMATCH_ERR) {
+    // Check the existing entry is file or not.
+    // 1) If the entry is a file:
+    //   a) If we get PATH_EXISTS_ERR, a file exists.
+    //   b) If we get TYPE_MISMATCH_ERR, a directory exists.
+    // 2) If the entry is a directory:
+    //   a) If we get PATH_EXISTS_ERR, a directory exists.
+    //   b) If we get TYPE_MISMATCH_ERR, a file exists.
+    return strf(
+        (entry.isFile && error.name ==
+            util.FileError.PATH_EXISTS_ERR) ||
+        (!entry.isFile && error.name ==
+            util.FileError.TYPE_MISMATCH_ERR) ?
+            'FILE_ALREADY_EXISTS' :
+            'DIRECTORY_ALREADY_EXISTS',
+        newName);
+  }
+
+  return strf('ERROR_RENAMING', entry.name,
+      util.getFileErrorString(error.name));
+};
+
+/**
+ * Remove a file or a directory.
+ * @param {Entry} entry The entry to remove.
+ * @param {function()} onSuccess The success callback.
+ * @param {function(DOMError)} onError The error callback.
+ */
+util.removeFileOrDirectory = function(entry, onSuccess, onError) {
+  if (entry.isDirectory)
+    entry.removeRecursively(onSuccess, onError);
+  else
+    entry.remove(onSuccess, onError);
+};
+
+/**
+ * Convert a number of bytes into a human friendly format, using the correct
+ * number separators.
+ *
+ * @param {number} bytes The number of bytes.
+ * @return {string} Localized string.
+ */
+util.bytesToString = function(bytes) {
+  // Translation identifiers for size units.
+  var UNITS = ['SIZE_BYTES',
+               'SIZE_KB',
+               'SIZE_MB',
+               'SIZE_GB',
+               'SIZE_TB',
+               'SIZE_PB'];
+
+  // Minimum values for the units above.
+  var STEPS = [0,
+               Math.pow(2, 10),
+               Math.pow(2, 20),
+               Math.pow(2, 30),
+               Math.pow(2, 40),
+               Math.pow(2, 50)];
+
+  var str = function(n, u) {
+    return strf(u, n.toLocaleString());
+  };
+
+  var fmt = function(s, u) {
+    var rounded = Math.round(bytes / s * 10) / 10;
+    return str(rounded, u);
+  };
+
+  // Less than 1KB is displayed like '80 bytes'.
+  if (bytes < STEPS[1]) {
+    return str(bytes, UNITS[0]);
+  }
+
+  // Up to 1MB is displayed as rounded up number of KBs.
+  if (bytes < STEPS[2]) {
+    var rounded = Math.ceil(bytes / STEPS[1]);
+    return str(rounded, UNITS[1]);
+  }
+
+  // This loop index is used outside the loop if it turns out |bytes|
+  // requires the largest unit.
+  var i;
+
+  for (i = 2 /* MB */; i < UNITS.length - 1; i++) {
+    if (bytes < STEPS[i + 1])
+      return fmt(STEPS[i], UNITS[i]);
+  }
+
+  return fmt(STEPS[i], UNITS[i]);
+};
+
+/**
+ * Returns a string '[Ctrl-][Alt-][Shift-][Meta-]' depending on the event
+ * modifiers. Convenient for writing out conditions in keyboard handlers.
+ *
+ * @param {Event} event The keyboard event.
+ * @return {string} Modifiers.
+ */
+util.getKeyModifiers = function(event) {
+  return (event.ctrlKey ? 'Ctrl-' : '') +
+         (event.altKey ? 'Alt-' : '') +
+         (event.shiftKey ? 'Shift-' : '') +
+         (event.metaKey ? 'Meta-' : '');
+};
+
+/**
+ * @typedef {?{
+ *   scaleX: number,
+ *   scaleY: number,
+ *   rotate90: number
+ * }}
+ */
+util.Transform;
+
+/**
+ * @param {Element} element Element to transform.
+ * @param {util.Transform} transform Transform object,
+ *                           contains scaleX, scaleY and rotate90 properties.
+ */
+util.applyTransform = function(element, transform) {
+  // The order of rotate and scale matters.
+  element.style.transform =
+      transform ? 'rotate(' + transform.rotate90 * 90 + 'deg)' +
+                  'scaleX(' + transform.scaleX + ') ' +
+                  'scaleY(' + transform.scaleY + ') ' :
+      '';
+};
+
+/**
+ * Extracts path from filesystem: URL.
+ * @param {string} url Filesystem URL.
+ * @return {?string} The path.
+ */
+util.extractFilePath = function(url) {
+  var match =
+      /^filesystem:[\w-]*:\/\/[\w]*\/(external|persistent|temporary)(\/.*)$/.
+      exec(url);
+  var path = match && match[2];
+  if (!path) return null;
+  return decodeURIComponent(path);
+};
+
+/**
+ * A shortcut function to create a child element with given tag and class.
+ *
+ * @param {!HTMLElement} parent Parent element.
+ * @param {string=} opt_className Class name.
+ * @param {string=} opt_tag Element tag, DIV is omitted.
+ * @return {!HTMLElement} Newly created element.
+ */
+util.createChild = function(parent, opt_className, opt_tag) {
+  var child = parent.ownerDocument.createElement(opt_tag || 'div');
+  if (opt_className)
+    child.className = opt_className;
+  parent.appendChild(child);
+  return /** @type {!HTMLElement} */ (child);
+};
+
+/**
+ * Obtains the element that should exist, decorates it with given type, and
+ * returns it.
+ * @param {string} query Query for the element.
+ * @param {function(new: T, ...)} type Type used to decorate.
+ * @private
+ * @template T
+ * @return {!T} Decorated element.
+ */
+util.queryDecoratedElement = function(query, type) {
+  var element = queryRequiredElement(query);
+  cr.ui.decorate(element, type);
+  return element;
+};
+
+/**
+ * Updates the app state.
+ *
+ * @param {?string} currentDirectoryURL Currently opened directory as an URL.
+ *     If null the value is left unchanged.
+ * @param {?string} selectionURL Currently selected entry as an URL. If null the
+ *     value is left unchanged.
+ * @param {string|Object=} opt_param Additional parameters, to be stored. If
+ *     null, then left unchanged.
+ */
+util.updateAppState = function(currentDirectoryURL, selectionURL, opt_param) {
+  window.appState = window.appState || {};
+  if (opt_param !== undefined && opt_param !== null)
+    window.appState.params = opt_param;
+  if (currentDirectoryURL !== null)
+    window.appState.currentDirectoryURL = currentDirectoryURL;
+  if (selectionURL !== null)
+    window.appState.selectionURL = selectionURL;
+  util.saveAppState();
+};
+
+/**
+ * Returns a translated string.
+ *
+ * Wrapper function to make dealing with translated strings more concise.
+ * Equivalent to loadTimeData.getString(id).
+ *
+ * @param {string} id The id of the string to return.
+ * @return {string} The translated string.
+ */
+function str(id) {
+  return loadTimeData.getString(id);
+}
+
+/**
+ * Returns a translated string with arguments replaced.
+ *
+ * Wrapper function to make dealing with translated strings more concise.
+ * Equivalent to loadTimeData.getStringF(id, ...).
+ *
+ * @param {string} id The id of the string to return.
+ * @param {...*} var_args The values to replace into the string.
+ * @return {string} The translated string with replaced values.
+ */
+function strf(id, var_args) {
+  return loadTimeData.getStringF.apply(loadTimeData, arguments);
+}
+
+/**
+ * @return {boolean} True if Files.app is running as an open files or a select
+ *     folder dialog. False otherwise.
+ */
+util.runningInBrowser = function() {
+  return !window.appID;
+};
+
+/**
+ * Attach page load handler.
+ * @param {function()} handler Application-specific load handler.
+ */
+util.addPageLoadHandler = function(handler) {
+  document.addEventListener('DOMContentLoaded', function() {
+    handler();
+  });
+};
+
+/**
+ * Save app launch data to the local storage.
+ */
+util.saveAppState = function() {
+  if (!window.appState)
+    return;
+  var items = {};
+
+  items[window.appID] = JSON.stringify(window.appState);
+  chrome.storage.local.set(items);
+};
+
+/**
+ *  AppCache is a persistent timestamped key-value storage backed by
+ *  HTML5 local storage.
+ *
+ *  It is not designed for frequent access. In order to avoid costly
+ *  localStorage iteration all data is kept in a single localStorage item.
+ *  There is no in-memory caching, so concurrent access is _almost_ safe.
+ *
+ *  TODO(kaznacheev) Reimplement this based on Indexed DB.
+ */
+util.AppCache = function() {};
+
+/**
+ * Local storage key.
+ */
+util.AppCache.KEY = 'AppCache';
+
+/**
+ * Max number of items.
+ */
+util.AppCache.CAPACITY = 100;
+
+/**
+ * Default lifetime.
+ */
+util.AppCache.LIFETIME = 30 * 24 * 60 * 60 * 1000;  // 30 days.
+
+/**
+ * @param {string} key Key.
+ * @param {function(number)} callback Callback accepting a value.
+ */
+util.AppCache.getValue = function(key, callback) {
+  util.AppCache.read_(function(map) {
+    var entry = map[key];
+    callback(entry && entry.value);
+  });
+};
+
+/**
+ * Updates the cache.
+ *
+ * @param {string} key Key.
+ * @param {?(string|number)} value Value. Remove the key if value is null.
+ * @param {number=} opt_lifetime Maximum time to keep an item (in milliseconds).
+ */
+util.AppCache.update = function(key, value, opt_lifetime) {
+  util.AppCache.read_(function(map) {
+    if (value != null) {
+      map[key] = {
+        value: value,
+        expire: Date.now() + (opt_lifetime || util.AppCache.LIFETIME)
+      };
+    } else if (key in map) {
+      delete map[key];
+    } else {
+      return;  // Nothing to do.
+    }
+    util.AppCache.cleanup_(map);
+    util.AppCache.write_(map);
+  });
+};
+
+/**
+ * @param {function(Object)} callback Callback accepting a map of timestamped
+ *   key-value pairs.
+ * @private
+ */
+util.AppCache.read_ = function(callback) {
+  chrome.storage.local.get(util.AppCache.KEY, function(values) {
+    var json = values[util.AppCache.KEY];
+    if (json) {
+      try {
+        callback(/** @type {Object} */ (JSON.parse(json)));
+      } catch (e) {
+        // The local storage item somehow got messed up, start fresh.
+      }
+    }
+    callback({});
+  });
+};
+
+/**
+ * @param {Object} map A map of timestamped key-value pairs.
+ * @private
+ */
+util.AppCache.write_ = function(map) {
+  var items = {};
+  items[util.AppCache.KEY] = JSON.stringify(map);
+  chrome.storage.local.set(items);
+};
+
+/**
+ * Remove over-capacity and obsolete items.
+ *
+ * @param {Object} map A map of timestamped key-value pairs.
+ * @private
+ */
+util.AppCache.cleanup_ = function(map) {
+  // Sort keys by ascending timestamps.
+  var keys = [];
+  for (var key in map) {
+    if (map.hasOwnProperty(key))
+      keys.push(key);
+  }
+  keys.sort(function(a, b) { return map[a].expire - map[b].expire; });
+
+  var cutoff = Date.now();
+
+  var obsolete = 0;
+  while (obsolete < keys.length &&
+         map[keys[obsolete]].expire < cutoff) {
+    obsolete++;
+  }
+
+  var overCapacity = Math.max(0, keys.length - util.AppCache.CAPACITY);
+
+  var itemsToDelete = Math.max(obsolete, overCapacity);
+  for (var i = 0; i != itemsToDelete; i++) {
+    delete map[keys[i]];
+  }
+};
+
+/**
+ * Returns true if the board of the device matches the given prefix.
+ * @param {string} boardPrefix The board prefix to match against.
+ *     (ex. "x86-mario". Prefix is used as the actual board name comes with
+ *     suffix like "x86-mario-something".
+ * @return {boolean} True if the board of the device matches the given prefix.
+ */
+util.boardIs = function(boardPrefix) {
+  // The board name should be lower-cased, but making it case-insensitive for
+  // backward compatibility just in case.
+  var board = str('CHROMEOS_RELEASE_BOARD');
+  var pattern = new RegExp('^' + boardPrefix, 'i');
+  return board.match(pattern) != null;
+};
+
+/**
+ * Adds an isFocused method to the current window object.
+ */
+util.addIsFocusedMethod = function() {
+  var focused = true;
+
+  window.addEventListener('focus', function() {
+    focused = true;
+  });
+
+  window.addEventListener('blur', function() {
+    focused = false;
+  });
+
+  /**
+   * @return {boolean} True if focused.
+   */
+  window.isFocused = function() {
+    return focused;
+  };
+};
+
+/**
+ * Checks, if the Files.app's window is in a full screen mode.
+ *
+ * @param {chrome.app.window.AppWindow} appWindow App window to be maximized.
+ * @return {boolean} True if the full screen mode is enabled.
+ */
+util.isFullScreen = function(appWindow) {
+  if (appWindow) {
+    return appWindow.isFullscreen();
+  } else {
+    console.error('App window not passed. Unable to check status of ' +
+                  'the full screen mode.');
+    return false;
+  }
+};
+
+/**
+ * Toggles the full screen mode.
+ *
+ * @param {chrome.app.window.AppWindow} appWindow App window to be maximized.
+ * @param {boolean} enabled True for enabling, false for disabling.
+ */
+util.toggleFullScreen = function(appWindow, enabled) {
+  if (appWindow) {
+    if (enabled)
+      appWindow.fullscreen();
+    else
+      appWindow.restore();
+    return;
+  }
+
+  console.error(
+      'App window not passed. Unable to toggle the full screen mode.');
+};
+
+/**
+ * The type of a file operation.
+ * @enum {string}
+ * @const
+ */
+util.FileOperationType = {
+  COPY: 'COPY',
+  MOVE: 'MOVE',
+  ZIP: 'ZIP',
+};
+Object.freeze(util.FileOperationType);
+
+/**
+ * The type of a file operation error.
+ * @enum {number}
+ * @const
+ */
+util.FileOperationErrorType = {
+  UNEXPECTED_SOURCE_FILE: 0,
+  TARGET_EXISTS: 1,
+  FILESYSTEM_ERROR: 2,
+};
+Object.freeze(util.FileOperationErrorType);
+
+/**
+ * The kind of an entry changed event.
+ * @enum {number}
+ * @const
+ */
+util.EntryChangedKind = {
+  CREATED: 0,
+  DELETED: 1,
+};
+Object.freeze(util.EntryChangedKind);
+
+/**
+ * Obtains whether an entry is fake or not.
+ * @param {(!Entry|!FakeEntry)} entry Entry or a fake entry.
+ * @return {boolean} True if the given entry is fake.
+ */
+util.isFakeEntry = function(entry) {
+  return !('getParent' in entry);
+};
+
+/**
+ * Creates an instance of UserDOMError with given error name that looks like a
+ * FileError except that it does not have the deprecated FileError.code member.
+ *
+ * @param {string} name Error name for the file error.
+ * @return {DOMError} DOMError instance
+ */
+util.createDOMError = function(name) {
+  return new util.UserDOMError(name);
+};
+
+/**
+ * Creates a DOMError-like object to be used in place of returning file errors.
+ *
+ * @param {string} name Error name for the file error.
+ * @extends {DOMError}
+ * @constructor
+ */
+util.UserDOMError = function(name) {
+  /**
+   * @type {string}
+   * @private
+   */
+  this.name_ = name;
+  Object.freeze(this);
+};
+
+util.UserDOMError.prototype = {
+  /**
+   * @return {string} File error name.
+   */
+  get name() { return this.name_;
+  }
+};
+
+/**
+ * Compares two entries.
+ * @param {Entry|FakeEntry} entry1 The entry to be compared. Can be a fake.
+ * @param {Entry|FakeEntry} entry2 The entry to be compared. Can be a fake.
+ * @return {boolean} True if the both entry represents a same file or
+ *     directory. Returns true if both entries are null.
+ */
+util.isSameEntry = function(entry1, entry2) {
+  if (!entry1 && !entry2)
+    return true;
+  if (!entry1 || !entry2)
+    return false;
+  return entry1.toURL() === entry2.toURL();
+};
+
+/**
+ * Compares two file systems.
+ * @param {FileSystem} fileSystem1 The file system to be compared.
+ * @param {FileSystem} fileSystem2 The file system to be compared.
+ * @return {boolean} True if the both file systems are equal. Also, returns true
+ *     if both file systems are null.
+ */
+util.isSameFileSystem = function(fileSystem1, fileSystem2) {
+  if (!fileSystem1 && !fileSystem2)
+    return true;
+  if (!fileSystem1 || !fileSystem2)
+    return false;
+  return util.isSameEntry(fileSystem1.root, fileSystem2.root);
+};
+
+/**
+ * Collator for sorting.
+ * @type {Intl.Collator}
+ */
+util.collator = new Intl.Collator(
+    [], {usage: 'sort', numeric: true, sensitivity: 'base'});
+
+/**
+ * Compare by name. The 2 entries must be in same directory.
+ * @param {Entry} entry1 First entry.
+ * @param {Entry} entry2 Second entry.
+ * @return {number} Compare result.
+ */
+util.compareName = function(entry1, entry2) {
+  return util.collator.compare(entry1.name, entry2.name);
+};
+
+/**
+ * Compare by path.
+ * @param {Entry} entry1 First entry.
+ * @param {Entry} entry2 Second entry.
+ * @return {number} Compare result.
+ */
+util.comparePath = function(entry1, entry2) {
+  return util.collator.compare(entry1.fullPath, entry2.fullPath);
+};
+
+/**
+ * Checks if {@code entry} is an immediate child of {@code directory}.
+ *
+ * @param {Entry} entry The presumptive child.
+ * @param {DirectoryEntry|FakeEntry} directory The presumptive parent.
+ * @return {!Promise.<boolean>} Resolves with true if {@code directory} is
+ *     parent of {@code entry}.
+ */
+util.isChildEntry = function(entry, directory) {
+  return new Promise(
+      function(resolve, reject) {
+        if (!entry || !directory) {
+          resolve(false);
+        }
+
+        entry.getParent(
+            function(parent) {
+              resolve(util.isSameEntry(parent, directory));
+            },
+            reject);
+    });
+};
+
+/**
+ * Checks if the child entry is a descendant of another entry. If the entries
+ * point to the same file or directory, then returns false.
+ *
+ * @param {!DirectoryEntry|!FakeEntry} ancestorEntry The ancestor directory
+ *     entry. Can be a fake.
+ * @param {!Entry|!FakeEntry} childEntry The child entry. Can be a fake.
+ * @return {boolean} True if the child entry is contained in the ancestor path.
+ */
+util.isDescendantEntry = function(ancestorEntry, childEntry) {
+  if (!ancestorEntry.isDirectory)
+    return false;
+  if (!util.isSameFileSystem(ancestorEntry.filesystem, childEntry.filesystem))
+    return false;
+  if (util.isSameEntry(ancestorEntry, childEntry))
+    return false;
+  if (util.isFakeEntry(ancestorEntry) || util.isFakeEntry(childEntry))
+    return false;
+
+  // Check if the ancestor's path with trailing slash is a prefix of child's
+  // path.
+  var ancestorPath = ancestorEntry.fullPath;
+  if (ancestorPath.slice(-1) !== '/')
+    ancestorPath += '/';
+  return childEntry.fullPath.indexOf(ancestorPath) === 0;
+};
+
+/**
+ * Visit the URL.
+ *
+ * If the browser is opening, the url is opened in a new tag, otherwise the url
+ * is opened in a new window.
+ *
+ * @param {string} url URL to visit.
+ */
+util.visitURL = function(url) {
+  window.open(url);
+};
+
+/**
+ * Returns normalized current locale, or default locale - 'en'.
+ * @return {string} Current locale
+ */
+util.getCurrentLocaleOrDefault = function() {
+  // chrome.i18n.getMessage('@@ui_locale') can't be used in packed app.
+  // Instead, we pass it from C++-side with strings.
+  return str('UI_LOCALE') || 'en';
+};
+
+/**
+ * Converts array of entries to an array of corresponding URLs.
+ * @param {Array<Entry>} entries Input array of entries.
+ * @return {!Array<string>} Output array of URLs.
+ */
+util.entriesToURLs = function(entries) {
+  return entries.map(function(entry) {
+    // When building background.js, cachedUrl is not refered other than here.
+    // Thus closure compiler raises an error if we refer the property like
+    // entry.cachedUrl.
+    return entry['cachedUrl'] || entry.toURL();
+  });
+};
+
+/**
+ * Converts array of URLs to an array of corresponding Entries.
+ *
+ * @param {Array<string>} urls Input array of URLs.
+ * @param {function(!Array<!Entry>, !Array<!URL>)=} opt_callback Completion
+ *     callback with array of success Entries and failure URLs.
+ * @return {Promise} Promise fulfilled with the object that has entries property
+ *     and failureUrls property. The promise is never rejected.
+ */
+util.URLsToEntries = function(urls, opt_callback) {
+  var promises = urls.map(function(url) {
+    return new Promise(window.webkitResolveLocalFileSystemURL.bind(null, url)).
+        then(function(entry) {
+          return {entry: entry};
+        }, function(failureUrl) {
+          // Not an error. Possibly, the file is not accessible anymore.
+          console.warn('Failed to resolve the file with url: ' + url + '.');
+          return {failureUrl: url};
+        });
+  });
+  var resultPromise = Promise.all(promises).then(function(results) {
+    var entries = [];
+    var failureUrls = [];
+    for (var i = 0; i < results.length; i++) {
+      if ('entry' in results[i])
+        entries.push(results[i].entry);
+      if ('failureUrl' in results[i]) {
+        failureUrls.push(results[i].failureUrl);
+      }
+    }
+    return {
+      entries: entries,
+      failureUrls: failureUrls
+    };
+  });
+
+  // Invoke the callback. If opt_callback is specified, resultPromise is still
+  // returned and fulfilled with a result.
+  if (opt_callback) {
+    resultPromise.then(function(result) {
+      opt_callback(result.entries, result.failureUrls);
+    }).catch(function(error) {
+      console.error(
+          'util.URLsToEntries is failed.',
+          error.stack ? error.stack : error);
+    });
+  }
+
+  return resultPromise;
+};
+
+/**
+ * Converts a url into an {!Entry}, if possible.
+ *
+ * @param {string} url
+ *
+ * @return {!Promise.<!Entry>} Promise Resolves with the corresponding
+ *     {!Entry} if possible, else rejects.
+ */
+util.urlToEntry = function(url) {
+  return new Promise(
+      window.webkitResolveLocalFileSystemURL.bind(null, url));
+};
+
+/**
+ * Returns whether the window is teleported or not.
+ * @param {Window} window Window.
+ * @return {Promise.<boolean>} Whether the window is teleported or not.
+ */
+util.isTeleported = function(window) {
+  return new Promise(function(onFulfilled) {
+    window.chrome.fileManagerPrivate.getProfiles(
+        function(profiles, currentId, displayedId) {
+          onFulfilled(currentId !== displayedId);
+        });
+  });
+};
+
+/**
+ * Sets up and shows the alert to inform a user the task is opened in the
+ * desktop of the running profile.
+ *
+ * TODO(hirono): Move the function from the util namespace.
+ * @param {cr.ui.dialogs.AlertDialog} alertDialog Alert dialog to be shown.
+ * @param {Array<Entry>} entries List of opened entries.
+ */
+util.showOpenInOtherDesktopAlert = function(alertDialog, entries) {
+  if (!entries.length)
+    return;
+  chrome.fileManagerPrivate.getProfiles(
+      function(profiles, currentId, displayedId) {
+        // Find strings.
+        var displayName;
+        for (var i = 0; i < profiles.length; i++) {
+          if (profiles[i].profileId === currentId) {
+            displayName = profiles[i].displayName;
+            break;
+          }
+        }
+        if (!displayName) {
+          console.warn('Display name is not found.');
+          return;
+        }
+
+        var title = entries.length > 1 ?
+            entries[0].name + '\u2026' /* ellipsis */ : entries[0].name;
+        var message = strf(entries.length > 1 ?
+                           'OPEN_IN_OTHER_DESKTOP_MESSAGE_PLURAL' :
+                           'OPEN_IN_OTHER_DESKTOP_MESSAGE',
+                           displayName,
+                           currentId);
+
+        // Show the dialog.
+        alertDialog.showWithTitle(title, message, null, null, null);
+      }.bind(this));
+};
+
+/**
+ * Runs chrome.test.sendMessage in test environment. Does nothing if running
+ * in production environment.
+ *
+ * @param {string} message Test message to send.
+ */
+util.testSendMessage = function(message) {
+  var test = chrome.test || window.top.chrome.test;
+  if (test)
+    test.sendMessage(message);
+};
+
+/**
+ * Extracts the extension of the path.
+ *
+ * Examples:
+ * util.splitExtension('abc.ext') -> ['abc', '.ext']
+ * util.splitExtension('a/b/abc.ext') -> ['a/b/abc', '.ext']
+ * util.splitExtension('a/b') -> ['a/b', '']
+ * util.splitExtension('.cshrc') -> ['', '.cshrc']
+ * util.splitExtension('a/b.backup/hoge') -> ['a/b.backup/hoge', '']
+ *
+ * @param {string} path Path to be extracted.
+ * @return {Array<string>} Filename and extension of the given path.
+ */
+util.splitExtension = function(path) {
+  var dotPosition = path.lastIndexOf('.');
+  if (dotPosition <= path.lastIndexOf('/'))
+    dotPosition = -1;
+
+  var filename = dotPosition != -1 ? path.substr(0, dotPosition) : path;
+  var extension = dotPosition != -1 ? path.substr(dotPosition) : '';
+  return [filename, extension];
+};
+
+/**
+ * Returns the localized name of the root type.
+ * @param {!EntryLocation} locationInfo Location info.
+ * @return {string} The localized name.
+ */
+util.getRootTypeLabel = function(locationInfo) {
+  switch (locationInfo.rootType) {
+    case VolumeManagerCommon.RootType.DOWNLOADS:
+      return str('DOWNLOADS_DIRECTORY_LABEL');
+    case VolumeManagerCommon.RootType.DRIVE:
+      return str('DRIVE_MY_DRIVE_LABEL');
+    case VolumeManagerCommon.RootType.DRIVE_OFFLINE:
+      return str('DRIVE_OFFLINE_COLLECTION_LABEL');
+    case VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME:
+      return str('DRIVE_SHARED_WITH_ME_COLLECTION_LABEL');
+    case VolumeManagerCommon.RootType.DRIVE_RECENT:
+      return str('DRIVE_RECENT_COLLECTION_LABEL');
+    case VolumeManagerCommon.RootType.DRIVE_OTHER:
+    case VolumeManagerCommon.RootType.ARCHIVE:
+    case VolumeManagerCommon.RootType.REMOVABLE:
+    case VolumeManagerCommon.RootType.MTP:
+    case VolumeManagerCommon.RootType.PROVIDED:
+      return locationInfo.volumeInfo.label;
+    default:
+      console.error('Unsupported root type: ' + locationInfo.rootType);
+      return locationInfo.volumeInfo.label;
+  }
+}
+
+/**
+ * Returns the localized name of the entry.
+ *
+ * @param {EntryLocation} locationInfo
+ * @param {!Entry} entry The entry to be retrieve the name of.
+ * @return {?string} The localized name.
+ */
+util.getEntryLabel = function(locationInfo, entry) {
+  if (locationInfo && locationInfo.isRootEntry)
+    return util.getRootTypeLabel(locationInfo);
+  else
+    return entry.name;
+};
+
+/**
+ * Checks if the specified set of allowed effects contains the given effect.
+ * See: http://www.w3.org/TR/html5/editing.html#the-datatransfer-interface
+ *
+ * @param {string} effectAllowed The string denoting the set of allowed effects.
+ * @param {string} dropEffect The effect to be checked.
+ * @return {boolean} True if |dropEffect| is included in |effectAllowed|.
+ */
+util.isDropEffectAllowed = function(effectAllowed, dropEffect) {
+  return effectAllowed === 'all' ||
+      effectAllowed.toLowerCase().indexOf(dropEffect) !== -1;
+};
+
+/**
+ * Verifies the user entered name for file or folder to be created or
+ * renamed to. Name restrictions must correspond to File API restrictions
+ * (see DOMFilePath::isValidPath). Curernt WebKit implementation is
+ * out of date (spec is
+ * http://dev.w3.org/2009/dap/file-system/file-dir-sys.html, 8.3) and going to
+ * be fixed. Shows message box if the name is invalid.
+ *
+ * It also verifies if the name length is in the limit of the filesystem.
+ *
+ * @param {!DirectoryEntry} parentEntry The entry of the parent directory.
+ * @param {string} name New file or folder name.
+ * @param {boolean} filterHiddenOn Whether to report the hidden file name error
+ *     or not.
+ * @return {Promise} Promise fulfilled on success, or rejected with the error
+ *     message.
+ */
+util.validateFileName = function(parentEntry, name, filterHiddenOn) {
+  var testResult = /[\/\\\<\>\:\?\*\"\|]/.exec(name);
+  var msg;
+  if (testResult)
+    return Promise.reject(strf('ERROR_INVALID_CHARACTER', testResult[0]));
+  else if (/^\s*$/i.test(name))
+    return Promise.reject(str('ERROR_WHITESPACE_NAME'));
+  else if (/^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$/i.test(name))
+    return Promise.reject(str('ERROR_RESERVED_NAME'));
+  else if (filterHiddenOn && /\.crdownload$/i.test(name))
+    return Promise.reject(str('ERROR_RESERVED_NAME'));
+  else if (filterHiddenOn && name[0] == '.')
+    return Promise.reject(str('ERROR_HIDDEN_NAME'));
+
+  return new Promise(function(fulfill, reject) {
+    chrome.fileManagerPrivate.validatePathNameLength(
+        parentEntry,
+        name,
+        function(valid) {
+          if (valid)
+            fulfill(null);
+          else
+            reject(str('ERROR_LONG_NAME'));
+        });
+  });
+};
+
+/**
+ * Adds a foregorund listener to the background page components.
+ * The lisner will be removed when the foreground window is closed.
+ * @param {!cr.EventTarget} target
+ * @param {string} type
+ * @param {Function} handler
+ */
+util.addEventListenerToBackgroundComponent = function(target, type, handler) {
+  target.addEventListener(type, handler);
+  window.addEventListener('pagehide', function() {
+    target.removeEventListener(type, handler);
+  });
+};
+
+/**
+ * Checks if an API call returned an error, and if yes then prints it.
+ */
+util.checkAPIError = function() {
+  if (chrome.runtime.lastError)
+    console.error(chrome.runtime.lastError.message);
+};
+
+/**
+ * Makes a promise which will be fulfilled |ms| milliseconds later.
+ * @param {number} ms The delay in milliseconds.
+ * @return {!Promise}
+ */
+util.delay = function(ms) {
+  return new Promise(function(resolve) {
+    setTimeout(resolve, ms);
+  });
+};
+
+/**
+ * Makes a promise which will be rejected if the given |promise| is not resolved
+ * or rejected for |ms| milliseconds.
+ * @param {!Promise} promise A promise which needs to be timed out.
+ * @param {number} ms Delay for the timeout in milliseconds.
+ * @param {string=} opt_message Error message for the timeout.
+ * @return {!Promise} A promise which can be rejected by timeout.
+ */
+util.timeoutPromise = function(promise, ms, opt_message) {
+  return Promise.race([
+    promise,
+    util.delay(ms).then(function() {
+      throw new Error(opt_message || 'Operation timed out.');
+    })
+  ]);
+};
+
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * Namespace for common types shared between VolumeManager and
+ * VolumeManagerWrapper.
+ */
+var VolumeManagerCommon = {};
+
+/**
+ * Paths that can be handled by the dialog opener in native code.
+ * @enum {string}
+ * @const
+ */
+var AllowedPaths = {
+  NATIVE_PATH: 'nativePath',
+  NATIVE_OR_DRIVE_PATH: 'nativeOrDrivePath',
+  ANY_PATH: 'anyPath'
+};
+
+/**
+ * Type of a root directory.
+ * @enum {string}
+ * @const
+ */
+VolumeManagerCommon.RootType = {
+  // Root for a downloads directory.
+  DOWNLOADS: 'downloads',
+
+  // Root for a mounted archive volume.
+  ARCHIVE: 'archive',
+
+  // Root for a removable volume.
+  REMOVABLE: 'removable',
+
+  // Root for a drive volume.
+  DRIVE: 'drive',
+
+  // Root for a MTP volume.
+  MTP: 'mtp',
+
+  // Root for a provided volume.
+  PROVIDED: 'provided',
+
+  // Root for entries that is not located under RootType.DRIVE. e.g. shared
+  // files.
+  DRIVE_OTHER: 'drive_other',
+
+  // Fake root for offline available files on the drive.
+  DRIVE_OFFLINE: 'drive_offline',
+
+  // Fake root for shared files on the drive.
+  DRIVE_SHARED_WITH_ME: 'drive_shared_with_me',
+
+  // Fake root for recent files on the drive.
+  DRIVE_RECENT: 'drive_recent'
+};
+Object.freeze(VolumeManagerCommon.RootType);
+
+/**
+ * Error type of VolumeManager.
+ * @enum {string}
+ * @const
+ */
+VolumeManagerCommon.VolumeError = {
+  /* Internal errors */
+  TIMEOUT: 'timeout',
+
+  /* System events */
+  UNKNOWN: 'error_unknown',
+  INTERNAL: 'error_internal',
+  INVALID_ARGUMENT: 'error_invalid_argument',
+  INVALID_PATH: 'error_invalid_path',
+  ALREADY_MOUNTED: 'error_path_already_mounted',
+  PATH_NOT_MOUNTED: 'error_path_not_mounted',
+  DIRECTORY_CREATION_FAILED: 'error_directory_creation_failed',
+  INVALID_MOUNT_OPTIONS: 'error_invalid_mount_options',
+  INVALID_UNMOUNT_OPTIONS: 'error_invalid_unmount_options',
+  INSUFFICIENT_PERMISSIONS: 'error_insufficient_permissions',
+  MOUNT_PROGRAM_NOT_FOUND: 'error_mount_program_not_found',
+  MOUNT_PROGRAM_FAILED: 'error_mount_program_failed',
+  INVALID_DEVICE_PATH: 'error_invalid_device_path',
+  UNKNOWN_FILESYSTEM: 'error_unknown_filesystem',
+  UNSUPPORTED_FILESYSTEM: 'error_unsupported_filesystem',
+  INVALID_ARCHIVE: 'error_invalid_archive',
+  AUTHENTICATION: 'error_authentication',
+  PATH_UNMOUNTED: 'error_path_unmounted'
+};
+Object.freeze(VolumeManagerCommon.VolumeError);
+
+/**
+ * List of connection types of drive.
+ *
+ * Keep this in sync with the kDriveConnectionType* constants in
+ * private_api_dirve.cc.
+ *
+ * @enum {string}
+ * @const
+ */
+VolumeManagerCommon.DriveConnectionType = {
+  OFFLINE: 'offline',  // Connection is offline or drive is unavailable.
+  METERED: 'metered',  // Connection is metered. Should limit traffic.
+  ONLINE: 'online'     // Connection is online.
+};
+Object.freeze(VolumeManagerCommon.DriveConnectionType);
+
+/**
+ * List of reasons of DriveConnectionType.
+ *
+ * Keep this in sync with the kDriveConnectionReason constants in
+ * private_api_drive.cc.
+ *
+ * @enum {string}
+ * @const
+ */
+VolumeManagerCommon.DriveConnectionReason = {
+  NOT_READY: 'not_ready',    // Drive is not ready or authentication is failed.
+  NO_NETWORK: 'no_network',  // Network connection is unavailable.
+  NO_SERVICE: 'no_service'   // Drive service is unavailable.
+};
+Object.freeze(VolumeManagerCommon.DriveConnectionReason);
+
+/**
+ * The type of each volume.
+ * @enum {string}
+ * @const
+ */
+VolumeManagerCommon.VolumeType = {
+  DRIVE: 'drive',
+  DOWNLOADS: 'downloads',
+  REMOVABLE: 'removable',
+  ARCHIVE: 'archive',
+  MTP: 'mtp',
+  PROVIDED: 'provided'
+};
+
+/**
+ * Source of each volume's data.
+ * @enum {string}
+ * @const
+ */
+VolumeManagerCommon.Source = {
+  FILE: 'file',
+  DEVICE: 'device',
+  NETWORK: 'network',
+  SYSTEM: 'system'
+};
+
+/**
+ * Returns if the volume is linux native file system or not. Non-native file
+ * system does not support few operations (e.g. load unpacked extension).
+ * @param {VolumeManagerCommon.VolumeType} type
+ * @return {boolean}
+ */
+VolumeManagerCommon.VolumeType.isNative = function(type) {
+  return type === VolumeManagerCommon.VolumeType.DOWNLOADS ||
+      type === VolumeManagerCommon.VolumeType.REMOVABLE ||
+      type === VolumeManagerCommon.VolumeType.ARCHIVE;
+};
+
+Object.freeze(VolumeManagerCommon.VolumeType);
+
+/**
+ * Obtains volume type from root type.
+ * @param {VolumeManagerCommon.RootType} rootType RootType
+ * @return {VolumeManagerCommon.VolumeType}
+ */
+VolumeManagerCommon.getVolumeTypeFromRootType = function(rootType) {
+  switch (rootType) {
+    case VolumeManagerCommon.RootType.DOWNLOADS:
+      return VolumeManagerCommon.VolumeType.DOWNLOADS;
+    case VolumeManagerCommon.RootType.ARCHIVE:
+      return VolumeManagerCommon.VolumeType.ARCHIVE;
+    case VolumeManagerCommon.RootType.REMOVABLE:
+      return VolumeManagerCommon.VolumeType.REMOVABLE;
+    case VolumeManagerCommon.RootType.DRIVE:
+    case VolumeManagerCommon.RootType.DRIVE_OTHER:
+    case VolumeManagerCommon.RootType.DRIVE_OFFLINE:
+    case VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME:
+    case VolumeManagerCommon.RootType.DRIVE_RECENT:
+      return VolumeManagerCommon.VolumeType.DRIVE;
+    case VolumeManagerCommon.RootType.MTP:
+      return VolumeManagerCommon.VolumeType.MTP;
+    case VolumeManagerCommon.RootType.PROVIDED:
+      return VolumeManagerCommon.VolumeType.PROVIDED;
+  }
+  assertNotReached('Unknown root type: ' + rootType);
+};
+
+/**
+ * @typedef {{
+ *   type: VolumeManagerCommon.DriveConnectionType,
+ *   reason: VolumeManagerCommon.DriveConnectionReason
+ * }}
+ */
+VolumeManagerCommon.DriveConnectionState;
+
+/**
+ * Interface for classes providing access to {@code VolumeInfo}
+ * for {@code Entry} instances.
+ *
+ * @interface
+ */
+VolumeManagerCommon.VolumeInfoProvider = function() {};
+
+/**
+ * Obtains a volume info containing the passed entry.
+ * @param {Entry|Object} entry Entry on the volume to be returned. Can be fake.
+ * @return {?VolumeInfo} The VolumeInfo instance or null if not found.
+ */
+VolumeManagerCommon.VolumeInfoProvider.prototype.getVolumeInfo;
+
+/**
+ * Fake entries for Google Drive's virtual folders.
+ * (OFFLINE, RECENT, and SHARED_WITH_ME)
+ * @typedef {?{
+ *   isDirectory: boolean,
+ *   rootType: VolumeManagerCommon.RootType,
+ *   toURL: function(): string
+ * }}
+ */
+var FakeEntry;
+
+// Copyright 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * Thin wrapper for VolumeManager. This should be an interface proxy to talk
+ * to VolumeManager. This class also filters Drive related data/events if
+ * driveEnabled is set to false.
+ *
+ * @constructor
+ * @extends {cr.EventTarget}
+ * @implements {VolumeManagerCommon.VolumeInfoProvider}
+ *
+ * @param {!AllowedPaths} allowedPaths Which paths are supported in the Files
+ *     app dialog.
+ * @param {Window=} opt_backgroundPage Window object of the background
+ *     page. If this is specified, the class skips to get background page.
+ *     TOOD(hirono): Let all clients of the class pass the background page and
+ *     make the argument not optional.
+ */
+function VolumeManagerWrapper(allowedPaths, opt_backgroundPage) {
+  cr.EventTarget.call(this);
+
+  this.allowedPaths_ = allowedPaths;
+  this.volumeInfoList = new cr.ui.ArrayDataModel([]);
+
+  this.volumeManager_ = null;
+  this.pendingTasks_ = [];
+  this.onEventBound_ = this.onEvent_.bind(this);
+  this.onVolumeInfoListUpdatedBound_ =
+      this.onVolumeInfoListUpdated_.bind(this);
+
+  this.disposed_ = false;
+
+  // Start initialize the VolumeManager.
+  var queue = new AsyncUtil.Queue();
+
+  if (opt_backgroundPage) {
+    this.backgroundPage_ = opt_backgroundPage;
+  } else {
+    queue.run(function(callNextStep) {
+      chrome.runtime.getBackgroundPage(/** @type {function(Window=)} */(
+          function(opt_backgroundPage) {
+            this.backgroundPage_ = opt_backgroundPage;
+            callNextStep();
+          }.bind(this)));
+    }.bind(this));
+  }
+
+  queue.run(function(callNextStep) {
+    this.backgroundPage_.VolumeManager.getInstance(function(volumeManager) {
+      this.onReady_(volumeManager);
+      callNextStep();
+    }.bind(this));
+  }.bind(this));
+}
+
+/**
+ * Extends cr.EventTarget.
+ */
+VolumeManagerWrapper.prototype.__proto__ = cr.EventTarget.prototype;
+
+/**
+ * @param {VolumeManagerCommon.VolumeType} volumeType
+ * @return {boolean}
+ */
+VolumeManagerWrapper.prototype.isAllowedVolume_ = function(volumeType) {
+  if (this.allowedPaths_ === AllowedPaths.ANY_PATH)
+    return true;
+
+  if (this.allowedPaths_ === AllowedPaths.NATIVE_OR_DRIVE_PATH &&
+      (VolumeManagerCommon.VolumeType.isNative(volumeType) ||
+       volumeType == VolumeManagerCommon.VolumeType.DRIVE)) {
+    return true;
+  }
+
+  if (this.allowedPaths_ === AllowedPaths.NATIVE_PATH &&
+      VolumeManagerCommon.VolumeType.isNative(volumeType)) {
+    return true;
+  }
+
+  return false;
+};
+
+/**
+ * Called when the VolumeManager gets ready for post initialization.
+ * @param {VolumeManager} volumeManager The initialized VolumeManager instance.
+ * @private
+ */
+VolumeManagerWrapper.prototype.onReady_ = function(volumeManager) {
+  if (this.disposed_)
+    return;
+
+  this.volumeManager_ = volumeManager;
+
+  // Subscribe to VolumeManager.
+  this.volumeManager_.addEventListener(
+      'drive-connection-changed', this.onEventBound_);
+  this.volumeManager_.addEventListener(
+      'externally-unmounted', this.onEventBound_);
+
+  // Dispatch 'drive-connection-changed' to listeners, since the return value of
+  // VolumeManagerWrapper.getDriveConnectionState() can be changed by setting
+  // this.volumeManager_.
+  cr.dispatchSimpleEvent(this, 'drive-connection-changed');
+
+  // Cache volumeInfoList.
+  var volumeInfoList = [];
+  for (var i = 0; i < this.volumeManager_.volumeInfoList.length; i++) {
+    var volumeInfo = this.volumeManager_.volumeInfoList.item(i);
+    // TODO(hidehiko): Filter mounted volumes located on Drive File System.
+    if (!this.isAllowedVolume_(volumeInfo.volumeType))
+      continue;
+    volumeInfoList.push(volumeInfo);
+  }
+  this.volumeInfoList.splice.apply(
+      this.volumeInfoList,
+      [0, this.volumeInfoList.length].concat(volumeInfoList));
+
+  // Subscribe to VolumeInfoList.
+  // In VolumeInfoList, we only use 'splice' event.
+  this.volumeManager_.volumeInfoList.addEventListener(
+      'splice', this.onVolumeInfoListUpdatedBound_);
+
+  // Run pending tasks.
+  var pendingTasks = this.pendingTasks_;
+  this.pendingTasks_ = null;
+  for (var i = 0; i < pendingTasks.length; i++)
+    pendingTasks[i]();
+};
+
+/**
+ * Disposes the instance. After the invocation of this method, any other
+ * method should not be called.
+ */
+VolumeManagerWrapper.prototype.dispose = function() {
+  this.disposed_ = true;
+
+  if (!this.volumeManager_)
+    return;
+  this.volumeManager_.removeEventListener(
+      'drive-connection-changed', this.onEventBound_);
+  this.volumeManager_.removeEventListener(
+      'externally-unmounted', this.onEventBound_);
+  this.volumeManager_.volumeInfoList.removeEventListener(
+      'splice', this.onVolumeInfoListUpdatedBound_);
+};
+
+/**
+ * Called on events sent from VolumeManager. This has responsibility to
+ * re-dispatch the event to the listeners.
+ * @param {!Event} event Event object sent from VolumeManager.
+ * @private
+ */
+VolumeManagerWrapper.prototype.onEvent_ = function(event) {
+  var eventVolumeType;
+  switch (event.type) {
+    case 'drive-connection-changed':
+      eventVolumeType = VolumeManagerCommon.VolumeType.DRIVE;
+      break;
+    case 'externally-unmounted':
+      eventVolumeType = event.volumeInfo.volumeType;
+      break;
+  }
+
+  if (this.isAllowedVolume_(eventVolumeType))
+    this.dispatchEvent(event);
+};
+
+/**
+ * Called on events of modifying VolumeInfoList.
+ * @param {Event} event Event object sent from VolumeInfoList.
+ * @private
+ */
+VolumeManagerWrapper.prototype.onVolumeInfoListUpdated_ = function(event) {
+  if (this.allowedPaths_ === AllowedPaths.ANY_PATH) {
+    // Apply the splice as is.
+    this.volumeInfoList.splice.apply(
+         this.volumeInfoList,
+         [event.index, event.removed.length].concat(event.added));
+    return;
+  }
+
+  // Filters Drive related volumes.
+  var index = event.index;
+  for (var i = 0; i < event.index; i++) {
+    var volumeType = this.volumeManager_.volumeInfoList.item(i).volumeType;
+    if (!this.isAllowedVolume_(volumeType))
+      index--;
+  }
+
+  var numRemovedVolumes = 0;
+  for (var i = 0; i < event.removed.length; i++) {
+    if (this.isAllowedVolume_(event.removed[i].volumeType))
+      numRemovedVolumes++;
+  }
+
+  var addedVolumes = [];
+  for (var i = 0; i < event.added.length; i++) {
+    var volumeInfo = event.added[i];
+    if (this.isAllowedVolume_(volumeInfo.volumeType)) {
+      addedVolumes.push(volumeInfo);
+    }
+  }
+
+  this.volumeInfoList.splice.apply(
+      this.volumeInfoList, [index, numRemovedVolumes].concat(addedVolumes));
+};
+
+/**
+ * Returns whether the VolumeManager is initialized or not.
+ * @return {boolean} True if the VolumeManager is initialized.
+ */
+VolumeManagerWrapper.prototype.isInitialized = function() {
+  return this.pendingTasks_ === null;
+};
+
+/**
+ * Ensures the VolumeManager is initialized, and then invokes callback.
+ * If the VolumeManager is already initialized, callback will be called
+ * immediately.
+ * @param {function()} callback Called on initialization completion.
+ */
+VolumeManagerWrapper.prototype.ensureInitialized = function(callback) {
+  if (!this.isInitialized()) {
+    this.pendingTasks_.push(this.ensureInitialized.bind(this, callback));
+    return;
+  }
+
+  callback();
+};
+
+/**
+ * @return {VolumeManagerCommon.DriveConnectionState} Current drive connection
+ *     state.
+ */
+VolumeManagerWrapper.prototype.getDriveConnectionState = function() {
+  if (!this.isAllowedVolume_(VolumeManagerCommon.VolumeType.DRIVE) ||
+      !this.volumeManager_) {
+    return {
+      type: VolumeManagerCommon.DriveConnectionType.OFFLINE,
+      reason: VolumeManagerCommon.DriveConnectionReason.NO_SERVICE
+    };
+  }
+
+  return this.volumeManager_.getDriveConnectionState();
+};
+
+/** @override */
+VolumeManagerWrapper.prototype.getVolumeInfo = function(entry) {
+  return this.filterDisabledVolume_(
+      this.volumeManager_ && this.volumeManager_.getVolumeInfo(entry));
+};
+
+/**
+ * Obtains a volume information of the current profile.
+ * @param {VolumeManagerCommon.VolumeType} volumeType Volume type.
+ * @return {VolumeInfo} Found volume info.
+ */
+VolumeManagerWrapper.prototype.getCurrentProfileVolumeInfo =
+    function(volumeType) {
+  return this.filterDisabledVolume_(
+      this.volumeManager_ &&
+      this.volumeManager_.getCurrentProfileVolumeInfo(volumeType));
+};
+
+/**
+ * Obtains the default display root entry.
+ * @param {function(Entry)} callback Callback passed the default display root.
+ */
+VolumeManagerWrapper.prototype.getDefaultDisplayRoot =
+    function(callback) {
+  this.ensureInitialized(function() {
+    var defaultVolume = this.getCurrentProfileVolumeInfo(
+        VolumeManagerCommon.VolumeType.DOWNLOADS);
+    defaultVolume.resolveDisplayRoot(callback, function() {
+      // defaultVolume is DOWNLOADS and resolveDisplayRoot should succeed.
+      throw new Error(
+          'Unexpectedly failed to obtain the default display root.');
+    });
+  }.bind(this));
+};
+
+/**
+ * Obtains location information from an entry.
+ *
+ * @param {(!Entry|!FakeEntry)} entry File or directory entry.
+ * @return {EntryLocation} Location information.
+ */
+VolumeManagerWrapper.prototype.getLocationInfo = function(entry) {
+  var locationInfo =
+      this.volumeManager_ && this.volumeManager_.getLocationInfo(entry);
+  if (!locationInfo)
+    return null;
+  if (!this.filterDisabledVolume_(locationInfo.volumeInfo))
+    return null;
+  return locationInfo;
+};
+
+/**
+ * Requests to mount the archive file.
+ * @param {string} fileUrl The path to the archive file to be mounted.
+ * @param {function(VolumeInfo)} successCallback Called with the VolumeInfo
+ *     instance.
+ * @param {function(VolumeManagerCommon.VolumeError)} errorCallback Called when
+ *     an error occurs.
+ */
+VolumeManagerWrapper.prototype.mountArchive = function(
+    fileUrl, successCallback, errorCallback) {
+  if (this.pendingTasks_) {
+    this.pendingTasks_.push(
+        this.mountArchive.bind(this, fileUrl, successCallback, errorCallback));
+    return;
+  }
+
+  this.volumeManager_.mountArchive(fileUrl, successCallback, errorCallback);
+};
+
+/**
+ * Requests unmount the specified volume.
+ * @param {!VolumeInfo} volumeInfo Volume to be unmounted.
+ * @param {function()} successCallback Called on success.
+ * @param {function(VolumeManagerCommon.VolumeError)} errorCallback Called when
+ *     an error occurs.
+ */
+VolumeManagerWrapper.prototype.unmount = function(
+    volumeInfo, successCallback, errorCallback) {
+  if (this.pendingTasks_) {
+    this.pendingTasks_.push(
+        this.unmount.bind(this, volumeInfo, successCallback, errorCallback));
+    return;
+  }
+
+  this.volumeManager_.unmount(volumeInfo, successCallback, errorCallback);
+};
+
+/**
+ * Requests configuring of the specified volume.
+ * @param {!VolumeInfo} volumeInfo Volume to be configured.
+ * @return {!Promise} Fulfilled on success, otherwise rejected with an error
+ *     message.
+ */
+VolumeManagerWrapper.prototype.configure = function(volumeInfo) {
+  if (this.pendingTasks_) {
+    return new Promise(function(fulfill, reject) {
+      this.pendingTasks_.push(function() {
+        return this.volumeManager_.configure(volumeInfo).then(fulfill, reject);
+      }.bind(this));
+    }.bind(this));
+  }
+
+  return this.volumeManager_.configure(volumeInfo);
+};
+
+/**
+ * Filters volume info by referring allowedPaths_.
+ *
+ * @param {VolumeInfo} volumeInfo Volume info.
+ * @return {VolumeInfo} Null if the volume is disabled. Otherwise just returns
+ *     the volume.
+ * @private
+ */
+VolumeManagerWrapper.prototype.filterDisabledVolume_ =
+    function(volumeInfo) {
+  if (volumeInfo && this.isAllowedVolume_(volumeInfo.volumeType)) {
+    return volumeInfo;
+  } else {
+    return null;
+  }
+};
+
+/**
+ * Returns current state of VolumeManagerWrapper.
+ * @return {string} Current state of VolumeManagerWrapper.
+ */
+VolumeManagerWrapper.prototype.toString = function() {
+  var initialized = this.isInitialized();
+  var volumeManager = initialized ?
+      this.volumeManager_ :
+      this.backgroundPage_.VolumeManager.getInstanceForDebug();
+
+  var str = 'VolumeManagerWrapper\n' +
+      '- Initialized: ' + initialized + '\n';
+
+  if (!initialized)
+    str += '- PendingTasksCount: ' + this.pendingTasks_.length + '\n';
+
+  return str + '- VolumeManager:\n' +
+      '  ' + volumeManager.toString().replace(/\n/g, '\n  ');
+};
+
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @param {!MessagePort=} opt_messagePort Message port overriding the default
+ *     worker port.
+ * @extends {NewMetadataProvider}
+ * @constructor
+ * @struct
+ */
+function ContentMetadataProvider(opt_messagePort) {
+  NewMetadataProvider.call(
+      this,
+      ContentMetadataProvider.PROPERTY_NAMES);
+
+  /**
+   * Pass all URLs to the metadata reader until we have a correct filter.
+   * @private {RegExp}
+   */
+  this.urlFilter_ = /.*/;
+
+  /**
+   * @private {!MessagePort}
+   * @const
+   */
+  this.dispatcher_ = opt_messagePort ?
+      opt_messagePort :
+      new SharedWorker(ContentMetadataProvider.WORKER_SCRIPT).port;
+  this.dispatcher_.onmessage = this.onMessage_.bind(this);
+  this.dispatcher_.postMessage({verb: 'init'});
+  this.dispatcher_.start();
+
+  /**
+   * Initialization is not complete until the Worker sends back the
+   * 'initialized' message.  See below.
+   * @private {boolean}
+   */
+  this.initialized_ = false;
+
+  /**
+   * Map from Entry.toURL() to callback.
+   * Note that simultaneous requests for same url are handled in MetadataCache.
+   * @private {!Object<!string, !Array<function(Object)>>}
+   * @const
+   */
+  this.callbacks_ = {};
+}
+
+/**
+ * @const {!Array<string>}
+ */
+ContentMetadataProvider.PROPERTY_NAMES = [
+  'contentImageTransform',
+  'contentThumbnailTransform',
+  'contentThumbnailUrl',
+  'exifLittleEndian',
+  'ifd',
+  'imageHeight',
+  'imageWidth',
+  'mediaArtist',
+  'mediaMimeType',
+  'mediaTitle'
+];
+
+/**
+ * Path of a worker script.
+ * @public {string}
+ */
+ContentMetadataProvider.WORKER_SCRIPT =
+    'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/' +
+    'foreground/js/metadata/metadata_dispatcher.js';
+
+/**
+ * Converts content metadata from parsers to the internal format.
+ * @param {Object} metadata The content metadata.
+ * @return {!MetadataItem} Converted metadata.
+ */
+ContentMetadataProvider.convertContentMetadata = function(metadata) {
+  var item = new MetadataItem();
+  item.contentImageTransform = metadata['imageTransform'];
+  item.contentThumbnailTransform = metadata['thumbnailTransform'];
+  item.contentThumbnailUrl = metadata['thumbnailURL'];
+  item.exifLittleEndian = metadata['littleEndian'];
+  item.ifd = metadata['ifd'];
+  item.imageHeight = metadata['height'];
+  item.imageWidth = metadata['width'];
+  item.mediaArtist = metadata['artist'];
+  item.mediaMimeType = metadata['mimeType'];
+  item.mediaTitle = metadata['title'];
+  return item;
+};
+
+ContentMetadataProvider.prototype.__proto__ = NewMetadataProvider.prototype;
+
+/**
+ * @override
+ */
+ContentMetadataProvider.prototype.get = function(requests) {
+  if (!requests.length)
+    return Promise.resolve([]);
+
+  var promises = [];
+  for (var i = 0; i < requests.length; i++) {
+    promises.push(new Promise(function(request, fulfill) {
+      this.getImpl_(request.entry, request.names, fulfill);
+    }.bind(this, requests[i])));
+  }
+  return Promise.all(promises);
+};
+
+/**
+ * Fetches the metadata.
+ * @param {!Entry} entry File entry.
+ * @param {!Array<string>} names Requested metadata type.
+ * @param {function(!MetadataItem)} callback Callback expects metadata value.
+ *     This callback is called asynchronously.
+ * @private
+ */
+ContentMetadataProvider.prototype.getImpl_ = function(entry, names, callback) {
+  if (entry.isDirectory) {
+    setTimeout(callback.bind(null, this.createError_(entry.toURL(),
+        'get',
+        'we don\'t generate thumbnails for directory')), 0);
+    return;
+  }
+  // TODO(ryoh): mediaGalleries API does not handle
+  // jpes's exif thumbnail and mirror attribute correctly
+  // and .ico file.
+  // We parse it in our pure js parser.
+  // chrome/browser/media_galleries/fileapi/supported_image_type_validator.cc
+  var type = FileType.getType(entry);
+  if (type && type.type === 'image' &&
+      (type.subtype === 'JPEG' || type.subtype === 'ICO')) {
+    var url = entry.toURL();
+    if (this.callbacks_[url]) {
+      this.callbacks_[url].push(callback);
+    } else {
+      this.callbacks_[url] = [callback];
+      this.dispatcher_.postMessage({verb: 'request', arguments: [url]});
+    }
+    return;
+  }
+  this.getFromMediaGalleries_(entry, names).then(callback);
+};
+
+/**
+ * Gets a metadata from mediaGalleries API
+ *
+ * @param {!Entry} entry File entry.
+ * @param {!Array<string>} names Requested metadata type.
+ * @return {!Promise<!MetadataItem>}  Promise that resolves with the metadata of
+ *    the entry.
+ * @private
+ */
+ContentMetadataProvider.prototype.getFromMediaGalleries_ =
+    function(entry, names) {
+  var self = this;
+  return new Promise(function(resolve, reject) {
+    entry.file(function(blob) {
+      var metadataType = 'mimeTypeOnly';
+      if (names.indexOf('mediaArtist') !== -1 ||
+          names.indexOf('mediaTitle') !== -1) {
+        metadataType = 'mimeTypeAndTags';
+      }
+      if (names.indexOf('contentThumbnailUrl') !== -1) {
+        metadataType = 'all';
+      }
+      chrome.mediaGalleries.getMetadata(blob, {metadataType: metadataType},
+          function(metadata) {
+            if (chrome.runtime.lastError) {
+              resolve(self.createError_(entry.toURL(),
+                  'resolving metadata',
+                  chrome.runtime.lastError.toString()));
+            } else {
+              self.convertMediaMetadataToMetadataItem_(entry, metadata)
+                  .then(resolve, reject);
+            }
+          });
+    }, function(err) {
+      resolve(self.createError_(entry.toURL(),
+          'loading file entry',
+          'failed to open file entry'));
+    });
+  });
+};
+
+/**
+ * Dispatches a message from a metadata reader to the appropriate on* method.
+ * @param {Object} event The event.
+ * @private
+ */
+ContentMetadataProvider.prototype.onMessage_ = function(event) {
+  var data = event.data;
+  switch (data.verb) {
+    case 'initialized':
+      this.onInitialized_(data.arguments[0]);
+      break;
+    case 'result':
+      this.onResult_(
+          data.arguments[0],
+          data.arguments[1] ?
+          ContentMetadataProvider.convertContentMetadata(data.arguments[1]) :
+          new MetadataItem());
+      break;
+    case 'error':
+      var error = this.createError_(
+          data.arguments[0],
+          data.arguments[1],
+          data.arguments[2]);
+      this.onResult_(
+          data.arguments[0],
+          error);
+      break;
+    case 'log':
+      this.onLog_(data.arguments[0]);
+      break;
+    default:
+      assertNotReached();
+      break;
+  }
+};
+
+/**
+ * Handles the 'initialized' message from the metadata reader Worker.
+ * @param {RegExp} regexp Regexp of supported urls.
+ * @private
+ */
+ContentMetadataProvider.prototype.onInitialized_ = function(regexp) {
+  this.urlFilter_ = regexp;
+
+  // Tests can monitor for this state with
+  // ExtensionTestMessageListener listener("worker-initialized");
+  // ASSERT_TRUE(listener.WaitUntilSatisfied());
+  // Automated tests need to wait for this, otherwise we crash in
+  // browser_test cleanup because the worker process still has
+  // URL requests in-flight.
+  util.testSendMessage('worker-initialized');
+  this.initialized_ = true;
+};
+
+/**
+ * Handles the 'result' message from the worker.
+ * @param {string} url File url.
+ * @param {!MetadataItem} metadataItem The metadata item.
+ * @private
+ */
+ContentMetadataProvider.prototype.onResult_ = function(url, metadataItem) {
+  var callbacks = this.callbacks_[url];
+  delete this.callbacks_[url];
+  for (var i = 0; i < callbacks.length; i++) {
+    callbacks[i](metadataItem);
+  }
+};
+
+/**
+ * Handles the 'log' message from the worker.
+ * @param {Array<*>} arglist Log arguments.
+ * @private
+ */
+ContentMetadataProvider.prototype.onLog_ = function(arglist) {
+  console.log.apply(console, ['ContentMetadataProvider log:'].concat(arglist));
+};
+
+/**
+ * Dispatches a message from MediaGalleries API to the appropriate on* method.
+ * @param {!Entry} entry File entry.
+ * @param {!Object} metadata The metadata from MediaGalleries API.
+ * @return {!Promise<!MetadataItem>}  Promise that resolves with
+ *    converted metadata item.
+ * @private
+ */
+ContentMetadataProvider.prototype.convertMediaMetadataToMetadataItem_ =
+    function(entry, metadata) {
+  return new Promise(function(resolve, reject) {
+    if (!metadata) {
+      resolve(this.createError_(entry.toURL(), 'Reading a thumbnail image',
+          "Failed to parse metadata"));
+      return;
+    }
+    var item = new MetadataItem();
+    var mimeType = metadata['mimeType'];
+    item.contentMimeType = mimeType;
+    var trans = {scaleX: 1, scaleY: 1, rotate90: 0};
+    if (metadata.rotation) {
+      switch (metadata.rotation) {
+        case 0:
+          break;
+        case 90:
+          trans.rotate90 = 1;
+          break;
+        case 180:
+          trans.scaleX *= -1;
+          trans.scaleY *= -1;
+          break;
+        case 270:
+          trans.rotate90 = 1;
+          trans.scaleX *= -1;
+          trans.scaleY *= -1;
+          break;
+        default:
+          console.error('Unknown rotation angle: ', metadata.rotation);
+      }
+    }
+    if (metadata.rotation) {
+      item.contentImageTransform = item.contentThumbnailTransform = trans;
+    }
+    item.imageHeight = metadata['height'];
+    item.imageWidth = metadata['width'];
+    item.mediaArtist = metadata['artist'];
+    item.mediaTitle = metadata['title'];
+    if (metadata.attachedImages && metadata.attachedImages.length > 0) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        item.contentThumbnailUrl = e.target.result;
+        resolve(item);
+      };
+      reader.onerror = function(e) {
+        resolve(this.createError_(entry.toURL(), 'Reading a thumbnail image',
+            reader.error.toString()));
+      }.bind(this);
+      reader.readAsDataURL(metadata.attachedImages[0]);
+    } else {
+      resolve(item);
+    }
+  }.bind(this));
+};
+
+/**
+ * Handles the 'error' message from the worker.
+ * @param {string} url File entry.
+ * @param {string} step Step failed.
+ * @param {string} errorDescription Error description.
+ * @return {!MetadataItem} Error metadata
+ * @private
+ */
+ContentMetadataProvider.prototype.createError_ = function(
+    url, step, errorDescription) {
+  // For error case, fill all fields with error object.
+  var error = new ContentMetadataProvider.Error(url, step, errorDescription);
+  var item = new MetadataItem();
+  item.contentImageTransformError = error;
+  item.contentThumbnailTransformError = error;
+  item.contentThumbnailUrlError = error;
+  item.exifLittleEndianError = error;
+  item.ifdError = error;
+  item.imageHeightError = error;
+  item.imageWidthError = error;
+  item.mediaArtistError = error;
+  item.mediaMimeTypeError = error;
+  item.mediaTitleError = error;
+  return item;
+};
+
+/**
+ * Content metadata provider error.
+ * @param {string} url File Entry.
+ * @param {string} step Step failed.
+ * @param {string} errorDescription Error description.
+ * @constructor
+ * @struct
+ * @extends {Error}
+ */
+ContentMetadataProvider.Error = function(url, step, errorDescription) {
+  /**
+   * @public {string}
+   */
+  this.url = url;
+
+  /**
+   * @public {string}
+   */
+  this.step = step;
+
+  /**
+   * @public {string}
+   */
+  this.errorDescription = errorDescription;
+};
+
+ContentMetadataProvider.Error.prototype.__proto__ = Error.prototype;
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * Metadata provider for FileEntry#getMetadata.
+ * TODO(hirono): Rename thumbnailUrl with externalThumbnailUrl.
+ *
+ * @constructor
+ * @extends {NewMetadataProvider}
+ * @struct
+ */
+function ExternalMetadataProvider() {
+  NewMetadataProvider.call(this, ExternalMetadataProvider.PROPERTY_NAMES);
+}
+
+/**
+ * @const {!Array<string>}
+ */
+ExternalMetadataProvider.PROPERTY_NAMES = [
+  'availableOffline',
+  'availableWhenMetered',
+  'contentMimeType',
+  'croppedThumbnailUrl',
+  'customIconUrl',
+  'dirty',
+  'externalFileUrl',
+  'hosted',
+  'imageHeight',
+  'imageRotation',
+  'imageWidth',
+  'modificationTime',
+  'pinned',
+  'present',
+  'shared',
+  'sharedWithMe',
+  'size',
+  'thumbnailUrl'
+];
+
+ExternalMetadataProvider.prototype.__proto__ = NewMetadataProvider.prototype;
+
+/**
+ * @override
+ */
+ExternalMetadataProvider.prototype.get = function(requests) {
+  if (!requests.length)
+    return Promise.resolve([]);
+  return new Promise(function(fulfill) {
+    var entries = requests.map(function(request) {
+      return request.entry;
+    });
+    var nameMap = [];
+    for (var i = 0; i < requests.length; i++) {
+      for (var j = 0; j < requests[i].names.length; j++) {
+        nameMap[requests[i].names[j]] = true;
+      }
+    }
+    chrome.fileManagerPrivate.getEntryProperties(
+        entries,
+        Object.keys(nameMap),
+        function(results) {
+          if (!chrome.runtime.lastError)
+            fulfill(this.convertResults_(requests, nameMap, results));
+          else
+            fulfill(requests.map(function() { return new MetadataItem(); }));
+        }.bind(this));
+  }.bind(this));
+};
+
+/**
+ * @param {!Array<!MetadataRequest>} requests
+ * @param {!Object<boolean>} nameMap
+ * @param {!Array<!EntryProperties>} propertiesList
+ * @return {!Array<!MetadataItem>}
+ */
+ExternalMetadataProvider.prototype.convertResults_ =
+    function(requests, nameMap, propertiesList) {
+  var results = [];
+  for (var i = 0; i < propertiesList.length; i++) {
+    var prop = propertiesList[i];
+    var item = new MetadataItem();
+    if (prop.availableOffline !== undefined || nameMap['availableOffline'])
+      item.availableOffline = prop.availableOffline;
+    if (prop.availableWhenMetered !== undefined ||
+        nameMap['availableWhenMetered'])
+      item.availableWhenMetered = prop.availableWhenMetered;
+    if (prop.contentMimeType !== undefined || nameMap['contentMimeType'])
+      item.contentMimeType = prop.contentMimeType || '';
+    if (prop.croppedThumbnailUrl !== undefined ||
+        nameMap['croppedThumbnailUrl'])
+      item.croppedThumbnailUrl = prop.croppedThumbnailUrl;
+    if (prop.customIconUrl !== undefined || nameMap['customIconUrl'])
+      item.customIconUrl = prop.customIconUrl || '';
+    if (prop.dirty !== undefined || nameMap['dirty'])
+      item.dirty = prop.dirty;
+    if (prop.externalFileUrl !== undefined || nameMap['externalFileUrl'])
+      item.externalFileUrl = prop.externalFileUrl;
+    if (prop.hosted !== undefined || nameMap['hosted'])
+      item.hosted = prop.hosted;
+    if (prop.imageHeight !== undefined || nameMap['imageHeight'])
+      item.imageHeight = prop.imageHeight;
+    if (prop.imageRotation !== undefined || nameMap['imageRotation'])
+      item.imageRotation = prop.imageRotation;
+    if (prop.imageWidth !== undefined || nameMap['imageWidth'])
+      item.imageWidth = prop.imageWidth;
+    if (prop.modificationTime !== undefined || nameMap['modificationTime'])
+      item.modificationTime = new Date(prop.modificationTime);
+    if (prop.pinned !== undefined || nameMap['pinned'])
+      item.pinned = prop.pinned;
+    if (prop.present !== undefined || nameMap['present'])
+      item.present = prop.present;
+    if (prop.shared !== undefined || nameMap['shared'])
+      item.shared = prop.shared;
+    if (prop.sharedWithMe !== undefined || nameMap['sharedWithMe'])
+      item.sharedWithMe = prop.sharedWithMe;
+    if (prop.size !== undefined || nameMap['size'])
+      item.size = requests[i].entry.isFile ? (prop.size || 0) : -1;
+    if (prop.thumbnailUrl !== undefined || nameMap['thumbnailUrl'])
+      item.thumbnailUrl = prop.thumbnailUrl;
+    results.push(item);
+  }
+  return results;
+};
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * Metadata provider for FileEntry#getMetadata.
+ *
+ * @constructor
+ * @extends {NewMetadataProvider}
+ * @struct
+ */
+function FileSystemMetadataProvider() {
+  NewMetadataProvider.call(this, FileSystemMetadataProvider.PROPERTY_NAMES);
+}
+
+/**
+ * @const {!Array<string>}
+ */
+FileSystemMetadataProvider.PROPERTY_NAMES = [
+  'modificationTime', 'size', 'present', 'availableOffline'
+];
+
+FileSystemMetadataProvider.prototype.__proto__ = NewMetadataProvider.prototype;
+
+/**
+ * @override
+ */
+FileSystemMetadataProvider.prototype.get = function(requests) {
+  if (!requests.length)
+    return Promise.resolve([]);
+  return Promise.all(requests.map(function(request) {
+    return new Promise(function(fulfill, reject) {
+      request.entry.getMetadata(fulfill, reject);
+    }).then(function(result) {
+      var item = new MetadataItem();
+      item.modificationTime = result.modificationTime;
+      item.size = request.entry.isDirectory ? -1 : result.size;
+      item.present = true;
+      item.availableOffline = true;
+      return item;
+    }, function() {
+      return new MetadataItem();
+    });
+  }));
+};
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * Cache of metadata for a FileEntry.
+ * @constructor
+ * @struct
+ */
+function MetadataCacheItem() {
+  /**
+   * Map of property name and MetadataCacheItemProperty.
+   * @private {!Object<!MetadataCacheItemProperty>}
+   * @const
+   */
+  this.properties_ = {};
+}
+
+/**
+ * Creates requested names that need to be loaded.
+ * @param {!Array<string>} names
+ * @return {!Array<string>} Property names that need to be loaded.
+ */
+MetadataCacheItem.prototype.createRequests = function(names) {
+  var loadRequested = [];
+  for (var i = 0; i < names.length; i++) {
+    var name = names[i];
+    assert(!/Error$/.test(name));
+    // Check if the property needs to be updated.
+    if (this.properties_[name] &&
+        this.properties_[name].state !==
+        MetadataCacheItemPropertyState.INVALIDATED) {
+      continue;
+    }
+    loadRequested.push(name);
+  }
+  return loadRequested;
+};
+
+/**
+ * Marks the given properies as loading.
+ * @param {number} requestId
+ * @param {!Array<string>} names
+ */
+MetadataCacheItem.prototype.startRequests = function(requestId, names) {
+  for (var i = 0; i < names.length; i++) {
+    var name = names[i];
+    assert(!/Error$/.test(name));
+    if (!this.properties_[name])
+      this.properties_[name] = new MetadataCacheItemProperty();
+    this.properties_[name].requestId = requestId;
+    this.properties_[name].state = MetadataCacheItemPropertyState.LOADING;
+  }
+};
+
+/**
+ * Feeds the result of startRequests.
+ * @param {number} requestId Request ID passed when calling startRequests.
+ * @param {!MetadataItem} typedObject Map of property name and value.
+ * @return {boolean} Whether at least one property is updated or not.
+ */
+MetadataCacheItem.prototype.storeProperties = function(requestId, typedObject) {
+  var changed = false;
+  var object = /** @type {!Object} */(typedObject);
+  for (var name in object) {
+    if (/.Error$/.test(name) && object[name])
+      object[name.substr(0, name.length - 5)] = undefined;
+  }
+  for (var name in object) {
+    if (/.Error$/.test(name))
+      continue;
+    if (!this.properties_[name])
+      this.properties_[name] = new MetadataCacheItemProperty();
+    if (requestId < this.properties_[name].requestId ||
+        this.properties_[name].state ===
+        MetadataCacheItemPropertyState.FULFILLED) {
+      continue;
+    }
+    changed = true;
+    this.properties_[name].requestId = requestId;
+    this.properties_[name].value = object[name];
+    this.properties_[name].error = object[name + 'Error'];
+    this.properties_[name].state = MetadataCacheItemPropertyState.FULFILLED;
+  }
+  return changed;
+};
+
+/**
+ * Marks the caches of all properties in the item as invalidates and forces to
+ * reload at the next time of startRequests.
+ * @param {number} requestId Request ID of the invalidation request. This must
+ *     be larger than other requets ID passed to the item before.
+ */
+MetadataCacheItem.prototype.invalidate = function(requestId) {
+  for (var name in this.properties_) {
+    assert(this.properties_[name].requestId < requestId);
+    this.properties_[name].requestId = requestId;
+    this.properties_[name].state = MetadataCacheItemPropertyState.INVALIDATED;
+  }
+};
+
+/**
+ * Obtains property for entries and names.
+ * Note that it returns invalidated properties also.
+ * @param {!Array<string>} names
+ * @return {!MetadataItem}
+ */
+MetadataCacheItem.prototype.get = function(names) {
+  var result = /** @type {!Object} */(new MetadataItem());
+  for (var i = 0; i < names.length; i++) {
+    var name = names[i];
+    assert(!/Error$/.test(name));
+    if (this.properties_[name]) {
+      result[name] = this.properties_[name].value;
+      result[name + 'Error'] = this.properties_[name].error;
+    }
+  }
+  return /** @type {!MetadataItem} */(result);
+};
+
+/**
+ * Creates deep copy of the item.
+ * @return {!MetadataCacheItem}
+ */
+MetadataCacheItem.prototype.clone = function() {
+  var clonedItem = new MetadataCacheItem();
+  for (var name in this.properties_) {
+    var property = this.properties_[name];
+    clonedItem.properties_[name] = new MetadataCacheItemProperty();
+    clonedItem.properties_[name].value = property.value;
+    clonedItem.properties_[name].error = property.error;
+    clonedItem.properties_[name].requestId = property.requestId;
+    clonedItem.properties_[name].state = property.state;
+  }
+  return clonedItem;
+};
+
+/**
+ * Returns whether all the given properties are fulfilled.
+ * @param {!Array<string>} names Property names.
+ * @return {boolean}
+ */
+MetadataCacheItem.prototype.hasFreshCache = function(names) {
+  for (var i = 0; i < names.length; i++) {
+    if (!(this.properties_[names[i]] &&
+          this.properties_[names[i]].state ===
+          MetadataCacheItemPropertyState.FULFILLED)) {
+      return false;
+    }
+  }
+  return true;
+};
+
+/**
+ * @enum {string}
+ */
+var MetadataCacheItemPropertyState = {
+  INVALIDATED: 'invalidated',
+  LOADING: 'loading',
+  FULFILLED: 'fulfilled'
+};
+
+/**
+ * Cache of metadata for a property.
+ * @constructor
+ * @struct
+ */
+function MetadataCacheItemProperty() {
+  /**
+   * Cached value of property.
+   * @public {*}
+   */
+  this.value = null;
+
+  /**
+   * @public {Error}
+   */
+  this.error = null;
+
+  /**
+   * Last request ID.
+   * @public {number}
+   */
+  this.requestId = -1;
+
+  /**
+   * Cache state of the property.
+   * @public {MetadataCacheItemPropertyState}
+   */
+  this.state = MetadataCacheItemPropertyState.INVALIDATED;
+}
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @typedef {{
+ *  scaleX: number,
+ *  scaleY: number,
+ *  rotate90: number
+ * }}
+ */
+var ImageTransformation;
+
+/**
+ * Each property of MetadataItem has error property also.
+ * @constructor
+ * @struct
+ */
+function MetadataItem() {
+  /**
+   * Size of the file. -1 for directory.
+   * @public {number|undefined}
+   */
+  this.size;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.sizeError;
+
+  /**
+   * @public {!Date|undefined}
+   */
+  this.modificationTime;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.modificationTimeError;
+
+  /**
+   * Thumbnail URL obtained from external provider.
+   * @public {string|undefined}
+   */
+  this.thumbnailUrl;
+
+  /**
+   * Cropped thumbnail URL obtained from external provider.
+   * @public {string|undefined}
+   */
+  this.croppedThumbnailUrl;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.thumbnailUrlError;
+
+  /**
+   * @public {number|undefined}
+   */
+  this.imageWidth;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.imageWidthError;
+
+  /**
+   * @public {number|undefined}
+   */
+  this.imageHeight;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.imageHeightError;
+
+  /**
+   * @public {number|undefined}
+   */
+  this.imageRotation;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.imageRotationError;
+
+  /**
+   * Thumbnail obtained from content provider.
+   * @public {string|undefined}
+   */
+  this.contentThumbnailUrl;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.contentThumbnailUrlError;
+
+  /**
+   * Thumbnail transformation obtained from content provider.
+   * @public {!ImageTransformation|undefined}
+   */
+  this.contentThumbnailTransform;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.contentThumbnailTransformError;
+
+  /**
+   * Image transformation obtained from content provider.
+   * @public {!ImageTransformation|undefined}
+   */
+  this.contentImageTransform;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.contentImageTransformError;
+
+  /**
+   * Whether the entry is pinned for ensuring it is available offline.
+   * @public {boolean|undefined}
+   */
+  this.pinned;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.pinnedError;
+
+  /**
+   * Whether the entry is cached locally.
+   * @public {boolean|undefined}
+   */
+  this.present;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.presentError;
+
+  /**
+   * Whether the entry is hosted document of google drive.
+   * @public {boolean|undefined}
+   */
+  this.hosted;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.hostedError;
+
+  /**
+   * Whether the entry is modified locally and not synched yet.
+   * @public {boolean|undefined}
+   */
+  this.dirty;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.dirtyError;
+
+  /**
+   * Whether the entry is present or hosted;
+   * @public {boolean|undefined}
+   */
+  this.availableOffline;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.availableOfflineError;
+
+  /**
+   * @public {boolean|undefined}
+   */
+  this.availableWhenMetered;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.availableWhenMeteredError;
+
+  /**
+   * @public {string|undefined}
+   */
+  this.customIconUrl;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.customIconUrlError;
+
+  /**
+   * @public {string|undefined}
+   */
+  this.contentMimeType;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.contentMimeTypeError;
+
+  /**
+   * Whether the entry is shared explicitly with me.
+   * @public {boolean|undefined}
+   */
+  this.sharedWithMe;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.sharedWithMeError;
+
+  /**
+   * Whether the entry is shared publicly.
+   * @public {boolean|undefined}
+   */
+  this.shared;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.sharedError;
+
+  /**
+   * URL for open a file in browser tab.
+   * @public {string|undefined}
+   */
+  this.externalFileUrl;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.externalFileUrlError;
+
+  /**
+   * @public {string|undefined}
+   */
+  this.mediaTitle;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.mediaTitleError;
+
+  /**
+   * @public {string|undefined}
+   */
+  this.mediaArtist;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.mediaArtistError;
+
+  /**
+   * Mime type obtained by content provider based on URL.
+   * TODO(hirono): Remove the mediaMimeType.
+   * @public {string|undefined}
+   */
+  this.mediaMimeType;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.mediaMimeTypeError;
+
+  /**
+   * "Image File Directory" obtained from EXIF header.
+   * @public {!Object|undefined}
+   */
+  this.ifd;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.ifdError;
+
+  /**
+   * @public {boolean|undefined}
+   */
+  this.exifLittleEndian;
+
+  /**
+   * @public {Error|undefined}
+   */
+  this.exifLittleEndianError;
+}
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @param {!NewMetadataProvider} rawProvider
+ * @constructor
+ * @struct
+ */
+function MetadataModel(rawProvider) {
+  /**
+   * @private {!NewMetadataProvider}
+   * @const
+   */
+  this.rawProvider_ = rawProvider;
+
+  /**
+   * @private {!MetadataProviderCache}
+   * @const
+   */
+  this.cache_ = new MetadataProviderCache();
+
+  /**
+   * @private {!Array<!MetadataProviderCallbackRequest<T>>}
+   * @const
+   */
+  this.callbackRequests_ = [];
+}
+
+/**
+ * @param {!VolumeManagerCommon.VolumeInfoProvider} volumeManager
+ * @return {!MetadataModel}
+ */
+MetadataModel.create = function(volumeManager) {
+  return new MetadataModel(
+      new MultiMetadataProvider(
+          new FileSystemMetadataProvider(),
+          new ExternalMetadataProvider(),
+          new ContentMetadataProvider(),
+          volumeManager));
+};
+
+/**
+ * @return {!NewMetadataProvider}
+ */
+MetadataModel.prototype.getProvider = function() {
+  return this.rawProvider_;
+};
+
+/**
+ * Obtains metadata for entries.
+ * @param {!Array<!Entry>} entries Entries.
+ * @param {!Array<string>} names Metadata property names to be obtained.
+ * @return {!Promise<!Array<!MetadataItem>>}
+ */
+MetadataModel.prototype.get = function(entries, names) {
+  this.rawProvider_.checkPropertyNames(names);
+
+  // Check if the results are cached or not.
+  if (this.cache_.hasFreshCache(entries, names))
+    return Promise.resolve(this.getCache(entries, names));
+
+  // The LRU cache may be cached out when the callback is completed.
+  // To hold cached values, create snapshot of the cache for entries.
+  var requestId = this.cache_.generateRequestId();
+  var snapshot = this.cache_.createSnapshot(entries);
+  var requests = snapshot.createRequests(entries, names);
+  snapshot.startRequests(requestId, requests);
+  this.cache_.startRequests(requestId, requests);
+
+  // Register callback.
+  var promise = new Promise(function(fulfill) {
+    this.callbackRequests_.push(new MetadataProviderCallbackRequest(
+        entries, names, snapshot, fulfill));
+  }.bind(this));
+
+  // If the requests are not empty, call the requests.
+  if (requests.length) {
+    this.rawProvider_.get(requests).then(function(list) {
+      // Obtain requested entries and ensure all the requested properties are
+      // contained in the result.
+      var requestedEntries = [];
+      for (var i = 0; i < requests.length; i++) {
+        requestedEntries.push(requests[i].entry);
+        for (var j = 0; j < requests[i].names.length; j++) {
+          var name = requests[i].names[j];
+          if (!(name in list[i]))
+            list[i][name] = undefined;
+        }
+      }
+
+      // Store cache.
+      this.cache_.storeProperties(requestId, requestedEntries, list);
+
+      // Invoke callbacks.
+      var i = 0;
+      while (i < this.callbackRequests_.length) {
+        if (this.callbackRequests_[i].storeProperties(
+            requestId, requestedEntries, list)) {
+          // Callback was called.
+          this.callbackRequests_.splice(i, 1);
+        } else {
+          i++;
+        }
+      }
+    }.bind(this));
+  }
+
+  return promise;
+};
+
+/**
+ * Obtains metadata cache for entries.
+ * @param {!Array<!Entry>} entries Entries.
+ * @param {!Array<string>} names Metadata property names to be obtained.
+ * @return {!Array<!MetadataItem>}
+ */
+MetadataModel.prototype.getCache = function(entries, names) {
+  // Check if the property name is correct or not.
+  this.rawProvider_.checkPropertyNames(names);
+  return this.cache_.get(entries, names);
+};
+
+/**
+ * Clears old metadata for newly created entries.
+ * @param {!Array<!Entry>} entries
+ */
+MetadataModel.prototype.notifyEntriesCreated = function(entries) {
+  this.cache_.clear(util.entriesToURLs(entries));
+};
+
+/**
+ * Clears metadata for deleted entries.
+ * @param {!Array<string>} urls Note it is not an entry list because we cannot
+ *     obtain entries after removing them from the file system.
+ */
+MetadataModel.prototype.notifyEntriesRemoved = function(urls) {
+  this.cache_.clear(urls);
+};
+
+/**
+ * Invalidates metadata for updated entries.
+ * @param {!Array<!Entry>} entries
+ */
+MetadataModel.prototype.notifyEntriesChanged = function(entries) {
+  this.cache_.invalidate(this.cache_.generateRequestId(), entries);
+};
+
+/**
+ * Clears all cache.
+ */
+MetadataModel.prototype.clearAllCache = function() {
+  this.cache_.clearAll();
+};
+
+/**
+ * Adds event listener to internal cache object.
+ * @param {string} type
+ * @param {function(Event):undefined} callback
+ */
+MetadataModel.prototype.addEventListener = function(type, callback) {
+  this.cache_.addEventListener(type, callback);
+};
+
+/**
+ * @param {!Array<!Entry>} entries
+ * @param {!Array<string>} names
+ * @param {!MetadataCacheSet} cache
+ * @param {function(!MetadataItem):undefined} fulfill
+ * @constructor
+ * @struct
+ */
+function MetadataProviderCallbackRequest(entries, names, cache, fulfill) {
+  /**
+   * @private {!Array<!Entry>}
+   * @const
+   */
+  this.entries_ = entries;
+
+  /**
+   * @private {!Array<string>}
+   * @const
+   */
+  this.names_ = names;
+
+  /**
+   * @private {!MetadataCacheSet}
+   * @const
+   */
+  this.cache_ = cache;
+
+  /**
+   * @private {function(!MetadataItem):undefined}
+   * @const
+   */
+  this.fulfill_ = fulfill;
+}
+
+/**
+ * Stores properties to snapshot cache of the callback request.
+ * If all the requested property are served, it invokes the callback.
+ * @param {number} requestId
+ * @param {!Array<!Entry>} entries
+ * @param {!Array<!MetadataItem>} objects
+ * @return {boolean} Whether the callback is invoked or not.
+ */
+MetadataProviderCallbackRequest.prototype.storeProperties = function(
+    requestId, entries, objects) {
+  this.cache_.storeProperties(requestId, entries, objects);
+  if (this.cache_.hasFreshCache(this.entries_, this.names_)) {
+    this.fulfill_(this.cache_.get(this.entries_, this.names_));
+    return true;
+  }
+  return false;
+};
+
+/**
+ * Helper wrapper for LRUCache.
+ * @constructor
+ * @extends {MetadataCacheSet}
+ * @struct
+ */
+function MetadataProviderCache() {
+  MetadataCacheSet.call(this, new MetadataCacheSetStorageForObject({}));
+
+  /**
+   * @private {number}
+   */
+  this.requestIdCounter_ = 0;
+}
+
+MetadataProviderCache.prototype.__proto__ = MetadataCacheSet.prototype;
+
+/**
+ * Generates a unique request ID every time when it is called.
+ * @return {number}
+ */
+MetadataProviderCache.prototype.generateRequestId = function() {
+  return this.requestIdCounter_++;
+};
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @param {!FileSystemMetadataProvider} fileSystemMetadataProvider
+ * @param {!ExternalMetadataProvider} externalMetadataProvider
+ * @param {!ContentMetadataProvider} contentMetadataProvider
+ * @param {!VolumeManagerCommon.VolumeInfoProvider} volumeManager
+ * @constructor
+ * @extends {NewMetadataProvider}
+ * @struct
+ */
+function MultiMetadataProvider(
+    fileSystemMetadataProvider,
+    externalMetadataProvider,
+    contentMetadataProvider,
+    volumeManager) {
+  NewMetadataProvider.call(
+      this,
+      FileSystemMetadataProvider.PROPERTY_NAMES.concat(
+          ExternalMetadataProvider.PROPERTY_NAMES).concat(
+              ContentMetadataProvider.PROPERTY_NAMES));
+
+  /**
+   * @private {!FileSystemMetadataProvider}
+   * @const
+   */
+  this.fileSystemMetadataProvider_ = fileSystemMetadataProvider;
+
+  /**
+   * @private {!ExternalMetadataProvider}
+   * @const
+   */
+  this.externalMetadataProvider_ = externalMetadataProvider;
+
+  /**
+   * @private {!ContentMetadataProvider}
+   * @const
+   */
+  this.contentMetadataProvider_ = contentMetadataProvider;
+
+  /**
+   * @private {!VolumeManagerCommon.VolumeInfoProvider}
+   * @const
+   */
+  this.volumeManager_ = volumeManager;
+}
+
+MultiMetadataProvider.prototype.__proto__ = NewMetadataProvider.prototype;
+
+/**
+ * Obtains metadata for entries.
+ * @param {!Array<!MetadataRequest>} requests
+ * @return {!Promise<!Array<!MetadataItem>>}
+ */
+MultiMetadataProvider.prototype.get = function(requests) {
+  var fileSystemRequests = [];
+  var externalRequests = [];
+  var contentRequests = [];
+  var fallbackContentRequests = [];
+  requests.forEach(function(request) {
+    // Group property names.
+    var fileSystemPropertyNames = [];
+    var externalPropertyNames = [];
+    var contentPropertyNames = [];
+    var fallbackContentPropertyNames = [];
+    for (var i = 0; i < request.names.length; i++) {
+      var name = request.names[i];
+      var isFileSystemProperty =
+          FileSystemMetadataProvider.PROPERTY_NAMES.indexOf(name) !== -1;
+      var isExternalProperty =
+          ExternalMetadataProvider.PROPERTY_NAMES.indexOf(name) !== -1;
+      var isContentProperty =
+          ContentMetadataProvider.PROPERTY_NAMES.indexOf(name) !== -1;
+      assert(isFileSystemProperty || isExternalProperty || isContentProperty);
+      assert(!(isFileSystemProperty && isContentProperty));
+      // If the property can be obtained both from ExternalProvider and from
+      // ContentProvider, we can obtain the property from ExternalProvider
+      // without fetching file content. On the other hand, the values from
+      // ExternalProvider may be out of sync if the file is 'dirty'. Thus we
+      // fallback to ContentProvider if the file is dirty. See below.
+      if (isExternalProperty && isContentProperty) {
+        externalPropertyNames.push(name);
+        fallbackContentPropertyNames.push(name);
+        continue;
+      }
+      if (isFileSystemProperty)
+        fileSystemPropertyNames.push(name);
+      if (isExternalProperty)
+        externalPropertyNames.push(name);
+      if (isContentProperty)
+        contentPropertyNames.push(name);
+    }
+    var volumeInfo = this.volumeManager_.getVolumeInfo(request.entry);
+    var addRequests = function(list, names) {
+      if (names.length)
+        list.push(new MetadataRequest(request.entry, names));
+    };
+    if (volumeInfo &&
+        (volumeInfo.volumeType === VolumeManagerCommon.VolumeType.DRIVE ||
+         volumeInfo.volumeType === VolumeManagerCommon.VolumeType.PROVIDED)) {
+      // Because properties can be out of sync just after sync completion
+      // even if 'dirty' is false, it refers 'present' here to switch the
+      // content and the external providers.
+      if (fallbackContentPropertyNames.length &&
+          externalPropertyNames.indexOf('present') === -1) {
+        externalPropertyNames.push('present');
+      }
+      addRequests(externalRequests, externalPropertyNames);
+      addRequests(contentRequests, contentPropertyNames);
+      addRequests(fallbackContentRequests, fallbackContentPropertyNames);
+    } else {
+      addRequests(fileSystemRequests, fileSystemPropertyNames);
+      addRequests(
+          contentRequests,
+          contentPropertyNames.concat(fallbackContentPropertyNames));
+    }
+  }.bind(this));
+
+  var get = function(provider, inRequests) {
+    return provider.get(inRequests).then(function(results) {
+      return {
+        requests: inRequests,
+        results: results
+      };
+    });
+  };
+  var fileSystemPromise = get(
+      this.fileSystemMetadataProvider_, fileSystemRequests);
+  var externalPromise = get(this.externalMetadataProvider_, externalRequests);
+  var contentPromise = get(this.contentMetadataProvider_, contentRequests);
+  var fallbackContentPromise = externalPromise.then(
+      function(requestsAndResults) {
+        var requests = requestsAndResults.requests;
+        var results = requestsAndResults.results;
+        var dirtyMap = [];
+        for (var i = 0; i < results.length; i++) {
+          dirtyMap[requests[i].entry.toURL()] = results[i].present;
+        }
+        return get(
+            this.contentMetadataProvider_,
+            fallbackContentRequests.filter(
+                function(request) {
+                  return dirtyMap[request.entry.toURL()];
+                }));
+      }.bind(this));
+
+  // Merge results.
+  return Promise.all([
+    fileSystemPromise,
+    externalPromise,
+    contentPromise,
+    fallbackContentPromise
+  ]).then(function(resultsList) {
+    var integratedResults = {};
+    for (var i = 0; i < resultsList.length; i++) {
+      var inRequests = resultsList[i].requests;
+      var results = resultsList[i].results;
+      assert(inRequests.length === results.length);
+      for (var j = 0; j < results.length; j++) {
+        var url = inRequests[j].entry.toURL();
+        integratedResults[url] = integratedResults[url] || new MetadataItem();
+        for (var name in results[j]) {
+          integratedResults[url][name] = results[j][name];
+        }
+      }
+    }
+    return requests.map(function(request) {
+      return integratedResults[request.entry.toURL()] || new MetadataItem();
+    });
+  });
+};
+
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * Metadata containing thumbnail information.
+ * @typedef {Object}
+ */
+var ThumbnailMetadataItem;
+
+/**
+ * @param {!MetadataModel} metadataModel
+ * @struct
+ * @constructor
+ */
+function ThumbnailModel(metadataModel) {
+  /**
+   * @private {!MetadataModel}
+   * @const
+   */
+  this.metadataModel_ = metadataModel;
+}
+
+/**
+ * @param {!Array<!Entry>} entries
+ * @return {Promise<ThumbnailMetadataItem>} Promise fulfilled with old format
+ *     metadata list.
+ */
+ThumbnailModel.prototype.get = function(entries) {
+  var results = {};
+  return this.metadataModel_.get(
+      entries,
+      [
+        'modificationTime',
+        'customIconUrl',
+        'contentMimeType',
+        'thumbnailUrl',
+        'croppedThumbnailUrl',
+        'present'
+      ]).then(function(metadataList) {
+        var contentRequestEntries = [];
+        for (var i = 0; i < entries.length; i++) {
+          var url = entries[i].toURL();
+          // TODO(hirono): Use the provider results directly after removing code
+          // using old metadata format.
+          results[url] = {
+            filesystem: {
+              modificationTime: metadataList[i].modificationTime,
+              modificationTimeError: metadataList[i].modificationTimeError
+            },
+            external: {
+              thumbnailUrl: metadataList[i].thumbnailUrl,
+              thumbnailUrlError: metadataList[i].thumbnailUrlError,
+              croppedThumbnailUrl: metadataList[i].croppedThumbnailUrl,
+              croppedThumbnailUrlError:
+                  metadataList[i].croppedThumbnailUrlError,
+              customIconUrl: metadataList[i].customIconUrl,
+              customIconUrlError: metadataList[i].customIconUrlError,
+              present: metadataList[i].present,
+              presentError: metadataList[i].presentError
+            },
+            thumbnail: {},
+            media: {}
+          };
+          var canUseContentThumbnail =
+              metadataList[i].present &&
+              (FileType.isImage(entries[i], metadataList[i].contentMimeType) ||
+               FileType.isAudio(entries[i], metadataList[i].contentMimeType));
+          if (canUseContentThumbnail)
+            contentRequestEntries.push(entries[i]);
+        }
+        if (contentRequestEntries.length) {
+          return this.metadataModel_.get(
+              contentRequestEntries,
+              [
+                'contentThumbnailUrl',
+                'contentThumbnailTransform',
+                'contentImageTransform'
+              ]).then(function(contentMetadataList) {
+                for (var i = 0; i < contentRequestEntries.length; i++) {
+                  var url = contentRequestEntries[i].toURL();
+                  results[url].thumbnail.url =
+                      contentMetadataList[i].contentThumbnailUrl;
+                  results[url].thumbnail.urlError =
+                      contentMetadataList[i].contentThumbnailUrlError;
+                  results[url].thumbnail.transform =
+                      contentMetadataList[i].contentThumbnailTransform;
+                  results[url].thumbnail.transformError =
+                      contentMetadataList[i].contentThumbnailTransformError;
+                  results[url].media.imageTransform =
+                      contentMetadataList[i].contentImageTransform;
+                  results[url].media.imageTransformError =
+                      contentMetadataList[i].contentImageTransformError;
+                }
+              });
+        }
+      }.bind(this)).then(function() {
+        return entries.map(function(entry) { return results[entry.toURL()]; });
+      });
+};
+
+
+// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * Overrided metadata worker's path.
+ * @type {string}
+ */
+ContentMetadataProvider.WORKER_SCRIPT = '/js/metadata_worker.js';
+
+/**
+ * @param {Element} container Container element.
+ * @constructor
+ */
+function AudioPlayer(container) {
+  this.container_ = container;
+  this.volumeManager_ = new VolumeManagerWrapper(AllowedPaths.ANY_PATH);
+  this.metadataModel_ = MetadataModel.create(this.volumeManager_);
+  this.selectedEntry_ = null;
+  this.invalidTracks_ = {};
+  this.entries_ = [];
+  this.currentTrackIndex_ = -1;
+  this.playlistGeneration_ = 0;
+
+  /**
+   * Whether if the playlist is expanded or not. This value is changed by
+   * this.syncPlaylistExpanded().
+   * True: expanded, false: collapsed, null: unset.
+   *
+   * @type {?boolean}
+   * @private
+   */
+  // Initial value is null. It'll be set in load().
+  this.isPlaylistExpanded_ = null;
+
+  /**
+   * Whether if the trackinfo is expanded or not.
+   * True: expanded, false: collapsed, null: unset.
+   *
+   * @type {?boolean}
+   * @private
+   */
+  // Initial value is null. It'll be set in load().
+  this.isTrackInfoExpanded_ = null;
+
+  this.player_ =
+    /** @type {AudioPlayerElement} */ (document.querySelector('audio-player'));
+  this.player_.tracks = [];
+
+  // Restore the saved state from local storage, and update the local storage
+  // if the states are changed.
+  var STORAGE_PREFIX = 'audioplayer-';
+  var KEYS_TO_SAVE_STATES =
+      ['shuffle',
+       'repeat',
+       'volume',
+       'playlist-expanded',
+       'track-info-expanded'];
+  var storageKeys = KEYS_TO_SAVE_STATES.map(a => STORAGE_PREFIX + a);
+  chrome.storage.local.get(storageKeys, function(results) {
+    // Update the UI by loaded state.
+    for (var storageKey in results) {
+      var key = storageKey.substr(STORAGE_PREFIX.length);
+      this.player_[Polymer.CaseMap.dashToCamelCase(key)] = results[storageKey];
+    }
+    // Start listening to UI changes to write back the states to local storage.
+    for (var i = 0; i < KEYS_TO_SAVE_STATES.length; i++) {
+      this.player_.addEventListener(
+          KEYS_TO_SAVE_STATES[i] + '-changed',
+          function(storageKey, event) {
+            var objectToBeSaved = {};
+            objectToBeSaved[storageKey] = event.detail.value;
+            chrome.storage.local.set(objectToBeSaved);
+          }.bind(this, storageKeys[i]));
+    }
+  }.bind(this));
+
+  // Update the window size when UI's 'playlist-expanded' state is changed.
+  this.player_.addEventListener('playlist-expanded-changed', function(event) {
+    this.onPlaylistExpandedChanged_(event.detail.value);
+  }.bind(this));
+
+  // Update the window size when UI's 'track-info-expanded' state is changed.
+  this.player_.addEventListener('track-info-expanded-changed', function(event) {
+    this.onTrackInfoExpandedChanged_(event.detail.value);
+  }.bind(this));
+
+  // Run asynchronously after an event of model change is delivered.
+  setTimeout(function() {
+    this.errorString_ = '';
+    this.offlineString_ = '';
+    chrome.fileManagerPrivate.getStrings(function(strings) {
+      container.ownerDocument.title = strings['AUDIO_PLAYER_TITLE'];
+      this.errorString_ = strings['AUDIO_ERROR'];
+      this.offlineString_ = strings['AUDIO_OFFLINE'];
+      AudioPlayer.TrackInfo.DEFAULT_ARTIST =
+          strings['AUDIO_PLAYER_DEFAULT_ARTIST'];
+      // Pass translated labels to the AudioPlayerElement.
+      this.player_.ariaLabels = {
+        shuffle: strings['AUDIO_PLAYER_SHUFFLE_BUTTON_LABEL'],
+        repeat: strings['AUDIO_PLAYER_REPEAT_BUTTON_LABEL'],
+        previous: strings['MEDIA_PLAYER_PREVIOUS_BUTTON_LABEL'],
+        play: strings['MEDIA_PLAYER_PLAY_BUTTON_LABEL'],
+        pause: strings['MEDIA_PLAYER_PAUSE_BUTTON_LABEL'],
+        next: strings['MEDIA_PLAYER_NEXT_BUTTON_LABEL'],
+        playList: strings['AUDIO_PLAYER_OPEN_PLAY_LIST_BUTTON_LABEL'],
+        seekSlider: strings['MEDIA_PLAYER_SEEK_SLIDER_LABEL'],
+        mute: strings['MEDIA_PLAYER_MUTE_BUTTON_LABEL'],
+        unmute: strings['MEDIA_PLAYER_UNMUTE_BUTTON_LABEL'],
+        volumeSlider: strings['MEDIA_PLAYER_VOLUME_SLIDER_LABEL']
+      };
+    }.bind(this));
+
+    this.volumeManager_.addEventListener('externally-unmounted',
+        this.onExternallyUnmounted_.bind(this));
+
+    window.addEventListener('resize', this.onResize_.bind(this));
+    document.addEventListener('keydown', this.onKeyDown_.bind(this));
+
+    // Show the window after DOM is processed.
+    var currentWindow = chrome.app.window.current();
+    if (currentWindow)
+      setTimeout(currentWindow.show.bind(currentWindow), 0);
+  }.bind(this), 0);
+}
+
+/**
+ * Initial load method (static).
+ */
+AudioPlayer.load = function() {
+  document.ondragstart = function(e) { e.preventDefault(); };
+
+  AudioPlayer.instance =
+      new AudioPlayer(document.querySelector('.audio-player'));
+
+  reload();
+};
+
+/**
+ * Unloads the player.
+ */
+function unload() {
+  if (AudioPlayer.instance)
+    AudioPlayer.instance.onUnload();
+}
+
+/**
+ * Reloads the player.
+ */
+function reload() {
+  AudioPlayer.instance.load(/** @type {Playlist} */ (window.appState));
+}
+
+/**
+ * Loads a new playlist.
+ * @param {Playlist} playlist Playlist object passed via mediaPlayerPrivate.
+ */
+AudioPlayer.prototype.load = function(playlist) {
+  this.playlistGeneration_++;
+  this.currentTrackIndex_ = -1;
+
+  // Save the app state, in case of restart. Make a copy of the object, so the
+  // playlist member is not changed after entries are resolved.
+  window.appState = /** @type {Playlist} */ (
+      JSON.parse(JSON.stringify(playlist)));  // cloning
+  util.saveAppState();
+
+  this.isPlaylistExpanded_ = this.player_.playlistExpanded;
+  this.isTrackInfoExpanded_ = this.player_.trackInfoExpanded;
+
+  // Resolving entries has to be done after the volume manager is initialized.
+  this.volumeManager_.ensureInitialized(function() {
+    util.URLsToEntries(playlist.items || [], function(entries) {
+      this.entries_ = entries;
+
+      var position = playlist.position || 0;
+      var time = playlist.time || 0;
+
+      if (this.entries_.length == 0)
+        return;
+
+      var newTracks = [];
+      var currentTracks = this.player_.tracks;
+      var unchanged = (currentTracks.length === this.entries_.length);
+
+      for (var i = 0; i != this.entries_.length; i++) {
+        var entry = this.entries_[i];
+        newTracks.push(new AudioPlayer.TrackInfo(entry));
+
+        if (unchanged && entry.toURL() !== currentTracks[i].url)
+          unchanged = false;
+      }
+
+      if (!unchanged)
+        this.player_.tracks = newTracks;
+
+      // Run asynchronously, to makes it sure that the handler of the track list
+      // is called, before the handler of the track index.
+      setTimeout(function() {
+        this.select_(position);
+
+        // Load the selected track metadata first, then load the rest.
+        this.loadMetadata_(position);
+        for (i = 0; i != this.entries_.length; i++) {
+          if (i != position)
+            this.loadMetadata_(i);
+        }
+      }.bind(this), 0);
+    }.bind(this));
+  }.bind(this));
+};
+
+/**
+ * Loads metadata for a track.
+ * @param {number} track Track number.
+ * @private
+ */
+AudioPlayer.prototype.loadMetadata_ = function(track) {
+  this.fetchMetadata_(
+      this.entries_[track], this.displayMetadata_.bind(this, track));
+};
+
+/**
+ * Displays track's metadata.
+ * @param {number} track Track number.
+ * @param {Object} metadata Metadata object.
+ * @param {string=} opt_error Error message.
+ * @private
+ */
+AudioPlayer.prototype.displayMetadata_ = function(track, metadata, opt_error) {
+  this.player_.tracks[track].setMetadata(metadata, opt_error);
+  this.player_.notifyTrackMetadataUpdated(track);
+};
+
+/**
+ * Closes audio player when a volume containing the selected item is unmounted.
+ * @param {Event} event The unmount event.
+ * @private
+ */
+AudioPlayer.prototype.onExternallyUnmounted_ = function(event) {
+  if (!this.selectedEntry_)
+    return;
+
+  if (this.volumeManager_.getVolumeInfo(this.selectedEntry_) ===
+      event.volumeInfo)
+    window.close();
+};
+
+/**
+ * Called on window is being unloaded.
+ */
+AudioPlayer.prototype.onUnload = function() {
+  if (this.player_)
+    this.player_.onPageUnload();
+
+  if (this.volumeManager_)
+    this.volumeManager_.dispose();
+};
+
+/**
+ * Selects a new track to play.
+ * @param {number} newTrack New track number.
+ * @private
+ */
+AudioPlayer.prototype.select_ = function(newTrack) {
+  if (this.currentTrackIndex_ == newTrack) return;
+
+  this.currentTrackIndex_ = newTrack;
+  this.player_.currentTrackIndex = this.currentTrackIndex_;
+  this.player_.time = 0;
+
+  // Run asynchronously after an event of current track change is delivered.
+  setTimeout(function() {
+    if (!window.appReopen)
+      this.player_.$.audio.play();
+
+    window.appState.position = this.currentTrackIndex_;
+    window.appState.time = 0;
+    util.saveAppState();
+
+    var entry = this.entries_[this.currentTrackIndex_];
+
+    this.fetchMetadata_(entry, function(metadata) {
+      if (this.currentTrackIndex_ != newTrack)
+        return;
+
+      this.selectedEntry_ = entry;
+    }.bind(this));
+  }.bind(this), 0);
+};
+
+/**
+ * @param {FileEntry} entry Track file entry.
+ * @param {function(Object)} callback Callback.
+ * @private
+ */
+AudioPlayer.prototype.fetchMetadata_ = function(entry, callback) {
+  this.metadataModel_.get(
+      [entry],
+      ['mediaTitle', 'mediaArtist', 'present', 'contentThumbnailUrl']).then(
+      function(generation, metadata) {
+        // Do nothing if another load happened since the metadata request.
+        if (this.playlistGeneration_ == generation)
+          callback(metadata[0]);
+      }.bind(this, this.playlistGeneration_));
+};
+
+/**
+ * Media error handler.
+ * @private
+ */
+AudioPlayer.prototype.onError_ = function() {
+  var track = this.currentTrackIndex_;
+
+  this.invalidTracks_[track] = true;
+
+  this.fetchMetadata_(
+      this.entries_[track],
+      function(metadata) {
+        var error = (!navigator.onLine && !metadata.present) ?
+            this.offlineString_ : this.errorString_;
+        this.displayMetadata_(track, metadata, error);
+        this.player_.onAudioError();
+      }.bind(this));
+};
+
+/**
+ * Toggles the expanded mode when resizing.
+ *
+ * @param {Event} event Resize event.
+ * @private
+ */
+AudioPlayer.prototype.onResize_ = function(event) {
+  var trackListHeight =
+          (/** @type {{trackList:TrackListElement}} */ (this.player_.$))
+          .trackList.clientHeight;
+  if (trackListHeight > AudioPlayer.TOP_PADDING_HEIGHT) {
+    this.isPlaylistExpanded_ = true;
+    this.player_.playlistExpanded = true;
+  } else {
+    this.isPlaylistExpanded_ = false;
+    this.player_.playlistExpanded = false;
+  }
+};
+
+/**
+ * Handles keydown event to open inspector with shortcut keys.
+ *
+ * @param {Event} event KeyDown event.
+ * @private
+ */
+AudioPlayer.prototype.onKeyDown_ = function(event) {
+  switch (util.getKeyModifiers(event) + event.key) {
+    case 'Ctrl-w': // Ctrl+W => Close the player.
+      chrome.app.window.current().close();
+      break;
+
+    // Handle debug shortcut keys.
+    case 'Ctrl-Shift-I': // Ctrl+Shift+I
+      chrome.fileManagerPrivate.openInspector('normal');
+      break;
+    case 'Ctrl-Shift-J': // Ctrl+Shift+J
+      chrome.fileManagerPrivate.openInspector('console');
+      break;
+    case 'Ctrl-Shift-C': // Ctrl+Shift+C
+      chrome.fileManagerPrivate.openInspector('element');
+      break;
+    case 'Ctrl-Shift-B': // Ctrl+Shift+B
+      chrome.fileManagerPrivate.openInspector('background');
+      break;
+
+    case ' ': // Space
+    case 'k':
+      this.player_.dispatchEvent(new Event('toggle-pause-event'));
+      break;
+    case 'ArrowUp':
+    case 'ArrowRight':
+      if (event.target.id !== 'volumeSlider')
+        this.player_.dispatchEvent(new Event('small-forward-skip-event'));
+      break;
+    case 'ArrowDown':
+    case 'ArrowLeft':
+      if (event.target.id !== 'volumeSlider')
+        this.player_.dispatchEvent(new Event('small-backword-skip-event'));
+      break;
+    case 'l':
+      this.player_.dispatchEvent(new Event('big-forward-skip-event'));
+      break;
+    case 'j':
+      this.player_.dispatchEvent(new Event('big-backword-skip-event'));
+      break;
+  }
+};
+
+/* Keep the below constants in sync with the CSS. */
+
+/**
+ * Window header size in pixels.
+ * @type {number}
+ * @const
+ */
+AudioPlayer.HEADER_HEIGHT = 33;  // 32px + border 1px
+
+/**
+ * Top padding height of audio player in pixels.
+ * @type {number}
+ * @const
+ */
+AudioPlayer.TOP_PADDING_HEIGHT = 4;
+
+/**
+ * Track height in pixels.
+ * @type {number}
+ * @const
+ */
+AudioPlayer.TRACK_HEIGHT = 48;
+
+/**
+ * artwork panel height in pixels, when it's closed.
+ * @type {number}
+ * @const
+ */
+AudioPlayer.CLOSED_ARTWORK_HEIGHT = 48;
+
+/**
+ * artwork panel height in pixels, when it's opened.
+ * @type {number}
+ * @const
+ */
+AudioPlayer.EXPANDED_ARTWORK_HEIGHT = 320;
+
+/**
+ * Controls bar height in pixels.
+ * @type {number}
+ * @const
+ */
+AudioPlayer.CONTROLS_HEIGHT = 96;
+
+/**
+ * Default number of items in the expanded mode.
+ * @type {number}
+ * @const
+ */
+AudioPlayer.DEFAULT_EXPANDED_ITEMS = 5;
+
+/**
+ * Minimum size of the window in the expanded mode in pixels.
+ * @type {number}
+ * @const
+ */
+AudioPlayer.EXPANDED_MODE_MIN_HEIGHT = AudioPlayer.TOP_PADDING_HEIGHT +
+                                       AudioPlayer.EXPANDED_ARTWORK_HEIGHT +
+                                       AudioPlayer.CONTROLS_HEIGHT;
+
+/**
+ * Minimum size of the window in the mode in pixels.
+ * @type {number}
+ * @const
+ */
+AudioPlayer.CLOSED_MODE_MIN_HEIGHT = AudioPlayer.TOP_PADDING_HEIGHT +
+                                     AudioPlayer.CLOSED_ARTWORK_HEIGHT +
+                                     AudioPlayer.CONTROLS_HEIGHT;
+
+/**
+ * Invoked when the 'playlist-expanded' property in the model is changed.
+ * @param {boolean} newValue New value.
+ * @private
+ */
+AudioPlayer.prototype.onPlaylistExpandedChanged_ = function(newValue) {
+  if (this.isPlaylistExpanded_ !== null &&
+      this.isPlaylistExpanded_ === newValue)
+    return;
+
+  if (this.isPlaylistExpanded_ && !newValue)
+    this.lastExpandedInnerHeight_ = window.innerHeight;
+
+  if (this.isPlaylistExpanded_ !== newValue) {
+    this.isPlaylistExpanded_ = newValue;
+    this.syncHeightForPlaylist_();
+
+    // Saves new state.
+    window.appState.playlistExpanded = newValue;
+    util.saveAppState();
+  }
+};
+
+/**
+ * Invoked when the 'track-info-expanded' property in the model is changed.
+ * @param {boolean} newValue New value.
+ * @private
+ */
+AudioPlayer.prototype.onTrackInfoExpandedChanged_ = function(newValue) {
+  if (this.isTrackInfoExpanded_ !== null &&
+      this.isTrackInfoExpanded_ === newValue)
+    return;
+
+  this.lastExpandedInnerHeight_ = window.innerHeight;
+
+  if (this.isTrackInfoExpanded_ !== newValue) {
+    this.isTrackInfoExpanded_ = newValue;
+    var state = chrome.app.window.current()
+    var newHeight = window.outerHeight;
+    if (newValue) {
+      state.innerBounds.minHeight = AudioPlayer.EXPANDED_MODE_MIN_HEIGHT;
+      newHeight += AudioPlayer.EXPANDED_MODE_MIN_HEIGHT -
+          AudioPlayer.CLOSED_MODE_MIN_HEIGHT;
+    } else {
+      state.innerBounds.minHeight = AudioPlayer.CLOSED_MODE_MIN_HEIGHT;
+      newHeight -= AudioPlayer.EXPANDED_MODE_MIN_HEIGHT -
+          AudioPlayer.CLOSED_MODE_MIN_HEIGHT;
+    }
+    window.resizeTo(window.outerWidth, newHeight);
+
+    // Saves new state.
+    window.appState.isTrackInfoExpanded_ = newValue;
+    util.saveAppState();
+  }
+};
+
+/**
+ * @private
+ */
+AudioPlayer.prototype.syncHeightForPlaylist_ = function() {
+  var targetInnerHeight;
+
+  if (this.player_.playlistExpanded) {
+    // playllist expanded.
+    if (!this.lastExpandedInnerHeight_ ||
+        this.lastExpandedInnerHeight_ < AudioPlayer.EXPANDED_MODE_MIN_HEIGHT) {
+      var expandedListHeight =
+          Math.min(this.entries_.length, AudioPlayer.DEFAULT_EXPANDED_ITEMS) *
+              AudioPlayer.TRACK_HEIGHT;
+      if (this.player_.trackInfoExpanded) {
+        targetInnerHeight = AudioPlayer.TOP_PADDING_HEIGHT +
+                            AudioPlayer.EXPANDED_ARTWORK_HEIGHT +
+                            expandedListHeight +
+                            AudioPlayer.CONTROLS_HEIGHT;
+      } else {
+        targetInnerHeight = AudioPlayer.TOP_PADDING_HEIGHT +
+                            AudioPlayer.TRACK_HEIGHT +
+                            expandedListHeight +
+                            AudioPlayer.CONTROLS_HEIGHT;
+      }
+      this.lastExpandedInnerHeight_ = targetInnerHeight;
+    } else {
+      targetInnerHeight = this.lastExpandedInnerHeight_;
+    }
+  } else {
+    // playllist not expanded.
+    if (this.player_.trackInfoExpanded) {
+      targetInnerHeight = AudioPlayer.TOP_PADDING_HEIGHT +
+                          AudioPlayer.EXPANDED_ARTWORK_HEIGHT +
+                          AudioPlayer.CONTROLS_HEIGHT;
+    } else {
+      targetInnerHeight = AudioPlayer.TOP_PADDING_HEIGHT +
+                          AudioPlayer.TRACK_HEIGHT +
+                          AudioPlayer.CONTROLS_HEIGHT;
+    }
+  }
+  window.resizeTo(window.outerWidth,
+                  AudioPlayer.HEADER_HEIGHT + targetInnerHeight);
+};
+
+/**
+ * Create a TrackInfo object encapsulating the information about one track.
+ *
+ * @param {FileEntry} entry FileEntry to be retrieved the track info from.
+ * @constructor
+ */
+AudioPlayer.TrackInfo = function(entry) {
+  this.url = entry.toURL();
+  this.title = this.getDefaultTitle();
+  this.artist = this.getDefaultArtist();
+
+  this.artworkUrl = "";
+  this.active = false;
+};
+
+/**
+ * @return {string} Default track title (file name extracted from the url).
+ */
+AudioPlayer.TrackInfo.prototype.getDefaultTitle = function() {
+  var title = this.url.split('/').pop();
+  var dotIndex = title.lastIndexOf('.');
+  if (dotIndex >= 0) title = title.substr(0, dotIndex);
+  title = decodeURIComponent(title);
+  return title;
+};
+
+/**
+ * TODO(kaznacheev): Localize.
+ */
+AudioPlayer.TrackInfo.DEFAULT_ARTIST = 'Unknown Artist';
+
+/**
+ * @return {string} 'Unknown artist' string.
+ */
+AudioPlayer.TrackInfo.prototype.getDefaultArtist = function() {
+  return AudioPlayer.TrackInfo.DEFAULT_ARTIST;
+};
+
+/**
+ * @param {Object} metadata The metadata object.
+ * @param {string} error Error string.
+ */
+AudioPlayer.TrackInfo.prototype.setMetadata = function(
+    metadata, error) {
+  // TODO(yoshiki): Handle error in better way.
+  this.title = metadata.mediaTitle || this.getDefaultTitle();
+  this.artist = error || metadata.mediaArtist || this.getDefaultArtist();
+  this.artworkUrl = metadata.contentThumbnailUrl || "";
+};
+
+// Starts loading the audio player.
+window.addEventListener('DOMContentLoaded', function(e) {
+  AudioPlayer.load();
+});
+
+
+window.reload = reload;
+window.unload = unload;
+window.AudioPlayer = AudioPlayer;
+
+})();

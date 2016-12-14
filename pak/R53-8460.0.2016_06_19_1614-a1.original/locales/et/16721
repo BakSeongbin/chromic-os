@@ -1,0 +1,1 @@
+{COUNT,plural, =0{vähemalt 1 üksus sünkroonitud seadmetes}=1{1 üksus (ja rohkem sünkroonitud seadmetes)}other{# üksust (ja rohkem sünkroonitud seadmetes)}}

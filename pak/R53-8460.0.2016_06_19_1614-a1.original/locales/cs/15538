@@ -1,0 +1,1 @@
+{NUM_FILES,plural, =1{Má trvalý přístup k jednomu souboru.}few{Má trvalý přístup ke # souborům.}many{Má trvalý přístup k # souboru.}other{Má trvalý přístup k # souborům.}}

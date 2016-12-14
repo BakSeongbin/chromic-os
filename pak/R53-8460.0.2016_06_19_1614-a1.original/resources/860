@@ -1,0 +1,598 @@
+<!doctype html>
+<html i18n-values="dir:textdirection;lang:language">
+<head>
+  <meta charset="utf-8">
+  <title i18n-content="aboutTitle"></title>
+  <link rel="stylesheet" href="chrome://resources/css/chrome_shared.css">
+  <style>/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+body {
+  -webkit-margin-start: 23px;
+  color: rgb(48, 57, 66);
+}
+
+body.uber-frame {
+  -webkit-margin-start: 155px;
+}
+
+html[dir='rtl'] body.uber-frame {
+  /* Enable vertical scrollbar at all times in RTL to avoid visual glitches when
+   * showing sub-pages that vertically overflow. */
+  overflow-y: scroll;
+}
+
+/* TODO(dbeam): Remove .page class from overlays in settings so the junk below
+ * isn't necessary. */
+body #extension-settings.page,
+body #mainview-content .page,
+body .subpage-sheet-container .page,
+body > .page {
+  -webkit-margin-end: 24px;
+  min-width: 576px;
+  padding-bottom: 20px;
+  padding-top: 55px;
+}
+
+body header {
+  background-image: -webkit-linear-gradient(white,
+                                            white 40%,
+                                            rgba(255, 255, 255, 0.92));
+  left: 23px;
+  /* <section>s in options currently amount to 638px total, broken up into
+   * 600px max-width + 18px -webkit-padding-start + 20px -webkit-margin-end
+   * so we mirror this value here so the headers match width and horizontal
+   * alignment when scrolling sideways.
+   * other-devices.css' .device width depends on this, please keep in sync.
+   */
+  max-width: 738px;
+  min-width: 600px;
+  position: fixed;
+  right: 0;
+  top: 0;
+  /* list.css sets a z-index of up to 2, this is set to 3 to ensure that the
+   * header is in front of the selected list item. */
+  z-index: 3;
+}
+
+body.uber-frame header {
+  left: 155px;
+}
+
+html[dir='rtl'] body header {
+  left: 0;
+  right: 23px;
+}
+
+html[dir='rtl'] body.uber-frame header {
+  right: 155px;
+}
+
+body header > .search-field-container,
+body header > .header-extras,
+body header > button {
+  position: absolute;
+  right: 20px;
+  top: 21px;
+}
+
+html[dir='rtl'] body header > .search-field-container,
+html[dir='rtl'] body header > .header-extras,
+html[dir='rtl'] body header > button {
+  left: 20px;
+  right: auto;
+}
+
+body header input[type='search'],
+body header input[type='text'],
+body header button {
+  margin: 0;
+}
+
+body header > h1 {
+  margin: 0;
+  padding: 21px 0 13px;
+}
+
+/* Create a border under the h1 (but before anything that gets appended
+ * to the end of the header). */
+body header > h1::after {
+  -webkit-margin-end: 20px;
+  background-color: #eee;
+  content: ' ';
+  display: block;
+  height: 1px;
+  position: relative;
+  top: 13px;
+}
+
+body footer {
+  border-top: 1px solid #eee;
+  margin-top: 16px;
+  /* min-width and max-width should match the header */
+  max-width: 638px;
+  min-width: 600px;
+  padding: 8px 0;
+}
+
+/* Sections are used in options pages, help page and history page. This defines
+ * the section metrics to match the header metrics above. */
+body section {
+  -webkit-padding-start: 18px;
+  margin-bottom: 24px;
+  margin-top: 8px;
+  max-width: 600px;
+}
+
+body section:last-of-type {
+  margin-bottom: 0;
+}
+
+body section > h3 {
+  -webkit-margin-start: -18px;
+}
+
+body section > div:only-of-type {
+  -webkit-box-flex: 1;
+}
+
+body .section-header {
+  -webkit-margin-start: -18px;
+  margin-bottom: 0.8em;
+  margin-top: 1.2em;
+}
+
+body .section-header > h3 {
+  display: inline;
+}
+
+/* Styles for a hideable notification banner at the top of a page. */
+.page.showing-banner {
+  margin-top: 45px;
+}
+
+.page-banner {
+  background-color: white;
+  width: 100%;
+  z-index: 2;
+}
+
+.page:not(.showing-banner) .page-banner {
+  display: none;
+}
+
+.page-banner-gradient {
+  background: -webkit-linear-gradient(rgb(255, 242, 183),
+                                      rgb(250, 230, 145));
+  border: 1px solid rgb(201, 189, 141);
+  border-radius: 3px;
+  margin: 9px 9px 0 9px;
+  min-height: 25px;
+}
+
+.page-banner .page-banner-gradient {
+  -webkit-margin-end: 20px;
+  -webkit-margin-start: 0;
+  margin-bottom: 9px;
+}
+
+.page-banner-text {
+  -webkit-padding-end: 8px;
+  -webkit-padding-start: 26px;
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0iIzYyNjI2MiI+CiAgICA8cGF0aCBkPSJNMCAwaDQ4djQ4SDB6IiBmaWxsPSJub25lIi8+CiAgICA8cGF0aCBkPSJNMjQgMTRWNkg0djM2aDQwVjE0SDI0ek0xMiAzOEg4di00aDR2NHptMC04SDh2LTRoNHY0em0wLThIOHYtNGg0djR6bTAtOEg4di00aDR2NHptOCAyNGgtNHYtNGg0djR6bTAtOGgtNHYtNGg0djR6bTAtOGgtNHYtNGg0djR6bTAtOGgtNHYtNGg0djR6bTIwIDI0SDI0di00aDR2LTRoLTR2LTRoNHYtNGgtNHYtNGgxNnYyMHptLTQtMTZoLTR2NGg0di00em0wIDhoLTR2NGg0di00eiIvPgo8L3N2Zz4K);
+  background-position: 0 center;
+  background-repeat: no-repeat;
+  background-size: 18px;
+  display: block;
+  padding-bottom: 8px;
+  padding-top: 8px;
+}
+
+.page-banner.clickable:active .page-banner-text {
+  background: -webkit-linear-gradient(rgb(250, 230, 145),
+                                      rgb(255, 242, 183));
+}
+</style>
+  <style>/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+body {
+  -webkit-user-select: text;
+}
+</style>
+  <style>/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#about-container {
+  align-items: center;
+  display: flex;
+}
+
+#page-container #about-container {
+  margin-top: 10px;
+}
+
+#product-description {
+  -webkit-margin-start: 10px;
+}
+
+@-webkit-keyframes spin {
+  to { transform: rotate(-10turn); }
+}
+
+#product-logo.spin {
+  -webkit-animation: spin 500ms cubic-bezier(1, 0, 0, 1) forwards;
+}
+
+#version-container {
+  margin-top: 30px;
+}
+
+#update-buttons-container {
+  margin-top: 5px;
+}
+
+#update-status-container {
+  margin-top: 10px;
+}
+
+#update-status {
+  vertical-align: middle;
+}
+
+#update-percentage {
+  font-size: 90%;
+}
+
+#get-help,
+#promote {
+  -webkit-margin-end: 4px;
+}
+
+#help-container {
+  margin-top: 16px;
+}
+
+#product-container {
+  line-height: 1.8em;
+  margin-top: 200px;
+}
+
+.overlay #product-container {
+  margin-top: 30px;
+}
+
+.help-page-icon {
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+  height: 18px;
+  vertical-align: middle;
+  width: 18px;
+}
+
+#update-status-icon.up-to-date {
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOHB4IiBoZWlnaHQ9IjE4cHgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0iIzQyODVGNCI+CiAgICA8cGF0aCBkPSJNMCAwaDQ4djQ4SDB6IiBmaWxsPSJub25lIi8+CiAgICA8cGF0aCBkPSJNMjQgNEMxMi45NSA0IDQgMTIuOTUgNCAyNGMwIDExLjA0IDguOTUgMjAgMjAgMjAgMTEuMDQgMCAyMC04Ljk2IDIwLTIwIDAtMTEuMDUtOC45Ni0yMC0yMC0yMHptLTQgMzBMMTAgMjRsMi44My0yLjgzTDIwIDI4LjM0bDE1LjE3LTE1LjE3TDM4IDE2IDIwIDM0eiIvPgo8L3N2Zz4K);
+  background-size: 18px;
+}
+
+#update-status-icon.working {
+  background-image: url(chrome://resources/images/throbber_small.svg);
+  background-size: 16px;
+}
+
+#update-status-icon.failed {
+  background-image: url(chrome://resources/images/error.svg);
+  background-size: 18px;
+}
+
+#update-status-icon.disabled-by-admin {
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0iIzYyNjI2MiI+CiAgICA8cGF0aCBkPSJNMCAwaDQ4djQ4SDB6IiBmaWxsPSJub25lIi8+CiAgICA8cGF0aCBkPSJNMjQgMTRWNkg0djM2aDQwVjE0SDI0ek0xMiAzOEg4di00aDR2NHptMC04SDh2LTRoNHY0em0wLThIOHYtNGg0djR6bTAtOEg4di00aDR2NHptOCAyNGgtNHYtNGg0djR6bTAtOGgtNHYtNGg0djR6bTAtOGgtNHYtNGg0djR6bTAtOGgtNHYtNGg0djR6bTIwIDI0SDI0di00aDR2LTRoLTR2LTRoNHYtNGgtNHYtNGgxNnYyMHptLTQtMTZoLTR2NGg0di00em0wIDhoLTR2NGg0di00eiIvPgo8L3N2Zz4K);
+  background-size: 18px;
+}
+
+#controlled-feature-icon {
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0iIzYyNjI2MiI+CiAgICA8cGF0aCBkPSJNMCAwaDQ4djQ4SDB6IiBmaWxsPSJub25lIi8+CiAgICA8cGF0aCBkPSJNMjQgMTRWNkg0djM2aDQwVjE0SDI0ek0xMiAzOEg4di00aDR2NHptMC04SDh2LTRoNHY0em0wLThIOHYtNGg0djR6bTAtOEg4di00aDR2NHptOCAyNGgtNHYtNGg0djR6bTAtOGgtNHYtNGg0djR6bTAtOGgtNHYtNGg0djR6bTAtOGgtNHYtNGg0djR6bTIwIDI0SDI0di00aDR2LTRoLTR2LTRoNHYtNGgtNHYtNGgxNnYyMHptLTQtMTZoLTR2NGg0di00em0wIDhoLTR2NGg0di00eiIvPgo8L3N2Zz4K);
+  background-size: 18px;
+}
+
+#update-status-message-container {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+#more-info-expander {
+  -webkit-padding-start: 0;
+  margin-top: 10px;
+}
+
+#more-info-container.visible {
+  margin-bottom: 10px;
+}
+
+#more-info-container {
+  -webkit-transition: all 200ms;
+  height: 0;
+  margin-bottom: 0;
+  overflow: hidden;
+}
+
+#build-date-container.empty {
+  visibility: hidden;
+}
+
+#channel-change-confirmation {
+  margin-top: 5px;
+}
+
+#change-channel {
+  margin-top: 8px;
+}
+
+#channel-change-disallowed-icon,
+.channel-change-error-icon {
+  -webkit-margin-start: 4px;
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0iIzYyNjI2MiI+CiAgICA8cGF0aCBkPSJNMCAwaDQ4djQ4SDB6IiBmaWxsPSJub25lIi8+CiAgICA8cGF0aCBkPSJNMjQgMTRWNkg0djM2aDQwVjE0SDI0ek0xMiAzOEg4di00aDR2NHptMC04SDh2LTRoNHY0em0wLThIOHYtNGg0djR6bTAtOEg4di00aDR2NHptOCAyNGgtNHYtNGg0djR6bTAtOGgtNHYtNGg0djR6bTAtOGgtNHYtNGg0djR6bTAtOGgtNHYtNGg0djR6bTIwIDI0SDI0di00aDR2LTRoLTR2LTRoNHYtNGgtNHYtNGgxNnYyMHptLTQtMTZoLTR2NGg0di00em0wIDhoLTR2NGg0di00eiIvPgo8L3N2Zz4K);
+  background-size: 18px;
+}
+
+.channel-change-error-bubble {
+  display: flex;
+}
+
+.channel-change-error-bubble .channel-change-error-icon {
+  vertical-align: top;
+}
+
+.channel-change-error-text {
+  -webkit-margin-start: 4px;
+  display: block;
+  vertical-align: top;
+  width: 240px;
+}
+
+#regulatory-label-container {
+  padding-top: 32px;
+}
+
+#regulatory-label {
+  display: block;
+  width: 330px;
+}
+</style>
+<link rel="stylesheet" href="chrome://resources/css/bubble.css">
+  <link rel="stylesheet" href="chrome://resources/css/overlay.css">
+  <style>/* Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#channel-change-page {
+  min-height: 200px;
+  width: 500px;
+}
+
+.channel-change-page-channel label {
+  margin-left: 10px;
+}
+
+.channel-change-page-channel {
+  display: block;
+  margin: 0 25px;
+}
+
+.show-when-selected-channel-requires-powerwash,
+.show-when-selected-channel-requires-delayed-update,
+.show-when-selected-channel-good,
+.show-when-selected-channel-unstable {
+  display: none !important;
+}
+
+.selected-channel-requires-powerwash
+.show-when-selected-channel-requires-powerwash,
+.selected-channel-requires-delayed-update
+.show-when-selected-channel-requires-delayed-update,
+.selected-channel-good .show-when-selected-channel-good,
+.selected-channel-unstable .show-when-selected-channel-unstable {
+  display: block !important;
+}
+</style>
+
+  <script src="chrome://resources/js/action_link.js"></script>
+  <script src="chrome://resources/js/cr.js"></script>
+  <script src="chrome://resources/js/cr/event_target.js"></script>
+  <script src="chrome://resources/js/load_time_data.js"></script>
+  <script src="chrome://resources/js/util.js"></script>
+  <script src="chrome://resources/js/cr/ui.js"></script>
+  <script src="chrome://resources/js/cr/ui/focus_manager.js"></script>
+  <script src="chrome://resources/js/cr/ui/focus_outline_manager.js"></script>
+  <script src="chrome://resources/js/cr/ui/overlay.js"></script>
+  <script src="chrome://resources/js/cr/ui/page_manager/page_manager.js"></script>
+  <script src="chrome://resources/js/cr/ui/page_manager/page.js"></script>
+<script src="chrome://resources/js/cr/ui/bubble.js"></script>
+  <script src="chrome://resources/js/event_tracker.js"></script>
+  <script src="chrome://help-frame/channel_change_page.js"></script>
+  <script src="chrome://help-frame/help_page.js"></script>
+  <script src="chrome://help-frame/help.js"></script>
+</head>
+<body class="uber-frame">
+  <header>
+    <h1 i18n-content="aboutTitle"></h1>
+  </header>
+<div id="overlay-container-1" class="overlay transparent" hidden>
+    <div id="channel-change-page" class="page" hidden>
+  <div class="close-button"></div>
+  <h1 i18n-content="channelChangePageTitle"></h1>
+  <div class="content-area">
+    <div class="channel-change-page-channel radio">
+      <input id="channel-change-page-stable-option"
+          type="radio" name="channel" value="stable-channel">
+      <label for="channel-change-page-stable-option" i18n-content="stable">
+      </label>
+    </div>
+    <div class="channel-change-page-channel radio">
+      <input id="channel-change-page-beta-option"
+          type="radio" name="channel" value="beta-channel">
+      <label for="channel-change-page-beta-option" i18n-content="beta"></label>
+    </div>
+    <div class="channel-change-page-channel radio">
+      <input id="channel-change-page-dev-option"
+          type="radio" name="channel" value="dev-channel">
+      <label for="channel-change-page-dev-option" i18n-content="dev"></label>
+    </div>
+  </div>
+  <div class="content-area">
+    <div class="show-when-selected-channel-requires-powerwash">
+      <h2 i18n-content="channelChangePagePowerwashTitle"></h2>
+      <div i18n-content="channelChangePagePowerwashMessage"></div>
+    </div>
+    <div class="show-when-selected-channel-requires-delayed-update">
+      <h2 i18n-content="channelChangePageDelayedChangeTitle"></h2>
+      <div i18n-content="channelChangePageDelayedChangeMessage"></div>
+    </div>
+    <div class="show-when-selected-channel-unstable">
+      <h2 i18n-content="channelChangePageUnstableTitle"></h2>
+      <div i18n-content="channelChangePageUnstableMessage"></div>
+    </div>
+  </div>
+  <div class="action-area">
+    <div class="button-strip">
+      <button id="channel-change-page-powerwash-button"
+          class="show-when-selected-channel-requires-powerwash"
+          i18n-content="channelChangePagePowerwashButton">
+      </button>
+      <button id="channel-change-page-change-button"
+          class="show-when-selected-channel-requires-delayed-update
+                 show-when-selected-channel-good
+                 show-when-selected-channel-unstable"
+          i18n-content="channelChangePageChangeButton">
+      </button>
+      <button id="channel-change-page-cancel-button"
+          class="default-button"
+          i18n-content="channelChangePageCancelButton">
+      </button>
+    </div>
+  </div>
+</div>
+
+  </div>
+  <div id="mainview-content">
+    <div id="page-container">
+      <div id="help-page" class="page">
+         <div class="content-area">
+  <div id="about-container">
+    <img id="product-logo" srcset="chrome://theme/current-channel-logo@1x 1x,
+                                   chrome://theme/current-channel-logo@2x 2x"
+        alt="">
+    <div id="product-description">
+      <h2 i18n-content="aboutProductTitle"></h2>
+      <span i18n-content="aboutProductDescription"></span>
+    </div>
+  </div>
+  <div id="help-container">
+    <button id="get-help" i18n-content="getHelpWithChrome"></button>
+
+  </div>
+  <div id="version-container">
+    <div i18n-content="browserVersion" dir="ltr"></div>
+<div>
+      <span i18n-content="platform"></span>&nbsp;<span id="os-version"></span>
+    </div>
+    <div>
+      <span i18n-content="arcVersion">
+      </span>&nbsp;<span id="arc-version"></span>
+    </div>
+    <div>
+      <span i18n-content="firmware"></span>&nbsp;<span id="firmware"></span>
+    </div>
+<div id="update-status-container" hidden>
+      <div id="update-status-icon" class="help-page-icon up-to-date"></div>
+      <div id="update-status-message-container">
+        <div id="update-status-message" i18n-content="updateCheckStarted">
+        </div>
+
+        <div id="allowed-connection-types-message" hidden></div>
+      </div>
+    </div>
+    <div id="update-buttons-container">
+      <div id="update-percentage" hidden></div>
+
+      <button id="relaunch" i18n-content="relaunch" hidden></button>
+<button id="relaunch-and-powerwash"
+          i18n-content="relaunchAndPowerwash" hidden>
+      </button>
+      <button id="request-update" i18n-content="updateButton">
+      </button>
+      <div id="controlled-feature-icon" class="help-page-icon" hidden></div>
+    </div>
+<div id="more-info-container">
+      <section id="channel-changer-container" hidden>
+        <h3 i18n-content="channel"></h3>
+        <select id="channel-changer">
+          <option value="stable-channel" i18n-content="stable"></option>
+          <option value="beta-channel" i18n-content="beta"></option>
+          <option value="dev-channel" i18n-content="dev"></option>
+        </select>
+        <div id="channel-change-confirmation" hidden></div>
+      </section>
+      <section id="channel-change-page-container" hidden>
+        <h3 i18n-content="channel"></h3>
+        <div id="current-channel"></div>
+        <div>
+          <span id="dev-channel-disclaimer" i18n-content="devChannelDisclaimer"
+              hidden></span>
+        </div>
+        <button id="change-channel"
+            i18n-content="channelChangeButton" disabled>
+        </button>
+        <div id="channel-change-disallowed-icon"
+            class="help-page-icon" hidden>
+        </div>
+      </section>
+      <section>
+        <h3 i18n-content="webkit"></h3>
+        <div i18n-content="webkitVersion" dir="ltr"></div>
+      </section>
+      <section>
+        <h3 i18n-content="jsEngine" dir="ltr"></h3>
+        <div i18n-content="jsEngineVersion"></div>
+      </section>
+      <section>
+        <h3 i18n-content="userAgent"></h3>
+        <div i18n-content="userAgentInfo" dir="ltr"></div>
+      </section>
+      <section>
+        <h3 i18n-content="commandLine"></h3>
+        <div i18n-content="commandLineInfo" dir="ltr"></div>
+      </section>
+      <section id="build-date-container" class="empty">
+        <h3 i18n-content="buildDate"></h3>
+        <div id="build-date"></div>
+      </section>
+    </div>
+    <a is="action-link" id="more-info-expander" i18n-content="showMoreInfo"></a>
+  </div>
+  <div id="product-container">
+    <div i18n-content="productName"></div>
+    <div i18n-content="productCopyright"></div>
+    <div id="product-license"></div>
+<div id="product-os-license"></div>
+
+  </div>
+<div id="regulatory-label-container" hidden>
+    <img id="regulatory-label">
+  </div>
+</div>
+
+      </div>
+    </div>
+  </div>
+</body>
+<script src="chrome://help-frame/strings.js"></script>
+<script src="chrome://resources/js/i18n_template.js"></script>
+</html>

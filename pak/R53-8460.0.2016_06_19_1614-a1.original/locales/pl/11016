@@ -1,0 +1,1 @@
+{HOURS,plural, =1{Pozostała 1 godzina}few{Pozostały # godziny}many{Pozostało # godzin}other{Pozostało # godziny}}

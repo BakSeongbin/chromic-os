@@ -1,0 +1,1 @@
+Força os listeners de eventos touchstart, touchmove, mousewheel e wheel (que não foram solicitados de outra forma) a serem tratados como passivos. Isso romperá o comportamento tocar/rolar (touch/wheel) em alguns websites, mas é útil para demonstrar os possíveis benefícios de desempenho causados pela adoção de listeners de eventos passivos.

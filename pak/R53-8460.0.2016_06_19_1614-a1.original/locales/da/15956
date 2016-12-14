@@ -1,0 +1,1 @@
+Begrænser Native Client-applikationens GDB-baserede fejlretning ved hjælp af webadressen for manifestfilen. Native Client GDB-baseret fejlretning skal aktiveres, for at denne indstilling fungerer.

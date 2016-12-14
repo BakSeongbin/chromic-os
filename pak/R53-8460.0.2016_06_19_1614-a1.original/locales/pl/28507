@@ -1,0 +1,2 @@
+Odebrano wiele różnych nagłówków Content-Length. Jest to niedozwolone,
+    by zapobiec atakom polegającym na rozdzieleniu odpowiedzi HTTP.

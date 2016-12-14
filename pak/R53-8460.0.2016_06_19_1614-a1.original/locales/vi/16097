@@ -1,0 +1,1 @@
+Buộc xử lý thụ động trình nghe sự kiện bánh xe, con lăn chuột, khởi động bằng thao tác chạm và di chuyển bằng thao tác chạm (chưa yêu cầu). Điều này sẽ làm hỏng hoạt động của cảm ứng/con lăn trên một số trang web nhưng hữu ích trong việc chứng minh các lợi ích về hiệu suất tiềm năng của việc áp dụng trình xử lý sự kiện thụ động.

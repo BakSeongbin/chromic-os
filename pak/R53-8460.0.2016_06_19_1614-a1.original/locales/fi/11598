@@ -1,0 +1,1 @@
+{NUM_DOWNLOAD,plural, =1{Lataus on parhaillaan käynnissä. Haluatko peruuttaa latauksen ja poistua Chromiumista?}other{# latausta on parhaillaan käynnissä. Haluatko peruuttaa lataukset ja poistua Chromiumista?}}

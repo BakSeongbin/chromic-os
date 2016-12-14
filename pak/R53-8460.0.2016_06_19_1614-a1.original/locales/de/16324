@@ -1,0 +1,1 @@
+Installationsstatus des App Launchers bei jedem Neustart zurücksetzen. Wenn diese Markierung gesetzt ist, merkt sich Chrome für den nächsten Start nicht, dass die Übersicht bereits installiert wurde. Dies dient zum Testen des Installationsablaufs des App Launchers.

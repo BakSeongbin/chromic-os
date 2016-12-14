@@ -1,0 +1,1 @@
+Відкрийте <a jsvalues="href:urlCorrection;.jstdata:$this" onmousedown="linkClicked(this.jstdata)">кешовану копію</a> <span jscontent="originalUrlForDisplay"></span>

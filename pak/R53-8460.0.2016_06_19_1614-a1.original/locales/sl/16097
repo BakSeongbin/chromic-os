@@ -1,0 +1,1 @@
+Vsili, da se poslušalniki dogodkov touchstart, touchmove, mousewheel in wheel, ki niso zahtevali drugače, obravnavajo kot pasivni. Zaradi tega na nekaterih spletnih mestih ne bodo delovale funkcije dotika/kolesca, je pa koristno za predstavitev potencialnih izboljšanj učinkovitosti delovanja, ki jih ponuja uporaba pasivnih poslušalnikov dogodkov.

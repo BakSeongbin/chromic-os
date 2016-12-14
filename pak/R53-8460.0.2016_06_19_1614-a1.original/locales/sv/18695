@@ -1,0 +1,1 @@
+Återanvänd ett cachelagrat teckensnitt vid renderingen av olika teckenstorlekar så att layouten renderas snabbare.

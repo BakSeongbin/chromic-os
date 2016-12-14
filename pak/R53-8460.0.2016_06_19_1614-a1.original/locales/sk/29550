@@ -1,0 +1,8 @@
+Prejdite do
+        ponuky Chromium >
+        <span jscontent="settingsTitle"></span>
+        >
+        <span jscontent="advancedTitle"></span>
+        a zrušte výber položky <span jscontent="noNetworkPredictionTitle"></span>.
+        Ak to problém nevyrieši, odporúčame túto možnosť vybrať,
+        aby ste získali lepšiu výkonnosť.

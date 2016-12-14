@@ -1,0 +1,1 @@
+Faz com que as transmissões de áudio em fluxo contínuo verifiquem se estão disponíveis esquemas de canais diferentes do esquema de hardware predefinido.

@@ -1,0 +1,1 @@
+Mengaktifkan mode latar belakang untuk API Push. Hal ini memungkinkan Chrome untuk terus berjalan setelah jendela terakhir ditutup dan diluncurkan saat memulai OS, jika API Push memerlukannya.

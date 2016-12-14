@@ -1,0 +1,1 @@
+Enables the use of the GPU to perform 2d canvas rendering instead of using software rendering.

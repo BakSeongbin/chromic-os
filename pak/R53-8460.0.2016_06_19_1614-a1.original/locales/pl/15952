@@ -1,0 +1,1 @@
+Włącz kod pośredniczący debugowania przy użyciu GDB. Spowoduje to zatrzymanie aplikacji klienta natywnego przy uruchomieniu i oczekiwanie na przyłączenie się do niej debugera nacl-gdb (z pakietu NaCL SDK).

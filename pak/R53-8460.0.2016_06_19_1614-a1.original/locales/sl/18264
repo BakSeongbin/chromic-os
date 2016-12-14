@@ -1,0 +1,1 @@
+Strogo poskusni način učinkovitosti delovanja, v katerem so elementi iframe na več spletnih mestih v procesu, ki je ločen od krovnega dokumenta. Elementi iframe z različnih spletnih mest bodo v tem načinu lahko souporabljali isti proces.

@@ -1,0 +1,197 @@
+<!doctype html>
+<!--
+Copyright 2013 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html i18n-values="dir:textdirection;lang:language">
+<meta charset="utf-8">
+<title>Sync File System Internals</title>
+<link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+<style>/* Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+tabbox {
+  min-height: 650px;
+}
+
+h3 {
+  margin: 2px 0;
+}
+
+th,
+td {
+  font-size: 14px;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  text-align: left;
+  vertical-align: top;
+}
+
+thead tr {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+tbody tr:nth-child(odd) {
+  background: rgb(238, 238, 255);
+}
+
+.log-time {
+  white-space: nowrap;
+}
+
+.log-event.error {
+  background: rgb(255, 220, 220);
+}
+
+.task-log-details label {
+  cursor: pointer;
+}
+
+.task-log-collapse-check {
+  vertical-align: top;
+}
+
+.task-log-collapse-check ~ ul {
+  display: inline-block;
+  height: 1em;
+  list-style: none;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+}
+
+.task-log-collapse-check:checked ~ ul {
+  height: auto;
+}
+
+.file-icon {
+  background-image: url(chrome://syncfs-internals/file.png);
+  background-position: 0 2px;
+  background-repeat: no-repeat;
+  padding-left: 18px;
+}
+
+.folder-icon {
+  background-image: url(chrome://syncfs-internals/folder_closed.png);
+  background-position: 0 2px;
+  background-repeat: no-repeat;
+  padding-left: 18px;
+}
+</style>
+
+<script src="chrome://resources/js/util.js"></script>
+<script src="chrome://resources/js/cr.js"></script>
+<script src="chrome://resources/js/cr/event_target.js"></script>
+
+<link rel="stylesheet" href="chrome://resources/css/tabs.css">
+<script src="chrome://resources/js/load_time_data.js"></script>
+<script src="chrome://resources/js/cr/ui.js"></script>
+<script src="chrome://resources/js/cr/ui/tabs.js"></script>
+<script src="chrome://resources/js/cr/ui/focus_outline_manager.js"></script>
+<script src="chrome://syncfs-internals/strings.js"></script>
+<script src="chrome://syncfs-internals/utils.js"></script>
+
+<body>
+
+<tabbox>
+  <tabs>
+    <tab>Sync Service</tab>
+    <tab>Task Log</tab>
+    <tab>Extension Statuses</tab>
+    <tab>File Metadata</tab>
+    <tab>Database Dump</tab>
+  </tabs>
+  <tabpanels>
+    <tabpanel>
+      <script src="chrome://syncfs-internals/sync_service.js"></script>
+
+<table>
+  <tbody>
+    <tr>
+      <td>Service Status</td>
+      <td id="service-status">N/A</td>
+    </tr>
+    <tr>
+      <td>Notification Source</td>
+      <td id="notification-source">N/A</td>
+    </tr>
+  </tbody>
+</table>
+<br>
+
+<button id="clear-log-button">Clear old logs</button>
+<h3>Debug Log</h3>
+<table>
+  <thead>
+    <tr>
+      <td class="log-time">Time</td>
+      <td class="log-event">Log Event</td>
+    </tr>
+  </thead>
+  <tbody id="log-entries"></tbody>
+</table>
+
+    </tabpanel>
+    <tabpanel>
+      <script src="chrome://syncfs-internals/task_log.js"></script>
+
+<h3>Task Log</h3>
+<table>
+  <thead>
+    <tr>
+      <td>Duration</td>
+      <td>Task</td>
+      <td>Result</td>
+      <td>Details</td>
+    </tr>
+  </thead>
+  <tbody id="task-log-entries"></tbody>
+</table>
+
+    </tabpanel>
+    <tabpanel>
+      <script src="chrome://syncfs-internals/extension_statuses.js"></script>
+
+<button id="refresh-extensions-statuses">Refresh</button>
+<table>
+  <thead>
+    <tr>
+      <td>Extension Name</td>
+      <td>ID</td>
+      <td>Sync Status</td>
+    </tr>
+  </thead>
+  <tbody id="extension-entries"></tbody>
+</table>
+
+    </tabpanel>
+    <tabpanel>
+      <script src="chrome://syncfs-internals/file_metadata.js"></script>
+
+<select id="extensions-select"></select>
+<button id="refresh-metadata-button">Refresh</button>
+
+<table style="table-layout:fixed">
+  <thead id="file-metadata-header"></thead>
+  <tbody id="file-metadata-entries"></tbody>
+</table>
+
+    </tabpanel>
+    <tabpanel>
+      <script src="chrome://syncfs-internals/dump_database.js"></script>
+
+<button id="refresh-database-dump">Refresh</button>
+
+<div id="dump-database-placeholder"></div>
+
+    </tabpanel>
+  </tabpanels>
+</tabbox>
+
+<script src="chrome://resources/js/i18n_template.js"></script>
+</body>
+</html>

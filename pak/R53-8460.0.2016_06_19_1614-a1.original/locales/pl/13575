@@ -1,0 +1,18 @@
+<h3>Funkcje debugowania</h3>
+    <br>
+    Możesz włączyć funkcje debugowania na swoim urządzeniu z systemem operacyjnym Chrome, by implementować i testować na nim niestandardowy kod. Dzięki temu możesz:<br>
+    <ul>
+      <li>Wyłączyć weryfikację rootfs, by modyfikować pliki systemowe.
+      <li>Przyznać urządzeniu dostęp SSH, używając standardowych klawiszy testowych, dzięki czemu możesz korzystać z narzędzi takich jak <span style="color:grey;font-family:monospace">„cros flash”</span>, by uzyskać dostęp do urządzenia.
+      <li>Umożliwić rozruch z dysku USB, dzięki czemu możesz zainstalować system operacyjny z obrazu zapisanego na dysku USB.
+      <li>Ustawić hasło logowania do trybu programisty i głównego katalogu systemu na niestandardową wartość, dzięki możesz ręcznie uruchomić protokół SSH na urządzeniu.
+    </ul>
+    <br>
+    Po włączeniu większość funkcji debugowania pozostanie aktywna, nawet po wykonaniu Powerwash lub wymazaniu danych na urządzeniu zarządzanym przez firmę. Aby całkowicie wyłączyć wszystkie funkcje debugowania, wykonaj proces odzyskiwania systemu operacyjnego Chrome (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Więcej informacji o funkcjach debugowania znajdziesz na:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Uwaga:</b> Podczas procesu system uruchomi się ponownie.

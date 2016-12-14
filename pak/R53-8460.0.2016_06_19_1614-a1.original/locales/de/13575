@@ -1,0 +1,18 @@
+<h3>Debugging-Funktionen</h3>
+    <br>
+    Sie können die Debugging-Funktionen auf Ihrem Chrome OS-Gerät aktivieren, um benutzerdefinierten Code auf Ihrem Gerät zu installieren und zu testen. Dadurch können Sie:<br>
+    <ul>
+      <li>die rootfs-Überprüfung entfernen, sodass Sie OS-Dateien ändern können,
+      <li>den SSH-Zugriff auf das Gerät mit den Standard-Testschlüsseln ermöglichen, sodass Sie Tools wie <span style="color:grey;font-family:monospace">"Cros Flash"</span> für den Gerätezugriff verwenden können,
+      <li>das Starten über USB aktivieren, sodass Sie ein OS-Abbild über ein USB-Laufwerk installieren können, und
+      <li>für das Dev- und System-Root-Passwort einen benutzerdefinierten Wert festlegen, sodass Sie sich manuell per SSH mit dem Gerät verbinden können.
+    </ul>
+    <br>
+    Nach der Aktivierung bleiben die meisten Debugging-Funktionen auch dann aktiviert, wenn Sie einen Powerwash durchführen oder die Daten auf einem verwalteten Unternehmensgerät löschen. Führen Sie zur vollständigen Deaktivierung aller Debugging-Funktionen den Chrome OS-Wiederherstellungsprozess aus: https://support.google.com/chromebook/answer/1080595.
+    <br>
+    <br>
+    Weitere Informationen zu den Debugging-Funktionen finden Sie hier:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Hinweis:</b> Das System wird während des Vorgangs neu gestartet.

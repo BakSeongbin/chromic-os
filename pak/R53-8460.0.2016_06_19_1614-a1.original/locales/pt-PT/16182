@@ -1,0 +1,1 @@
+Se uma página não tiver definido uma política de referenciador explícita, definir este sinalizador reduz a quantidade de informações no cabeçalho "referenciador" para pedidos provenientes de várias origens.

@@ -1,0 +1,1 @@
+Si una pàgina no ha establert una política explícita d'URL de referència, en establir aquesta marca es reduirà la quantitat d'informació inclosa a la capçalera "referer" per a les sol·licituds de diversos orígens.

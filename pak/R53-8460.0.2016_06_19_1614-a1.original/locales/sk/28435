@@ -1,0 +1,1 @@
+Prístup ku <a jsvalues="href:urlCorrection;.jstdata:$this" onmousedown="linkClicked(this.jstdata)">kópii vo vyrovnávacej pamäti</a> stránky <span jscontent="originalUrlForDisplay"></span>

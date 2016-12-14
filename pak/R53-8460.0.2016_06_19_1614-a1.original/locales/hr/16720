@@ -1,0 +1,1 @@
+{COUNT,plural, =0{ništa}=1{1 stavka}one{# stavka}few{# stavke}other{# stavki}}

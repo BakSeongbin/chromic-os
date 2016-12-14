@@ -1,0 +1,4 @@
+Om du använder en proxyserver kontrollerar du proxyinställningarna eller
+    kontaktar nätverksadministratören för att kontrollera att
+    servern fungerar. Om du inte tror att du bör använda en
+    proxyserver ändrar du $1proxyinställningarna$2.

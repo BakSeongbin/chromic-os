@@ -1,0 +1,1 @@
+Menyebabkan keluaran audio mengalir untuk memeriksa apakah tersedia tata letak saluran selain tata letak perangkat keras default. Dengan mengaktifkan setelan ini, OS akan dapat menghasilkan keluaran stereo surround expansion jika didukung. Dapat mengekspos bug driver pihak ketiga, gunakan dengan hati-hati.

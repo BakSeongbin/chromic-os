@@ -1,0 +1,1 @@
+Paganahin ang stub na GDB debug. Ihihinto nito ang Native Client na application sa startup at maghihintay para sa nacl-gdb (mula sa NaCl SDK) upang ilakip dito.

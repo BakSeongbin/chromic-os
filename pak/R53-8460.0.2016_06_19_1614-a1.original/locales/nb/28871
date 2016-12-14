@@ -1,0 +1,1 @@
+Du forsøkte å gå til <strong>$1</strong>, men tjeneren presenterte et sertifikat som er signert med en usikker signaturalgoritme. Dette betyr at sikkerhetslegitimasjonen tjeneren har presentert kan være forfalsket. Tjeneren kan med andre ord være enn annen tjener enn du tror (det vil si at du kanskje kommuniserer med en angriper).

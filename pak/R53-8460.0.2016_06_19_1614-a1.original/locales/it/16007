@@ -1,0 +1,1 @@
+Un esperimento per applicare l'area visibile del layout in tutte le API. Le proprietà window.scroll diventeranno relative rispetto all'area visibile del layout.

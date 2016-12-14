@@ -1,0 +1,1 @@
+Ak stránka nenastavila explicitné pravidlá pre sprostredkovateľov, nastavením tohto príznaku obmedzíte množstvo informácií, ktoré sa budú odosielať v hlavičke „referer“ pre medzidoménové žiadosti.

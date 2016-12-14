@@ -1,0 +1,1 @@
+Ke skládání webových stránek využívá sekundární vlákno. To umožňuje plynulé posouvání i v případě, že hlavní vlákno neodpovídá.

@@ -1,0 +1,1 @@
+Vynutí, aby posluchače událostí touchstart, touchmove, mousewheel a wheel byly považovány za pasivní (pokud výslovně nepožádaly, aby za pasivní považovány nebyly). Toto nastavení způsobí, že ovládání dotykem a kolečkem myši na některých webech nebude fungovat správně. Umožňuje však předvést, jakého zlepšení výkonu lze potenciálně dosáhnout použitím pasivních posluchačů událostí.

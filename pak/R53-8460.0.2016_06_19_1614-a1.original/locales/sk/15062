@@ -1,0 +1,1 @@
+{NUM_DOWNLOAD,plural, =1{Momentálne prebieha sťahovanie. Chcete ho zrušiť a ukončiť režim inkognito?}few{Momentálne prebieha sťahovanie # položiek. Chcete ho zrušiť a ukončiť režim inkognito?}many{Momentálne prebieha sťahovanie # položky. Chcete ho zrušiť a ukončiť režim inkognito?}other{Momentálne prebieha sťahovanie # položiek. Chcete ho zrušiť a ukončiť režim inkognito?}}

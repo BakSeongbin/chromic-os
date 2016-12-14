@@ -1,0 +1,1 @@
+Gi utvidelser tillatelse til å opprette panelvinduer som åpnes utenfor nettleserrammen. Hvis du ikke har slått på dette alternativet, fører forsøk på å åpne paneler til at det åpnes forgrunnsvinduer i stedet. Som standard tillates bare godkjente utvidelser. Hvis alternativet er slått på, tillates alle utvidelser, og hvis det er slått av, tillates ikke paneler for noen utvidelser.

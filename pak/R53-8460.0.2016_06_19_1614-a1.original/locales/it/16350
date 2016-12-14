@@ -1,0 +1,1 @@
+Il targeting basato su rettangoli utilizza un approccio euristico per stabilire la destinazione più probabile di un gesto, con l'area del tocco rappresentata da un rettangolo.

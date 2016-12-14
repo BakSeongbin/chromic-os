@@ -1,0 +1,1 @@
+Suporte altamente experimental para processar iframes entre sites em processos separados. Neste modo, os documentos partilham um processo de renderização apenas se forem provenientes do mesmo Website.

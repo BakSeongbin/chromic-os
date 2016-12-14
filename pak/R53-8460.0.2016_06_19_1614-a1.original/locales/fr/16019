@@ -1,0 +1,1 @@
+Active l'utilisation des listes d'affichage pour enregistrer les commandes Canvas 2D. Cela permet ainsi d'effectuer la rastérisation Canvas 2D sur un autre thread.

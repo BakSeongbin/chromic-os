@@ -1,0 +1,3 @@
+<p>Paleidus „$1“ palaikomoje darbalaukio aplinkoje, bus naudojami tarpinio sistemos serverio nustatymai. Tačiau jūsų sistema nepalaikoma arba iškilo problemų paleidžiant sistemos konfigūraciją.</p>
+
+        <p>Vis tiek galite konfigūruoti naudodami komandų eilutę. Žr. <code>$2</code>, jei norite gauti daugiau informacijos apie žymas ir aplinkos variantus.

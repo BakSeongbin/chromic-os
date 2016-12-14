@@ -1,0 +1,1 @@
+啟用後，WebRTC 產生的 Stun 訊息會包含 Origin 標頭。

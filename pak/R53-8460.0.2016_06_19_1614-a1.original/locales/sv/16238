@@ -1,0 +1,1 @@
+Aktivera bakgrundsläge för Push-API:et. Det gör att Chrome fortfarande kan köras när det sista fönstret har stängts, och att det kan startas tillsammans med operativsystemet, om Push-API:et behöver det.

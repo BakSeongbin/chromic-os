@@ -1,0 +1,9 @@
+Un utilisateur supervisé peut naviguer sur le Web sous votre contrôle. En tant que gestionnaire d'un tel utilisateur dans Chrome, vous pouvez :
+
+ • autoriser ou interdire l'accès à certains sites Web,
+ • consulter les sites Web visités par l'utilisateur supervisé, et
+ • gérer d'autres paramètres.
+
+La création d'un utilisateur supervisé n'entraîne pas la création d'un compte Google. Chrome Sync ne permettra pas à cet utilisateur de retrouver ses favoris, son historique de navigation et ses autres préférences sur d'autres appareils. Une fois que vous avez créé un nouvel utilisateur supervisé, vous pouvez modifier les paramètres le concernant à tout moment, à partir de n'importe quel appareil sur <a target="_blank" href="$1">$2</a>.
+
+Pour en savoir plus, consultez notre <a target="_blank" href="https://support.google.com/chrome/?p=ui_supervised_users&hl=fr">Centre d'aide</a>.

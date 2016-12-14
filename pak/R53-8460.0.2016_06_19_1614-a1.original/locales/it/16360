@@ -1,0 +1,1 @@
+Gestione nei thread degli eventi di input relativi allo scorrimento. Se questa opzione viene disattivata, viene forzata la gestione di tutti gli eventi di scorrimento nel thread principale. Tieni presente che questa opzione potrebbe danneggiare notevolmente le prestazioni dello scorrimento nella maggior parte dei siti web ed è riservata ai test.

@@ -1,0 +1,1 @@
+Způsobí, že streamy zvukového výstupu budou zjišťovat, zda jsou k dispozici jiná rozvržení kanálů, než je výchozí rozvržení hardwaru. Když tuto možnost aktivujete, operační systém bude moci přehrávat stereofonní zvuk v prostorovém režimu (pokud je tato funkce podporována). Po aktivování této možnosti se mohou projevit chyby ovladačů třetích stran, postupujte proto opatrně.

@@ -1,0 +1,1 @@
+{COUNT,plural, =0{nenhuma}=1{1 aplicação (1 $)}=2{2 aplicações (1 $, 2 $)}other{# aplicações (1 $, 2 $, 3 $)}}

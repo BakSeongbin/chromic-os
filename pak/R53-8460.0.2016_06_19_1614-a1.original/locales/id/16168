@@ -1,0 +1,1 @@
+Jangan tampilkan bilah info saat ekstensi dilampirkan di laman melalui API chrome.debugger. Hal ini dibutuhkan untuk menjalankan debug laman latar belakang ekstensi.

@@ -1,0 +1,1 @@
+Omogućuje pozadinski način za Push API. Time se Chromeu omogućuje nastavak izvođenja nakon zatvaranja posljednjeg prozora i pokretanje prilikom pokretanja operativnog sustava ako to Push API zahtijeva.

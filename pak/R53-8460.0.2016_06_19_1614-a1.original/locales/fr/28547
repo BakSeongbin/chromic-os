@@ -1,0 +1,1 @@
+<a href="#buttons" onclick="toggleHelpBox()">Vérifier les configurations du proxy, du pare-feu et du DNS</a>

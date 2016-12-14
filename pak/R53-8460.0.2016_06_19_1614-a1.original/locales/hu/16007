@@ -1,0 +1,1 @@
+Arra irányuló kísérlet, hogy valamennyi API az elrendezés látható területét tükrözze – ennek hatására a window.scroll tulajdonságok az elrendezés látható területéhez fognak viszonyulni.

@@ -1,0 +1,1 @@
+{DAYS,plural, =1{Včera}few{Pred # dňami}many{Pred # dňom}other{Pred # dňami}}

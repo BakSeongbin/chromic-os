@@ -1,0 +1,2 @@
+Tämän käytännön kanssa käytetään määritettä trace-upload-url flag.
+        VAROITUS: Kun tämä käytäntö on käytössä, Chrome tallentaa jokaisen siirtymisen suorituskykytiedot ja lähettää ne trace-upload-url-määritteellä ilmoitettuun URL-osoitteeseen. Jäljitystiedot voivat sisältää henkilökohtaisia tunnistetietoja, kuten avattujen sivustojen otsikoita ja URL-osoitteita.

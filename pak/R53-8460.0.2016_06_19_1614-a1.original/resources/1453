@@ -1,0 +1,208 @@
+<!doctype html>
+<html i18n-values="dir:textdirection;.style.fontFamily:fontfamily;lang:language">
+  <head>
+    <meta charset=utf-8>
+    <title></title>
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+    <link rel="stylesheet" href="chrome://resources/css/widgets.css">
+    <link rel="stylesheet" href="chrome://resources/css/apps/common.css">
+    <link rel="stylesheet" href="chrome://resources/css/apps/topbutton_bar.css">
+    <style>/**
+ * Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+.step {
+  background: white;
+  color: #8c8c8c;
+  padding: 0;
+}
+
+.step h1 {
+  color: #333;
+  font-weight: normal;
+}
+
+.step p {
+  line-height: 1.5;
+}
+
+.step button.blue-button {
+  color: white;
+}
+
+.step button.white-button {
+  color: black;
+}
+
+.step .controls button {
+  margin: 0 3px;
+}
+
+.step .controls button:first-of-type {
+  -webkit-margin-start: 0;
+}
+
+.step .controls button:last-of-type {
+  -webkit-margin-end: 0;
+}
+</style>
+    <style>/**
+ * Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * Preloads images. Without preloading, background image starts loading in
+ * the moment when CSS property is applied. Image loading has visible delay and
+ * looks like defect.
+ */
+
+@media all and (-webkit-max-device-pixel-ratio: 1.5) {
+  body::after {
+    content: url(chrome://resources/images/apps/button.png)
+        url(chrome://resources/images/apps/button_hover.png)
+        url(chrome://resources/images/apps/button_pressed.png)
+        url(chrome://resources/images/apps/button_focused.png)
+        url(chrome://resources/images/apps/button_focused_hover.png)
+        url(chrome://resources/images/apps/button_focused_pressed.png)
+        url(chrome://resources/images/apps/button_inactive.png)
+        url(chrome://resources/images/apps/blue_button.png)
+        url(chrome://resources/images/apps/blue_button_hover.png)
+        url(chrome://resources/images/apps/blue_button_pressed.png)
+        url(chrome://resources/images/apps/blue_button_focused.png)
+        url(chrome://resources/images/apps/blue_button_focused_hover.png)
+        url(chrome://resources/images/apps/blue_button_focused_pressed.png)
+        url(chrome://resources/images/apps/blue_button_inactive.png);
+    display: none;
+  }
+}
+
+@media all and (-webkit-min-device-pixel-ratio: 1.5) {
+  body::after {
+    content: url(chrome://resources/images/2x/apps/button.png)
+        url(chrome://resources/images/2x/apps/button_hover.png)
+        url(chrome://resources/images/2x/apps/button_pressed.png)
+        url(chrome://resources/images/2x/apps/button_focused.png)
+        url(chrome://resources/images/2x/apps/button_focused_hover.png)
+        url(chrome://resources/images/2x/apps/button_focused_pressed.png)
+        url(chrome://resources/images/2x/apps/button_inactive.png)
+        url(chrome://resources/images/2x/apps/blue_button.png)
+        url(chrome://resources/images/2x/apps/blue_button_hover.png)
+        url(chrome://resources/images/2x/apps/blue_button_pressed.png)
+        url(chrome://resources/images/2x/apps/blue_button_focused.png)
+        url(chrome://resources/images/2x/apps/blue_button_focused_hover.png)
+        url(chrome://resources/images/2x/apps/blue_button_focused_pressed.png)
+        url(chrome://resources/images/2x/apps/blue_button_inactive.png);
+    display: none;
+  }
+}
+</style>
+    <style>/**
+ * Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.step.dialog {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  padding: 40px;
+  text-align: center;
+  width: 720px;
+}
+
+.step.dialog h1 {
+  font-size: 30px;
+  margin-bottom: 16px;
+  margin-top: 0;
+}
+
+.step.dialog p {
+  font-size: 15px;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.step.dialog .controls {
+  margin-bottom: 0;
+  margin-top: 40px;
+}
+
+.step.dialog .controls button {
+  font-size: 12px;
+  min-width: 0;
+  padding: 0 35px;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.step.dialog .window-header {
+  -webkit-app-region: drag;
+  display: block;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.step.dialog .topbutton-bar {
+  display: block;
+  margin-top: 10px;
+}
+
+.step.dialog .topbutton-wrapper {
+  -webkit-padding-end: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.step.dialog .topbutton-bar button {
+  -webkit-app-region: no-drag;
+  -webkit-margin-end: 0;
+  display: inline;
+}
+
+.step.dialog .greeting-image {
+  margin-bottom: 49px;
+  margin-top: 64px;
+}
+</style>
+    <script src="chrome://resources/js/load_time_data.js"></script>
+    <script src="chrome://resources/js/util.js"></script>
+    <script src="chrome://resources/js/i18n_template_no_process.js"></script>
+    <script src="main.js"></script>
+  </head>
+  <body>
+    <div id="greeting" class="step dialog">
+      <div class="window-header">
+        <div class="topbutton-bar">
+          <div class="topbutton-wrapper">
+            <button class="custom-appearance close-button"
+                 i18n-values="aria-label:closeButton" tabindex="1">
+            </button>
+          </div>
+        </div>
+      </div>
+      <h1 i18n-content="greetingHeader"></h1>
+      <p>
+        <span i18n-content="greetingText1"></span><br>
+        <span i18n-content="greetingText2"></span>
+      </p>
+      <div class="controls">
+        <button i18n-content="greetingButton"
+            class="next-button custom-appearance blue-button" tabindex="0">
+        </button>
+      </div>
+      
+
+    </div>
+  </body>
+</html>

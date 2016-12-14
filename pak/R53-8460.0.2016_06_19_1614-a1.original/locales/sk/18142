@@ -1,0 +1,9 @@
+Kontrolovaný používateľ môže skúmať web pod vaším dohľadom. Ako správca kontrolovaného používateľa v prehliadači Chrome môžete
+
+ • povoliť alebo zakázať konkrétne webové stránky,
+ • kontrolovať webové stránky, ktoré kontrolovaný používateľ navštívil, a
+ • spravovať ďalšie nastavenia.
+
+Pri vytvorení kontrolovaného používateľa sa nevytvorí účet Google a jeho záložky, história prehliadania a ďalšie predvoľby sa neprenesú do ďalších zariadení pomocou Synchronizácie Chrome.
+
+Po vytvorení nového kontrolovaného používateľa môžete kedykoľvek spravovať nastavenia z akéhokoľvek zariadenia na adrese $1. <a target="_blank" href="https://support.google.com/chrome/?p=ui_supervised_users&hl=sk">Ďalšie informácie o kontrolovaných používateľoch</a>

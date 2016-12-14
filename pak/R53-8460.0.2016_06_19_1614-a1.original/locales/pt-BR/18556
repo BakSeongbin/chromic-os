@@ -1,0 +1,1 @@
+Permite solicitações ao host local para HTTPS mesmo quando um certificado inválido é apresentado.

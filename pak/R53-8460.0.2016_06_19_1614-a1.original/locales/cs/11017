@@ -1,0 +1,1 @@
+{DAYS,plural, =1{Zbývá 1 den}few{Zbývají # dny}many{Zbývá # dne}other{Zbývá # dnů}}

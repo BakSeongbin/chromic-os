@@ -1,0 +1,1 @@
+{COUNT,plural, =0{legalább egy elem van a szinkronizált eszközökön}=1{1 elem (és még több a szinkronizált eszközökön)}other{# elem (és még több a szinkronizált eszközökön)}}

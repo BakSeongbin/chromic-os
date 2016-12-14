@@ -1,0 +1,2 @@
+Den här flaggan används tillsammans med flaggan trace-upload-url.
+        VARNING! När detta är aktiverat registreras prestandainformation om alla navigeringsåtgärder i Chrome och laddas upp till den webbadress som angetts med flaggan trace-upload-url. Spårningen kan innehålla personligt identifierande information (PII) som namnet på och webbadressen till webbplatser du besöker.

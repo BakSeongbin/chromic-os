@@ -1,0 +1,1 @@
+A lehetőség kiválasztásával a fix pozíciójú elemeknek saját összevont rétegük lehet. Vegye figyelembe, hogy a fix pozíciójú elemeknek halmozási kontextust is létre kell hozniuk, hogy ez működhessen.

@@ -1,0 +1,1 @@
+Svært eksperimentell ytelsesmodus hvor iframes med koblinger til andre nettsteder holdes i en egen prosess som er adskilt fra toppdokumentet. I denne modusen kan iframes fra andre tredjeparters nettsteder dele prosesser.

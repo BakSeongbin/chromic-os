@@ -1,0 +1,1 @@
+Alcune pagine web utilizzano estensioni JavaScript precedenti o non standard che potrebbero essere in conflitto con le funzioni JavaScript più recenti. Questo flag consente di disattivare il supporto di tali funzioni per garantire la compatibilità con tali pagine.

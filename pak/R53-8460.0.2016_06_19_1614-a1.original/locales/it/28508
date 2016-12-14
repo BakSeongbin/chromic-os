@@ -1,0 +1,1 @@
+Sono state ricevute più intestazioni Content-Disposition distinte. Questo non è consentito, al fine di prevenire attacchi che dividono le risposte HTTP.

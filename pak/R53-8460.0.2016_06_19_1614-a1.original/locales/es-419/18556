@@ -1,0 +1,1 @@
+Permite el envío de solicitudes al host local por HTTPS aunque se presente un certificado no válido.

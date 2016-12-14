@@ -1,0 +1,1 @@
+Für die eingegebene Omnibox-Suchanfrage wird ein Vorabruf der Suchergebnisse durchgeführt. Die vorab gerenderte Suchbasisseite wird dann zum Senden jeder Suchanfrage und nicht nur für die Vorabruf-Anfrage wiederverwendet.

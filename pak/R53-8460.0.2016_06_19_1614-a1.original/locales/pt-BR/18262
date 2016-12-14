@@ -1,0 +1,1 @@
+Compatibilidade altamente experimental para renderização de iframes entre sites em processos separados. Neste modo, os documentos compartilham um processo do renderizador apenas se eles são do mesmo website.

@@ -1,0 +1,1 @@
+Hierdurch werden die Ereignis-Listener "touchstart", "touchmove", "mousewheel" und "wheel", die keine andere Anfrage gestellt haben, als passiv behandelt. Diese Einstellung beeinträchtigt das Verhalten des Touchpads/Mausrads auf einigen Websites, ist aber hilfreich, um die potenziellen Leistungsvorteile bei einer Verwendung passiver Ereignis-Listener zu demonstrieren.

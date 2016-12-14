@@ -1,0 +1,1 @@
+Al habilitar esta opción, se permitirá que los elementos de posición fija tengan sus propias capas compuestas. Ten en cuenta que los elementos de posición fija también deben crear contextos de apilamiento para que esto funcione.

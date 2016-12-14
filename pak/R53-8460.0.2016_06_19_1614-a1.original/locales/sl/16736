@@ -1,0 +1,1 @@
+{COUNT,plural, =0{nič}=1{1 aplikacija ($1)}=2{2 aplikaciji ($1, $2)}one{# aplikacija ($1, $2, $3)}two{# aplikaciji ($1, $2, $3)}few{# aplikacije ($1, $2, $3)}other{# aplikacij ($1, $2, $3)}}

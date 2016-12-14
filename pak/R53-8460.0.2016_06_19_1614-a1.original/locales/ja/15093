@@ -1,0 +1,1 @@
+{NUM_DEVICES,plural, =1{1 台の USB デバイスと通信します}other{# 台の USB デバイスと通信します}}

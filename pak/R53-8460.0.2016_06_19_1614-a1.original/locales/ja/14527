@@ -1,0 +1,1 @@
+ページを自動更新するには URL に次のようなクエリ パラメータを追加してください: chrome://network/?refresh=<sec>

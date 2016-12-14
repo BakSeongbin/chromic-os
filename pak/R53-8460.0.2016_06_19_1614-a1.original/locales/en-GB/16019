@@ -1,0 +1,1 @@
+Enables the use of display lists to record 2D canvas commands. This allows 2D canvas rasterisation to be performed on separate thread.

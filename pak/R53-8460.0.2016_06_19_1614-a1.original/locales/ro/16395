@@ -1,0 +1,1 @@
+Fluxurile audio de ieșire vor verifica dacă sunt disponibile și alte configurații ale canalului, în afara configurației hardware prestabilite. Dacă activezi această opțiune, sistemul de operare va putea trece de la stereo la surround, dacă se acceptă. Este posibil să apară erori ale driverului terță parte. Folosește opțiunea cu atenție.

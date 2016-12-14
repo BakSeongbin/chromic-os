@@ -1,0 +1,854 @@
+// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file contains the navigation controls that are visible on the left side
+// of the uber page. It exists separately from uber.js so that it may be loaded
+// in an iframe. Iframes can be layered on top of each other, but not mixed in
+// with page content, so all overlapping content on uber must be framed.
+
+// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// // Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview Assertion support.
+ */
+
+/**
+ * Verify |condition| is truthy and return |condition| if so.
+ * @template T
+ * @param {T} condition A condition to check for truthiness.  Note that this
+ *     may be used to test whether a value is defined or not, and we don't want
+ *     to force a cast to Boolean.
+ * @param {string=} opt_message A message to show on failure.
+ * @return {T} A non-null |condition|.
+ */
+function assert(condition, opt_message) {
+  if (!condition) {
+    var message = 'Assertion failed';
+    if (opt_message)
+      message = message + ': ' + opt_message;
+    var error = new Error(message);
+    var global = function() { return this; }();
+    if (global.traceAssertionsForTesting)
+      console.warn(error.stack);
+    throw error;
+  }
+  return condition;
+}
+
+/**
+ * Call this from places in the code that should never be reached.
+ *
+ * For example, handling all the values of enum with a switch() like this:
+ *
+ *   function getValueFromEnum(enum) {
+ *     switch (enum) {
+ *       case ENUM_FIRST_OF_TWO:
+ *         return first
+ *       case ENUM_LAST_OF_TWO:
+ *         return last;
+ *     }
+ *     assertNotReached();
+ *     return document;
+ *   }
+ *
+ * This code should only be hit in the case of serious programmer error or
+ * unexpected input.
+ *
+ * @param {string=} opt_message A message to show when this is hit.
+ */
+function assertNotReached(opt_message) {
+  assert(false, opt_message || 'Unreachable code hit');
+}
+
+/**
+ * @param {*} value The value to check.
+ * @param {function(new: T, ...)} type A user-defined constructor.
+ * @param {string=} opt_message A message to show when this is hit.
+ * @return {T}
+ * @template T
+ */
+function assertInstanceof(value, type, opt_message) {
+  // We don't use assert immediately here so that we avoid constructing an error
+  // message if we don't have to.
+  if (!(value instanceof type)) {
+    assertNotReached(opt_message || 'Value ' + value +
+                     ' is not a[n] ' + (type.name || typeof type));
+  }
+  return value;
+}
+
+
+/**
+ * Alias for document.getElementById. Found elements must be HTMLElements.
+ * @param {string} id The ID of the element to find.
+ * @return {HTMLElement} The found element or null if not found.
+ */
+function $(id) {
+  var el = document.getElementById(id);
+  return el ? assertInstanceof(el, HTMLElement) : null;
+}
+
+// TODO(devlin): This should return SVGElement, but closure compiler is missing
+// those externs.
+/**
+ * Alias for document.getElementById. Found elements must be SVGElements.
+ * @param {string} id The ID of the element to find.
+ * @return {Element} The found element or null if not found.
+ */
+function getSVGElement(id) {
+  var el = document.getElementById(id);
+  return el ? assertInstanceof(el, Element) : null;
+}
+
+/**
+ * Add an accessible message to the page that will be announced to
+ * users who have spoken feedback on, but will be invisible to all
+ * other users. It's removed right away so it doesn't clutter the DOM.
+ * @param {string} msg The text to be pronounced.
+ */
+function announceAccessibleMessage(msg) {
+  var element = document.createElement('div');
+  element.setAttribute('aria-live', 'polite');
+  element.style.position = 'relative';
+  element.style.left = '-9999px';
+  element.style.height = '0px';
+  element.innerText = msg;
+  document.body.appendChild(element);
+  window.setTimeout(function() {
+    document.body.removeChild(element);
+  }, 0);
+}
+
+/**
+ * Generates a CSS url string.
+ * @param {string} s The URL to generate the CSS url for.
+ * @return {string} The CSS url string.
+ */
+function url(s) {
+  // http://www.w3.org/TR/css3-values/#uris
+  // Parentheses, commas, whitespace characters, single quotes (') and double
+  // quotes (") appearing in a URI must be escaped with a backslash
+  var s2 = s.replace(/(\(|\)|\,|\s|\'|\"|\\)/g, '\\$1');
+  // WebKit has a bug when it comes to URLs that end with \
+  // https://bugs.webkit.org/show_bug.cgi?id=28885
+  if (/\\\\$/.test(s2)) {
+    // Add a space to work around the WebKit bug.
+    s2 += ' ';
+  }
+  return 'url("' + s2 + '")';
+}
+
+/**
+ * Parses query parameters from Location.
+ * @param {Location} location The URL to generate the CSS url for.
+ * @return {Object} Dictionary containing name value pairs for URL
+ */
+function parseQueryParams(location) {
+  var params = {};
+  var query = unescape(location.search.substring(1));
+  var vars = query.split('&');
+  for (var i = 0; i < vars.length; i++) {
+    var pair = vars[i].split('=');
+    params[pair[0]] = pair[1];
+  }
+  return params;
+}
+
+/**
+ * Creates a new URL by appending or replacing the given query key and value.
+ * Not supporting URL with username and password.
+ * @param {Location} location The original URL.
+ * @param {string} key The query parameter name.
+ * @param {string} value The query parameter value.
+ * @return {string} The constructed new URL.
+ */
+function setQueryParam(location, key, value) {
+  var query = parseQueryParams(location);
+  query[encodeURIComponent(key)] = encodeURIComponent(value);
+
+  var newQuery = '';
+  for (var q in query) {
+    newQuery += (newQuery ? '&' : '?') + q + '=' + query[q];
+  }
+
+  return location.origin + location.pathname + newQuery + location.hash;
+}
+
+/**
+ * @param {Node} el A node to search for ancestors with |className|.
+ * @param {string} className A class to search for.
+ * @return {Element} A node with class of |className| or null if none is found.
+ */
+function findAncestorByClass(el, className) {
+  return /** @type {Element} */(findAncestor(el, function(el) {
+    return el.classList && el.classList.contains(className);
+  }));
+}
+
+/**
+ * Return the first ancestor for which the {@code predicate} returns true.
+ * @param {Node} node The node to check.
+ * @param {function(Node):boolean} predicate The function that tests the
+ *     nodes.
+ * @return {Node} The found ancestor or null if not found.
+ */
+function findAncestor(node, predicate) {
+  var last = false;
+  while (node != null && !(last = predicate(node))) {
+    node = node.parentNode;
+  }
+  return last ? node : null;
+}
+
+function swapDomNodes(a, b) {
+  var afterA = a.nextSibling;
+  if (afterA == b) {
+    swapDomNodes(b, a);
+    return;
+  }
+  var aParent = a.parentNode;
+  b.parentNode.replaceChild(a, b);
+  aParent.insertBefore(b, afterA);
+}
+
+/**
+ * Disables text selection and dragging, with optional whitelist callbacks.
+ * @param {function(Event):boolean=} opt_allowSelectStart Unless this function
+ *    is defined and returns true, the onselectionstart event will be
+ *    surpressed.
+ * @param {function(Event):boolean=} opt_allowDragStart Unless this function
+ *    is defined and returns true, the ondragstart event will be surpressed.
+ */
+function disableTextSelectAndDrag(opt_allowSelectStart, opt_allowDragStart) {
+  // Disable text selection.
+  document.onselectstart = function(e) {
+    if (!(opt_allowSelectStart && opt_allowSelectStart.call(this, e)))
+      e.preventDefault();
+  };
+
+  // Disable dragging.
+  document.ondragstart = function(e) {
+    if (!(opt_allowDragStart && opt_allowDragStart.call(this, e)))
+      e.preventDefault();
+  };
+}
+
+/**
+ * TODO(dbeam): DO NOT USE. THIS IS DEPRECATED. Use an action-link instead.
+ * Call this to stop clicks on <a href="#"> links from scrolling to the top of
+ * the page (and possibly showing a # in the link).
+ */
+function preventDefaultOnPoundLinkClicks() {
+  document.addEventListener('click', function(e) {
+    var anchor = findAncestor(/** @type {Node} */(e.target), function(el) {
+      return el.tagName == 'A';
+    });
+    // Use getAttribute() to prevent URL normalization.
+    if (anchor && anchor.getAttribute('href') == '#')
+      e.preventDefault();
+  });
+}
+
+/**
+ * Check the directionality of the page.
+ * @return {boolean} True if Chrome is running an RTL UI.
+ */
+function isRTL() {
+  return document.documentElement.dir == 'rtl';
+}
+
+/**
+ * Get an element that's known to exist by its ID. We use this instead of just
+ * calling getElementById and not checking the result because this lets us
+ * satisfy the JSCompiler type system.
+ * @param {string} id The identifier name.
+ * @return {!HTMLElement} the Element.
+ */
+function getRequiredElement(id) {
+  return assertInstanceof($(id), HTMLElement,
+                          'Missing required element: ' + id);
+}
+
+/**
+ * Query an element that's known to exist by a selector. We use this instead of
+ * just calling querySelector and not checking the result because this lets us
+ * satisfy the JSCompiler type system.
+ * @param {string} selectors CSS selectors to query the element.
+ * @param {(!Document|!DocumentFragment|!Element)=} opt_context An optional
+ *     context object for querySelector.
+ * @return {!HTMLElement} the Element.
+ */
+function queryRequiredElement(selectors, opt_context) {
+  var element = (opt_context || document).querySelector(selectors);
+  return assertInstanceof(element, HTMLElement,
+                          'Missing required element: ' + selectors);
+}
+
+// Handle click on a link. If the link points to a chrome: or file: url, then
+// call into the browser to do the navigation.
+document.addEventListener('click', function(e) {
+  if (e.defaultPrevented)
+    return;
+
+  var el = e.target;
+  if (el.nodeType == Node.ELEMENT_NODE &&
+      el.webkitMatchesSelector('A, A *')) {
+    while (el.tagName != 'A') {
+      el = el.parentElement;
+    }
+
+    if ((el.protocol == 'file:' || el.protocol == 'about:') &&
+        (e.button == 0 || e.button == 1)) {
+      chrome.send('navigateToUrl', [
+        el.href,
+        el.target,
+        e.button,
+        e.altKey,
+        e.ctrlKey,
+        e.metaKey,
+        e.shiftKey
+      ]);
+      e.preventDefault();
+    }
+  }
+});
+
+/**
+ * Creates a new URL which is the old URL with a GET param of key=value.
+ * @param {string} url The base URL. There is not sanity checking on the URL so
+ *     it must be passed in a proper format.
+ * @param {string} key The key of the param.
+ * @param {string} value The value of the param.
+ * @return {string} The new URL.
+ */
+function appendParam(url, key, value) {
+  var param = encodeURIComponent(key) + '=' + encodeURIComponent(value);
+
+  if (url.indexOf('?') == -1)
+    return url + '?' + param;
+  return url + '&' + param;
+}
+
+/**
+ * Creates an element of a specified type with a specified class name.
+ * @param {string} type The node type.
+ * @param {string} className The class name to use.
+ * @return {Element} The created element.
+ */
+function createElementWithClassName(type, className) {
+  var elm = document.createElement(type);
+  elm.className = className;
+  return elm;
+}
+
+/**
+ * webkitTransitionEnd does not always fire (e.g. when animation is aborted
+ * or when no paint happens during the animation). This function sets up
+ * a timer and emulate the event if it is not fired when the timer expires.
+ * @param {!HTMLElement} el The element to watch for webkitTransitionEnd.
+ * @param {number=} opt_timeOut The maximum wait time in milliseconds for the
+ *     webkitTransitionEnd to happen. If not specified, it is fetched from |el|
+ *     using the transitionDuration style value.
+ */
+function ensureTransitionEndEvent(el, opt_timeOut) {
+  if (opt_timeOut === undefined) {
+    var style = getComputedStyle(el);
+    opt_timeOut = parseFloat(style.transitionDuration) * 1000;
+
+    // Give an additional 50ms buffer for the animation to complete.
+    opt_timeOut += 50;
+  }
+
+  var fired = false;
+  el.addEventListener('webkitTransitionEnd', function f(e) {
+    el.removeEventListener('webkitTransitionEnd', f);
+    fired = true;
+  });
+  window.setTimeout(function() {
+    if (!fired)
+      cr.dispatchSimpleEvent(el, 'webkitTransitionEnd', true);
+  }, opt_timeOut);
+}
+
+/**
+ * Alias for document.scrollTop getter.
+ * @param {!HTMLDocument} doc The document node where information will be
+ *     queried from.
+ * @return {number} The Y document scroll offset.
+ */
+function scrollTopForDocument(doc) {
+  return doc.documentElement.scrollTop || doc.body.scrollTop;
+}
+
+/**
+ * Alias for document.scrollTop setter.
+ * @param {!HTMLDocument} doc The document node where information will be
+ *     queried from.
+ * @param {number} value The target Y scroll offset.
+ */
+function setScrollTopForDocument(doc, value) {
+  doc.documentElement.scrollTop = doc.body.scrollTop = value;
+}
+
+/**
+ * Alias for document.scrollLeft getter.
+ * @param {!HTMLDocument} doc The document node where information will be
+ *     queried from.
+ * @return {number} The X document scroll offset.
+ */
+function scrollLeftForDocument(doc) {
+  return doc.documentElement.scrollLeft || doc.body.scrollLeft;
+}
+
+/**
+ * Alias for document.scrollLeft setter.
+ * @param {!HTMLDocument} doc The document node where information will be
+ *     queried from.
+ * @param {number} value The target X scroll offset.
+ */
+function setScrollLeftForDocument(doc, value) {
+  doc.documentElement.scrollLeft = doc.body.scrollLeft = value;
+}
+
+/**
+ * Replaces '&', '<', '>', '"', and ''' characters with their HTML encoding.
+ * @param {string} original The original string.
+ * @return {string} The string with all the characters mentioned above replaced.
+ */
+function HTMLEscape(original) {
+  return original.replace(/&/g, '&amp;')
+                 .replace(/</g, '&lt;')
+                 .replace(/>/g, '&gt;')
+                 .replace(/"/g, '&quot;')
+                 .replace(/'/g, '&#39;');
+}
+
+/**
+ * Shortens the provided string (if necessary) to a string of length at most
+ * |maxLength|.
+ * @param {string} original The original string.
+ * @param {number} maxLength The maximum length allowed for the string.
+ * @return {string} The original string if its length does not exceed
+ *     |maxLength|. Otherwise the first |maxLength| - 1 characters with '...'
+ *     appended.
+ */
+function elide(original, maxLength) {
+  if (original.length <= maxLength)
+    return original;
+  return original.substring(0, maxLength - 1) + '\u2026';
+}
+
+/**
+ * Quote a string so it can be used in a regular expression.
+ * @param {string} str The source string.
+ * @return {string} The escaped string.
+ */
+function quoteString(str) {
+  return str.replace(/([\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:])/g, '\\$1');
+}
+
+// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview A collection of utility methods for UberPage and its contained
+ *     pages.
+ */
+
+cr.define('uber', function() {
+  /**
+   * Fixed position header elements on the page to be shifted by handleScroll.
+   * @type {NodeList}
+   */
+  var headerElements;
+
+  /**
+   * This should be called by uber content pages when DOM content has loaded.
+   */
+  function onContentFrameLoaded() {
+    headerElements = document.getElementsByTagName('header');
+    document.addEventListener('scroll', handleScroll);
+    document.addEventListener('mousedown', handleMouseDownInFrame, true);
+
+    invokeMethodOnParent('ready');
+
+    // Prevent the navigation from being stuck in a disabled state when a
+    // content page is reloaded while an overlay is visible (crbug.com/246939).
+    invokeMethodOnParent('stopInterceptingEvents');
+
+    // Trigger the scroll handler to tell the navigation if our page started
+    // with some scroll (happens when you use tab restore).
+    handleScroll();
+
+    window.addEventListener('message', handleWindowMessage);
+  }
+
+  /**
+   * Handles scroll events on the document. This adjusts the position of all
+   * headers and updates the parent frame when the page is scrolled.
+   */
+  function handleScroll() {
+    var scrollLeft = scrollLeftForDocument(document);
+    var offset = scrollLeft * -1;
+    for (var i = 0; i < headerElements.length; i++) {
+      // As a workaround for http://crbug.com/231830, set the transform to
+      // 'none' rather than 0px.
+      headerElements[i].style.webkitTransform = offset ?
+          'translateX(' + offset + 'px)' : 'none';
+    }
+
+    invokeMethodOnParent('adjustToScroll', scrollLeft);
+  }
+
+  /**
+   * Tells the parent to focus the current frame if the mouse goes down in the
+   * current frame (and it doesn't already have focus).
+   * @param {Event} e A mousedown event.
+   */
+  function handleMouseDownInFrame(e) {
+    if (!e.isSynthetic && !document.hasFocus())
+      window.focus();
+  }
+
+  /**
+   * Handles 'message' events on window.
+   * @param {Event} e The message event.
+   */
+  function handleWindowMessage(e) {
+    e = /** @type {!MessageEvent<!{method: string, params: *}>} */(e);
+    if (e.data.method === 'frameSelected') {
+      handleFrameSelected();
+    } else if (e.data.method === 'mouseWheel') {
+      handleMouseWheel(
+          /** @type {{deltaX: number, deltaY: number}} */(e.data.params));
+    } else if (e.data.method === 'mouseDown') {
+      handleMouseDown();
+    } else if (e.data.method === 'popState') {
+      handlePopState(e.data.params.state, e.data.params.path);
+    }
+  }
+
+  /**
+   * This is called when a user selects this frame via the navigation bar
+   * frame (and is triggered via postMessage() from the uber page).
+   */
+  function handleFrameSelected() {
+    setScrollTopForDocument(document, 0);
+  }
+
+  /**
+   * Called when a user mouse wheels (or trackpad scrolls) over the nav frame.
+   * The wheel event is forwarded here and we scroll the body.
+   * There's no way to figure out the actual scroll amount for a given delta.
+   * It differs for every platform and even initWebKitWheelEvent takes a
+   * pixel amount instead of a wheel delta. So we just choose something
+   * reasonable and hope no one notices the difference.
+   * @param {{deltaX: number, deltaY: number}} params A structure that holds
+   *     wheel deltas in X and Y.
+   */
+  function handleMouseWheel(params) {
+    window.scrollBy(-params.deltaX * 49 / 120, -params.deltaY * 49 / 120);
+  }
+
+  /**
+   * Fire a synthetic mousedown on the body to dismiss transient things like
+   * bubbles or menus that listen for mouse presses outside of their UI. We
+   * dispatch a fake mousedown rather than a 'mousepressedinnavframe' so that
+   * settings/history/extensions don't need to know about their embedder.
+   */
+  function handleMouseDown() {
+    var mouseEvent = new MouseEvent('mousedown');
+    mouseEvent.isSynthetic = true;
+    document.dispatchEvent(mouseEvent);
+  }
+
+  /**
+   * Called when the parent window restores some state saved by uber.pushState
+   * or uber.replaceState. Simulates a popstate event.
+   * @param {PopStateEvent} state A state object for replaceState and pushState.
+   * @param {string} path The path the page navigated to.
+   * @suppress {checkTypes}
+   */
+  function handlePopState(state, path) {
+    window.history.replaceState(state, '', path);
+    window.dispatchEvent(new PopStateEvent('popstate', {state: state}));
+  }
+
+  /**
+   * @return {boolean} Whether this frame has a parent.
+   */
+  function hasParent() {
+    return window != window.parent;
+  }
+
+  /**
+   * Invokes a method on the parent window (UberPage). This is a convenience
+   * method for API calls into the uber page.
+   * @param {string} method The name of the method to invoke.
+   * @param {?=} opt_params Optional property bag of parameters to pass to the
+   *     invoked method.
+   */
+  function invokeMethodOnParent(method, opt_params) {
+    if (!hasParent())
+      return;
+
+    invokeMethodOnWindow(window.parent, method, opt_params, 'chrome://chrome');
+  }
+
+  /**
+   * Invokes a method on the target window.
+   * @param {string} method The name of the method to invoke.
+   * @param {?=} opt_params Optional property bag of parameters to pass to the
+   *     invoked method.
+   * @param {string=} opt_url The origin of the target window.
+   */
+  function invokeMethodOnWindow(targetWindow, method, opt_params, opt_url) {
+    var data = {method: method, params: opt_params};
+    targetWindow.postMessage(data, opt_url ? opt_url : '*');
+  }
+
+  /**
+   * Updates the page's history state. If the page is embedded in a child,
+   * forward the information to the parent for it to manage history for us. This
+   * is a replacement of history.replaceState and history.pushState.
+   * @param {Object} state A state object for replaceState and pushState.
+   * @param {string} path The path the page navigated to.
+   * @param {boolean} replace If true, navigate with replacement.
+   */
+  function updateHistory(state, path, replace) {
+    var historyFunction = replace ?
+        window.history.replaceState :
+        window.history.pushState;
+
+    if (hasParent()) {
+      // If there's a parent, always replaceState. The parent will do the actual
+      // pushState.
+      historyFunction = window.history.replaceState;
+      invokeMethodOnParent('updateHistory', {
+        state: state, path: path, replace: replace});
+    }
+    historyFunction.call(window.history, state, '', '/' + path);
+  }
+
+  /**
+   * Sets the current title for the page. If the page is embedded in a child,
+   * forward the information to the parent. This is a replacement for setting
+   * document.title.
+   * @param {string} title The new title for the page.
+   */
+  function setTitle(title) {
+    document.title = title;
+    invokeMethodOnParent('setTitle', {title: title});
+  }
+
+  /**
+   * Pushes new history state for the page. If the page is embedded in a child,
+   * forward the information to the parent; when embedded, all history entries
+   * are attached to the parent. This is a replacement of history.pushState.
+   * @param {Object} state A state object for replaceState and pushState.
+   * @param {string} path The path the page navigated to.
+   */
+  function pushState(state, path) {
+    updateHistory(state, path, false);
+  }
+
+  /**
+   * Replaces the page's history state. If the page is embedded in a child,
+   * forward the information to the parent; when embedded, all history entries
+   * are attached to the parent. This is a replacement of history.replaceState.
+   * @param {Object} state A state object for replaceState and pushState.
+   * @param {string} path The path the page navigated to.
+   */
+  function replaceState(state, path) {
+    updateHistory(state, path, true);
+  }
+
+  return {
+    invokeMethodOnParent: invokeMethodOnParent,
+    invokeMethodOnWindow: invokeMethodOnWindow,
+    onContentFrameLoaded: onContentFrameLoaded,
+    pushState: pushState,
+    replaceState: replaceState,
+    setTitle: setTitle,
+  };
+});
+
+
+cr.define('uber_frame', function() {
+
+  /**
+   * Handles page initialization.
+   */
+  function onLoad() {
+    var navigationItems = document.querySelectorAll('li');
+
+    for (var i = 0; i < navigationItems.length; ++i) {
+      navigationItems[i].addEventListener('click', onNavItemClicked);
+    }
+
+    cr.ui.FocusOutlineManager.forDocument(this);
+
+    window.addEventListener('message', handleWindowMessage);
+    uber.invokeMethodOnParent('navigationControlsLoaded');
+
+    document.documentElement.addEventListener('mousewheel', onMouseWheel);
+    document.documentElement.addEventListener('mousedown', onMouseDown);
+  }
+
+  /**
+   * Handles clicks on the navigation controls (switches the page and updates
+   * the URL).
+   * @param {Event} e The click event.
+   */
+  function onNavItemClicked(e) {
+    // Though pointer-event: none; is applied to the .selected nav item, users
+    // can still tab to them and press enter/space which simulates a click.
+    if (e.target.classList.contains('selected'))
+      return;
+
+    // Extensions can override Uber content (e.g., if the user has a history
+    // extension, it should display when the 'History' navigation is clicked).
+    if (e.currentTarget.getAttribute('override') == 'yes') {
+      window.open('chrome://' + e.currentTarget.getAttribute('controls'),
+          '_blank');
+      return;
+    }
+
+    uber.invokeMethodOnParent('showPage',
+       {pageId: e.currentTarget.getAttribute('controls')});
+
+    setSelection(/** @type {Element} */(e.currentTarget));
+  }
+
+  /**
+   * Handles postMessage from chrome://chrome.
+   * @param {Event} e The post data.
+   */
+  function handleWindowMessage(e) {
+    if (e.data.method === 'changeSelection')
+      changeSelection(e.data.params);
+    else if (e.data.method === 'adjustToScroll')
+      adjustToScroll(e.data.params);
+    else if (e.data.method === 'setContentChanging')
+      setContentChanging(e.data.params);
+    else
+      console.error('Received unexpected message', e.data);
+  }
+
+  /**
+   * Changes the selected nav control.
+   * @param {Object} params Must contain pageId.
+   */
+  function changeSelection(params) {
+    var navItem =
+        document.querySelector('li[controls="' + params.pageId + '"]');
+    setSelection(navItem);
+    showNavItems();
+  }
+
+  /**
+   * @return {Element} The currently selected nav item, if any.
+   */
+  function getSelectedNavItem() {
+    return document.querySelector('li.selected');
+  }
+
+  /**
+   * Sets selection on the given nav item.
+   * @param {Element} newSelection The item to be selected.
+   */
+  function setSelection(newSelection) {
+    var items = document.querySelectorAll('li');
+    for (var i = 0; i < items.length; ++i) {
+      items[i].classList.toggle('selected', items[i] == newSelection);
+      items[i].setAttribute('aria-selected', items[i] == newSelection);
+    }
+  }
+
+  /**
+   * Shows nav items belonging to the same group as the selected item.
+   */
+  function showNavItems() {
+    var hideSettingsAndHelp = loadTimeData.getBoolean('hideSettingsAndHelp');
+    $('settings').hidden = hideSettingsAndHelp;
+    $('help').hidden = hideSettingsAndHelp;
+    $('extensions').hidden = loadTimeData.getBoolean('hideExtensions');
+    $('history').hidden = loadTimeData.getBoolean('hideHistory');
+  }
+
+  /**
+   * Adjusts this frame's content to scrolls from the outer frame. This is done
+   * to obscure text in RTL as a user scrolls over the content of this frame (as
+   * currently RTL scrollbars still draw on the right).
+   * @param {number} scrollLeft document.body.scrollLeft of the content frame.
+   */
+  function adjustToScroll(scrollLeft) {
+    assert(isRTL());
+    document.body.style.webkitTransform = 'translateX(' + -scrollLeft + 'px)';
+  }
+
+  /**
+   * Enable/disable an animation to ease the nav bar back into view when
+   * changing content while horizontally scrolled.
+   * @param {boolean} enabled Whether easing should be enabled.
+   */
+  function setContentChanging(enabled) {
+    assert(isRTL());
+    document.documentElement.classList.toggle('changing-content', enabled);
+  }
+
+  /**
+   * Handles mouse wheels on the top level element. Forwards them to uber.js.
+   * @param {Event} e The mouse wheel event.
+   */
+  function onMouseWheel(e) {
+    uber.invokeMethodOnParent('mouseWheel',
+        {deltaX: e.wheelDeltaX, deltaY: e.wheelDeltaY});
+  }
+
+  /**
+   * Handles mouse presses on the top level element. Forwards them to uber.js.
+   * @param {Event} e The mouse down event.
+   */
+  function onMouseDown(e) {
+    uber.invokeMethodOnParent('mouseDown');
+  }
+
+  /**
+   * @return {Element} The currently selected iframe container.
+   * @private
+   */
+  function getSelectedIframe() {
+    return document.querySelector('.iframe-container.selected');
+  }
+
+  /**
+   * Finds the <li> element whose 'controls' attribute is |controls| and sets
+   * its 'override' attribute to |override|.
+   * @param {string} controls The value of the 'controls' attribute of the
+   *     element to change.
+   * @param {string} override The value to set for the 'override' attribute of
+   *     that element (either 'yes' or 'no').
+   */
+  function setNavigationOverride(controls, override) {
+    var navItem =
+        document.querySelector('li[controls="' + controls + '"]');
+    navItem.setAttribute('override', override);
+  }
+
+  return {
+    onLoad: onLoad,
+    setNavigationOverride: setNavigationOverride,
+  };
+
+});
+
+document.addEventListener('DOMContentLoaded', uber_frame.onLoad);

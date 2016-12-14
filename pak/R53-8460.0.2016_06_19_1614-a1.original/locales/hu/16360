@@ -1,0 +1,1 @@
+A görgetéssel kapcsolatos beviteli események külön szálakban való kezelése. Letiltása esetén a böngésző minden görgetési eseményt a fő szálon belül kezel. Vegye figyelembe, hogy ez drasztikusan csökkentheti a legtöbb webhely görgetési teljesítményét, és csak tesztelési célra készült.

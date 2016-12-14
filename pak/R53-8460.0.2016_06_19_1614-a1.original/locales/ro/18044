@@ -1,0 +1,3 @@
+<p>Când rulezi $1 într-un mediu de desktop acceptat, vor fi utilizate setările de proxy ale sistemului. Cu toate acestea, fie sistemul nu este acceptat, fie a existat o problemă la lansarea configurației sistemului.</p>
+
+        <p>Poți totuși să configurezi prin linia de comandă. Accesează <code>man $2</code> pentru mai multe informații despre semnalizatori și variabile de mediu.</p>

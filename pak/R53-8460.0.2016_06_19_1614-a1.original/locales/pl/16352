@@ -1,0 +1,1 @@
+Pokazuj okna aplikacji po pierwszym otwarciu. W przypadku dużych aplikacji z wieloma zasobami wczytywanymi synchronicznie okna będą wyświetlane ze sporym opóźnieniem. Opóźnienie będzie jednak nieznaczne w przypadku aplikacji, które wczytują swoje zasoby asynchronicznie.

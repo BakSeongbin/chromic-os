@@ -1,0 +1,1 @@
+If you delete a server certificate, you restore the usual security checks for that server and require that it uses a valid certificate.

@@ -1,0 +1,1 @@
+Izmanto stabilu logu kārtošanu pārskata režīmā. Tas nozīmē, ka pēc iespējas tiek samazināta logu kustība, atverot/aizverot pārskatu, kā arī starp pārskata sesijām.

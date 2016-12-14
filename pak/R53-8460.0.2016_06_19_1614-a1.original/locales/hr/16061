@@ -1,0 +1,1 @@
+Omogućuje proširenjima da izrade prozore ploča koji se otvaraju izvan okvira preglednika. Ako ploče nisu omogućene, otvorit će se skočni prozor. Prema zadanim postavkama prihvaćaju se samo proširenja s popisa dopuštenih. Ako je to pravilo omogućeno, prihvaćaju se sva proširenja. Ako je onemogućeno, ploče nisu dopuštene ni za jedno proširenje.

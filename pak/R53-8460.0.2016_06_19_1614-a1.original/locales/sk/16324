@@ -1,0 +1,1 @@
+Obnoviť stav inštalácie Spúšťača aplikácií pri každom reštartovaní. Keď je tento príznak nastavený, prehliadač Chrome zabudne pri každom spustení, že spúšťač bol nainštalovaný. Táto možnosť sa používa na testovanie inštalačného postupu spúšťača aplikácií.

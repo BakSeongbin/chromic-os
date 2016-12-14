@@ -1,0 +1,1 @@
+Den här flaggan gör webbläsaren Chrome osäker. Använd den endast om du förstår vad den kan göra. Observera att flaggan kan tas bort utan att du meddelas om detta. Om den har aktiverats kan ramar från en HTTPS-källa använda WebSocket med en osäker webbadress (ws://).

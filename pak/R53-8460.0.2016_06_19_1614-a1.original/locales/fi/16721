@@ -1,0 +1,1 @@
+{COUNT,plural, =0{vähintään 1 kohde synkronoiduilla laitteilla}=1{1 kohde (ja lisää synkronoiduilla laitteilla)}other{# kohdetta (ja lisää synkronoiduilla laitteilla)}}

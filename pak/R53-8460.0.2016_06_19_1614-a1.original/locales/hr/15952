@@ -1,0 +1,1 @@
+Omogućavanje elementa GDB-a za uklanjanje bugova. Time će se zaustaviti aplikacija lokalnog klijenta prilikom pokretanja te će se pričekati priključivanje alata za uklanjanje bugova u lokalnom klijentu (iz kompleta za razvoj softvera lokalnog klijenta).

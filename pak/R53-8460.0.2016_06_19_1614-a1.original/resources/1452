@@ -1,0 +1,913 @@
+<!doctype html>
+<!--
+------
+Copyright (c) 2013 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html i18n-values="dir:textdirection;lang:language">
+<head>
+  <meta charset="utf-8">
+  <title>Wallpaper Picker</title>
+  <style>/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* This file is dynamically processed by a C++ data source handler to fill in
+ * some per-platform/locale styles that dramatically alter the page. This is
+ * done to reduce flicker, as JS may not run before the page is rendered.
+ *
+ * There are two ways to include this stylesheet:
+ * 1. via its chrome://resources/ URL in HTML, i.e.:
+ *
+ *   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+ *
+ * 2. via the webui::AppendWebUICSSTextDefaults() method to directly append it
+ * to an HTML string.
+ * Otherwise its placeholders won't be expanded. */
+
+html {
+  direction: $i18n{textDirection};
+}
+
+body {
+  font-family: $i18nRaw{fontFamily};
+  font-size: $i18n{fontSize};
+}
+
+button {
+  font-family: $i18nRaw{fontFamily};
+}
+</style>
+  <style>/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* This file defines styles for form controls. The order of rule blocks is
+ * important as there are some rules with equal specificity that rely on order
+ * as a tiebreaker. These are marked with OVERRIDE. */
+
+/* Copyright 2015 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+[is='action-link'] {
+  cursor: pointer;
+  display: inline-block;
+  text-decoration: none;
+}
+
+[is='action-link']:hover {
+  text-decoration: underline;
+}
+
+[is='action-link']:active {
+  color: rgb(5, 37, 119);
+  text-decoration: underline;
+}
+
+[is='action-link'][disabled] {
+  color: #999;
+  cursor: default;
+  pointer-events: none;
+  text-decoration: none;
+}
+
+[is='action-link'].no-outline {
+  outline: none;
+}
+
+
+/* Default state **************************************************************/
+
+:-webkit-any(button,
+             input[type='button'],
+             input[type='submit']):not(.custom-appearance),
+select,
+input[type='checkbox'],
+input[type='radio'] {
+  -webkit-appearance: none;
+  -webkit-user-select: none;
+  background-image: -webkit-linear-gradient(#ededed, #ededed 38%, #dedede);
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 2px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08),
+      inset 0 1px 2px rgba(255, 255, 255, 0.75);
+  color: #444;
+  font: inherit;
+  margin: 0 1px 0 0;
+  outline: none;
+  text-shadow: 0 1px 0 rgb(240, 240, 240);
+}
+
+:-webkit-any(button,
+             input[type='button'],
+             input[type='submit']):not(.custom-appearance),
+select {
+  min-height: 2em;
+  min-width: 4em;
+  padding-top: 1px;
+  padding-bottom: 1px;
+
+}
+
+:-webkit-any(button,
+             input[type='button'],
+             input[type='submit']):not(.custom-appearance) {
+  -webkit-padding-end: 10px;
+  -webkit-padding-start: 10px;
+}
+
+select {
+  -webkit-appearance: none;
+  -webkit-padding-end: 24px;
+  -webkit-padding-start: 10px;
+  /* OVERRIDE */
+  background-image: -webkit-image-set(url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAAICAQAAACxSAwfAAAAUklEQVQY02P4z0AMRGZGMaShwCisyhITmb8huMzfEhOxKvuvsGAh208Ik+3ngoX/FbBbClcIUcSAw21QhXxfIIrwKAMpfNsEUYRXGVCEFc6CQwBqq4CCCtU4VgAAAABJRU5ErkJggg==) 1x, url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACcAAAAQCAQAAAA/1a6rAAAAQUlEQVR4Xu3MsQnAMBAEMI1+myf9gw0+3ASCenmu+mQn2yGn3S4Mp906DEW3CEPfzTD03QxD380w3OmIUHe9v+u9QwAt93yns5cAAAAASUVORK5CYII=) 2x),
+      -webkit-linear-gradient(#ededed, #ededed 38%, #dedede);
+  background-position: right center;
+  background-repeat: no-repeat;
+}
+
+html[dir='rtl'] select {
+  background-position: center left;
+}
+
+input[type='checkbox'] {
+  height: 13px;
+  position: relative;
+  vertical-align: middle;
+  width: 13px;
+}
+
+input[type='radio'] {
+  /* OVERRIDE */
+  border-radius: 100%;
+  height: 15px;
+  position: relative;
+  vertical-align: middle;
+  width: 15px;
+}
+
+/* TODO(estade): add more types here? */
+input[type='number'],
+input[type='password'],
+input[type='search'],
+input[type='text'],
+input[type='url'],
+input:not([type]),
+textarea {
+  border: 1px solid #bfbfbf;
+  border-radius: 2px;
+  box-sizing: border-box;
+  color: #444;
+  font: inherit;
+  margin: 0;
+  /* Use min-height to accommodate addditional padding for touch as needed. */
+  min-height: 2em;
+  padding: 3px;
+  outline: none;
+
+}
+
+input[type='search'] {
+  -webkit-appearance: textfield;
+  /* NOTE: Keep a relatively high min-width for this so we don't obscure the end
+   * of the default text in relatively spacious languages (i.e. German). */
+  min-width: 160px;
+}
+
+/* Remove when https://bugs.webkit.org/show_bug.cgi?id=51499 is fixed.
+ * TODO(dbeam): are there more types that would benefit from this? */
+input[type='search']::-webkit-textfield-decoration-container {
+  direction: inherit;
+}
+
+/* Checked ********************************************************************/
+
+input[type='checkbox']:checked::before {
+  -webkit-user-select: none;
+  background-image: -webkit-image-set(url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAQAAAADpb+tAAAAaElEQVR4Xl3PIQoCQQCF4Y8JW42D1bDZ4iVEjDbxFpstYhC7eIVBZHkXFGw734sv/TqDQQ8Xb1udja/I8igeIm7Aygj2IpoKTGZnVRNxAHYi4iPiDlA9xX+aNQDFySziqDN6uSp6y7ofEMwZ05uUZRkAAAAASUVORK5CYII=) 1x, url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAQAAABuvaSwAAAAvElEQVR4XrXPMUrDYBzG4UeRZnAQnFxq3XT3AsVABm8QPIHQIeAJuoqb2s1BcHAIin4HVLqEvx9NQgb5rc/wvn4mNBUbqlKDcezCp6Qexxx7lbapx/CBe6mrHsYrKXQ7hKtIre1nOD/W9eiQiK80inis680JEc+1kien+TEfzom4sJG2aZXxmG9LIqaRerohx6V2J72zl2NY2OTUgxm7MEU25sURfZg4590Zw5iFZ8mXS0ZwN+eaPjyh/8O/H7bzPJ5NOo0AAAAASUVORK5CYII=) 2x);
+  background-size: 100% 100%;
+  content: '';
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+input[type='radio']:checked::before {
+  background-color: #666;
+  border-radius: 100%;
+  bottom: 3px;
+  content: '';
+  display: block;
+  left: 3px;
+  position: absolute;
+  right: 3px;
+  top: 3px;
+}
+
+/* Hover **********************************************************************/
+
+:enabled:hover:-webkit-any(
+    select,
+    input[type='checkbox'],
+    input[type='radio'],
+    :-webkit-any(
+        button,
+        input[type='button'],
+        input[type='submit']):not(.custom-appearance)) {
+  background-image: -webkit-linear-gradient(#f0f0f0, #f0f0f0 38%, #e0e0e0);
+  border-color: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12),
+      inset 0 1px 2px rgba(255, 255, 255, 0.95);
+  color: black;
+}
+
+:enabled:hover:-webkit-any(select) {
+  /* OVERRIDE */
+  background-image: -webkit-image-set(url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAAICAQAAACxSAwfAAAAUklEQVQY02P4z0AMRGZGMaShwCisyhITmb8huMzfEhOxKvuvsGAh208Ik+3ngoX/FbBbClcIUcSAw21QhXxfIIrwKAMpfNsEUYRXGVCEFc6CQwBqq4CCCtU4VgAAAABJRU5ErkJggg==) 1x, url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACcAAAAQCAQAAAA/1a6rAAAAQUlEQVR4Xu3MsQnAMBAEMI1+myf9gw0+3ASCenmu+mQn2yGn3S4Mp906DEW3CEPfzTD03QxD380w3OmIUHe9v+u9QwAt93yns5cAAAAASUVORK5CYII=) 2x),
+      -webkit-linear-gradient(#f0f0f0, #f0f0f0 38%, #e0e0e0);
+}
+
+/* Active *********************************************************************/
+
+:enabled:active:-webkit-any(
+    select,
+    input[type='checkbox'],
+    input[type='radio'],
+    :-webkit-any(
+        button,
+        input[type='button'],
+        input[type='submit']):not(.custom-appearance)) {
+  background-image: -webkit-linear-gradient(#e7e7e7, #e7e7e7 38%, #d7d7d7);
+  box-shadow: none;
+  text-shadow: none;
+}
+
+:enabled:active:-webkit-any(select) {
+  /* OVERRIDE */
+  background-image: -webkit-image-set(url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAAICAQAAACxSAwfAAAAUklEQVQY02P4z0AMRGZGMaShwCisyhITmb8huMzfEhOxKvuvsGAh208Ik+3ngoX/FbBbClcIUcSAw21QhXxfIIrwKAMpfNsEUYRXGVCEFc6CQwBqq4CCCtU4VgAAAABJRU5ErkJggg==) 1x, url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACcAAAAQCAQAAAA/1a6rAAAAQUlEQVR4Xu3MsQnAMBAEMI1+myf9gw0+3ASCenmu+mQn2yGn3S4Mp906DEW3CEPfzTD03QxD380w3OmIUHe9v+u9QwAt93yns5cAAAAASUVORK5CYII=) 2x),
+      -webkit-linear-gradient(#e7e7e7, #e7e7e7 38%, #d7d7d7);
+}
+
+/* Disabled *******************************************************************/
+
+:disabled:-webkit-any(
+    button,
+    input[type='button'],
+    input[type='submit']):not(.custom-appearance),
+select:disabled {
+  background-image: -webkit-linear-gradient(#f1f1f1, #f1f1f1 38%, #e6e6e6);
+  border-color: rgba(80, 80, 80, 0.2);
+  box-shadow: 0 1px 0 rgba(80, 80, 80, 0.08),
+      inset 0 1px 2px rgba(255, 255, 255, 0.75);
+  color: #aaa;
+}
+
+select:disabled {
+  /* OVERRIDE */
+  background-image: -webkit-image-set(url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAAICAQAAACxSAwfAAAASklEQVQY02P4z0AMRGZGMaShwCisyhITG/4jw8RErMr+KyxYiFC0YOF/BeyWIikEKWLA4Ta4QogiPMpACt82QRThVQYUYYWz4BAAGr6Ii6kEPacAAAAASUVORK5CYII=) 1x, url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAQCAQAAADQF8WVAAAARElEQVR4Xu3MsQ0AIAwEsYx+m4fySsgLOuTe1Re9z4De4DzbdVDnmZ0ENcrsZJVkdoIKMzurMLOzSjNhlWfCapBlfpZbeMFeGdxKIEQAAAAASUVORK5CYII=) 2x),
+      -webkit-linear-gradient(#f1f1f1, #f1f1f1 38%, #e6e6e6);
+}
+
+input:disabled:-webkit-any([type='checkbox'],
+                           [type='radio']) {
+  opacity: .75;
+}
+
+input:disabled:-webkit-any([type='password'],
+                           [type='search'],
+                           [type='text'],
+                           [type='url'],
+                           :not([type])) {
+  color: #999;
+}
+
+/* Focus **********************************************************************/
+
+:enabled:focus:-webkit-any(
+    select,
+    input[type='checkbox'],
+    input[type='number'],
+    input[type='password'],
+    input[type='radio'],
+    input[type='search'],
+    input[type='text'],
+    input[type='url'],
+    input:not([type]),
+    :-webkit-any(
+         button,
+         input[type='button'],
+         input[type='submit']):not(.custom-appearance)) {
+  /* OVERRIDE */
+  -webkit-transition: border-color 200ms;
+  /* We use border color because it follows the border radius (unlike outline).
+   * This is particularly noticeable on mac. */
+  border-color: rgb(77, 144, 254);
+  outline: none;
+}
+
+/* Checkbox/radio helpers ******************************************************
+ *
+ * .checkbox and .radio classes wrap labels. Checkboxes and radios should use
+ * these classes with the markup structure:
+ *
+ *   <div class="checkbox">
+ *     <label>
+ *       <input type="checkbox"></input>
+ *       <span>
+ *     </label>
+ *   </div>
+ */
+
+:-webkit-any(.checkbox, .radio) label {
+  -webkit-user-select: none;
+  /* Don't expand horizontally: <http://crbug.com/112091>. */
+  align-items: center;
+  display: inline-flex;
+  padding-bottom: 7px;
+  padding-top: 7px;
+}
+
+:-webkit-any(.checkbox, .radio) label input {
+  flex-shrink: 0;
+}
+
+:-webkit-any(.checkbox, .radio) label input ~ span {
+  -webkit-margin-start: 0.6em;
+  /* Make sure long spans wrap at the same horizontal position they start. */
+  display: block;
+}
+
+:-webkit-any(.checkbox, .radio) label:hover {
+  color: black;
+}
+
+label > input:disabled:-webkit-any([type='checkbox'], [type='radio']) ~ span {
+  color: #999;
+}
+
+extensionview {
+  display: inline-block;
+  height: 300px;
+  width: 300px;
+}
+</style>
+  <style>/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+cr-menu {
+  -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, .50);
+  background: white;
+  border-radius: 2px;
+  color: black;
+  cursor: default;
+  left: 0;
+  margin: 0;
+  outline: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 8px 0;
+  position: fixed;
+  white-space: nowrap;
+  z-index: 3;
+}
+
+cr-menu:not(.decorated) {
+  display: none;
+}
+
+cr-menu > * {
+  box-sizing: border-box;
+  display: block;
+  margin: 0;
+  text-align: start;
+  width: 100%;
+}
+
+cr-menu > :not(hr) {
+  -webkit-appearance: none;
+  background: transparent;
+  border: 0;
+  color: black;
+  font: inherit;
+  line-height: 18px;
+  outline: none;
+  overflow: hidden;
+  padding: 0 19px;
+  text-overflow: ellipsis;
+}
+
+cr-menu > hr {
+  background: -webkit-linear-gradient(left,
+                                      rgba(0, 0, 0, .10),
+                                      rgba(0, 0, 0, .02) 96%);
+  border: 0;
+  height: 1px;
+  margin: 8px 0;
+}
+
+cr-menu > [disabled] {
+  color: rgba(0, 0, 0, .3);
+}
+
+cr-menu > [hidden] {
+  display: none;
+}
+
+cr-menu > :not(hr):-webkit-any([selected], :active) {
+  background-color: rgba(0, 0, 0, .06);
+}
+
+cr-menu > [checked]::before {
+  content: -webkit-image-set(url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAQAAABKmM6bAAAAP0lEQVQYlWNgQAXGDILoAu8YlBiAosZIAv9BQkpAhjFc4B1IoxKYUQ4VAOsQBHP+IwQYkLQYo9p0F0ngPwYEAB7sIJx+g9KdAAAAAElFTkSuQmCC) 1x, url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAQAAAD8x0bcAAAAlElEQVR4Xq3KoW1CURQA0EPNs60lsAEToNolYAOwhD2aWroBLAGKCdgAggX7DNyaL3pD+P2iOfaIDronz/R8tieKtWhPr7aiPQ0cRE4rJZWRo8iJsNcH8O7SlLvl7xTOxmCiNqWaklOoZhZuTbn6QE6ZkxE5zdVUDobkBGNn0dh54zFB314IG4VnieLblxceU7t/Tj+dadMtVYp4hwAAAABJRU5ErkJggg==) 2x);
+  display: inline-block;
+  height: 9px;
+  margin: 0 5px;
+  width: 9px;
+}
+
+cr-menu > [checked] {
+  -webkit-padding-start: 0;
+}
+
+cr-menu > [selected][checked]:active::before {
+  content: -webkit-image-set(url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAQAAABKmM6bAAAAQklEQVR4Xl3LQQ0AIAwDwFmYBSxMHGqxgIVSmjSEpZ/ulgb+FLLDxggkywNcGixlICZJZQr05FAHDCRPDCLhEph6DuGWaFS/FhbPAAAAAElFTkSuQmCC) 1x, url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAQAAAD8x0bcAAAAkUlEQVR42rXRsRHBYBgG4NCkpXVskAlSsQQb0Dp7OC0bsARVJsgGXFraNDzuFM4fhILvbb7iqd438kV+gBrmn1BsTT1q2VKPunJCtBQHJLGnish07qTvCLiYPSIK6e0fKgGlkShElMamzoCTQdjT8x0k1TInyoDkeq8aTxUAdtrvZunIwEZct11sZaH51cD/RFfxwIiG5OFb1QAAAABJRU5ErkJggg==) 2x);
+}
+
+/* TODO(zvorygin) menu > [shortcutText]::after - this selector is much better,
+ * but it's buggy in current webkit revision, so I have to use [showShortcuts].
+ */
+cr-menu[showShortcuts] > ::after {
+  -webkit-padding-start: 30px;
+  color: #999;
+  content: attr(shortcutText);
+  float: right;
+}
+</style>
+
+  <style>/* Copyright (c) 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+html {
+  height: 100%;
+}
+
+body {
+  -webkit-app-region: drag;
+  background-color: rgba(20, 20, 20, 0.93);
+  color: #999;
+  font-size: 80%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Click events are not received in draggable area. Making all clickable areas
+ * not draggable to receive click events.
+ * TODO(bshe): Remove this when http://crbug.com/142275 fixed.
+ */
+.dialog-topbar #navstrip,
+.dialog-topbar #window-close-button,
+.overlay-container .page,
+#author-website,
+/* TODO(bshe): Once http://crbug.com/369651 fixed, use .image-picker instead of
+ * #category-container.
+ */
+#category-container,
+#surprise-me {
+  -webkit-app-region: no-drag;
+}
+
+.dialog-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.dialog-topbar {
+  -webkit-box-align: center;
+  display: -webkit-box;
+  height: 54px;
+  overflow: hidden;
+  padding: 0 15px;
+  position: relative;
+}
+
+.dialog-topbar .spacer {
+  -webkit-box-flex: 1;
+}
+
+#categories-list {
+  -webkit-box-orient: horizontal;
+  display: -webkit-box;
+  height: 54px;
+  outline: none;
+  width: 100%;
+}
+
+#categories-list > li {
+  -webkit-box-align: center;
+  -webkit-transition: border-top 130ms ease;
+  -webkit-user-select: none;
+  border-top: 4px solid transparent;
+  color: #777;
+  display: -webkit-box;
+  height: 50px;
+}
+
+#categories-list:not([disabled]) > li:hover {
+  border-top-color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+}
+
+#categories-list > li[selected] {
+  color: rgb(70, 78, 90);
+  cursor: default;
+}
+
+#categories-list > li > div {
+  line-height: 34px;
+  padding: 0 10px;
+}
+
+#categories-list > li[selected] > div {
+  color: #eee;
+}
+
+.close {
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 14px;
+  padding: 10px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 14px;
+}
+
+#window-close-button {
+  background-image: -webkit-image-set(url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAQAAAC1QeVaAAAATklEQVR4XqXPwQnAMAxD0W7g/ceJIQFrqV8IJcYYegk6Ph2kh5/c48SxDYYzKw5AGIYAr2jEZn2lxORDDdWwkIjkRD+Dog9a5coq2HKJL6US5eLCMj4tAAAAAElFTkSuQmCC) 1x, url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAQAAADYBBcfAAAAjElEQVR4Xu3UOwqFMBCGUfcVzBpE927hRZvbGOuk/iyHDP5gBDtJFZjDhHmk4+G5DT44sLPSe0DPSmLQ8A9AJlYskgHYNZzBqGPw0zCQjTqWCQr6wOhuvjiaCmZQUc0MalqMNUDL9+JTjZWbxfGspR3BWNsALDVzdNEwVczTpOHEwXa5VhsH49s/wAdP+VOX+rrHR7EAAAAASUVORK5CYII=) 2x);
+}
+
+#window-close-button:hover {
+  background-image: -webkit-image-set(url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAQAAAC1QeVaAAAAlUlEQVR4XoXQwWnDQBCG0SnCUScrsEFpQqnIAZcXFKeRXScHOQe/sJiFuYXv+C4zf3h2cHG1223ODqL3pFUl1awDVw9yeHQOLxpOFhVUixOaKZzBq1BUVREWcAkbqObOnRQVXMNO4kFwz1gy4jtsiYo58ec4aBkHmfNBk4ZjfsURzfTPCL03N1K3TiIP/+XXjw/vY/g/nRk5UWXfq8kAAAAASUVORK5CYII=) 1x, url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAQAAADYBBcfAAABOElEQVR4Xp3VQW6CQBhA4R/dyVrcdIOpkV4Cu2rjNfA06FXaeAYtbqw3wAOQuJMVq9eF+cM4YQbSx4qEL2GGmUGwr4CUnIKKhoaKgi0pgf3cMxqRUdJVScbIBWPO+DoTd8F3bvR1I7XhBw1Davg04ZI7Q6tZKhzr2NgzY84RuyNzIvY6VsYPmKG9IAghB8wOhAjCDG2DCAEl2hui1GYIr2glgbCirSBsqcVCCtpWQo7ZwaTWnVku/ICLOhkchQpc1MmgEhrw0kkHg6Yfhg7431f1Tc7EPzlbF/N/DtcCmPQvAHPJLZ6ZRRdoJSNB2KBFJrMpEdpGt9Uvj76YEnduq5gp3zy66LYSEmqGVpOYR8d68NGxRhQqremrVmZCIeGCrwuJ70C+0tXVdyArTtlx0l8AJ3akilr4B2bQ5rio/VK0AAAAAElFTkSuQmCC) 2x);
+}
+
+#bar {
+  -webkit-transition: left 130ms ease-in-out;
+  background-color: #eee;
+  height: 4px;
+  position: absolute;
+  top: 0;
+}
+
+.dialog-main {
+  display: flex;
+  flex: 1;
+}
+
+#category-container {
+  flex: 1;
+  position: relative;
+}
+
+#spinner-container {
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
+  background: url(chrome://resources/images/throbber_medium.svg) center/32px
+      no-repeat;
+  display: -webkit-box;
+  height: 287px;
+  padding-bottom: 15px;
+  padding-top: 5px;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+#wallpaper-set-by-message {
+  -webkit-padding-end: 5px;
+  -webkit-padding-start: 15px;
+  height: 30px;
+}
+
+#wallpaper-set-by-message:empty {
+  display: none;
+}
+
+.image-picker {
+  -webkit-padding-end: 5px;
+  -webkit-padding-start: 15px;
+  display: block;
+  /* Set font size to 0 to remove the extra vertical margin between two rows of
+   * thumbnails.
+   * TODO(bshe): Find the root cause of the margin.
+   */
+  font-size: 0;
+  height: 287px;
+  outline: none;
+  overflow-y: auto;
+  padding-bottom: 15px;
+  padding-top: 5px;
+}
+
+.image-picker .spacer {
+  display: block;
+}
+
+.image-picker.small {
+  height: 275px;
+}
+
+.image-picker > * {
+  display: inline-block;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+.image-picker [role=listitem] {
+  -webkit-margin-end: 1px;
+  height: 68px;
+  margin-bottom: 1px;
+  position: relative;
+  width: 108px;
+}
+
+.image-picker:not([disabled]) [role=listitem]:hover {
+  outline: 3px solid #f1f1f1;
+  z-index: 1;
+}
+
+.image-picker .check {
+  background-image: -webkit-image-set(url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACmklEQVR4Xs2XT28SQRjGOakhKQsFtMQulZgg9YLeWvRM/Qp8CPkAAt8CjjXb1MgBbtQDtQeSFuHg0tIWt9YQxWKUkEYS3GhFi++T7Boz6f5hocRJfsmbeWfmeVjmr83juW4WOxElnhACsUm8AkosIKe0sZsd14wwTySJbeK1SbaVPvw4Bq4Qj4kKBCyCvnGMNaqBeeI5BCYExuLNGggRmxCYMBgzZGQALl9C4JLA2LyWgavqZ79kstC6yEAcAlMizhqYJ6pTNAAt/l8DSSSmTEo1YGc2mbHwem+Iq6tPOwCxwWZlh4HopMTn5ny1XC53OlRKPp8/RZ1OnygMJCYh7vPdrBWLxd6QKRsbL7663V6tL5GAAcFIIBC4XQNa+YWFwF65XO6z4rIsn8disRMysKuhIcDAlp54MBiq1+v7MkB8cb4us+K9Xu98ZeXRF45zSmRAy/yWTe+wCYfvHxwfv/uhDooYdVp5lU6n8zsSefjZ4XAeud2ePb3DStMAXFcqlW/s4O12+2x5+UFjaSnSQMzmW63Wr3D43ifll+8anZaafwE6Ly7ebUrS0YAV6Xa7A8DWS5I0CAbvnHCc6w0rrvcXCFpfwOl0Nfz+Wy1RFH8ODQraUNuPJN4wKQ4E3WWomqC1/KFUKp1piSOHNmjLTDgjEsxGpGnikCbT+0Kh8J0VRx1yaDOiOIgyW7GeidlDmljN9fVnsiqOGHXIWRDfUbdikELCwIRIQgczM1wznU73M5lMHzHqkBvnMAK8uePYK7pcs/sOB/cWIEadxePYb/VCImKWA8TjXkjYK1l2Sleya//LpXT613IbFSMDAC6zE/7svJWnWXzMy2rVytOMxU8kiZ0RhMtESl1qelh9nq8pE6oKlHjNyvP8D6VqcJt3dXYUAAAAAElFTkSuQmCC) 1x, url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAEvklEQVR4XuTQsU7CUBiGYc/QpUk3qAN4ASzeRLvWO+hGumngGugVMFMHRkJ0c4E04Px5Id6FL5sxStByyulxeJI///Tlver1YttiJBijxBIveIUAbn5YosQYCWLb+2wFGGGKNdTQGlOMXA8QIscKsmSFHKFLASIUqKGW1CgQXTKAQYYtdCFbZDBtB7hBBTmiwrCtACn2kGP2SG0GMJhAjpvAnDtAgBLqiBLBuQIEmEMdM0fQNIDBDOqoGUyTAPdQxz38NUACeSL9bYABdpAndhicGsBgAXlmAXNKgAzy1B2OBoiwgTy1QXQsQAF5rvgpQIga8lyN8LsAOfRP5F8DGDxBrur3r9+q6vH94HA33PAM8znALeSqj/atJaaJIAzrwYtJu9sHAhFBL1UvVoMHQrwBciNE8IgJHjABfKS9gTf0QPEk4Qan4qlFY5pIwEfQCPXgIghstYhAGx/QgK1NQUqh7hfrhjQhbGdnYAOd5Es2u/N/0+/fR/fbmT8vL3/U5XItJVPN7XYvYZ9K3nNbE2DTqvj8/OOjAwMD4WRaGxwcDOOYCm771gS4tSi+qOjU2PDwcDS5TfN6vVH0IeTv+5+AY1oUb7GcGZdaLLlDQx/0JdSQq0nTY7VemPD7p/8kFbaRkZGoyZRDcjtUIAGNWhJfUlI6FQwG15SKDwQCieLii1+lBHwg0NCIBDhoCSgvvywCpPFlZRW+UCi0rlS8z+dbt1hOBznOMEV4BTiQACcN8dXVV/yRSCQBYJs0Xql4QRDihYUnA5J4kfDsA04koF+t+Lq6azMrK6sbyVTDNvaRxCvB0NDQmvQeMMfzpGdehgcJeKOCQGhqap6Nx+ObybSGfc3NN+fQR2m8Eng8nlWTyTwriZ9UKR54eUiN+JaW1mAisf1Vi2OtrXeD6EsSn47e3kcxjuNneN5IQzzgJU2A0NHx4Pvm5s4nDn3QFzEE8TK6urqiOh0H8ROSeJlLJbxEtwAeOu3tjsVMBHR3dy/CxADYVhqHMdra2iI6nf6LwWD8aDZTEy/fAv0kCdDr+U82m205k0tYMjTLgNIAcEtj/JLO/LTRCPHyVUQLHtK/QcFoNI/r9Zy/vv76kvwQowhwghtjYCwG4gGn/CKkIgmfa2pqQ7FYjFoSwFVbezUEbobiAYfaV2EkYQy3Q2Vl5c9wOKw6CeAAFzjBzVC8/CpcoZbIZPqXhNLSSz8WFhY2SMUjFhzgAieBICIzlEuDDGaE43if1Xr+2/z8fCJT8TA1iAWHbGzYIw8JAProJcEgwqCIokhiasRdFP9467yAHQEUkzAFowLDwtrU0PokZqVJDoMCowLDAuNCZGrYw5r+WfwJgyRMwrjAwLAzNeSfxZlPjEAYjAsMjNPZGyMwNaxQt2tTYzAuMDAwMp2dnb8JTA37qTH2k6M5AowM3uwAAlNDEw17NT0uwEQB2N7D6XH9Tgskqg7wAgn5H6FnH4rvUbpEBijYh4ukCjKtFyg/wMvkZNzaB+JvZ5fKZhdLZ5fLZwsmsiUz2aIpNmVzVRoom6vCbzmIhZM3MLYWS2ddDIW76JXOsi+etlP6zAYOO/viafbl87hN7ktwpkrl36YEvktd0k9xLNWnYbfK5/8CPVq/9LY+rPwAAAAASUVORK5CYII=) 2x);
+  height: 32px;
+  left: 38px;
+  position: absolute;
+  top: 18px;
+  width: 32px;
+  z-index: 2;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #aaa;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+/* The width and height of img tag need to be set here. Otherwise, an incorrect
+ * image size may be used during layout. Some images may be misaligned as a
+ * result. See http://code.google.com/p/chromium/issues/detail?id=148480 for
+ * screen shot.
+ */
+.image-picker img {
+  height: 68px;
+  width: 108px;
+}
+
+.image-picker[disabled]~.bottom-bar #online-wallpaper-attribute,
+.image-picker[disabled] .check {
+  visibility: hidden;
+}
+
+.image-picker[disabled],
+.image-picker-offline img:not([offline]) {
+  -webkit-filter: grayscale(1);
+}
+
+#wallpaper-attribute {
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+}
+
+.bottom-bar {
+  -webkit-box-align: center;
+  -webkit-box-orient: horizontal;
+  -webkit-box-pack: end;
+  display: -webkit-box;
+  padding: 11px 15px 8px 15px;
+}
+
+.bottom-bar > .spacer {
+  -webkit-box-flex: 1;
+}
+
+#online-wallpaper-attribute {
+  display: -webkit-box;
+}
+
+#attribute-image {
+  -webkit-margin-end: 10px;
+  height: 34px;
+  width: 54px;
+}
+
+#author-website {
+  color: #999;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 240px;
+}
+
+/* [hidden] does display:none, but its priority is too low. */
+[hidden],
+body[custom] [visibleif]:not([visibleif~='custom']),
+body:not([custom]) [visibleif~='custom'] {
+  display: none !important;
+}
+
+body[surprise-me-disabled] [visibleif]:not([visibleif~='surprise-me-disabled']),
+body:not([surprise-me-disabled]) [visibleif~='surprise-me-disabled'] {
+  display: none !important;
+}
+
+.progress-bar {
+  background-color: rgba(255, 255, 255, 0.7);
+  height: 6px;
+  position: absolute;
+  top: 62px;
+  width: 100%;
+}
+
+.progress-track {
+  -webkit-transition: width 1ms linear;
+  background-color: rgb(66, 129, 244);
+  height: 100%;
+  width: 0;
+}
+
+.overlay-container {
+  -webkit-box-align: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-pack: center;
+  background-color: rgba(25, 25, 25, 0.25);
+  bottom: 0;
+  display: -webkit-box;
+  left: 0;
+  overflow: auto;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 4;
+}
+
+.overlay-container .page {
+  -webkit-box-orient: vertical;
+  background: rgb(255, 255, 255);
+  border-radius: 3px;
+  box-shadow: 0 4px 23px 5px rgba(0, 0, 0, 0.2), 0 2px 6px rgba(0, 0, 0, 0.15);
+  color: #333;
+  display: -webkit-box;
+  padding: 20px;
+  position: relative;
+  width: 302px;
+}
+
+#error-container {
+  z-index: 5;
+}
+
+.overlay-container .close {
+  background-image: -webkit-image-set(url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAQAAAC1QeVaAAAAUklEQVR4XqXP0QnAMAgAUTdw19uwQgK6VBqaUhDb/oT7fCIq46dtpGEoMlOMlvFgEOgsGFhGxS+ONZTx5kVIxfjCRYG/rbXnIK8H9fRKT1jaxBOeDsKi8maFLwAAAABJRU5ErkJggg==) 1x, url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAQAAADYBBcfAAAAcUlEQVR4Xu3UQQrAIAxEUc+cCyQ3t64G/GVUCt3J7AYeBBLS+secggujRY40RL2HGX2EVL2HFV0UbKQ8nCjZatSJkq0g6MSWkFRsB0nFzmEK5h6CkXpIVliOhWRcjodkoB6SkXpYYKInt/pm6v/+ABc+SKXnpxeJpRkAAAAASUVORK5CYII=) 2x);
+}
+
+.overlay-container .close:hover {
+  background-image: -webkit-image-set(url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAQAAAC1QeVaAAAAnUlEQVR4Xn2QQQ6CQAxFewjkJkMCyXgJPMk7AiYczyBeZEAX6AKE0pDGhXm7vrZpv6CQ0dIzrXQ0ZHtVFTWJxTFQq1Q1q/DMmxZODCxURJtORCqdzoVGS2eEQFoJCFFrrdBZf6E67E0qe2FicdqU8vYy/MjnsdYWFk7f7SDicVDhD8r1ldK/Qmmv/A9h48LoFaPF54J/8OHFjSsW/BfHmc1OTdrsMgAAAABJRU5ErkJggg==) 1x, url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAQAAADYBBcfAAABR0lEQVR4XpXVsY6CQBAG4A0hPJa14V0gFxMSvSiNVkReYWNJIxRYLG+APo0YaEhWjjVyw/3HkDv+bsIXwJkdxQqirMyTZVyFOuiCLtRxJa+Zpyy87yeyE3loV93vHNpEKpuBl0VUG8Alqi+LCZh+bDUCzFZnHsDzJiAwk6A7f45gvtw8AbBZP/PlGyqHvk31QYD1qFbOCyaSmLmIcvXk1ENlUQMK44gSe6UYNUdZIvUNYSgwSuoLWRJDiowiSxFXhJAio8R3EWoiSIlhQi2w8UgLZhAYqL6h4mCoGYYUXzWuOFZAc+DHkVeGYXOwHanPM56mPo0cMp6akbPNkJ/oFmBMvRd4rApgU/WoUc5wkN31fw6yO14duz+vjh2tjjelp/JPMwygeeGomWNRk7szC3nfTqE9v5AJZ568HR/DX8DxIW+ZNyDKF3a0GDYRA14BAAAAAElFTkSuQmCC) 2x);
+}
+
+/* Custom wallpaper thumbnail container. */
+#add-new img {
+  content: -webkit-image-set(url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGwAAABEAgMAAAAZ9zgFAAAACVBMVEX///////////+OSuX+AAAAA3RSTlMfTEGwG1GcAAAAJ0lEQVR4AWMgA4yCUTAKNPDIiVBfTjU0Ap8cfdyC8DvpYBSMglEAAAkxAm0U1KiGAAAAAElFTkSuQmCC) 1x, url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANgAAACIAgMAAAD4wM2JAAAADFBMVEX////////////////1pQ5zAAAABHRSTlMfTEcsT4ng1gAAAEhJREFUeF7t1CEOgAAIQFGLgcLZLHaO6BHVZJY5Ke/1vzHYWKYAAADk0cqiWtm6fZHJcr+8v1zcWTWz5pCDm5RFdZ/CEAAAgBNK5Q3po98wjQAAAABJRU5ErkJggg==) 2x);
+}
+
+.image-picker:not([disabled]) #add-new:hover img {
+  content: -webkit-image-set(url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGwAAABEAgMAAAAZ9zgFAAAACVBMVEX///////////+OSuX+AAAAA3RSTlM9i3hQbAqTAAAAJ0lEQVR4AWMgA4yCUTAKNPDIiVBfTjU0Ap8cfdyC8DvpYBSMglEAAAkxAm0U1KiGAAAAAElFTkSuQmCC) 1x, url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANgAAACIBAMAAAB3gDgpAAAAElBMVEX///////////////////////+65XQCAAAABnRSTlM9i4NTVIJcA2EBAAAAU0lEQVR4Xu3VQQ0AIRAEwbWwOCDnAAlowL+W+6BhA6TKQL8mE5cCAAAAAAAYX9TpLepknhATExu5VWyt59Zei83clp2dERN79TznijsBAAAAAAD8+nIGW+8EqbIAAAAASUVORK5CYII=) 2x);
+}
+
+#wallpaper-selection-container #content div {
+  margin: 20px 0 5px 0;
+}
+
+#wallpaper-selection-container #warning span {
+  line-height: 17px;
+}
+
+#wallpaper-selection-container select {
+  height: 30px;
+}
+
+#wallpaper-selection-container input[type='file']::-webkit-file-upload-button {
+  height: 30px;
+}
+
+#wallpaper-selection-container .remember-icon {
+  content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAARCAQAAACRZI9xAAABHElEQVR4XlXRsUoDQRAG4OksvCKNvWBhLVpbWAhqYash2iqCehaCjYivMHe52yUu7DQ+haxPYicmGg2xFvnN4i034WdhZvZjYRlCE84458AfjNl55ivO0k0CB/zGmMuQu4rwLaOAhYPflXW/7WBRRHbXED5kGHhIzCpIVmLlYSI6AhEv8tBCmtQboGotdRb8yR3iSwNJQX8LVG62vQGfUxG8ItU+qL/XEo/iieyraNIDVV09sSNyP5rUZ6D6VBP3S36sibkBmWtN/JQkaGIn/GK+NJFAPp8jj7xjB5r4nFwmIzVYBvklRSauQyBRP3jI64XBiSLHzY7kLpESjLIF92rT0pP3SOL6zD8YxxcUAUkmFxJkKpBvCbM6Szd/QGqLoD4RUZsAAAAASUVORK5CYII=);
+}
+
+#surprise-me #checkbox {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAARCAQAAACRZI9xAAAAJElEQVR4AWP4TxASrWTmf+xgJkLJfxwm/KeLklElhOOI8sQAANGdTifYd7+RAAAAAElFTkSuQmCC);
+  display: inline-block;
+  height: 17px;
+  margin-right: 4px;
+  opacity: 0.7;
+  position: relative;
+  top: 4px;
+  width: 17px;
+}
+
+#surprise-me #checkbox.checked {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAARCAQAAACRZI9xAAAAiUlEQVR4Xo3RsQnCABRAwQ+CEBAcIDNYCQ5gJTiA4ACu4gaBVFYOkA2shLRWDuAAtqnOwi7JJ+G1170w2RQ4Kv6gZrRWZ/snxDBXnEVOahAZWbqjykmhQWPRJ42LEFYeeFmLPjngptTioxRDEip0+NqIcVJ4o7MXGQk7TyeRk2HzSf6IesbpmeQHQgVooDixfR8AAAAASUVORK5CYII=);
+}
+</style>
+  <script src="js/main_scripts.js"></script>
+  
+</head>
+<body>
+  <commands>
+    <command id="delete" i18n-values="label:deleteCommandLabel"
+        shortcut="U+007F"></command>
+  </commands>
+
+  <cr-menu id="wallpaper-context-menu" class="chrome-menu"
+      visibleif="custom surprise-me-disabled">
+    <cr-menu-item command="#delete"></cr-menu-item>
+  </cr-menu>
+
+  <div id="error-container" class="overlay-container" hidden>
+    <div class="page">
+      <div id="close-error" class="close"></div>
+      <span class="error-message"></span>
+      <a id="learn-more" i18n-content="learnMore" target="_blank"></a>
+    </div>
+  </div>
+  <div id="wallpaper-selection-container" class="overlay-container" hidden>
+    <div class="page">
+      <div id="close-wallpaper-selection" class="close"></div>
+      <div id="content">
+        <input id="file-selector" type="file" size="80"
+            accept="image/jpeg, image/png">
+        <div i18n-content="positionLabel"></div>
+        <select id="set-wallpaper-layout" disabled>
+          <option value="CENTER" i18n-content="centerLayout"></option>
+          <option selected="selected" value="CENTER_CROPPED"
+              i18n-content="centerCroppedLayout"></option>
+          <option value="STRETCH" i18n-content="stretchLayout"></option>
+        </select>
+        <div id="warning">
+          <img class="remember-icon">
+          <span i18n-content="customWallpaperWarning"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="dialog-container">
+    <div class="dialog-topbar">
+      <div id="navstrip">
+        <list id="categories-list"></list>
+        <div id="bar"></div>
+      </div>
+      <div class="spacer"></div>
+      <div id="window-close-button" class="close"></div>
+    </div>
+    <div class="dialog-main">
+      <div id="category-container">
+        <div id="wallpaper-set-by-message"></div>
+        <grid id="wallpaper-grid" class="image-picker"></grid>
+        <div id="spinner-container" hidden></div>
+        <div class="progress-bar" hidden>
+          <div class="progress-track"></div>
+        </div>
+        <div class="bottom-bar">
+          <div id="online-wallpaper-attribute">
+            <img id="attribute-image" hidden>
+            <div id="wallpaper-attribute" hidden>
+              <div>
+                <label>
+                  <span id="author-name"></span>
+                </label>
+              </div>
+              <div>
+                <a id="author-website" target="_blank"></a>
+              </div>
+            </div>
+          </div>
+          <div class="spacer"></div>
+          <div id="surprise-me" hidden>
+            <div id="checkbox"></div>
+            <span i18n-content="surpriseMeLabel"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

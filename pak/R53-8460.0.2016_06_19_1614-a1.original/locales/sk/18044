@@ -1,0 +1,3 @@
+<p>Pri spustení aplikácie $1 v podporovanom prostredí počítača sa použijú systémové nastavenia servera proxy. Váš systém však nie je podporovaný alebo sa pri spúšťaní konfigurácie vášho systému vyskytol problém.</p>
+
+          <p>Stále však môžete nastavenia nakonfigurovať pomocou príkazového riadka. Ďalšie informácie o príznakoch a premenných prostredia nájdete v príručke <code>man $2</code>.</p>

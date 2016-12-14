@@ -1,0 +1,1 @@
+{COUNT,plural, =0{tidak ada}=1{1 aplikasi ($1)}=2{2 aplikasi ($1, $2)}other{# aplikasi ($1, $2, $3)}}

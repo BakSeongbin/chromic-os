@@ -1,0 +1,1 @@
+Omogočanje načina v ozadju za API Push. Chromu omogoča, da se po zaprtju zadnjega okna še naprej izvaja in zažene ob zagonu operacijskega sistema, če ga API Push potrebuje.

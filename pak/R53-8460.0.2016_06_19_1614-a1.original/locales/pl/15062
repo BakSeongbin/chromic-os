@@ -1,0 +1,1 @@
+{NUM_DOWNLOAD,plural, =1{Trwa pobieranie pliku. Czy chcesz je anulować i wyjść z trybu incognito?}few{Trwa pobieranie # plików. Czy chcesz je anulować i wyjść z trybu incognito?}many{Trwa pobieranie # plików. Czy chcesz je anulować i wyjść z trybu incognito?}other{Trwa pobieranie # pliku. Czy chcesz je anulować i wyjść z trybu incognito?}}

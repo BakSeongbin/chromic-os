@@ -1,0 +1,1 @@
+Tvinger aktivitetslytterne for touchstart, touchmove, mousewheel og wheel (som ikke har bedt om noe annet) til å bli behandlet som passive. Dette ødelegger trykk-/hjulfunksjonaliteten på enkelte nettsider, men er nyttig for å demonstrere de potensielle ytelsesfordelene som kan oppnås ved å bruke passive aktivitetslyttere.

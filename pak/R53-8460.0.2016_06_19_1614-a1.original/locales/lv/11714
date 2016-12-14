@@ -1,0 +1,1 @@
+{SECONDS,plural, =1{Chromium tiks restartēts pēc 1 sekundes.}zero{Chromium tiks restartēts pēc # sekundēm.}one{Chromium tiks restartēts pēc # sekundes.}other{Chromium tiks restartēts pēc # sekundēm.}}

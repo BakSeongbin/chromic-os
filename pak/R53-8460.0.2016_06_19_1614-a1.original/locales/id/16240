@@ -1,0 +1,1 @@
+Mengaktifkan penerapan eksperimental perintah "Cache-Control: stale-while-revalidate". Hal ini memungkinkan server menentukan bahwa beberapa sumber daya dapat divalidasi ulang di latar belakang guna meningkatkan latensi.

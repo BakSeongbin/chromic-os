@@ -1,0 +1,2964 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+//// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * The global object.
+ * @type {!Object}
+ * @const
+ */
+var global = this;
+
+/** @typedef {{eventName: string, uid: number}} */
+var WebUIListener;
+
+/** Platform, package, object property, and Event support. **/
+var cr = cr || function() {
+  'use strict';
+
+  /**
+   * Builds an object structure for the provided namespace path,
+   * ensuring that names that already exist are not overwritten. For
+   * example:
+   * "a.b.c" -> a = {};a.b={};a.b.c={};
+   * @param {string} name Name of the object that this file defines.
+   * @param {*=} opt_object The object to expose at the end of the path.
+   * @param {Object=} opt_objectToExportTo The object to add the path to;
+   *     default is {@code global}.
+   * @return {!Object} The last object exported (i.e. exportPath('cr.ui')
+   *     returns a reference to the ui property of window.cr).
+   * @private
+   */
+  function exportPath(name, opt_object, opt_objectToExportTo) {
+    var parts = name.split('.');
+    var cur = opt_objectToExportTo || global;
+
+    for (var part; parts.length && (part = parts.shift());) {
+      if (!parts.length && opt_object !== undefined) {
+        // last part and we have an object; use it
+        cur[part] = opt_object;
+      } else if (part in cur) {
+        cur = cur[part];
+      } else {
+        cur = cur[part] = {};
+      }
+    }
+    return cur;
+  }
+
+  /**
+   * Fires a property change event on the target.
+   * @param {EventTarget} target The target to dispatch the event on.
+   * @param {string} propertyName The name of the property that changed.
+   * @param {*} newValue The new value for the property.
+   * @param {*} oldValue The old value for the property.
+   */
+  function dispatchPropertyChange(target, propertyName, newValue, oldValue) {
+    var e = new Event(propertyName + 'Change');
+    e.propertyName = propertyName;
+    e.newValue = newValue;
+    e.oldValue = oldValue;
+    target.dispatchEvent(e);
+  }
+
+  /**
+   * Converts a camelCase javascript property name to a hyphenated-lower-case
+   * attribute name.
+   * @param {string} jsName The javascript camelCase property name.
+   * @return {string} The equivalent hyphenated-lower-case attribute name.
+   */
+  function getAttributeName(jsName) {
+    return jsName.replace(/([A-Z])/g, '-$1').toLowerCase();
+  }
+
+  /**
+   * The kind of property to define in {@code defineProperty}.
+   * @enum {string}
+   * @const
+   */
+  var PropertyKind = {
+    /**
+     * Plain old JS property where the backing data is stored as a "private"
+     * field on the object.
+     * Use for properties of any type. Type will not be checked.
+     */
+    JS: 'js',
+
+    /**
+     * The property backing data is stored as an attribute on an element.
+     * Use only for properties of type {string}.
+     */
+    ATTR: 'attr',
+
+    /**
+     * The property backing data is stored as an attribute on an element. If the
+     * element has the attribute then the value is true.
+     * Use only for properties of type {boolean}.
+     */
+    BOOL_ATTR: 'boolAttr'
+  };
+
+  /**
+   * Helper function for defineProperty that returns the getter to use for the
+   * property.
+   * @param {string} name The name of the property.
+   * @param {PropertyKind} kind The kind of the property.
+   * @return {function():*} The getter for the property.
+   */
+  function getGetter(name, kind) {
+    switch (kind) {
+      case PropertyKind.JS:
+        var privateName = name + '_';
+        return function() {
+          return this[privateName];
+        };
+      case PropertyKind.ATTR:
+        var attributeName = getAttributeName(name);
+        return function() {
+          return this.getAttribute(attributeName);
+        };
+      case PropertyKind.BOOL_ATTR:
+        var attributeName = getAttributeName(name);
+        return function() {
+          return this.hasAttribute(attributeName);
+        };
+    }
+
+    // TODO(dbeam): replace with assertNotReached() in assert.js when I can coax
+    // the browser/unit tests to preprocess this file through grit.
+    throw 'not reached';
+  }
+
+  /**
+   * Helper function for defineProperty that returns the setter of the right
+   * kind.
+   * @param {string} name The name of the property we are defining the setter
+   *     for.
+   * @param {PropertyKind} kind The kind of property we are getting the
+   *     setter for.
+   * @param {function(*, *):void=} opt_setHook A function to run after the
+   *     property is set, but before the propertyChange event is fired.
+   * @return {function(*):void} The function to use as a setter.
+   */
+  function getSetter(name, kind, opt_setHook) {
+    switch (kind) {
+      case PropertyKind.JS:
+        var privateName = name + '_';
+        return function(value) {
+          var oldValue = this[name];
+          if (value !== oldValue) {
+            this[privateName] = value;
+            if (opt_setHook)
+              opt_setHook.call(this, value, oldValue);
+            dispatchPropertyChange(this, name, value, oldValue);
+          }
+        };
+
+      case PropertyKind.ATTR:
+        var attributeName = getAttributeName(name);
+        return function(value) {
+          var oldValue = this[name];
+          if (value !== oldValue) {
+            if (value == undefined)
+              this.removeAttribute(attributeName);
+            else
+              this.setAttribute(attributeName, value);
+            if (opt_setHook)
+              opt_setHook.call(this, value, oldValue);
+            dispatchPropertyChange(this, name, value, oldValue);
+          }
+        };
+
+      case PropertyKind.BOOL_ATTR:
+        var attributeName = getAttributeName(name);
+        return function(value) {
+          var oldValue = this[name];
+          if (value !== oldValue) {
+            if (value)
+              this.setAttribute(attributeName, name);
+            else
+              this.removeAttribute(attributeName);
+            if (opt_setHook)
+              opt_setHook.call(this, value, oldValue);
+            dispatchPropertyChange(this, name, value, oldValue);
+          }
+        };
+    }
+
+    // TODO(dbeam): replace with assertNotReached() in assert.js when I can coax
+    // the browser/unit tests to preprocess this file through grit.
+    throw 'not reached';
+  }
+
+  /**
+   * Defines a property on an object. When the setter changes the value a
+   * property change event with the type {@code name + 'Change'} is fired.
+   * @param {!Object} obj The object to define the property for.
+   * @param {string} name The name of the property.
+   * @param {PropertyKind=} opt_kind What kind of underlying storage to use.
+   * @param {function(*, *):void=} opt_setHook A function to run after the
+   *     property is set, but before the propertyChange event is fired.
+   */
+  function defineProperty(obj, name, opt_kind, opt_setHook) {
+    if (typeof obj == 'function')
+      obj = obj.prototype;
+
+    var kind = /** @type {PropertyKind} */ (opt_kind || PropertyKind.JS);
+
+    if (!obj.__lookupGetter__(name))
+      obj.__defineGetter__(name, getGetter(name, kind));
+
+    if (!obj.__lookupSetter__(name))
+      obj.__defineSetter__(name, getSetter(name, kind, opt_setHook));
+  }
+
+  /**
+   * Counter for use with createUid
+   */
+  var uidCounter = 1;
+
+  /**
+   * @return {number} A new unique ID.
+   */
+  function createUid() {
+    return uidCounter++;
+  }
+
+  /**
+   * Returns a unique ID for the item. This mutates the item so it needs to be
+   * an object
+   * @param {!Object} item The item to get the unique ID for.
+   * @return {number} The unique ID for the item.
+   */
+  function getUid(item) {
+    if (item.hasOwnProperty('uid'))
+      return item.uid;
+    return item.uid = createUid();
+  }
+
+  /**
+   * Dispatches a simple event on an event target.
+   * @param {!EventTarget} target The event target to dispatch the event on.
+   * @param {string} type The type of the event.
+   * @param {boolean=} opt_bubbles Whether the event bubbles or not.
+   * @param {boolean=} opt_cancelable Whether the default action of the event
+   *     can be prevented. Default is true.
+   * @return {boolean} If any of the listeners called {@code preventDefault}
+   *     during the dispatch this will return false.
+   */
+  function dispatchSimpleEvent(target, type, opt_bubbles, opt_cancelable) {
+    var e = new Event(type, {
+      bubbles: opt_bubbles,
+      cancelable: opt_cancelable === undefined || opt_cancelable
+    });
+    return target.dispatchEvent(e);
+  }
+
+  /**
+   * Calls |fun| and adds all the fields of the returned object to the object
+   * named by |name|. For example, cr.define('cr.ui', function() {
+   *   function List() {
+   *     ...
+   *   }
+   *   function ListItem() {
+   *     ...
+   *   }
+   *   return {
+   *     List: List,
+   *     ListItem: ListItem,
+   *   };
+   * });
+   * defines the functions cr.ui.List and cr.ui.ListItem.
+   * @param {string} name The name of the object that we are adding fields to.
+   * @param {!Function} fun The function that will return an object containing
+   *     the names and values of the new fields.
+   */
+  function define(name, fun) {
+    var obj = exportPath(name);
+    var exports = fun();
+    for (var propertyName in exports) {
+      // Maybe we should check the prototype chain here? The current usage
+      // pattern is always using an object literal so we only care about own
+      // properties.
+      var propertyDescriptor = Object.getOwnPropertyDescriptor(exports,
+                                                               propertyName);
+      if (propertyDescriptor)
+        Object.defineProperty(obj, propertyName, propertyDescriptor);
+    }
+  }
+
+  /**
+   * Adds a {@code getInstance} static method that always return the same
+   * instance object.
+   * @param {!Function} ctor The constructor for the class to add the static
+   *     method to.
+   */
+  function addSingletonGetter(ctor) {
+    ctor.getInstance = function() {
+      return ctor.instance_ || (ctor.instance_ = new ctor());
+    };
+  }
+
+  /**
+   * Forwards public APIs to private implementations.
+   * @param {Function} ctor Constructor that have private implementations in its
+   *     prototype.
+   * @param {Array<string>} methods List of public method names that have their
+   *     underscored counterparts in constructor's prototype.
+   * @param {string=} opt_target Selector for target node.
+   */
+  function makePublic(ctor, methods, opt_target) {
+    methods.forEach(function(method) {
+      ctor[method] = function() {
+        var target = opt_target ? document.getElementById(opt_target) :
+                     ctor.getInstance();
+        return target[method + '_'].apply(target, arguments);
+      };
+    });
+  }
+
+  /**
+   * The mapping used by the sendWithPromise mechanism to tie the Promise
+   * returned to callers with the corresponding WebUI response. The mapping is
+   * from ID to the PromiseResolver helper; the ID is generated by
+   * sendWithPromise and is unique across all invocations of said method.
+   * @type {!Object<!PromiseResolver>}
+   */
+  var chromeSendResolverMap = {};
+
+  /**
+   * The named method the WebUI handler calls directly in response to a
+   * chrome.send call that expects a response. The handler requires no knowledge
+   * of the specific name of this method, as the name is passed to the handler
+   * as the first argument in the arguments list of chrome.send. The handler
+   * must pass the ID, also sent via the chrome.send arguments list, as the
+   * first argument of the JS invocation; additionally, the handler may
+   * supply any number of other arguments that will be included in the response.
+   * @param {string} id The unique ID identifying the Promise this response is
+   *     tied to.
+   * @param {boolean} isSuccess Whether the request was successful.
+   * @param {*} response The response as sent from C++.
+   */
+  function webUIResponse(id, isSuccess, response) {
+    var resolver = chromeSendResolverMap[id];
+    delete chromeSendResolverMap[id];
+
+    if (isSuccess)
+      resolver.resolve(response);
+    else
+      resolver.reject(response);
+  }
+
+  /**
+   * A variation of chrome.send, suitable for messages that expect a single
+   * response from C++.
+   * @param {string} methodName The name of the WebUI handler API.
+   * @param {...*} var_args Varibale number of arguments to be forwarded to the
+   *     C++ call.
+   * @return {!Promise}
+   */
+  function sendWithPromise(methodName, var_args) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    var promiseResolver = new PromiseResolver();
+    var id = methodName + '_' + createUid();
+    chromeSendResolverMap[id] = promiseResolver;
+    chrome.send(methodName, [id].concat(args));
+    return promiseResolver.promise;
+  }
+
+  /**
+   * A map of maps associating event names with listeners. The 2nd level map
+   * associates a listener ID with the callback function, such that individual
+   * listeners can be removed from an event without affecting other listeners of
+   * the same event.
+   * @type {!Object<!Object<!Function>>}
+   */
+  var webUIListenerMap = {};
+
+  /**
+   * The named method the WebUI handler calls directly when an event occurs.
+   * The WebUI handler must supply the name of the event as the first argument
+   * of the JS invocation; additionally, the handler may supply any number of
+   * other arguments that will be forwarded to the listener callbacks.
+   * @param {string} event The name of the event that has occurred.
+   * @param {...*} var_args Additional arguments passed from C++.
+   */
+  function webUIListenerCallback(event, var_args) {
+    var eventListenersMap = webUIListenerMap[event];
+    if (!eventListenersMap) {
+      // C++ event sent for an event that has no listeners.
+      // TODO(dpapad): Should a warning be displayed here?
+      return;
+    }
+
+    var args = Array.prototype.slice.call(arguments, 1);
+    for (var listenerId in eventListenersMap) {
+      eventListenersMap[listenerId].apply(null, args);
+    }
+  }
+
+  /**
+   * Registers a listener for an event fired from WebUI handlers. Any number of
+   * listeners may register for a single event.
+   * @param {string} eventName The event to listen to.
+   * @param {!Function} callback The callback run when the event is fired.
+   * @return {!WebUIListener} An object to be used for removing a listener via
+   *     cr.removeWebUIListener. Should be treated as read-only.
+   */
+  function addWebUIListener(eventName, callback) {
+    webUIListenerMap[eventName] = webUIListenerMap[eventName] || {};
+    var uid = createUid();
+    webUIListenerMap[eventName][uid] = callback;
+    return {eventName: eventName, uid: uid};
+  }
+
+  /**
+   * Removes a listener. Does nothing if the specified listener is not found.
+   * @param {!WebUIListener} listener The listener to be removed (as returned by
+   *     addWebUIListener).
+   * @return {boolean} Whether the given listener was found and actually
+   *     removed.
+   */
+  function removeWebUIListener(listener) {
+    var listenerExists = webUIListenerMap[listener.eventName] &&
+        webUIListenerMap[listener.eventName][listener.uid];
+    if (listenerExists) {
+      delete webUIListenerMap[listener.eventName][listener.uid];
+      return true;
+    }
+    return false;
+  }
+
+  return {
+    addSingletonGetter: addSingletonGetter,
+    createUid: createUid,
+    define: define,
+    defineProperty: defineProperty,
+    dispatchPropertyChange: dispatchPropertyChange,
+    dispatchSimpleEvent: dispatchSimpleEvent,
+    exportPath: exportPath,
+    getUid: getUid,
+    makePublic: makePublic,
+    PropertyKind: PropertyKind,
+
+    // C++ <-> JS communication related methods.
+    addWebUIListener: addWebUIListener,
+    removeWebUIListener: removeWebUIListener,
+    sendWithPromise: sendWithPromise,
+    webUIListenerCallback: webUIListenerCallback,
+    webUIResponse: webUIResponse,
+
+    get doc() {
+      return document;
+    },
+
+    /** Whether we are using a Mac or not. */
+    get isMac() {
+      return /Mac/.test(navigator.platform);
+    },
+
+    /** Whether this is on the Windows platform or not. */
+    get isWindows() {
+      return /Win/.test(navigator.platform);
+    },
+
+    /** Whether this is on chromeOS or not. */
+    get isChromeOS() {
+      return /CrOS/.test(navigator.userAgent);
+    },
+
+    /** Whether this is on vanilla Linux (not chromeOS). */
+    get isLinux() {
+      return /Linux/.test(navigator.userAgent);
+    },
+
+    /** Whether this is on Android. */
+    get isAndroid() {
+      return /Android/.test(navigator.userAgent);
+    }
+  };
+}();
+
+//// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview This file defines a singleton which provides access to all data
+ * that is available as soon as the page's resources are loaded (before DOM
+ * content has finished loading). This data includes both localized strings and
+ * any data that is important to have ready from a very early stage (e.g. things
+ * that must be displayed right away).
+ */
+
+/** @type {!LoadTimeData} */ var loadTimeData;
+
+// Expose this type globally as a temporary work around until
+// https://github.com/google/closure-compiler/issues/544 is fixed.
+/** @constructor */
+function LoadTimeData() {}
+
+(function() {
+  'use strict';
+
+  LoadTimeData.prototype = {
+    /**
+     * Sets the backing object.
+     *
+     * Note that there is no getter for |data_| to discourage abuse of the form:
+     *
+     *     var value = loadTimeData.data()['key'];
+     *
+     * @param {Object} value The de-serialized page data.
+     */
+    set data(value) {
+      expect(!this.data_, 'Re-setting data.');
+      this.data_ = value;
+    },
+
+    /**
+     * Returns a JsEvalContext for |data_|.
+     * @returns {JsEvalContext}
+     */
+    createJsEvalContext: function() {
+      return new JsEvalContext(this.data_);
+    },
+
+    /**
+     * @param {string} id An ID of a value that might exist.
+     * @return {boolean} True if |id| is a key in the dictionary.
+     */
+    valueExists: function(id) {
+      return id in this.data_;
+    },
+
+    /**
+     * Fetches a value, expecting that it exists.
+     * @param {string} id The key that identifies the desired value.
+     * @return {*} The corresponding value.
+     */
+    getValue: function(id) {
+      expect(this.data_, 'No data. Did you remember to include strings.js?');
+      var value = this.data_[id];
+      expect(typeof value != 'undefined', 'Could not find value for ' + id);
+      return value;
+    },
+
+    /**
+     * As above, but also makes sure that the value is a string.
+     * @param {string} id The key that identifies the desired string.
+     * @return {string} The corresponding string value.
+     */
+    getString: function(id) {
+      var value = this.getValue(id);
+      expectIsType(id, value, 'string');
+      return /** @type {string} */ (value);
+    },
+
+    /**
+     * Returns a formatted localized string where $1 to $9 are replaced by the
+     * second to the tenth argument.
+     * @param {string} id The ID of the string we want.
+     * @param {...(string|number)} var_args The extra values to include in the
+     *     formatted output.
+     * @return {string} The formatted string.
+     */
+    getStringF: function(id, var_args) {
+      var value = this.getString(id);
+      if (!value)
+        return '';
+
+      var varArgs = arguments;
+      return value.replace(/\$[$1-9]/g, function(m) {
+        return m == '$$' ? '$' : varArgs[m[1]];
+      });
+    },
+
+    /**
+     * As above, but also makes sure that the value is a boolean.
+     * @param {string} id The key that identifies the desired boolean.
+     * @return {boolean} The corresponding boolean value.
+     */
+    getBoolean: function(id) {
+      var value = this.getValue(id);
+      expectIsType(id, value, 'boolean');
+      return /** @type {boolean} */ (value);
+    },
+
+    /**
+     * As above, but also makes sure that the value is an integer.
+     * @param {string} id The key that identifies the desired number.
+     * @return {number} The corresponding number value.
+     */
+    getInteger: function(id) {
+      var value = this.getValue(id);
+      expectIsType(id, value, 'number');
+      expect(value == Math.floor(value), 'Number isn\'t integer: ' + value);
+      return /** @type {number} */ (value);
+    },
+
+    /**
+     * Override values in loadTimeData with the values found in |replacements|.
+     * @param {Object} replacements The dictionary object of keys to replace.
+     */
+    overrideValues: function(replacements) {
+      expect(typeof replacements == 'object',
+             'Replacements must be a dictionary object.');
+      for (var key in replacements) {
+        this.data_[key] = replacements[key];
+      }
+    }
+  };
+
+  /**
+   * Checks condition, displays error message if expectation fails.
+   * @param {*} condition The condition to check for truthiness.
+   * @param {string} message The message to display if the check fails.
+   */
+  function expect(condition, message) {
+    if (!condition) {
+      console.error('Unexpected condition on ' + document.location.href + ': ' +
+                    message);
+    }
+  }
+
+  /**
+   * Checks that the given value has the given type.
+   * @param {string} id The id of the value (only used for error message).
+   * @param {*} value The value to check the type on.
+   * @param {string} type The type we expect |value| to be.
+   */
+  function expectIsType(id, value, type) {
+    expect(typeof value == type, '[' + value + '] (' + id +
+                                 ') is not a ' + type);
+  }
+
+  expect(!loadTimeData, 'should only include this file once');
+  loadTimeData = new LoadTimeData;
+})();
+
+//// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/** @typedef {Document|DocumentFragment|Element} */
+var ProcessingRoot;
+
+/**
+ * @fileoverview This is a simple template engine inspired by JsTemplates
+ * optimized for i18n.
+ *
+ * It currently supports three handlers:
+ *
+ *   * i18n-content which sets the textContent of the element.
+ *
+ *     <span i18n-content="myContent"></span>
+ *
+ *   * i18n-options which generates <option> elements for a <select>.
+ *
+ *     <select i18n-options="myOptionList"></select>
+ *
+ *   * i18n-values is a list of attribute-value or property-value pairs.
+ *     Properties are prefixed with a '.' and can contain nested properties.
+ *
+ *     <span i18n-values="title:myTitle;.style.fontSize:fontSize"></span>
+ *
+ * This file is a copy of i18n_template.js, with minor tweaks to support using
+ * load_time_data.js. It should replace i18n_template.js eventually.
+ */
+
+var i18nTemplate = (function() {
+  /**
+   * This provides the handlers for the templating engine. The key is used as
+   * the attribute name and the value is the function that gets called for every
+   * single node that has this attribute.
+   * @type {!Object}
+   */
+  var handlers = {
+    /**
+     * This handler sets the textContent of the element.
+     * @param {!HTMLElement} element The node to modify.
+     * @param {string} key The name of the value in |data|.
+     * @param {!LoadTimeData} data The data source to draw from.
+     * @param {!Set<ProcessingRoot>} visited
+     */
+    'i18n-content': function(element, key, data, visited) {
+      element.textContent = data.getString(key);
+    },
+
+    /**
+     * This handler adds options to a <select> element.
+     * @param {!HTMLElement} select The node to modify.
+     * @param {string} key The name of the value in |data|. It should
+     *     identify an array of values to initialize an <option>. Each value,
+     *     if a pair, represents [content, value]. Otherwise, it should be a
+     *     content string with no value.
+     * @param {!LoadTimeData} data The data source to draw from.
+     * @param {!Set<ProcessingRoot>} visited
+     */
+    'i18n-options': function(select, key, data, visited) {
+      var options = data.getValue(key);
+      options.forEach(function(optionData) {
+        var option = typeof optionData == 'string' ?
+            new Option(optionData) :
+            new Option(optionData[1], optionData[0]);
+        select.appendChild(option);
+      });
+    },
+
+    /**
+     * This is used to set HTML attributes and DOM properties. The syntax is:
+     *   attributename:key;
+     *   .domProperty:key;
+     *   .nested.dom.property:key
+     * @param {!HTMLElement} element The node to modify.
+     * @param {string} attributeAndKeys The path of the attribute to modify
+     *     followed by a colon, and the name of the value in |data|.
+     *     Multiple attribute/key pairs may be separated by semicolons.
+     * @param {!LoadTimeData} data The data source to draw from.
+     * @param {!Set<ProcessingRoot>} visited
+     */
+    'i18n-values': function(element, attributeAndKeys, data, visited) {
+      var parts = attributeAndKeys.replace(/\s/g, '').split(/;/);
+      parts.forEach(function(part) {
+        if (!part)
+          return;
+
+        var attributeAndKeyPair = part.match(/^([^:]+):(.+)$/);
+        if (!attributeAndKeyPair)
+          throw new Error('malformed i18n-values: ' + attributeAndKeys);
+
+        var propName = attributeAndKeyPair[1];
+        var propExpr = attributeAndKeyPair[2];
+
+        var value = data.getValue(propExpr);
+
+        // Allow a property of the form '.foo.bar' to assign a value into
+        // element.foo.bar.
+        if (propName[0] == '.') {
+          var path = propName.slice(1).split('.');
+          var targetObject = element;
+          while (targetObject && path.length > 1) {
+            targetObject = targetObject[path.shift()];
+          }
+          if (targetObject) {
+            targetObject[path] = value;
+            // In case we set innerHTML (ignoring others) we need to recursively
+            // check the content.
+            if (path == 'innerHTML') {
+              for (var i = 0; i < element.children.length; ++i) {
+                processWithoutCycles(element.children[i], data, visited, false);
+              }
+            }
+          }
+        } else {
+          element.setAttribute(propName, /** @type {string} */(value));
+        }
+      });
+    }
+  };
+
+  var prefixes = [''];
+
+  // Only look through shadow DOM when it's supported. As of April 2015, iOS
+  // Chrome doesn't support shadow DOM.
+  if (Element.prototype.createShadowRoot)
+    prefixes.push('* /deep/ ');
+
+  var attributeNames = Object.keys(handlers);
+  var selector = prefixes.map(function(prefix) {
+    return prefix + '[' + attributeNames.join('], ' + prefix + '[') + ']';
+  }).join(', ');
+
+  /**
+   * Processes a DOM tree using a |data| source to populate template values.
+   * @param {!ProcessingRoot} root The root of the DOM tree to process.
+   * @param {!LoadTimeData} data The data to draw from.
+   */
+  function process(root, data) {
+    processWithoutCycles(root, data, new Set(), true);
+  }
+
+  /**
+   * Internal process() method that stops cycles while processing.
+   * @param {!ProcessingRoot} root
+   * @param {!LoadTimeData} data
+   * @param {!Set<ProcessingRoot>} visited Already visited roots.
+   * @param {boolean} mark Whether nodes should be marked processed.
+   */
+  function processWithoutCycles(root, data, visited, mark) {
+    if (visited.has(root)) {
+      // Found a cycle. Stop it.
+      return;
+    }
+
+    // Mark the node as visited before recursing.
+    visited.add(root);
+
+    var importLinks = root.querySelectorAll('link[rel=import]');
+    for (var i = 0; i < importLinks.length; ++i) {
+      var importLink = /** @type {!HTMLLinkElement} */(importLinks[i]);
+      if (!importLink.import) {
+        // Happens when a <link rel=import> is inside a <template>.
+        // TODO(dbeam): should we log an error if we detect that here?
+        continue;
+      }
+      processWithoutCycles(importLink.import, data, visited, mark);
+    }
+
+    var templates = root.querySelectorAll('template');
+    for (var i = 0; i < templates.length; ++i) {
+      var template = /** @type {HTMLTemplateElement} */(templates[i]);
+      if (!template.content)
+        continue;
+      processWithoutCycles(template.content, data, visited, mark);
+    }
+
+    var isElement = root instanceof Element;
+    if (isElement && root.webkitMatchesSelector(selector))
+      processElement(/** @type {!Element} */(root), data, visited);
+
+    var elements = root.querySelectorAll(selector);
+    for (var i = 0; i < elements.length; ++i) {
+      processElement(elements[i], data, visited);
+    }
+
+    if (mark) {
+      var processed = isElement ? [root] : root.children;
+      if (processed) {
+        for (var i = 0; i < processed.length; ++i) {
+          processed[i].setAttribute('i18n-processed', '');
+        }
+      }
+    }
+  }
+
+  /**
+   * Run through various [i18n-*] attributes and populate.
+   * @param {!Element} element
+   * @param {!LoadTimeData} data
+   * @param {!Set<ProcessingRoot>} visited
+   */
+  function processElement(element, data, visited) {
+    for (var i = 0; i < attributeNames.length; i++) {
+      var name = attributeNames[i];
+      var attribute = element.getAttribute(name);
+      if (attribute != null)
+        handlers[name](element, attribute, data, visited);
+    }
+  }
+
+  return {
+    process: process
+  };
+}());
+
+//// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview This contains an implementation of the EventTarget interface
+ * as defined by DOM Level 2 Events.
+ */
+
+/**
+ * @typedef {EventListener|function(!Event):*}
+ */
+var EventListenerType;
+
+cr.define('cr', function() {
+
+  /**
+   * Creates a new EventTarget. This class implements the DOM level 2
+   * EventTarget interface and can be used wherever those are used.
+   * @constructor
+   * @implements {EventTarget}
+   */
+  function EventTarget() {
+  }
+
+  EventTarget.prototype = {
+    /**
+     * Adds an event listener to the target.
+     * @param {string} type The name of the event.
+     * @param {EventListenerType} handler The handler for the event. This is
+     *     called when the event is dispatched.
+     */
+    addEventListener: function(type, handler) {
+      if (!this.listeners_)
+        this.listeners_ = Object.create(null);
+      if (!(type in this.listeners_)) {
+        this.listeners_[type] = [handler];
+      } else {
+        var handlers = this.listeners_[type];
+        if (handlers.indexOf(handler) < 0)
+          handlers.push(handler);
+      }
+    },
+
+    /**
+     * Removes an event listener from the target.
+     * @param {string} type The name of the event.
+     * @param {EventListenerType} handler The handler for the event.
+     */
+    removeEventListener: function(type, handler) {
+      if (!this.listeners_)
+        return;
+      if (type in this.listeners_) {
+        var handlers = this.listeners_[type];
+        var index = handlers.indexOf(handler);
+        if (index >= 0) {
+          // Clean up if this was the last listener.
+          if (handlers.length == 1)
+            delete this.listeners_[type];
+          else
+            handlers.splice(index, 1);
+        }
+      }
+    },
+
+    /**
+     * Dispatches an event and calls all the listeners that are listening to
+     * the type of the event.
+     * @param {!Event} event The event to dispatch.
+     * @return {boolean} Whether the default action was prevented. If someone
+     *     calls preventDefault on the event object then this returns false.
+     */
+    dispatchEvent: function(event) {
+      if (!this.listeners_)
+        return true;
+
+      // Since we are using DOM Event objects we need to override some of the
+      // properties and methods so that we can emulate this correctly.
+      var self = this;
+      event.__defineGetter__('target', function() {
+        return self;
+      });
+
+      var type = event.type;
+      var prevented = 0;
+      if (type in this.listeners_) {
+        // Clone to prevent removal during dispatch
+        var handlers = this.listeners_[type].concat();
+        for (var i = 0, handler; handler = handlers[i]; i++) {
+          if (handler.handleEvent)
+            prevented |= handler.handleEvent.call(handler, event) === false;
+          else
+            prevented |= handler.call(this, event) === false;
+        }
+      }
+
+      return !prevented && !event.defaultPrevented;
+    }
+  };
+
+  // Export
+  return {
+    EventTarget: EventTarget
+  };
+});
+
+//// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('cr.ui.dialogs', function() {
+  /**
+   * @constructor
+   */
+  function BaseDialog(parentNode) {
+    this.parentNode_ = parentNode;
+    this.document_ = parentNode.ownerDocument;
+
+    // The DOM element from the dialog which should receive focus when the
+    // dialog is first displayed.
+    this.initialFocusElement_ = null;
+
+    // The DOM element from the parent which had focus before we were displayed,
+    // so we can restore it when we're hidden.
+    this.previousActiveElement_ = null;
+
+    this.initDom_();
+  }
+
+  /**
+   * Default text for Ok and Cancel buttons.
+   *
+   * Clients should override these with localized labels.
+   */
+  BaseDialog.OK_LABEL = '[LOCALIZE ME] Ok';
+  BaseDialog.CANCEL_LABEL = '[LOCALIZE ME] Cancel';
+
+  /**
+   * Number of miliseconds animation is expected to take, plus some margin for
+   * error.
+   */
+  BaseDialog.ANIMATE_STABLE_DURATION = 500;
+
+  /** @private */
+  BaseDialog.prototype.initDom_ = function() {
+    var doc = this.document_;
+    this.container_ = doc.createElement('div');
+    this.container_.className = 'cr-dialog-container';
+    this.container_.addEventListener('keydown',
+                                     this.onContainerKeyDown_.bind(this));
+    this.shield_ = doc.createElement('div');
+    this.shield_.className = 'cr-dialog-shield';
+    this.container_.appendChild(this.shield_);
+    this.container_.addEventListener('mousedown',
+                                     this.onContainerMouseDown_.bind(this));
+
+    this.frame_ = doc.createElement('div');
+    this.frame_.className = 'cr-dialog-frame';
+    // Elements that have negative tabIndex can be focused but are not traversed
+    // by Tab key.
+    this.frame_.tabIndex = -1;
+    this.container_.appendChild(this.frame_);
+
+    this.title_ = doc.createElement('div');
+    this.title_.className = 'cr-dialog-title';
+    this.frame_.appendChild(this.title_);
+
+    this.closeButton_ = doc.createElement('div');
+    this.closeButton_.className = 'cr-dialog-close';
+    this.closeButton_.addEventListener('click',
+                                        this.onCancelClick_.bind(this));
+    this.frame_.appendChild(this.closeButton_);
+
+    this.text_ = doc.createElement('div');
+    this.text_.className = 'cr-dialog-text';
+    this.frame_.appendChild(this.text_);
+
+    this.buttons = doc.createElement('div');
+    this.buttons.className = 'cr-dialog-buttons';
+    this.frame_.appendChild(this.buttons);
+
+    this.okButton_ = doc.createElement('button');
+    this.okButton_.className = 'cr-dialog-ok';
+    this.okButton_.textContent = BaseDialog.OK_LABEL;
+    this.okButton_.addEventListener('click', this.onOkClick_.bind(this));
+    this.buttons.appendChild(this.okButton_);
+
+    this.cancelButton_ = doc.createElement('button');
+    this.cancelButton_.className = 'cr-dialog-cancel';
+    this.cancelButton_.textContent = BaseDialog.CANCEL_LABEL;
+    this.cancelButton_.addEventListener('click',
+                                        this.onCancelClick_.bind(this));
+    this.buttons.appendChild(this.cancelButton_);
+
+    this.initialFocusElement_ = this.okButton_;
+  };
+
+  /** @private {Function|undefined} */
+  BaseDialog.prototype.onOk_ = null;
+
+  /** @private {Function|undefined} */
+  BaseDialog.prototype.onCancel_ = null;
+
+  /** @private */
+  BaseDialog.prototype.onContainerKeyDown_ = function(event) {
+    // Handle Escape.
+    if (event.keyCode == 27 && !this.cancelButton_.disabled) {
+      this.onCancelClick_(event);
+      event.stopPropagation();
+      // Prevent the event from being handled by the container of the dialog.
+      // e.g. Prevent the parent container from closing at the same time.
+      event.preventDefault();
+    }
+  };
+
+  /** @private */
+  BaseDialog.prototype.onContainerMouseDown_ = function(event) {
+    if (event.target == this.container_) {
+      var classList = this.frame_.classList;
+      // Start 'pulse' animation.
+      classList.remove('pulse');
+      setTimeout(classList.add.bind(classList, 'pulse'), 0);
+      event.preventDefault();
+    }
+  };
+
+  /** @private */
+  BaseDialog.prototype.onOkClick_ = function(event) {
+    this.hide();
+    if (this.onOk_)
+      this.onOk_();
+  };
+
+  /** @private */
+  BaseDialog.prototype.onCancelClick_ = function(event) {
+    this.hide();
+    if (this.onCancel_)
+      this.onCancel_();
+  };
+
+  /** @param {string} label */
+  BaseDialog.prototype.setOkLabel = function(label) {
+    this.okButton_.textContent = label;
+  };
+
+  /** @param {string} label */
+  BaseDialog.prototype.setCancelLabel = function(label) {
+    this.cancelButton_.textContent = label;
+  };
+
+  BaseDialog.prototype.setInitialFocusOnCancel = function() {
+    this.initialFocusElement_ = this.cancelButton_;
+  };
+
+  /**
+   * @param {string} message
+   * @param {Function=} opt_onOk
+   * @param {Function=} opt_onCancel
+   * @param {Function=} opt_onShow
+   */
+  BaseDialog.prototype.show = function(
+      message, opt_onOk, opt_onCancel, opt_onShow) {
+    this.showWithTitle('', message, opt_onOk, opt_onCancel, opt_onShow);
+  };
+
+  /**
+   * @param {string} title
+   * @param {string} message
+   * @param {Function=} opt_onOk
+   * @param {Function=} opt_onCancel
+   * @param {Function=} opt_onShow
+   */
+  BaseDialog.prototype.showHtml = function(title, message,
+      opt_onOk, opt_onCancel, opt_onShow) {
+    this.text_.innerHTML = message;
+    this.show_(title, opt_onOk, opt_onCancel, opt_onShow);
+  };
+
+  /** @private */
+  BaseDialog.prototype.findFocusableElements_ = function(doc) {
+    var elements = Array.prototype.filter.call(
+        doc.querySelectorAll('*'),
+        function(n) { return n.tabIndex >= 0; });
+
+    var iframes = doc.querySelectorAll('iframe');
+    for (var i = 0; i < iframes.length; i++) {
+      // Some iframes have an undefined contentDocument for security reasons,
+      // such as chrome://terms (which is used in the chromeos OOBE screens).
+      var iframe = iframes[i];
+      var contentDoc;
+      try {
+        contentDoc = iframe.contentDocument;
+      } catch(e) {} // ignore SecurityError
+      if (contentDoc)
+        elements = elements.concat(this.findFocusableElements_(contentDoc));
+    }
+    return elements;
+  };
+
+  /**
+   * @param {string} title
+   * @param {string} message
+   * @param {Function=} opt_onOk
+   * @param {Function=} opt_onCancel
+   * @param {Function=} opt_onShow
+   */
+  BaseDialog.prototype.showWithTitle = function(title, message,
+      opt_onOk, opt_onCancel, opt_onShow) {
+    this.text_.textContent = message;
+    this.show_(title, opt_onOk, opt_onCancel, opt_onShow);
+  };
+
+  /**
+   * @param {string} title
+   * @param {Function=} opt_onOk
+   * @param {Function=} opt_onCancel
+   * @param {Function=} opt_onShow
+   * @private
+   */
+  BaseDialog.prototype.show_ = function(
+      title, opt_onOk, opt_onCancel, opt_onShow) {
+    // Make all outside nodes unfocusable while the dialog is active.
+    this.deactivatedNodes_ = this.findFocusableElements_(this.document_);
+    this.tabIndexes_ = this.deactivatedNodes_.map(
+        function(n) { return n.getAttribute('tabindex'); });
+    this.deactivatedNodes_.forEach(
+        function(n) { n.tabIndex = -1; });
+
+    this.previousActiveElement_ = this.document_.activeElement;
+    this.parentNode_.appendChild(this.container_);
+
+    this.onOk_ = opt_onOk;
+    this.onCancel_ = opt_onCancel;
+
+    if (title) {
+      this.title_.textContent = title;
+      this.title_.hidden = false;
+    } else {
+      this.title_.textContent = '';
+      this.title_.hidden = true;
+    }
+
+    var self = this;
+    setTimeout(function() {
+      // Note that we control the opacity of the *container*, but the top/left
+      // of the *frame*.
+      self.container_.classList.add('shown');
+      self.initialFocusElement_.focus();
+      setTimeout(function() {
+        if (opt_onShow)
+          opt_onShow();
+      }, BaseDialog.ANIMATE_STABLE_DURATION);
+    }, 0);
+  };
+
+  /** @param {Function=} opt_onHide */
+  BaseDialog.prototype.hide = function(opt_onHide) {
+    // Restore focusability.
+    for (var i = 0; i < this.deactivatedNodes_.length; i++) {
+      var node = this.deactivatedNodes_[i];
+      if (this.tabIndexes_[i] === null)
+        node.removeAttribute('tabindex');
+      else
+        node.setAttribute('tabindex', this.tabIndexes_[i]);
+    }
+    this.deactivatedNodes_ = null;
+    this.tabIndexes_ = null;
+
+    // Note that we control the opacity of the *container*, but the top/left
+    // of the *frame*.
+    this.container_.classList.remove('shown');
+
+    if (this.previousActiveElement_) {
+      this.previousActiveElement_.focus();
+    } else {
+      this.document_.body.focus();
+    }
+    this.frame_.classList.remove('pulse');
+
+    var self = this;
+    setTimeout(function() {
+      // Wait until the transition is done before removing the dialog.
+      self.parentNode_.removeChild(self.container_);
+      if (opt_onHide)
+        opt_onHide();
+    }, BaseDialog.ANIMATE_STABLE_DURATION);
+  };
+
+  /**
+   * AlertDialog contains just a message and an ok button.
+   * @constructor
+   * @extends {cr.ui.dialogs.BaseDialog}
+   */
+  function AlertDialog(parentNode) {
+    BaseDialog.call(this, parentNode);
+    this.cancelButton_.style.display = 'none';
+  }
+
+  AlertDialog.prototype = {__proto__: BaseDialog.prototype};
+
+  /**
+   * @param {Function=} opt_onOk
+   * @param {Function=} opt_onShow
+   * @override
+   */
+  AlertDialog.prototype.show = function(message, opt_onOk, opt_onShow) {
+    return BaseDialog.prototype.show.call(
+        this, message, opt_onOk, opt_onOk, opt_onShow);
+  };
+
+  /**
+   * ConfirmDialog contains a message, an ok button, and a cancel button.
+   * @constructor
+   * @extends {cr.ui.dialogs.BaseDialog}
+   */
+  function ConfirmDialog(parentNode) {
+    BaseDialog.call(this, parentNode);
+  }
+
+  ConfirmDialog.prototype = {__proto__: BaseDialog.prototype};
+
+  /**
+   * PromptDialog contains a message, a text input, an ok button, and a
+   * cancel button.
+   * @constructor
+   * @extends {cr.ui.dialogs.BaseDialog}
+   */
+  function PromptDialog(parentNode) {
+    BaseDialog.call(this, parentNode);
+    this.input_ = this.document_.createElement('input');
+    this.input_.setAttribute('type', 'text');
+    this.input_.addEventListener('focus', this.onInputFocus.bind(this));
+    this.input_.addEventListener('keydown', this.onKeyDown_.bind(this));
+    this.initialFocusElement_ = this.input_;
+    this.frame_.insertBefore(this.input_, this.text_.nextSibling);
+  }
+
+  PromptDialog.prototype = {__proto__: BaseDialog.prototype};
+
+  PromptDialog.prototype.onInputFocus = function(event) {
+    this.input_.select();
+  };
+
+  /** @private */
+  PromptDialog.prototype.onKeyDown_ = function(event) {
+    if (event.keyCode == 13) {  // Enter
+      this.onOkClick_(event);
+      event.preventDefault();
+    }
+  };
+
+  /**
+   * @param {string} message
+   * @param {?} defaultValue
+   * @param {Function=} opt_onOk
+   * @param {Function=} opt_onCancel
+   * @param {Function=} opt_onShow
+   * @suppress {checkTypes}
+   * TODO(fukino): remove suppression if there is a better way to avoid warning
+   * about overriding method with different signature.
+   */
+  PromptDialog.prototype.show = function(
+      message, defaultValue, opt_onOk, opt_onCancel, opt_onShow) {
+    this.input_.value = defaultValue || '';
+    return BaseDialog.prototype.show.call(
+        this, message, opt_onOk, opt_onCancel, opt_onShow);
+  };
+
+  PromptDialog.prototype.getValue = function() {
+    return this.input_.value;
+  };
+
+  /** @private */
+  PromptDialog.prototype.onOkClick_ = function(event) {
+    this.hide();
+    if (this.onOk_)
+      this.onOk_(this.getValue());
+  };
+
+  return {
+    BaseDialog: BaseDialog,
+    AlertDialog: AlertDialog,
+    ConfirmDialog: ConfirmDialog,
+    PromptDialog: PromptDialog
+  };
+});
+
+
+(function() {
+'use strict';
+
+//// Copyright 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * Manage the installation of apps.
+ *
+ * @param {string} itemId Item id to be installed.
+ * @param {!CWSWidgetContainer.PlatformDelegate} delegate Delegate for accessing
+ *     Chrome platform APIs.
+ * @constructor
+ * @struct
+ */
+function AppInstaller(itemId, delegate) {
+  /** @private {!CWSWidgetContainer.PlatformDelegate} */
+  this.delegate_ = delegate;
+  this.itemId_ = itemId;
+  this.callback_ = null;
+}
+
+/**
+ * Type of result.
+ *
+ * @enum {string}
+ * @const
+ */
+AppInstaller.Result = {
+  SUCCESS: 'AppInstaller.success',
+  CANCELLED: 'AppInstaller.cancelled',
+  ERROR: 'AppInstaller.error'
+};
+Object.freeze(AppInstaller.Result);
+
+/**
+ * Error message for user cancellation. This must be match with the constant
+ * 'kUserCancelledError' in C/B/extensions/webstore_standalone_installer.cc.
+ * @type {string}
+ * @const
+ * @private
+ */
+AppInstaller.USER_CANCELLED_ERROR_STR_ = 'User cancelled install';
+
+/**
+ * Start an installation.
+ * @param {function(AppInstaller.Result, string)} callback Called when the
+ *     installation is finished.
+ */
+AppInstaller.prototype.install = function(callback) {
+  this.callback_ = callback;
+  this.delegate_.installWebstoreItem(
+      this.itemId_,
+      this.onInstallCompleted_.bind(this));
+};
+
+/**
+ * Prevents {@code this.callback_} from being called.
+ */
+AppInstaller.prototype.cancel = function() {
+  // TODO(tbarzic): Would it make sense to uninstall the app on success if the
+  // app instaler is cancelled instead of just invalidating the callback?
+  this.callback_ = null;
+};
+
+/**
+ * Called when the installation is completed.
+ *
+ * @param {?string} error Null if the installation is success,
+ *     otherwise error message.
+ * @private
+ */
+AppInstaller.prototype.onInstallCompleted_ = function(error) {
+  if (!this.callback_)
+    return;
+
+  var installerResult = AppInstaller.Result.SUCCESS;
+  if (error !== null) {
+    installerResult =
+        error == AppInstaller.USER_CANCELLED_ERROR_STR_ ?
+        AppInstaller.Result.CANCELLED :
+        AppInstaller.Result.ERROR;
+  }
+  this.callback_(installerResult, error || '');
+  this.callback_ = null;
+};
+
+//// Copyright 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @param {WebView} webView Web View tag.
+ * @param {number} width Width of the CWS widget.
+ * @param {number} height Height of the CWS widget.
+ * @param {string} url Share Url for an entry.
+ * @param {string} target Target (scheme + host + port) of the widget.
+ * @param {Object<*>} options Options to be sent to the dialog host.
+ * @param {!CWSWidgetContainer.PlatformDelegate} delegate Delegate for accessing
+ *     Chrome platform APIs.
+ * @constructor
+ * @extends {cr.EventTarget}
+ */
+function CWSContainerClient(webView, width, height, url, target, options,
+                            delegate) {
+  /** @private {!CWSWidgetContainer.PlatformDelegate} */
+  this.delegate_ = delegate;
+  this.webView_ = webView;
+  this.width_ = width;
+  this.height_ = height;
+  this.url_ = url;
+  this.target_ = target;
+  this.options_ = options;
+
+  this.loaded_ = false;
+  this.loading_ = false;
+
+  this.onMessageBound_ = this.onMessage_.bind(this);
+  this.onLoadStopBound_ = this.onLoadStop_.bind(this);
+  this.onLoadAbortBound_ = this.onLoadAbort_.bind(this);
+}
+
+CWSContainerClient.prototype = {
+  __proto__: cr.EventTarget.prototype
+};
+
+/**
+ * Events CWSContainerClient fires
+ *
+ * @enum {string}
+ * @const
+ */
+CWSContainerClient.Events = {
+  LOADED: 'CWSContainerClient.Events.LOADED',
+  LOAD_FAILED: 'CWSContainerClient.Events.LOAD_FAILED',
+  REQUEST_INSTALL: 'CWSContainerClient.Events.REQUEST_INSTALL',
+  INSTALL_DONE: 'CWSContainerClient.Events.INSTALL_DONE'
+};
+Object.freeze(CWSContainerClient.Events);
+
+/**
+ * Handles messages from the widget
+ * @param {Event} event Message event.
+ * @private
+ */
+CWSContainerClient.prototype.onMessage_ = function(event) {
+  if (event.origin != this.target_)
+    return;
+
+  var data = event.data;
+  switch (data['message']) {
+    case 'widget_loaded':
+      this.onWidgetLoaded_();
+      break;
+    case 'widget_load_failed':
+      this.onWidgetLoadFailed_();
+      break;
+    case 'before_install':
+      this.sendInstallRequest_(data['item_id']);
+      break;
+    case 'after_install':
+      this.sendInstallDone_(data['item_id']);
+      break;
+    default:
+      console.error('Unexpected message: ' + data['message'], data);
+  }
+};
+
+/**
+ * Called when receiving 'loadstop' event from the <webview>.
+ * @param {Event} event Message event.
+ * @private
+ */
+CWSContainerClient.prototype.onLoadStop_ = function(event) {
+  if (this.url_ == this.webView_.src && !this.loaded_) {
+    this.loaded_ = true;
+    this.postInitializeMessage_();
+  }
+};
+
+/**
+ * Called when the widget is loaded successfully.
+ * @private
+ */
+CWSContainerClient.prototype.onWidgetLoaded_ = function() {
+  cr.dispatchSimpleEvent(this, CWSContainerClient.Events.LOADED);
+};
+
+/**
+ * Called when the widget is failed to load.
+ * @private
+ */
+CWSContainerClient.prototype.onWidgetLoadFailed_ = function() {
+  this.sendWidgetLoadFailed_();
+};
+
+/**
+ * Called when receiving the 'loadabort' event from <webview>.
+ * @param {Event} event Message event.
+ * @private
+ */
+CWSContainerClient.prototype.onLoadAbort_ = function(event) {
+  this.sendWidgetLoadFailed_();
+};
+
+/**
+ * Called when the installation is completed from the suggest-app dialog.
+ *
+ * @param {boolean} result True if the installation is success, false if failed.
+ * @param {string} itemId Item id to be installed.
+ */
+CWSContainerClient.prototype.onInstallCompleted = function(result, itemId) {
+  if (result)
+    this.postInstallSuccessMessage_(itemId);
+  else
+    this.postInstallFailureMessage_(itemId);
+};
+
+/**
+ * Send the fail message to the suggest-app dialog.
+ * @private
+ */
+CWSContainerClient.prototype.sendWidgetLoadFailed_ = function() {
+  cr.dispatchSimpleEvent(this, CWSContainerClient.Events.LOAD_FAILED);
+};
+
+/**
+ * Send the install request to the suggest-app dialog.
+ *
+ * @param {string} itemId Item id to be installed.
+ * @private
+ */
+CWSContainerClient.prototype.sendInstallRequest_ = function(itemId) {
+  var event = new Event(CWSContainerClient.Events.REQUEST_INSTALL);
+  event.itemId = itemId;
+  this.dispatchEvent(event);
+};
+
+/**
+ * Notifies the suggest-app dialog that the item installation is completed.
+ *
+ * @param {string} itemId The installed item ID.
+ * @private
+ */
+CWSContainerClient.prototype.sendInstallDone_ = function(itemId) {
+  var event = new Event(CWSContainerClient.Events.INSTALL_DONE);
+  event.itemId = itemId;
+  this.dispatchEvent(event);
+};
+
+/**
+ * Send the 'install_failure' message to the widget.
+ *
+ * @param {string} itemId Item id to be installed.
+ * @private
+ */
+CWSContainerClient.prototype.postInstallFailureMessage_ = function(itemId) {
+  var message = {
+    message: 'install_failure',
+    item_id: itemId,
+    v: 1
+  };
+
+  this.postMessage_(message);
+};
+
+/**
+ * Send the 'install_success' message to the widget.
+ *
+ * @param {string} itemId Item id to be installed.
+ * @private
+ */
+CWSContainerClient.prototype.postInstallSuccessMessage_ = function(itemId) {
+  var message = {
+    message: 'install_success',
+    item_id: itemId,
+    v: 1
+  };
+
+  this.postMessage_(message);
+};
+
+/**
+ * Send the 'initialize' message to the widget.
+ * @private
+ */
+CWSContainerClient.prototype.postInitializeMessage_ = function() {
+  new Promise(function(fulfill, reject) {
+    this.delegate_.getInstalledItems(
+        /**
+         * @param {?Array<!string>} items Installed items.
+         *     Null on error.
+         */
+        function(items) {
+          if (!items) {
+            reject('Failed to retrive installed items.');
+            return;
+          }
+          fulfill(items);
+    })
+  }.bind(this)).then(
+      /**
+       * @param {!Array<string>} preinstalledExtensionIDs
+       */
+      function(preinstalledExtensionIDs) {
+        var message = {
+          message: 'initialize',
+          hl: this.delegate_.strings.UI_LOCALE,
+          width: this.width_,
+          height: this.height_,
+          preinstalled_items: preinstalledExtensionIDs,
+          v: 1
+        };
+
+        if (this.options_) {
+          Object.keys(this.options_).forEach(function(key) {
+            message[key] = this.options_[key];
+          }.bind(this));
+        }
+
+        this.postMessage_(message);
+      }.bind(this));
+};
+
+/**
+ * Send a message to the widget. This method shouldn't be called directly,
+ * should from more specified posting function (eg. postXyzMessage_()).
+ *
+ * @param {Object} message Message object to be posted.
+ * @private
+ */
+CWSContainerClient.prototype.postMessage_ = function(message) {
+  if (!this.webView_.contentWindow)
+    return;
+
+  this.webView_.contentWindow.postMessage(message, this.target_);
+};
+
+/**
+ * Loads the page to <webview>. Can be called only once.
+ */
+CWSContainerClient.prototype.load = function() {
+  if (this.loading_ || this.loaded_)
+    throw new Error('Already loaded.');
+  this.loading_ = true;
+  this.loaded_ = false;
+
+  window.addEventListener('message', this.onMessageBound_);
+  this.webView_.addEventListener('loadstop', this.onLoadStopBound_);
+  this.webView_.addEventListener('loadabort', this.onLoadAbortBound_);
+  this.webView_.setAttribute('src', this.url_);
+};
+
+/**
+ * Aborts loading of the embedded dialog and performs cleanup.
+ */
+CWSContainerClient.prototype.abort = function() {
+  window.removeEventListener('message', this.onMessageBound_);
+  this.webView_.removeEventListener('loadstop', this.onLoadStopBound_);
+  this.webView_.removeEventListener(
+      'loadabort', this.onLoadAbortBound_);
+  this.webView_.stop();
+};
+
+/**
+ * Cleans the dialog by removing all handlers.
+ */
+CWSContainerClient.prototype.dispose = function() {
+  this.abort();
+};
+
+//// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * CWSWidgetContainer contains a Chrome Web Store widget that displays list of
+ * apps that satisfy certain constraints (e.g. fileHandler apps that can handle
+ * files with specific file extension or MIME type) and enables the user to
+ * install apps directly from it.
+ * CWSWidgetContainer implements client side of the widget, which handles
+ * widget loading and app installation.
+ */
+
+/**
+ * The width of the widget (in pixels)
+ * @type {number}
+ * @const
+ */
+var WEBVIEW_WIDTH = 735;
+
+/**
+ * The height of the widget (in pixels).
+ * @type {number}
+ * @const
+ */
+var WEBVIEW_HEIGHT = 480;
+
+/**
+ * The URL of the widget showing suggested apps.
+ * @type {string}
+ * @const
+ */
+var CWS_WIDGET_URL =
+    'https://clients5.google.com/webstore/wall/cros-widget-container';
+
+/**
+ * The origin of the widget.
+ * @type {string}
+ * @const
+ */
+var CWS_WIDGET_ORIGIN = 'https://clients5.google.com';
+
+/**
+ * Creates the widget container element in DOM tree.
+ *
+ * @param {!HTMLDocument} document The document to contain this container.
+ * @param {!HTMLElement} parentNode Node to be parent for this container.
+ * @param {!CWSWidgetContainer.PlatformDelegate} delegate Delegate for accessing
+ *     Chrome platform APIs.
+ * @param {!{
+ *   overrideCwsContainerUrlForTest: (string|undefined),
+ *   overrideCwsContainerOriginForTest: (string|undefined)
+ * }} params Overrides for container params.
+ * @constructor
+ */
+function CWSWidgetContainer(document, parentNode, delegate, params) {
+  /** @private {!CWSWidgetContainer.PlatformDelegate} */
+  this.delegate_ = delegate;
+
+  /** @private {!CWSWidgetContainer.MetricsRecorder} */
+  this.metricsRecorder_ =
+      new CWSWidgetContainer.MetricsRecorder(delegate.metricsImpl);
+
+  /**
+   * The document that will contain the container.
+   * @const {!HTMLDocument}
+   * @private
+   */
+  this.document_ = document;
+
+  /**
+   * The element containing the widget webview.
+   * @type {!Element}
+   * @private
+   */
+  this.webviewContainer_ = document.createElement('div');
+  this.webviewContainer_.classList.add('cws-widget-webview-container');
+  this.webviewContainer_.style.width = WEBVIEW_WIDTH + 'px';
+  this.webviewContainer_.style.height = WEBVIEW_HEIGHT + 'px';
+  parentNode.appendChild(this.webviewContainer_);
+
+  parentNode.classList.add('cws-widget-container-root');
+
+  /**
+   * Element showing spinner layout in place of Web Store widget.
+   * @type {!Element}
+   */
+  var spinnerLayer = document.createElement('div');
+  spinnerLayer.className = 'cws-widget-spinner-layer';
+  parentNode.appendChild(spinnerLayer);
+
+  /** @private {!CWSWidgetContainer.SpinnerLayerController} */
+  this.spinnerLayerController_ =
+      new CWSWidgetContainer.SpinnerLayerController(spinnerLayer);
+
+  /**
+   * The widget container's button strip.
+   * @type {!Element}
+   */
+  var buttons = document.createElement('div');
+  buttons.classList.add('cws-widget-buttons');
+  parentNode.appendChild(buttons);
+
+  /**
+   * Button that opens the Webstore URL.
+   * @const {!Element}
+   * @private
+   */
+  this.webstoreButton_ = document.createElement('div');
+  this.webstoreButton_.hidden = true;
+  this.webstoreButton_.setAttribute('role', 'button');
+  this.webstoreButton_.tabIndex = 0;
+
+  /**
+   * Icon for the Webstore button.
+   * @type {!Element}
+   */
+  var webstoreButtonIcon = this.document_.createElement('span');
+  webstoreButtonIcon.classList.add('cws-widget-webstore-button-icon');
+  this.webstoreButton_.appendChild(webstoreButtonIcon);
+
+  /**
+   * The label for the Webstore button.
+   * @type {!Element}
+   */
+  var webstoreButtonLabel = this.document_.createElement('span');
+  webstoreButtonLabel.classList.add('cws-widget-webstore-button-label');
+  webstoreButtonLabel.textContent = this.delegate_.strings.LINK_TO_WEBSTORE;
+  this.webstoreButton_.appendChild(webstoreButtonLabel);
+
+  this.webstoreButton_.addEventListener(
+      'click', this.onWebstoreLinkActivated_.bind(this));
+  this.webstoreButton_.addEventListener(
+      'keydown', this.onWebstoreLinkKeyDown_.bind(this));
+
+  buttons.appendChild(this.webstoreButton_);
+
+  /**
+   * The webview element containing the Chrome Web Store widget.
+   * @type {?WebView}
+   * @private
+   */
+  this.webview_ = null;
+
+  /**
+   * The Chrome Web Store widget URL.
+   * @const {string}
+   * @private
+   */
+  this.widgetUrl_ = params.overrideCwsContainerUrlForTest || CWS_WIDGET_URL;
+
+  /**
+   * The Chrome Web Store widget origin.
+   * @const {string}
+   * @private
+   */
+  this.widgetOrigin_ = params.overrideCwsContainerOriginForTest ||
+      CWS_WIDGET_ORIGIN;
+
+  /**
+   * Map of options for the widget.
+   * @type {?Object<*>}
+   * @private
+   */
+  this.options_ = null;
+
+  /**
+   * The ID of the item being installed. Null if no items are being installed.
+   * @type {?string}
+   * @private
+   */
+  this.installingItemId_ = null;
+
+  /**
+   * The ID of the the installed item. Null if no item was installed.
+   * @type {?string}
+   * @private
+   */
+  this.installedItemId_ = null;
+
+  /**
+   * The current widget state.
+   * @type {CWSWidgetContainer.State}
+   * @private
+   */
+  this.state_ = CWSWidgetContainer.State.UNINITIALIZED;
+
+  /**
+   * The Chrome Web Store access token to be used when communicating with the
+   * Chrome Web Store widget.
+   * @type {?string}
+   * @private
+   */
+  this.accessToken_ = null;
+
+  /**
+   * Called when the Chrome Web Store widget is done. It resolves the promise
+   * returned by {@code this.start()}.
+   * @type {?function(CWSWidgetContainer.ResolveReason)}
+   * @private
+   */
+  this.resolveStart_ = null;
+
+  /**
+   * Promise for retriving {@code this.accessToken_}.
+   * @type {Promise.<string>}
+   * @private
+   */
+  this.tokenGetter_ = this.createTokenGetter_();
+
+  /**
+   * Dialog to be shown when an installation attempt fails.
+   * @type {CWSWidgetContainerErrorDialog}
+   * @private
+   */
+  this.errorDialog_ = new CWSWidgetContainerErrorDialog(parentNode);
+}
+
+/**
+ * Strings required by the widget container.
+ * @typedef {{
+ *   UI_LOCALE: string,
+ *   LINK_TO_WEBSTORE: string,
+ *   INSTALLATION_FAILED_MESSAGE: string,
+ *   LOADING_SPINNER_ALT: string,
+ *   INSTALLING_SPINNER_ALT: string
+ * }}
+ */
+CWSWidgetContainer.Strings;
+
+/**
+ * Functions for reporting metrics for the widget.
+ * @typedef {{
+ *   recordEnum: function(string, number, number),
+ *   recordUserAction: function(string),
+ *   startInterval: function(string),
+ *   recordInterval: function(string)
+ * }}
+ */
+CWSWidgetContainer.MetricsImpl;
+
+/**
+ * Type for delegate used by CWSWidgetContainer component to access Chrome
+ * platform APIs.
+ * @typedef {{
+ *   strings: !CWSWidgetContainer.Strings,
+ *   metricsImpl: !CWSWidgetContainer.MetricsImpl,
+ *   installWebstoreItem: function(string, function(?string)),
+ *   getInstalledItems: function(function(?Array<!string>)),
+ *   requestWebstoreAccessToken: function(function(?string))
+ * }}
+ */
+CWSWidgetContainer.PlatformDelegate;
+
+/**
+ * @enum {string}
+ * @private
+ */
+CWSWidgetContainer.State = {
+  UNINITIALIZED: 'CWSWidgetContainer.State.UNINITIALIZED',
+  GETTING_ACCESS_TOKEN: 'CWSWidgetContainer.State.GETTING_ACCESS_TOKEN',
+  ACCESS_TOKEN_READY: 'CWSWidgetContainer.State.ACCESS_TOKEN_READY',
+  INITIALIZING: 'CWSWidgetContainer.State.INITIALIZING',
+  INITIALIZE_FAILED_CLOSING:
+      'CWSWidgetContainer.State.INITIALIZE_FAILED_CLOSING',
+  INITIALIZED: 'CWSWidgetContainer.State.INITIALIZED',
+  INSTALLING: 'CWSWidgetContainer.State.INSTALLING',
+  WAITING_FOR_CONFIRMATION: 'CWSWidgetContainer.State.WAITING_FOR_CONFIRMATION',
+  INSTALLED_CLOSING: 'CWSWidgetContainer.State.INSTALLED_CLOSING',
+  OPENING_WEBSTORE_CLOSING: 'CWSWidgetContainer.State.OPENING_WEBSTORE_CLOSING',
+  CANCELED_CLOSING: 'CWSWidgetContainer.State.CANCELED_CLOSING'
+};
+Object.freeze(CWSWidgetContainer.State);
+
+/**
+ * @enum {string}
+ * @const
+ */
+CWSWidgetContainer.Result = {
+  /** Install is done. The install app should be opened. */
+  INSTALL_SUCCESSFUL: 'CWSWidgetContainer.Result.INSTALL_SUCCESSFUL',
+  /** User cancelled the suggest app dialog. No message should be shown. */
+  USER_CANCEL: 'CWSWidgetContainer.Result.USER_CANCEL',
+  /** User clicked the link to web store so the dialog is closed. */
+  WEBSTORE_LINK_OPENED: 'CWSWidgetContainer.Result.WEBSTORE_LINK_OPENED',
+  /** Failed to load the widget. Error message should be shown. */
+  FAILED: 'CWSWidgetContainer.Result.FAILED'
+};
+Object.freeze(CWSWidgetContainer.Result);
+
+/**
+ * The reason due to which the container is resolving {@code this.start}
+ * promise.
+ * @enum {string}
+ */
+CWSWidgetContainer.ResolveReason = {
+  /** The widget container ended up in its final state. */
+  DONE: 'CWSWidgetContainer.ResolveReason.DONE',
+  /** The widget container is being reset. */
+  RESET: 'CWSWidgetContainer.CloserReason.RESET'
+};
+Object.freeze(CWSWidgetContainer.ResolveReason);
+
+/**
+ * @return {!Element} The element that should be focused initially.
+ */
+CWSWidgetContainer.prototype.getInitiallyFocusedElement = function() {
+  return this.webviewContainer_;
+};
+
+/**
+ * Injects headers into the passed request.
+ *
+ * @param {!Object} e Request event.
+ * @return {!BlockingResponse} Modified headers.
+ * @private
+ */
+CWSWidgetContainer.prototype.authorizeRequest_ = function(e) {
+  e.requestHeaders.push({
+    name: 'Authorization',
+    value: 'Bearer ' + this.accessToken_
+  });
+  return /** @type {!BlockingResponse}*/ ({requestHeaders: e.requestHeaders});
+};
+
+/**
+ * Retrieves the authorize token.
+ * @return {Promise.<string>} The promise with the retrived access token.
+ * @private
+ */
+CWSWidgetContainer.prototype.createTokenGetter_ = function() {
+  return new Promise(function(resolve, reject) {
+    if (window.IN_TEST) {
+      // In test, use a dummy string as token. This must be a non-empty string.
+      resolve('DUMMY_ACCESS_TOKEN_FOR_TEST');
+      return;
+    }
+
+    // Fetch or update the access token.
+    this.delegate_.requestWebstoreAccessToken(
+        /** @param {?string} accessToken The requested token. Null on error. */
+        function(accessToken) {
+          if (!accessToken) {
+            reject('Error retriveing Web Store access token.');
+            return;
+          }
+          resolve(accessToken)
+        });
+  }.bind(this));
+};
+
+/**
+ * @return {boolean} Whether the container is in initial state, i.e. inactive.
+ */
+CWSWidgetContainer.prototype.isInInitialState = function() {
+  return this.state_ === CWSWidgetContainer.State.UNINITIALIZED;
+};
+
+/**
+ * Ensures that the widget container is in the state where it can properly
+ * handle showing the Chrome Web Store webview.
+ * @return {Promise} Resolved when the container is ready to be used.
+ */
+CWSWidgetContainer.prototype.ready = function() {
+  return new Promise(function(resolve, reject) {
+    if (this.state_ !== CWSWidgetContainer.State.UNINITIALIZED) {
+      reject('Invalid state.');
+      return;
+    }
+
+    this.spinnerLayerController_.setAltText(
+        this.delegate_.strings.LOADING_SPINNER_ALT);
+    this.spinnerLayerController_.setVisible(true);
+
+    this.metricsRecorder_.recordShowDialog();
+    this.metricsRecorder_.startLoad();
+
+    this.state_ = CWSWidgetContainer.State.GETTING_ACCESS_TOKEN;
+
+    this.tokenGetter_.then(function(accessToken) {
+      this.state_ = CWSWidgetContainer.State.ACCESS_TOKEN_READY;
+      this.accessToken_ = accessToken;
+      resolve();
+    }.bind(this), function(error) {
+      this.spinnerLayerController_.setVisible(false);
+      this.state_ = CWSWidgetContainer.State.UNINITIALIZED;
+      reject('Failed to get Web Store access token: ' + error);
+    }.bind(this));
+  }.bind(this));
+};
+
+/**
+ * Initializes and starts loading the Chrome Web Store widget webview.
+ * Must not be called before {@code this.ready()} is resolved.
+ *
+ * @param {!Object<*>} options Map of options for the dialog.
+ * @param {?string} webStoreUrl Url for more results. Null if not supported.
+ * @return {!Promise.<CWSWidgetContainer.ResolveReason>} Resolved when app
+ *     installation is done, or the installation is cancelled.
+ */
+CWSWidgetContainer.prototype.start = function(options, webStoreUrl) {
+  return new Promise(function(resolve, reject) {
+    if (this.state_ !== CWSWidgetContainer.State.ACCESS_TOKEN_READY) {
+      this.state_ = CWSWidgetContainer.State.INITIALIZE_FAILED_CLOSING;
+      reject('Invalid state in |start|.');
+      return;
+    }
+
+    if (!this.accessToken_) {
+      this.state_ = CWSWidgetContainer.State.INITIALIZE_FAILED_CLOSING;
+      reject('No access token.');
+      return;
+    }
+
+    this.resolveStart_ = resolve;
+
+    this.state_ = CWSWidgetContainer.State.INITIALIZING;
+
+    this.webStoreUrl_ = webStoreUrl;
+    this.options_ = options;
+
+    this.webstoreButton_.hidden = !webStoreUrl;
+    this.webstoreButton_.classList.toggle('cws-widget-webstore-button',
+                                          !!webStoreUrl);
+
+    this.webview_ =
+        /** @type {!WebView} */(this.document_.createElement('webview'));
+    this.webview_.id = 'cws-widget';
+    this.webview_.partition = 'persist:cwswidgets';
+    this.webview_.style.width = WEBVIEW_WIDTH + 'px';
+    this.webview_.style.height = WEBVIEW_HEIGHT + 'px';
+    this.webview_.request.onBeforeSendHeaders.addListener(
+        this.authorizeRequest_.bind(this),
+        /** @type {!RequestFilter}*/ ({urls: [this.widgetOrigin_ + '/*']}),
+        ['blocking', 'requestHeaders']);
+    this.webview_.addEventListener('newwindow', function(event) {
+      event = /** @type {NewWindowEvent} */ (event);
+      // Discard the window object and reopen in an external window.
+      event.window.discard();
+      window.open(event.targetUrl);
+      event.preventDefault();
+    });
+    this.webviewContainer_.appendChild(this.webview_);
+
+    this.spinnerLayerController_.setElementToFocusOnHide(this.webview_);
+    this.spinnerLayerController_.setAltText(
+        this.delegate_.strings.LOADING_SPINNER_ALT);
+    this.spinnerLayerController_.setVisible(true);
+
+    this.webviewClient_ = new CWSContainerClient(
+        this.webview_,
+        WEBVIEW_WIDTH,
+        WEBVIEW_HEIGHT,
+        this.widgetUrl_,
+        this.widgetOrigin_,
+        this.options_,
+        this.delegate_);
+    this.webviewClient_.addEventListener(CWSContainerClient.Events.LOADED,
+                                         this.onWidgetLoaded_.bind(this));
+    this.webviewClient_.addEventListener(CWSContainerClient.Events.LOAD_FAILED,
+                                         this.onWidgetLoadFailed_.bind(this));
+    this.webviewClient_.addEventListener(
+        CWSContainerClient.Events.REQUEST_INSTALL,
+        this.onInstallRequest_.bind(this));
+    this.webviewClient_.addEventListener(
+        CWSContainerClient.Events.INSTALL_DONE,
+        this.onInstallDone_.bind(this));
+    this.webviewClient_.load();
+  }.bind(this));
+};
+
+/**
+ * Called when the 'See more...' button is activated. It opens
+ * {@code this.webstoreUrl_}.
+ * @param {Event} e The event that activated the link. Either mouse click or
+ *     key down event.
+ * @private
+ */
+CWSWidgetContainer.prototype.onWebstoreLinkActivated_ = function(e) {
+  if (!this.webStoreUrl_)
+    return;
+  window.open(this.webStoreUrl_);
+  this.state_ = CWSWidgetContainer.State.OPENING_WEBSTORE_CLOSING;
+  this.reportDone_();
+};
+
+/**
+ * Key down event handler for webstore button element. If the key is enter, it
+ * activates the button.
+ * @param {Event} e The event
+ * @private
+ */
+CWSWidgetContainer.prototype.onWebstoreLinkKeyDown_ = function(e) {
+  if (e.keyCode !== 13 /* Enter */)
+    return;
+  this.onWebstoreLinkActivated_(e);
+};
+
+/**
+ * Called when the widget is loaded successfully.
+ * @param {Event} event Event.
+ * @private
+ */
+CWSWidgetContainer.prototype.onWidgetLoaded_ = function(event) {
+  this.metricsRecorder_.finishLoad();
+  this.metricsRecorder_.recordLoad(
+      CWSWidgetContainer.MetricsRecorder.LOAD.SUCCEEDED);
+
+  this.state_ = CWSWidgetContainer.State.INITIALIZED;
+
+  this.spinnerLayerController_.setVisible(false);
+  this.webview_.focus();
+};
+
+/**
+ * Called when the widget is failed to load.
+ * @param {Event} event Event.
+ * @private
+ */
+CWSWidgetContainer.prototype.onWidgetLoadFailed_ = function(event) {
+  this.metricsRecorder_.recordLoad(
+      CWSWidgetContainer.MetricsRecorder.LOAD.FAILED);
+
+  this.spinnerLayerController_.setVisible(false);
+  this.state_ = CWSWidgetContainer.State.INITIALIZE_FAILED_CLOSING;
+  this.reportDone_();
+};
+
+/**
+ * Called when the connection status is changed to offline.
+ */
+CWSWidgetContainer.prototype.onConnectionLost = function() {
+  if (this.state_ !== CWSWidgetContainer.State.UNINITIALIZED) {
+    this.state_ = CWSWidgetContainer.State.INITIALIZE_FAILED_CLOSING;
+    this.reportDone_();
+  }
+};
+
+/**
+ * Called when receiving the install request from the webview client.
+ * @param {Event} e Event.
+ * @private
+ */
+CWSWidgetContainer.prototype.onInstallRequest_ = function(e) {
+  var itemId = e.itemId;
+  this.installingItemId_ = itemId;
+
+  this.appInstaller_ = new AppInstaller(itemId, this.delegate_);
+  this.appInstaller_.install(this.onItemInstalled_.bind(this));
+
+  this.spinnerLayerController_.setAltText(
+      this.delegate_.strings.INSTALLING_SPINNER_ALT);
+  this.spinnerLayerController_.setVisible(true);
+  this.state_ = CWSWidgetContainer.State.INSTALLING;
+};
+
+/**
+ * Called when the webview client receives install confirmation from the
+ * Web Store widget.
+ * @param {Event} e Event
+ * @private
+ */
+CWSWidgetContainer.prototype.onInstallDone_ = function(e) {
+  this.spinnerLayerController_.setVisible(false);
+  this.state_ = CWSWidgetContainer.State.INSTALLED_CLOSING;
+  this.reportDone_();
+};
+
+/**
+ * Called when the installation is completed from the app installer.
+ * @param {AppInstaller.Result} result Result of the installation.
+ * @param {string} error Detail of the error.
+ * @private
+ */
+CWSWidgetContainer.prototype.onItemInstalled_ = function(result, error) {
+  var success = (result === AppInstaller.Result.SUCCESS);
+
+  // If install succeeded, the spinner will be removed once
+  // |this.webviewClient_| dispatched INSTALL_DONE event.
+  if (!success)
+    this.spinnerLayerController_.setVisible(false);
+
+  this.state_ = success ?
+                CWSWidgetContainer.State.WAITING_FOR_CONFIRMATION :
+                CWSWidgetContainer.State.INITIALIZED;  // Back to normal state.
+  this.webviewClient_.onInstallCompleted(success, this.installingItemId_);
+  this.installedItemId_ = this.installingItemId_;
+  this.installingItemId_ = null;
+
+  switch (result) {
+    case AppInstaller.Result.SUCCESS:
+      this.metricsRecorder_.recordInstall(
+          CWSWidgetContainer.MetricsRecorder.INSTALL.SUCCEEDED);
+      // Wait for the widget webview container to dispatch INSTALL_DONE.
+      break;
+    case AppInstaller.Result.CANCELLED:
+      this.metricsRecorder_.recordInstall(
+          CWSWidgetContainer.MetricsRecorder.INSTALL.CANCELLED);
+      // User cancelled the installation. Do nothing.
+      break;
+    case AppInstaller.Result.ERROR:
+      this.metricsRecorder_.recordInstall(
+          CWSWidgetContainer.MetricsRecorder.INSTALL.FAILED);
+      this.errorDialog_.show(
+          this.delegate_.strings.INSTALLATION_FAILED_MESSAGE,
+          null,
+          null,
+          null);
+      break;
+  }
+};
+
+/**
+ * Resolves the promise returned by {@code this.start} when widget is done with
+ * installing apps.
+ * @private
+ */
+CWSWidgetContainer.prototype.reportDone_ = function() {
+  if (this.resolveStart_)
+    this.resolveStart_(CWSWidgetContainer.ResolveReason.DONE);
+  this.resolveStart_ = null;
+};
+
+/**
+ * Finalizes the widget container state and returns the final app instalation
+ * result. The widget should not be used after calling this. If called before
+ * promise returned by {@code this.start} is resolved, the reported result will
+ * be as if the widget was cancelled.
+ * @return {{result: CWSWidgetContainer.Result, installedItemId: ?string}}
+ */
+CWSWidgetContainer.prototype.finalizeAndGetResult = function() {
+  switch (this.state_) {
+    case CWSWidgetContainer.State.INSTALLING:
+      // Install is being aborted. Send the failure result.
+      // Cancels the install.
+      if (this.webviewClient_)
+        this.webviewClient_.onInstallCompleted(false, this.installingItemId_);
+      this.installingItemId_ = null;
+
+      // Assumes closing the dialog as canceling the install.
+      this.state_ = CWSWidgetContainer.State.CANCELED_CLOSING;
+      break;
+    case CWSWidgetContainer.State.GETTING_ACCESS_TOKEN:
+    case CWSWidgetContainer.State.ACCESS_TOKEN_READY:
+    case CWSWidgetContainer.State.INITIALIZING:
+      this.metricsRecorder_.recordLoad(
+          CWSWidgetContainer.MetricsRecorder.LOAD.CANCELLED);
+      this.state_ = CWSWidgetContainer.State.CANCELED_CLOSING;
+      break;
+    case CWSWidgetContainer.State.WAITING_FOR_CONFIRMATION:
+      // This can happen if the dialog is closed by the user before Web Store
+      // widget replies with 'after_install'.
+      // Consider this success, as the app has actually been installed.
+      // TODO(tbarzic): Should the app be uninstalled in this case?
+      this.state_ = CWSWidgetContainer.State.INSTALLED_CLOSING;
+      break;
+    case CWSWidgetContainer.State.INSTALLED_CLOSING:
+    case CWSWidgetContainer.State.INITIALIZE_FAILED_CLOSING:
+    case CWSWidgetContainer.State.OPENING_WEBSTORE_CLOSING:
+      // Do nothing.
+      break;
+    case CWSWidgetContainer.State.INITIALIZED:
+      this.state_ = CWSWidgetContainer.State.CANCELED_CLOSING;
+      break;
+    default:
+      this.state_ = CWSWidgetContainer.State.CANCELED_CLOSING;
+      console.error('Invalid state.');
+  }
+
+  var result;
+  switch (this.state_) {
+    case CWSWidgetContainer.State.INSTALLED_CLOSING:
+      result = CWSWidgetContainer.Result.INSTALL_SUCCESSFUL;
+      this.metricsRecorder_.recordCloseDialog(
+          CWSWidgetContainer.MetricsRecorder.CLOSE_DIALOG.ITEM_INSTALLED);
+      break;
+    case CWSWidgetContainer.State.INITIALIZE_FAILED_CLOSING:
+      result = CWSWidgetContainer.Result.FAILED;
+      break;
+    case CWSWidgetContainer.State.CANCELED_CLOSING:
+      result = CWSWidgetContainer.Result.USER_CANCEL;
+      this.metricsRecorder_.recordCloseDialog(
+          CWSWidgetContainer.MetricsRecorder.CLOSE_DIALOG.USER_CANCELLED);
+      break;
+    case CWSWidgetContainer.State.OPENING_WEBSTORE_CLOSING:
+      result = CWSWidgetContainer.Result.WEBSTORE_LINK_OPENED;
+      this.metricsRecorder_.recordCloseDialog(
+          CWSWidgetContainer.MetricsRecorder.CLOSE_DIALOG.WEBSTORE_LINK_OPENED);
+      break;
+    default:
+      result = CWSWidgetContainer.Result.USER_CANCEL;
+      this.metricsRecorder_.recordCloseDialog(
+          CWSWidgetContainer.MetricsRecorder.CLOSE_DIALOG.UNKNOWN_ERROR);
+  }
+
+  this.state_ = CWSWidgetContainer.State.UNINITIALIZED;
+
+  this.reset_();
+
+  return {result: result, installedItemId: this.installedItemId_};
+};
+
+/**
+ * Resets the widget.
+ * @private
+ */
+CWSWidgetContainer.prototype.reset_ = function () {
+  if (this.state_ !== CWSWidgetContainer.State.UNINITIALIZED)
+    console.error('Widget reset before its state was finalized.');
+
+  if (this.resolveStart_) {
+    this.resolveStart_(CWSWidgetContainer.ResolveReason.RESET);
+    this.resolveStart_ = null;
+  }
+
+  this.spinnerLayerController_.reset();
+
+  if (this.webviewClient_) {
+    this.webviewClient_.dispose();
+    this.webviewClient_ = null;
+  }
+
+  if (this.webview_) {
+    this.webviewContainer_.removeChild(this.webview_);
+    this.webview_ = null;
+  }
+
+  if (this.appInstaller_) {
+    this.appInstaller_.cancel();
+    this.appInstaller_ = null;
+  }
+
+  this.options_ = null;
+
+  if (this.errorDialog_.shown())
+    this.errorDialog_.hide();
+};
+
+/**
+ * Controls showing and hiding spinner layer.
+ * @param {!Element} spinnerLayer The spinner layer element.
+ * @constructor
+ */
+CWSWidgetContainer.SpinnerLayerController = function(spinnerLayer) {
+  /** @private {!Element} */
+  this.spinnerLayer_ = spinnerLayer;
+
+  /** @private {boolean} */
+  this.visible_ = false;
+
+  /**
+   * Set only if spinner is transitioning between visible and hidden states.
+   * Calling the function clears event handlers set for handling the transition,
+   * and updates spinner layer class list to its final state.
+   * @type {?function()}
+   * @private
+   */
+  this.clearTransition_ = null;
+
+  /**
+   * Reference to the timeout set to ensure {@code this.clearTransision_} gets
+   * called even if 'transitionend' event does not fire.
+   * @type {?number}
+   * @private
+   */
+  this.clearTransitionTimeout_ = null;
+
+  /**
+   * Element to be focused when the layer is hidden.
+   * @type {Element}
+   * @private
+   */
+  this.focusOnHide_ = null;
+
+  spinnerLayer.tabIndex = -1;
+
+  // Prevent default Tab key handling in order to prevent the widget from
+  // taking the focus while the spinner layer is active.
+  // NOTE: This assumes that there are no elements allowed to become active
+  // while the spinner is shown. Something smarter would be needed if this
+  // assumption becomes invalid.
+  spinnerLayer.addEventListener('keydown', this.handleKeyDown_.bind(this));
+};
+
+/**
+ * Sets element to be focused when the layer is hidden.
+ * @param {!Element} el
+ */
+CWSWidgetContainer.SpinnerLayerController.prototype.setElementToFocusOnHide =
+    function(el) {
+  this.focusOnHide_ = el;
+};
+
+/**
+ * Prevents default Tab key handling in order to prevent spinner layer from
+ * losing focus.
+ * @param {Event} e The key down event.
+ * @private
+ */
+CWSWidgetContainer.SpinnerLayerController.prototype.handleKeyDown_ =
+    function(e) {
+  if (!this.visible_)
+    return;
+  if (e.keyCode === 9 /* Tab */)
+    e.preventDefault();
+};
+
+/**
+ * Resets the spinner layer controllers state, and makes sure the spinner
+ * layre gets hidden.
+ */
+CWSWidgetContainer.SpinnerLayerController.prototype.reset = function() {
+  this.visible_ = false;
+  this.focusOnHide_ = null;
+  if (this.clearTransision_)
+    this.clearTransition_();
+};
+
+/**
+ * Sets alt text for the spinner layer.
+ * @param {string} text
+ */
+CWSWidgetContainer.SpinnerLayerController.prototype.setAltText = function(
+    text) {
+  this.spinnerLayer_.setAttribute('aria-label', text);
+};
+
+/**
+ * Shows or hides the spinner layer and handles the layer's opacity transition.
+ * @param {boolean} visible Whether the layer should become visible.
+ */
+CWSWidgetContainer.SpinnerLayerController.prototype.setVisible =
+    function(visible) {
+  if (this.visible_ === visible)
+    return;
+
+  if (this.clearTransition_)
+    this.clearTransition_();
+
+  this.visible_ = visible;
+
+  // Spinner should be shown during transition.
+  this.spinnerLayer_.classList.toggle('cws-widget-show-spinner', true);
+
+  if (this.visible_) {
+    this.spinnerLayer_.focus();
+   } else if (this.focusOnHide_) {
+        this.focusOnHide_.focus();
+   }
+
+  if (!this.visible_)
+    this.spinnerLayer_.classList.add('cws-widget-hiding-spinner');
+
+  this.clearTransition_ = function() {
+    if (this.clearTransitionTimeout_)
+      clearTimeout(this.clearTransitionTimeout_);
+    this.clearTransitionTimeout_ = null;
+
+    this.spinnerLayer_.removeEventListener(
+        'transitionend', this.clearTransition_);
+    this.clearTransition_ = null;
+
+    if (!this.visible_) {
+      this.spinnerLayer_.classList.remove('cws-widget-hiding-spinner');
+      this.spinnerLayer_.classList.remove('cws-widget-show-spinner');
+    }
+  }.bind(this);
+
+  this.spinnerLayer_.addEventListener('transitionend', this.clearTransition_);
+
+  // Ensure the transition state gets cleared, even if transitionend is not
+  // fired.
+  this.clearTransitionTimeout_ = setTimeout(function() {
+    this.clearTransitionTimeout_ = null;
+    this.clearTransition_();
+  }.bind(this), 550 /* ms */);
+};
+
+/**
+ * Utility methods and constants to record histograms.
+ * @param {!CWSWidgetContainer.MetricsImpl} metricsImpl
+ * @constructor
+ */
+CWSWidgetContainer.MetricsRecorder = function(metricsImpl) {
+  /** @private {!CWSWidgetContainer.MetricsImpl} */
+  this.metricsImpl_ = metricsImpl;
+};
+
+/**
+ * @enum {number}
+ * @const
+ */
+CWSWidgetContainer.MetricsRecorder.LOAD = {
+  SUCCEEDED: 0,
+  CANCELLED: 1,
+  FAILED: 2,
+};
+
+/**
+ * @enum {number}
+ * @const
+ */
+CWSWidgetContainer.MetricsRecorder.CLOSE_DIALOG = {
+  UNKNOWN_ERROR: 0,
+  ITEM_INSTALLED: 1,
+  USER_CANCELLED: 2,
+  WEBSTORE_LINK_OPENED: 3,
+};
+
+/**
+ * @enum {number}
+ * @const
+ */
+CWSWidgetContainer.MetricsRecorder.INSTALL = {
+  SUCCEEDED: 0,
+  CANCELLED: 1,
+  FAILED: 2,
+};
+
+/**
+ * @param {number} result Result of load, which must be defined in
+ *     CWSWidgetContainer.MetricsRecorder.LOAD.
+ */
+CWSWidgetContainer.MetricsRecorder.prototype.recordLoad = function(result) {
+  if (0 <= result && result < 3)
+    this.metricsImpl_.recordEnum('Load', result, 3);
+};
+
+/**
+ * @param {number} reason Reason of closing dialog, which must be defined in
+ *     CWSWidgetContainer.MetricsRecorder.CLOSE_DIALOG.
+ */
+CWSWidgetContainer.MetricsRecorder.prototype.recordCloseDialog = function(
+    reason) {
+  if (0 <= reason && reason < 4)
+    this.metricsImpl_.recordEnum('CloseDialog', reason, 4);
+};
+
+/**
+ * @param {number} result Result of installation, which must be defined in
+ *     CWSWidgetContainer.MetricsRecorder.INSTALL.
+ */
+CWSWidgetContainer.MetricsRecorder.prototype.recordInstall = function(result) {
+  if (0 <= result && result < 3)
+    this.metricsImpl_.recordEnum('Install', result, 3);
+};
+
+CWSWidgetContainer.MetricsRecorder.prototype.recordShowDialog = function() {
+  this.metricsImpl_.recordUserAction('ShowDialog');
+};
+
+CWSWidgetContainer.MetricsRecorder.prototype.startLoad = function() {
+  this.metricsImpl_.startInterval('LoadTime');
+};
+
+CWSWidgetContainer.MetricsRecorder.prototype.finishLoad = function() {
+  this.metricsImpl_.recordInterval('LoadTime');
+};
+
+//// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @param {HTMLElement} parentNode Node to be parent for this dialog.
+ * @constructor
+ * @extends {cr.ui.dialogs.BaseDialog}
+ */
+function CWSWidgetContainerErrorDialog(parentNode) {
+  cr.ui.dialogs.BaseDialog.call(this, parentNode);
+}
+
+CWSWidgetContainerErrorDialog.prototype = {
+  __proto__: cr.ui.dialogs.BaseDialog.prototype
+};
+
+/**
+ * Whether the dialog is showm.
+ * @return {boolean}
+ */
+CWSWidgetContainerErrorDialog.prototype.shown = function() {
+  return this.container_.classList.contains('shown');
+};
+
+/**
+ * One-time initialization of DOM.
+ * @private
+ */
+CWSWidgetContainerErrorDialog.prototype.initDom_ = function() {
+  cr.ui.dialogs.BaseDialog.prototype.initDom_.call(this);
+  this.frame_.classList.add('cws-widget-error-dialog-frame');
+  var img = this.document_.createElement('div');
+  img.className = 'cws-widget-error-dialog-img';
+  this.frame_.insertBefore(img, this.text_);
+
+  this.title_.hidden = true;
+  this.closeButton_.hidden = true;
+  this.cancelButton_.hidden = true;
+  this.text_.classList.add('cws-widget-error-dialog-text');
+
+  // Don't allow OK button to lose focus, in order to prevent webview content
+  // from stealing focus.
+  // BaseDialog keeps focus by removing all other focusable elements from tab
+  // order (by setting their tabIndex to -1). This doesn't work for webviews
+  // because the webview embedder cannot access the webview DOM tree, and thus
+  // fails to remove elements in the webview from tab order.
+  this.okButton_.addEventListener('blur', this.refocusOkButton_.bind(this));
+};
+
+/**
+ * Focuses OK button.
+ * @private
+ */
+CWSWidgetContainerErrorDialog.prototype.refocusOkButton_ = function() {
+  if (this.shown())
+    this.okButton_.focus();
+};
+
+
+/**
+ * @type {?{
+ *   filter: !Object<*>,
+ *   webstoreUrl: ?string
+ * }}
+ */
+window.params = window.params || null;
+
+/**
+ * @param {string} id Element id.
+ * @return {HTMLElement} The found element, or null.
+ */
+function $(id) {
+  return document.getElementById(id);
+}
+
+/**
+ * Default strings.
+ */
+var defaultStrings = {
+  'language': 'en',
+  'LINK_TO_WEBSTORE': '[LOCALIZE ME] Learn more...',
+  'INSTALLATION_FAILED_MESSAGE': '[LOCALIZE ME] Installation failed!',
+  'OK_BUTTON': '[LOCALIZE ME] OK',
+  'TITLE_PRINTER_PROVIDERS': '[LOCALIZE ME] Select app for your printer',
+  'DEFAULT_ERROR_MESSAGE': '[LOCALIZE ME] Failure'
+};
+
+/**
+ * @param {string} id The string id.
+ * @return {string}
+ */
+function getString(id) {
+  return loadTimeData.getString(id) || defaultStrings[id] || '';
+}
+
+/**
+ * @param {Object<string>} strings Localized strings used by the container.
+ * @return {!CWSWidgetContainer.PlatformDelegate}
+ */
+function createPlatformDelegate(strings) {
+  return {
+    strings: {
+      UI_LOCALE: getString('language'),
+      LINK_TO_WEBSTORE: getString('LINK_TO_WEBSTORE'),
+      INSTALLATION_FAILED_MESSAGE: getString('INSTALLATION_FAILED_MESSAGE'),
+      LOADING_SPINNER_ALT: getString('LOADING_SPINNER_ALT'),
+      INSTALLING_SPINNER_ALT: getString('INSTALLING_SPINNER_ALT')
+    },
+
+    metricsImpl: {
+      /**
+       * Map from interval name to interval start timestamp.
+       * @type {Object<string, Date>}
+       */
+      intervals: {},
+
+      /**
+       * @param {string} enumName
+       * @param {number} value
+       * @param {number} enumSize
+       */
+      recordEnum: function(enumName, value, enumSize) {
+        var index = (value >= 0 && value < enumSize) ? value : enumSize;
+        chrome.metricsPrivate.recordValue({
+          'metricName': 'WebstoreWidgetApp.' + enumName,
+          'type': 'histogram-linear',
+          'min': 1,
+          'max': enumSize,
+          'buckets': enumSize + 1
+        }, index);
+      },
+
+      /** @param {string} actionName */
+      recordUserAction: function(actionName) {
+        chrome.metricsPrivate.recordUserAction(
+            'WebstoreWidgetApp.' + actionName);
+      },
+
+      /** @param {string} intervalName */
+      startInterval: function(intervalName) {
+        this.intervals[intervalName] = Date.now();
+      },
+
+      /** @param {string} intervalName */
+      recordInterval: function(intervalName) {
+        if (!intervalName in this.intervals) {
+          console.error('Interval \'' + intervalName + '\' not started');
+          return;
+        }
+
+       chrome.metricsPrivate.recordTime(
+           'WebstoreWidgetApp.' + intervalName,
+           Date.now() - this.intervals[intervalName]);
+        delete this.intervals[intervalName];
+      }
+    },
+
+    /**
+     * @param {string} itemId Item to be installed.
+     * @param {function(?string)} callback Callback param is the error message,
+     *     which is set to null on success.
+     */
+    installWebstoreItem: function(itemId, callback) {
+      chrome.webstoreWidgetPrivate.installWebstoreItem(
+          itemId,
+          false,
+          function() {
+            callback(chrome.runtime.lastError ?
+                chrome.runtime.lastError.message || 'UNKNOWN_ERROR' : null);
+          });
+    },
+
+    /** @param {function(Array<string>)} callback */
+    getInstalledItems: function(callback) { callback([]); },
+
+    /**
+     * @param {function(?string)} callback The argument is the fetche3d access
+     *     token. Null on error.
+     */
+    requestWebstoreAccessToken: function(callback) {
+      chrome.fileManagerPrivate.requestWebStoreAccessToken(function(token) {
+        if (chrome.runtime.lastError) {
+          console.error('Error getting access token: ' +
+                        chrome.runtime.lastError.message);
+          callback(null);
+          return;
+        }
+        callback(token);
+      });
+    }
+  };
+}
+
+function initializeTopbarButtons() {
+  $('close-button').addEventListener('click', function(e) {
+    e.preventDefault();
+    closeAppWindow();
+  });
+
+  $('close-button').addEventListener('mousedown', function(e) {
+    e.preventDefault();
+  });
+
+  $('minimize-button').addEventListener('click', function(e) {
+    e.preventDefault();
+    chrome.app.window.current().minimize();
+  });
+
+  $('minimize-button').addEventListener('mousedown', function(e) {
+    e.preventDefault();
+  });
+}
+
+/**
+ * @param {!CWSWidgetContainer.Result} result The result reported by the widget.
+ */
+function showWidgetResult(result) {
+  // TODO(tbarzic): Add some UI to show on success.
+  if (result != CWSWidgetContainer.Result.FAILED) {
+    closeAppWindow();
+    return;
+  }
+
+  var dialog = new CWSWidgetContainerErrorDialog($('widget-container-root'));
+  dialog.show(getString('DEFAULT_ERROR_MESSAGE'),
+              closeAppWindow,
+              closeAppWindow);
+}
+
+/** Closes the current app window. */
+function closeAppWindow() {
+  chrome.app.window.current().close();
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+  initializeTopbarButtons();
+
+  chrome.webstoreWidgetPrivate.getStrings(function(strings) {
+    loadTimeData.data = strings;
+    i18nTemplate.process(document, loadTimeData);
+
+    cr.ui.dialogs.BaseDialog.OK_LABEL = getString('OK_BUTTON');
+
+    document.title = getString('TITLE_PRINTER_PROVIDERS');
+    $('title').textContent = document.title;
+
+    if (!window.params) {
+      console.error('Params not set!');
+      return;
+    }
+
+    /** @type {!CWSWidgetContainer.PlatformDelegate} */
+    var platformDelegate = createPlatformDelegate(strings);
+
+    var root = $('widget-container-root');
+    if (!root) {
+      console.error('No root element');
+      return;
+    }
+
+    /** @type {!CWSWidgetContainer} */
+    var widgetContainer = new CWSWidgetContainer(
+        document, root, platformDelegate, {} /* state */);
+
+    widgetContainer.ready()
+        /** @return {!Promise.<CWSWidgetContainer.ResolveReason>} */
+        .then(function() {
+          return widgetContainer.start(window.params.filter,
+                                       window.params.webstoreUrl);
+        })
+        /** @param {!CWSWidgetContainer.ResolveReason} reason */
+        .then(function(reason) {
+          if (reason != CWSWidgetContainer.ResolveReason.DONE)
+            return;
+
+          var result = widgetContainer.finalizeAndGetResult();
+          showWidgetResult(result.result);
+        })
+        /** @param {*} error */
+        .catch(function(error) {
+          showWidgetResult(CWSWidgetContainer.Result.FAILED);
+        });
+  });
+});
+})();

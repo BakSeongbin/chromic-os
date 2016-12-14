@@ -1,0 +1,1 @@
+Jatuh balik TLS 1.0 dapat berjabat tangan dengan pelayan tetapi kami tidak lagi menerima jatuh balik TLS 1.0. Pelayan perlu dikemaskinikan untuk melaksanakan rundingan versi dengan betul dan sebaik-baiknya menyokong TLS 1.2.

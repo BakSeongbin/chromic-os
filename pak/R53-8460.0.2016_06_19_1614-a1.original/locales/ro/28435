@@ -1,0 +1,1 @@
+Accesați o <a jsvalues="href:urlCorrection;.jstdata:$this" onmousedown="linkClicked(this.jstdata)">copie păstrată în memoria cache</a> a site-ului <span jscontent="originalUrlForDisplay"></span>

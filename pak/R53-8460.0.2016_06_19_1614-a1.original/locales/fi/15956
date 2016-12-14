@@ -1,0 +1,1 @@
+Rajoittaa Native Client -sovelluksen GDB-pohjaista vianetsintää luettelotiedoston URL-osoitteen mukaan. Native Clientin GDB-pohjaisen vianetsinnän täytyy olla käytössä, jotta tämä vaihtoehto toimii.

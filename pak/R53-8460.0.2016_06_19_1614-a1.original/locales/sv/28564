@@ -1,0 +1,1 @@
+Sök efter <a jsvalues="href:searchUrl;.jstdata:$this" onclick="linkClicked(this.jstdata)" jscontent="searchTerms" id="search-link"></a> på Google

@@ -1,0 +1,1 @@
+{COUNT,plural, =1{1 adres}few{# adresy}many{# adresów}other{# adresu}}

@@ -1,0 +1,1 @@
+Tentou aceder a <strong>$1</strong>, mas o servidor apresentou um certificado assinado utilizando um algoritmo de assinatura fraco. Significa que as credenciais de segurança apresentadas pelo servidor podem ter sido falsificadas e que o servidor pode não ser aquele que pretende (pode estar a comunicar com um utilizador mal intencionado).

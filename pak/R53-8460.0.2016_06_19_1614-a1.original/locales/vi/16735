@@ -1,0 +1,1 @@
+{COUNT,plural, =0{không có}=1{1 mục}other{# mục}}

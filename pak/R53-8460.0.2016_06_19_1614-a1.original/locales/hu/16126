@@ -1,0 +1,1 @@
+Egyes weboldalak régebbi vagy nem szabványos JavaScript-bővítményeket használnak, amelyek ütközhetnek a legújabb JavaScript-funkciókkal. Ez a jelölő engedélyezi az ilyen funkciók támogatásának letiltását a hasonló oldalak kompatibilitása érdekében.

@@ -1,0 +1,3 @@
+Felügyelt felhasználó létrehozásával nem hoz létre Google-fiókot, ezenkívül
+    a beállításai és az adatai nem jelennek meg más eszközökön a Chrome szinkronizáló
+    használata esetén. A felügyelt felhasználó csak ezen az eszközön érvényes.

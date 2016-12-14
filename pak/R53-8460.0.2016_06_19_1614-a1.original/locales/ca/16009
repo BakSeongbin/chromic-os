@@ -1,0 +1,1 @@
+Utilitza un subprocés secundari per crear pàgines web. Això permet un desplaçament suau, fins i tot quan el subprocés principal no respon.

@@ -1,0 +1,1 @@
+Brug sekundær tråd til GPU-rasterisering af webindhold. Dette kræver, at GPU-rasterisering er aktiveret.

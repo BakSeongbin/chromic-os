@@ -1,0 +1,1 @@
+Povolí rozšířením vytvářet okna panelů vně prohlížeče. Pokud tuto možnost nepovolíte, otevře se při pokusu o otevření panelu vyskakovací okno. Ve výchozím nastavení je toto chování povoleno jen pro vybraná rozšíření. Pokud tento příznak povolíte, chování bude povoleno pro všechna rozšíření. Pokud jej zakážete, vytváření panelů bude pro všechna rozšíření zakázáno.

@@ -1,0 +1,8 @@
+Buka
+          menu Chromium >
+          <span jscontent="settingsTitle"></span>
+          >
+          <span jscontent="advancedTitle"></span>
+          dan batalkan pilihan "<span jscontent="noNetworkPredictionTitle"></span>."
+          Jika hal ini tidak menyelesaikan masalah, sebaiknya pilih lagi opsi ini
+          untuk meningkatkan kinerja.

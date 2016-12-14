@@ -1,0 +1,1 @@
+Rukovanje ulaznim događajima povezanih s pomicanjem u niti. Ako se onemogući, svim će se takvim događajima pomicanja prisilno rukovati u glavnoj niti. To može značajno narušiti izvedbu pomicanja prikaza većine web-lokacija i predviđeno je samo u svrhe testiranja.

@@ -1,0 +1,345 @@
+<!doctype html>
+<html i18n-values="dir:textdirection;shelf:shelfAlignment;.style.fontFamily:fontfamily;">
+  <head>
+    <meta charset=utf-8>
+    <title></title>
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+    <link rel="stylesheet" href="chrome://resources/css/widgets.css">
+    <link rel="stylesheet" href="chrome://resources/css/apps/common.css">
+    <style>/**
+ * Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+.bubble .arrow {
+  border: solid transparent;
+  border-width: 6px;
+  content: ' ';
+  height: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 0;
+}
+
+.bubble .arrow.points-up {
+  border-bottom-color: white;
+  bottom: 100%;
+}
+
+.bubble .arrow.points-right {
+  border-left-color: white;
+  left: 100%;
+}
+
+.bubble .arrow.points-down {
+  border-top-color: white;
+  top: 100%;
+}
+
+.bubble .arrow.points-left {
+  border-right-color: white;
+  right: 100%;
+}
+
+.bubble .arrow.top {
+  top: 12px;
+}
+
+.bubble .arrow.right {
+  right: 12px;
+}
+
+.bubble .arrow.bottom {
+  bottom: 12px;
+}
+
+.bubble .arrow.left {
+  left: 12px;
+}
+</style>
+    <style>/**
+ * Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+[hidden] {
+  display: none !important;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: rgba(0, 0, 0, 0);
+  cursor: default;
+  height: 100%;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+.transparent {
+  opacity: 0;
+}
+
+.show-animated,
+.hide-animated {
+  transition-property: opacity;
+}
+
+.show-animated {
+  transition-function: ease-in;
+}
+
+.hide-animated {
+  transition-function: ease-out;
+}
+
+#background-container {
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: -1;
+}
+
+#background {
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+
+#background .fill {
+  fill: rgba(0, 0, 0, 0.5);
+}
+
+#steps {
+  align-items: center;
+  display: flex;
+  flex-flow: row;
+  height: 100%;
+  justify-content: center;
+  width: 100%;
+}
+
+#help #completion-image {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_FIRST_RUN_COMPLETION) 1x, url(chrome://theme/IDR_FIRST_RUN_COMPLETION@2x) 2x);
+  display: inline-block;
+  height: 153px;
+  width: 400px;
+}
+</style>
+    <style>/**
+ * Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * Preloads images. Without preloading, background image starts loading in
+ * the moment when CSS property is applied. Image loading has visible delay and
+ * looks like defect.
+ */
+
+@media all and (-webkit-max-device-pixel-ratio: 1.5) {
+  body::after {
+    content: url(chrome://resources/images/apps/button.png)
+        url(chrome://resources/images/apps/button_hover.png)
+        url(chrome://resources/images/apps/button_pressed.png)
+        url(chrome://resources/images/apps/button_focused.png)
+        url(chrome://resources/images/apps/button_focused_hover.png)
+        url(chrome://resources/images/apps/button_focused_pressed.png)
+        url(chrome://resources/images/apps/button_inactive.png)
+        url(chrome://resources/images/apps/blue_button.png)
+        url(chrome://resources/images/apps/blue_button_hover.png)
+        url(chrome://resources/images/apps/blue_button_pressed.png)
+        url(chrome://resources/images/apps/blue_button_focused.png)
+        url(chrome://resources/images/apps/blue_button_focused_hover.png)
+        url(chrome://resources/images/apps/blue_button_focused_pressed.png)
+        url(chrome://resources/images/apps/blue_button_inactive.png);
+    display: none;
+  }
+}
+
+@media all and (-webkit-min-device-pixel-ratio: 1.5) {
+  body::after {
+    content: url(chrome://resources/images/2x/apps/button.png)
+        url(chrome://resources/images/2x/apps/button_hover.png)
+        url(chrome://resources/images/2x/apps/button_pressed.png)
+        url(chrome://resources/images/2x/apps/button_focused.png)
+        url(chrome://resources/images/2x/apps/button_focused_hover.png)
+        url(chrome://resources/images/2x/apps/button_focused_pressed.png)
+        url(chrome://resources/images/2x/apps/button_inactive.png)
+        url(chrome://resources/images/2x/apps/blue_button.png)
+        url(chrome://resources/images/2x/apps/blue_button_hover.png)
+        url(chrome://resources/images/2x/apps/blue_button_pressed.png)
+        url(chrome://resources/images/2x/apps/blue_button_focused.png)
+        url(chrome://resources/images/2x/apps/blue_button_focused_hover.png)
+        url(chrome://resources/images/2x/apps/blue_button_focused_pressed.png)
+        url(chrome://resources/images/2x/apps/blue_button_inactive.png);
+    display: none;
+  }
+}
+</style>
+    <style>/**
+ * Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+.step {
+  background: white;
+  color: #8c8c8c;
+  padding: 0;
+}
+
+.step h1 {
+  color: #333;
+  font-weight: normal;
+}
+
+.step p {
+  line-height: 1.5;
+}
+
+.step button.blue-button {
+  color: white;
+}
+
+.step button.white-button {
+  color: black;
+}
+
+.step .controls button {
+  margin: 0 3px;
+}
+
+.step .controls button:first-of-type {
+  -webkit-margin-start: 0;
+}
+
+.step .controls button:last-of-type {
+  -webkit-margin-end: 0;
+}
+</style>
+    <style>/**
+ * Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+.step.bubble {
+  border: 1px solid;
+  border-radius: 3px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  display: inline-block;
+  position: absolute;
+  width: 400px;
+}
+
+.step.bubble h1 {
+  font-size: 18px;
+  margin-bottom: 20px;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-top: 20px;
+}
+
+.step.bubble p {
+  font-size: 14px;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.step.bubble p + p {
+  margin-top: 30px;
+}
+
+.step.bubble .controls {
+  margin-bottom: 18px;
+  margin-left: 18px;
+  margin-right: 18px;
+  margin-top: 18px;
+  text-align: end;
+}
+
+.step.bubble .controls button {
+  font-size: 12px;
+  min-width: 0;
+  padding: 0 15px;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.step.bubble.hidden {
+  visibility: hidden;
+}
+</style>
+    <script src="chrome://resources/js/cr.js"></script>
+    <script src="chrome://resources/js/cr/ui.js"></script>
+    <script src="chrome://resources/js/load_time_data.js"></script>
+    <script src="chrome://resources/js/util.js"></script>
+    <script src="chrome://first-run/first_run.js"></script>
+    <script src="chrome://first-run/strings.js"></script>
+  </head>
+  <body>
+    <div id="background-container" class="transparent">
+  <svg id="background" xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+      <rect id="rectangular-hole-pattern" class="hole transparent"/>
+      <circle id="round-hole-pattern" class="hole transparent"/>
+      <mask id="mask" maskUnits="objectBoundingBox"
+          maskContentUnits="userSpaceOnUse">
+        <rect width="100%" height="100%" fill="white"/>
+      </mask>
+    </defs>
+    <rect class="fill" width="100%" height="100%" mask="url(#mask)"/>
+  </svg>
+</div>
+
+    <div id="steps">
+      <div id="app-list" class="step bubble transparent hidden">
+  <h1 i18n-content="appListHeader"></h1>
+  <p>
+    <span i18n-content="appListText1"></span><br>
+    <span i18n-content="appListText2"></span>
+  </p>
+  <div class="controls">
+    <button i18n-content="nextButton"
+        class="next-button custom-appearance blue-button"></button>
+  </div>
+</div>
+
+      <div id="tray" class="step bubble transparent hidden">
+  <h1 i18n-content="trayHeader"></h1>
+  <p i18n-content="trayText"><p>
+  <div class="controls">
+    <button i18n-content="nextButton"
+        class="next-button custom-appearance blue-button"></button>
+  </div>
+</div>
+
+      <div id="help" class="step bubble transparent hidden">
+  <div id="completion-image"></div>
+  <h1 i18n-content="helpHeader"></h1>
+  <p i18n-content="helpText1"></p>
+  <p i18n-content="helpText2"></p>
+  <div class="controls">
+    <button i18n-content="helpKeepExploringButton"
+        class="help-button custom-appearance blue-button"></button>
+    <button i18n-content="helpFinishButton"
+        class="next-button custom-appearance white-button"></button>
+  </div>
+</div>
+
+    </div>
+    <script src="chrome://resources/js/i18n_template.js"></script>
+  </body>
+</html>
+

@@ -1,0 +1,2 @@
+Nakatanggap ng maraming natatanging Content-Length na header.  Hindi ito
+    pinahihintulutan upang mapigilan ang mga pag-atake sa HTTP response splitting.

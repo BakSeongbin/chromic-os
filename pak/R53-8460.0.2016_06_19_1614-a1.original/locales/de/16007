@@ -1,0 +1,1 @@
+Experiment zur Übernahme des Layout-Darstellungsbereichs in allen APIs. Damit wird ein Verhältnis zwischen "window.scroll"-Eigenschaften und dem Layout-Darstellungsbereich hergestellt.

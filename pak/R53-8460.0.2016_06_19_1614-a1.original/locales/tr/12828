@@ -1,0 +1,3 @@
+"$1" dosyasını çevrimdışı olarak kaydetmek için fazladan $2 alan boşaltmanız gerekiyor:<br>
+        <ul><li>artık çevrimdışı olarak erişmeniz gerekmeyen dosyaların sabitlemesini kaldırın</li>
+        <li>İndirilenler klasörünüzdeki dosyaları silin</li></ul>

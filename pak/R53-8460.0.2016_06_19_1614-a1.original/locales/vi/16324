@@ -1,0 +1,1 @@
+Đặt lại trạng thái cài đặt của Trình chạy ứng dụng mỗi khi khởi động lại. Trong khi đặt cờ này, Chrome sẽ quên trình chạy đã được cài đặt mỗi lần khởi động. Tùy chọn này được sử dụng để kiểm tra tiến trình cài đặt Trình chạy ứng dụng.

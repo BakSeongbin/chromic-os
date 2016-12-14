@@ -1,0 +1,1 @@
+1.0 versijos TLS surogatui pavyko užmegzti ryšį su serveriu, bet mes nebepriimame 1.0 versijos TLS surogatų. Reikia atnaujinti serverį, kad būtų tinkamai pritaikytas versijos derinimas ir, pageidautina, 1.2 versijos TLS palaikymas.

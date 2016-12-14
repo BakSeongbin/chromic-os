@@ -1,0 +1,3 @@
+<p>Ha a $1 támogatott asztali környezetben fut, akkor a rendszer proxybeállításait használja. Most azonban vagy a rendszer nem támogatott, vagy gond volt a rendszerkonfiguráció elindításával.</p>
+
+        <p>A konfigurálást azonban elvégezheti még a parancssoron keresztül is. Kérjük, a megjelölésről és környezeti változókról szóló további információért tekintse meg a következőt: <code>man $2</code></p>

@@ -1,0 +1,1 @@
+Enables partial experimental support for the Pointer Events API.  This is intended only for testing by web developers, it will cause some websites to be subtly broken.

@@ -1,0 +1,1 @@
+Visa appfönster efter den första uppritningen. Det tar betydligt längre tid att visa fönster för tunga appar där resurser läses in synkront men skillnaden är obetydlig för appar där de flesta resurserna läses in asynkront.

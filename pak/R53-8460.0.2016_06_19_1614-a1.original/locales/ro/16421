@@ -1,0 +1,1 @@
+Nu permite preluările scripturilor terță parte care blochează parserurile și care sunt inserate în cadrul principal prin document.write.

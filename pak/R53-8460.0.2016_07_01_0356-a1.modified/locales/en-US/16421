@@ -1,0 +1,1 @@
+Disallows fetches for third-party parser-blocking scripts inserted into the main frame via document.write.

@@ -1,0 +1,1 @@
+{COUNT,plural, =1{1 ieteikums}zero{# ieteikumu}one{# ieteikums}other{# ieteikumi}}

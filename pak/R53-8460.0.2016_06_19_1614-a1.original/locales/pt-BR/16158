@@ -1,0 +1,1 @@
+Ativa a compatibilidade parcial experimental para a API Pointer Events. Esse comportamento é destinado apenas a testes realizados por desenvolvedores da Web e fará com que alguns websites sejam sutilmente corrompidos.

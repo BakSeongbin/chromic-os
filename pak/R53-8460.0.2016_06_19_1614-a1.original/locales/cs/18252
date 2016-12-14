@@ -1,0 +1,1 @@
+Pokud je nakonfigurován server proxy, obvykle brání ověření v různých captive portálech. Toto nastavení umožňuje otevření autorizačního dialogu captive portálu v samostatném okně, které nastavení proxy serveru ignoruje.

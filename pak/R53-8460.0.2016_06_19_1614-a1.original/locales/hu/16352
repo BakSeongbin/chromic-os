@@ -1,0 +1,1 @@
+Alkalmazásablakok azonnali megjelenítése. Az ablakok lényegesen később jelennek meg az olyan összetett alkalmazásoknál, amelyek az erőforrásokat szinkron módon töltik be, ám a késés elhanyagolható azoknál az alkalmazásoknál, amelyek az erőforrások nagy részét aszinkron módon töltik be.

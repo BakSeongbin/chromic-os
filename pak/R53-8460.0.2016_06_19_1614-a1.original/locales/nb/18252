@@ -1,0 +1,1 @@
+Hvis en proxy-tjener er konfigurert, blir vanligvis autorisasjon på ulike «captive portal»-sider hindret. Dette flagget gjør det mulig å åpne en «captive portal»-autorisasjonsdialog i et eget vindu, og dermed ignoreres innstillingene for proxy-tjeneren.

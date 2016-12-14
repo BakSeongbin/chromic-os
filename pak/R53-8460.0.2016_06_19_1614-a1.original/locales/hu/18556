@@ -1,0 +1,1 @@
+Engedélyezi a localhost felé irányuló kéréseket HTTPS protokollon keresztül, még akkor is, ha a számítógép által bemutatott tanúsítvány érvénytelen.

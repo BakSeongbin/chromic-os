@@ -1,0 +1,1 @@
+Umožňuje odosielať žiadosti na lokálne hostenie (localhost) cez protokol HTTP, a to aj vtedy, keď je použitý neplatný certifikát.

@@ -1,0 +1,1 @@
+Compatibilidad de escritura con MTP en la API de sistema de archivos (y de gestor de archivos). No se admiten las operaciones de edición de imágenes in situ.

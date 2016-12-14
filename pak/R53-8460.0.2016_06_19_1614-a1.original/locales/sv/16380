@@ -1,0 +1,1 @@
+Aktiverar synkronisering av inställningar för Wi-Fi-nätverk på enheter. När detta är aktiverat registreras datatypen för Wi-Fi-användaruppgifter hos Chrome Sync och Wi-Fi-användaruppgifterna synkroniseras enligt användarens inställningar. (Mer information finns på chrome://settings/syncSetup.)

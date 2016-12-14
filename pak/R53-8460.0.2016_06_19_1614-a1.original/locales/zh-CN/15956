@@ -1,0 +1,1 @@
+根据清单文件网址限制 Native Client 应用基于 GDB 的调试。要使此选项生效，您必须启用 Native Client 基于 GDB 的调试。

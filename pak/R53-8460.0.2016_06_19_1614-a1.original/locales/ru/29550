@@ -1,0 +1,1 @@
+Откройте меню Chromium, нажмите "<span jscontent="settingsTitle"></span>" > "<span jscontent="advancedTitle"></span>" и снимите флажок "<span jscontent="noNetworkPredictionTitle"></span>". Если устранить проблему не удалось, снова установите флажок, чтобы страницы загружались быстрее.

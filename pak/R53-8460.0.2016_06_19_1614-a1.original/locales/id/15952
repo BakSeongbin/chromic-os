@@ -1,0 +1,1 @@
+Aktifkan potongan debug GDB. Ini akan menghentikan aplikasi Native Client saat mulai dan menunggu nacl-gdb (dari NaCl SDK) terikat padanya.

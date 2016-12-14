@@ -1,0 +1,1 @@
+Mode de fonctionnement hautement expérimental où les cadres iFrame inter-sites sont conservés dans des processus distincts du document principal. Si ce mode est activé, les cadres iFrame provenant de différents sites tiers pourront partager un processus.

@@ -1,0 +1,1 @@
+GDB hata ayıklama saplamasını etkinleştirin. Bu durumda Native Client uygulaması başlangıçta durdurulacak ve nacl-gdb'nin (NaCl SDK'dan) ona bağlanması beklenecektir.

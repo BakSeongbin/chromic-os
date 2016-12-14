@@ -1,0 +1,1 @@
+TLS 1.0 taanderežiimi ja serveri vaheline käepigistus õnnestus, kuid TLS 1.0 taanderežiimid ei ole enam toetatud. Serverit tuleb värskendada, et juurutada õigesti versiooniläbirääkimised ja soovitatavalt ka TLS 1.2 tugi.

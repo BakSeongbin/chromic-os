@@ -1,0 +1,1 @@
+{SECONDS,plural, =1{for 1 sek. siden}one{for # sek. siden}other{for # sek. siden}}

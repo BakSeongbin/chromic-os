@@ -1,0 +1,4 @@
+Bir proxy sunucusu kullanıyorsanız, proxy ayarlarınızı kontrol edin veya
+        proxy sunucunuzun çalıştığını kontrol etmek için ağ yöneticinize
+        başvurun. Bir proxy sunucusu kullanmanız gerekmediğini
+        düşünüyorsanız $1proxy ayarlarınızı$2 yapılandırın.

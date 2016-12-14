@@ -1,0 +1,1 @@
+This flag makes Chrome unsafe. Use this only if you understand what this does. Note that this flag may be removed without any notice. If enabled, frames with an https origin can use WebSockets with an insecure URL (ws://).

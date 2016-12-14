@@ -1,0 +1,1 @@
+Salli Push-sovellusliittymän taustakäyttö. Sen avulla Chrome voi pysyä käynnissä, vaikka kaikki ikkunat olisi suljettu, ja käynnistyä samaan aikaan kuin käyttöjärjestelmä, mikäli tästä on hyötyä Push-sovellusliittymälle.

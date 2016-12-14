@@ -1,0 +1,1 @@
+Uses a stable window ordering in overview mode which attempts to minimize movement of windows when entering / exiting overview and between overview sessions.

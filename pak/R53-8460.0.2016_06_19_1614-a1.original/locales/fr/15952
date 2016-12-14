@@ -1,0 +1,1 @@
+Activer le fichier stub de débogage avec GDB. Cela interrompt le lancement d'une application Native Client jusqu'à ce que le fichier nacl-gdb lui soit attribué (à partir du SDK NaCl).

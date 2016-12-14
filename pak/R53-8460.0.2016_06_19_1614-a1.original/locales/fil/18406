@@ -1,0 +1,1 @@
+Mag-prefetch ng mga resulta ng paghahanap para sa na-type na query sa omnibox at muling gamitin ang paunang na-render na base page ng paghahanap upang magsagawa ng anumang query sa paghahanap (hindi lang upang mag-prefetch ng query).

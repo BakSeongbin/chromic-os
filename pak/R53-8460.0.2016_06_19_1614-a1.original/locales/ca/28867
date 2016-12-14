@@ -1,0 +1,1 @@
+Heu provat d'accedir a <strong>$1</strong>, però l'emissor ha revocat el certificat que ha presentat el servidor. Això vol dir que no heu de confiar gens en les credencials de seguretat que ha presentat el servidor. És possible que us estigueu comunicant amb un atacant.

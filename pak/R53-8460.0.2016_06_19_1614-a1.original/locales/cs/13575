@@ -1,0 +1,18 @@
+<h3>Funkce ladění</h3>
+    <br>
+    V zařízení se systémem Chrome OS můžete aktivovat funkce ladění, abyste do svého zařízení mohli nainstalovat vlastní kód a otestovat jej. Budete moci:<br>
+    <ul>
+      <li>odstranit ověření rootfs, abyste mohli upravovat soubory operačního systému,
+      <li>povolit k zařízení přístup SSH pomocí standardních testovacích klíčů, abyste k němu mohli přistupovat pomocí nástrojů, jako je <span style="color:grey;font-family:monospace">cros flash</span>,
+      <li>aktivovat spouštění z jednotky USB, abyste mohli nainstalovat obraz operačního systému z jednotky USB,
+      <li>nastavit heslo uživatele root pro zařízení a systém na vlastní hodnotu, abyste se k zařízení mohli připojit ručně pomocí protokolu SSH.
+    </ul>
+    <br>
+        Jakmile tuto funkci povolíte, většina funkcí ladění zůstane zapnuta, dokonce i když zařízení vymažete pomocí funkce Powerwash nebo pokud vymažete data v zařízení spravovaném podnikem. Za účelem úplné deaktivace všech funkcí ladění bude potřeba provést proces obnovení systému Chrome OS (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Další informace o funkcích ladění naleznete na následující stránce:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Poznámka:</b>  Systéme se během tohoto procesu restartuje.

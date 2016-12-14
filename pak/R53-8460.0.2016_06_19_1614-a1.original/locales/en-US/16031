@@ -1,0 +1,1 @@
+Require user consent for an extension running a script on the page, if the extension requested permission to run on all urls.

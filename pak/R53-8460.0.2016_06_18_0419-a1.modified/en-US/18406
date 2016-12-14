@@ -1,0 +1,1 @@
+Prefetch search results for the typed omnibox query and reuse prerendered search base page to commit any search query (not just prefetch query).

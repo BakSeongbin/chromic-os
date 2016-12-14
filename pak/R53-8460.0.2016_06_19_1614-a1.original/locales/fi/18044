@@ -1,0 +1,3 @@
+<p>Kun tuotetta $1 käytetään tuetussa työpöytäympäristössä, järjestelmän välityspalvelinasetukset ovat käytössä. Joko järjestelmäsi ei ole tuettu tai järjestelmän määrityksiä käynnistettäessä tapahtui virhe.</p>
+
+          <p>Voit kuitenkin määrittää asetukset komentorivin kautta. Lisätietoja ilmoituksista ja ympäristömuuttujista saat täältä: <code>man $2</code>.</p>

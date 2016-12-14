@@ -1,0 +1,1 @@
+Kontrollerer via lydoutputtet om der er andre tilgængelige kanallayouts end standardlayoutet for hardwaren. Hvis du aktiverer dette, kan operativsystemet udvide fra stereo til surround, hvis det understøttes. Dette kan udløse fejl i drivere fra tredjeparter, så vær forsigtig.

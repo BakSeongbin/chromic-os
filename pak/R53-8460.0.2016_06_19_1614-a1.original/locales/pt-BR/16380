@@ -1,0 +1,1 @@
+Permite sincronizar as configurações de rede Wi-Fi entre dispositivos. Quando esse recurso está ativado, o tipo de dados de credencial do Wi-Fi é registrado na Sincronização do Chrome, e as credenciais de Wi-Fi são sincronizadas de acordo com as preferências do usuário. Consulte também: chrome://settings/syncSetup.

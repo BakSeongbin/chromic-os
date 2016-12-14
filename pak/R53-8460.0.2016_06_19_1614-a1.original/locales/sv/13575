@@ -1,0 +1,18 @@
+<h3>Felsökningsfunktioner</h3>
+    <br>
+    Du kan aktivera felsökningsfunktionerna på Chrome OS-enheten så att du kan installera och testa egen kod på den. Med dessa funktioner kan du<br>
+    <ul>
+      <li>ta bort rootfs-verifieringen så att du kan ändra operativsystemets filer
+      <li>aktivera SSH-åtkomst till enheten med standardtestnycklarna så att du kan få åtkomst till enheten med verktyg som <span style="color:grey;font-family:monospace">'cros flash'</span>
+      <li>aktivera start från USB så att du kan installera en systemavbildning från en USB-enhet
+      <li>ange ett anpassat lösenord för inloggning både som utvecklare och rot på systemet så att du kan logga in på enheten manuellt med SSH
+    </ul>
+    <br>
+    Efter aktiveringen förblir de flesta av felsökningsfunktionerna aktiverade även om du gör en powerwash eller om data raderas på en företagshanterad enhet. Om du vill inaktivera felsökningsfunktionerna helt återställer du Chrome OS (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Mer information om felsökningsfunktionerna finns i:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Obs!</b>  Systemet startas om under proceduren.

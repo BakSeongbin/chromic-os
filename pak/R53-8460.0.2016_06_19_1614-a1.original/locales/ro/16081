@@ -1,0 +1,1 @@
+Prin activarea acestei opțiuni, elementele cu poziție fixă vor avea propriile straturi compuse. Rețineți că elementele cu poziție fixă trebuie, de asemenea, să creeze contexte de stivuire pentru ca această opțiune să funcționeze.

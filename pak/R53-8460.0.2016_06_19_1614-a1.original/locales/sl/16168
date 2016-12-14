@@ -1,0 +1,1 @@
+Ne pokaži vrstice z informacijami, če je razširitev dodana strani prek API-ja chrome.debugger. To je potrebno za odpravljanje napak pri straneh v ozadju razširitve.

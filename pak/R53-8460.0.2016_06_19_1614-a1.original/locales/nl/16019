@@ -1,0 +1,1 @@
+Hiermee wordt het gebruik van weergavelijsten ingeschakeld om 2D-canvasopdrachten vast te leggen. Hierdoor kan 2D-canvasrastering worden uitgevoerd in een afzonderlijke thread.

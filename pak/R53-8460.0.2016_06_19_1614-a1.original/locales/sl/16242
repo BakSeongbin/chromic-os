@@ -1,0 +1,2 @@
+To se mora uporabljati skupaj z zastavico trace-upload-url.
+        OPOZORILO: če je omogočeno, bo Chrome beležil podatke o učinkovitosti delovanja za vsako krmarjenje in jih naložil na URL, ki je določen v zastavici trace-upload-url. Podatki morda vključujejo podatke, ki omogočajo osebno prepoznavo, na primer naslove in URL-je spletnih mest, ki jih obiščete.

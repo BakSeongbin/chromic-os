@@ -1,0 +1,1 @@
+Bỏ qua kiểm tra mức độ tham gia của người dùng để hiển thị biểu ngữ ứng dụng, chẳng hạn như yêu cầu người dùng đã truy cập trang web trước đó và biểu ngữ chưa được hiển thị gần đây. Điều này cho phép nhà phát triển kiểm tra xem các yêu cầu về khả năng đủ điều kiện khác để hiển thị biểu ngữ ứng dụng, chẳng hạn như có tệp kê khai, có được đáp ứng không.

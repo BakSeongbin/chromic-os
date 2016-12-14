@@ -1,0 +1,3 @@
+<p>När $1 körs i en skrivbordsmiljö som stöds används datorns proxyinställningar. Det kan hända att din dator inte stöds eller att det uppstod ett problem vid start av systemkonfigurationen.</p>
+
+        <p>Du kan fortfarande konfigurera via kommandoraden. Läs <code>man $2</code> om du vill veta mer om flaggningar och miljövariabler.</p>

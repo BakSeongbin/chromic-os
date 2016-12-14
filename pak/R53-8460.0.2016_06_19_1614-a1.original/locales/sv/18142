@@ -1,0 +1,9 @@
+En kontrollerad användare kan utforska webben enligt dina regler. Du som hanterar kontrollerade användare kan
+
+ • tillåta eller förbjuda vissa webbplatser
+ • granska webbplatser som kontrollerade användare har besökt
+ • hantera andra inställningar.
+
+När du skapar en kontrollerad användare skapas inte något Google-konto, vilket innebär att bokmärken, webbhistorik och inställningar som den kontrollerade användaren gör inte följer med till andra enheter via Chrome Sync.
+
+När du har skapat en ny kontrollerad användare kan du hantera inställningarna när du vill och från vilken enhet du vill på $1. <a target="_blank" href="https://support.google.com/chrome/?p=ui_supervised_users&hl=sv">Läs mer om kontrollerade användare</a>

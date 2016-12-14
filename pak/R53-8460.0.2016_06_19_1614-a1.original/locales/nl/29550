@@ -1,0 +1,8 @@
+Ga naar
+          het Chromium-menu >
+          <span jscontent="settingsTitle"></span>
+          >
+          <span jscontent="advancedTitle"></span>
+          en verwijder het vinkje bij '<span jscontent="noNetworkPredictionTitle"></span>'.
+          Als het probleem aanhoudt, adviseren we deze optie weer aan te
+          vinken voor betere prestaties.

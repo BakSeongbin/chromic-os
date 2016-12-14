@@ -1,0 +1,18 @@
+<h3>Hata Ayıklama Özellikleri</h3>
+    <br>
+    Cihazınıza özel kod yüklemek ve bu kodu test etmek için Chrome OS Cihazınızda hata ayıklama özelliklerini etkinleştirebilirsiniz. Bu özellik şunları yapabilmenize olanak sağlar:<br>
+    <ul>
+      <li>rootfs doğrulamayı kaldırabilir ve böylece OS dosyalarında değişiklik yapabilirsiniz
+      <li>Standart test anahtarları kullanarak cihaza SSH erişimini etkinleştirebilir ve bu şekilde cihaza erişmek için <span style="color:grey;font-family:monospace">"cros flash"</span> aracını kullanabilirsiniz
+      <li>USB sürücüsünden OS imajı yükleyebilmek için USB'den önyüklemeyi etkinleştirebilirsiniz
+      <li>Hem dev hem de sistem root düzeyinde giriş şifresini özel bir değere ayarlayabilir ve böylece cihazda manuel olarak SSH işlemi yapabilirsiniz
+    </ul>
+    <br>
+    Kuruluş tarafından yönetilen bir cihazda bu özellik etkinleştirildiğinde, powerwash veya verileri silme işlemi uygulanmış olsa bile hata ayıklama özelliklerinin çoğu etkin olmaya devam eder. Tüm hata ayıklama özelliklerini tamamen devre dışı bırakmak için Chrome OS kurtarma işlemini tamamlayın (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Hata ayıklama özellikleriyle ilgili daha fazla bilgi edinmek için şu adrese bakın:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Not:</b>  Bu işlem sırasında sistem yeniden başlatılır.

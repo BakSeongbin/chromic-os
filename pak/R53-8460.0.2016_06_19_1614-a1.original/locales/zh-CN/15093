@@ -1,0 +1,1 @@
+{NUM_DEVICES,plural, =1{可与 1 部 USB 设备通信}other{可与 # 部 USB 设备通信}}

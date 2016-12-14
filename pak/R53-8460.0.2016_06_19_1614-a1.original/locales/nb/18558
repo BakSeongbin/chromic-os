@@ -1,0 +1,1 @@
+Legg til en forespørselsparameter i nettadressen for å laste inn siden på nytt automatisk: chrome://device-log/?refresh=<sek>

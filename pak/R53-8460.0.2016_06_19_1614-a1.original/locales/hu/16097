@@ -1,0 +1,1 @@
+A touchstart, a touchmove, a mousewheel és a wheel eseményfigyelők passzívként történő kezelésének kényszerítése. Ez megszakítja az érintés vagy a görgő használata esetén bekövetkező viselkedést, de hasznos a passzív eseményfigyelők alkalmazásából adódó potenciális teljesítménybeli előnyök szemléltetésére.

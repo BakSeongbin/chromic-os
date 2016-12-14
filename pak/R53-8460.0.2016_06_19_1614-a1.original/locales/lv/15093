@@ -1,0 +1,1 @@
+{NUM_DEVICES,plural, =1{Saziņa ar USB ierīci}zero{Saziņa ar # USB ierīcēm}one{Saziņa ar # USB ierīci}other{Saziņa ar # USB ierīcēm}}

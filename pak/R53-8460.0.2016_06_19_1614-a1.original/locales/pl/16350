@@ -1,0 +1,1 @@
+Kierowanie oparte na prostokątach używa algorytmu heurystycznego, by określać najbardziej prawdopodobne miejsce wykonania gestu. Obszar dotyku jest oznaczony prostokątem.

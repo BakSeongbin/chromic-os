@@ -1,0 +1,1 @@
+{COUNT,plural, =0{niciunul}=1{1 element}few{# elemente}other{# de elemente}}

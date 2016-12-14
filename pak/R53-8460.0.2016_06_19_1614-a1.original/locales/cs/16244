@@ -1,0 +1,1 @@
+Vynucuje, aby prvky uživatelského prostředí určené k opětovnému načtení spouštěly opětovné načtení bez ověřování (pokud tento příznak není aktivován, spouští běžné opětovné načtení s ověřováním zdrojů z mezipaměti).

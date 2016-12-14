@@ -1,0 +1,1 @@
+Meget eksperimentel effektivitetstilstand, hvor iframes på flere websites holdes adskilt fra hoveddokumentet i en særskilt proces. Iframes fra forskellige tredjepartswebsites har i denne tilstand tilladelse til at dele en proces.

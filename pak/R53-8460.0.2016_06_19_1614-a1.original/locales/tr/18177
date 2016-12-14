@@ -1,0 +1,1 @@
+Denetlenen bu kullanıcı kaldırıldığında denetlenen kullanıcıyla ilişkilendirilmiş tüm dosyalar ve yerel veriler kalıcı olarak silinir. Yönetici, denetlenen bu kullanıcıya ilişkin ziyaret edilen web sayfaları ve ayarları $1 adresinden görüntülemeye devam edebilir.

@@ -1,0 +1,1 @@
+{COUNT,plural, =0{mitte ühtegi}=1{1 rakendus ($1)}=2{2 rakendust ($1, $2)}other{# rakendust ($1, $2, $3)}}

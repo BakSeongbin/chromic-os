@@ -1,0 +1,1 @@
+Bildiri dosyasının URL'sine göre Native İstemci uygulaması GDB tabanlı hata ayıklama işlemini kısıtlar. Bu seçeneğin çalışması için Native Client GDB tabanlı hata ayıklama etkinleştirilmelidir.

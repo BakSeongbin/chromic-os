@@ -1,0 +1,1 @@
+{HOURS,plural, =1{Pred 1 h}one{Pred # h}two{Pred # urama}few{Pred # urami}other{Pred # urami}}

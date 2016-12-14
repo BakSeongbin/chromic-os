@@ -1,0 +1,1 @@
+Bruker en sekundær tråd for å utføre sammensetting av nettside. Resultatet er jevn rulling, selv når hovedtråden ikke responderer.

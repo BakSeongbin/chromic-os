@@ -1,0 +1,2 @@
+Se debe utilizar junto con el indicador trace-upload-url.
+        ADVERTENCIA: Si se habilita, Chrome registrará los datos de rendimiento de cada navegación y los subirá a la URL que especifique el indicador trace-upload-url. Entre los datos que se pueden rastrear, se incluye información de identificación personal, como los títulos y las URL de los sitios web que visitas.

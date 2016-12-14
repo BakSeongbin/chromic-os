@@ -1,0 +1,1 @@
+Zobrazenie okien aplikácií po prvom vykreslení. Okná sa zobrazia s výrazným oneskorením, pretože veľké aplikácie načítavajú zdroje synchrónne. Oneskorenie bude bezvýznamné v prípade aplikácií, ktoré načítavajú väčšinu svojich zdrojov asynchrónne.

@@ -1,0 +1,1 @@
+Bir TLS 1.0 yedeği, sunucu ile anlaşabildi, ancak artık TLS 1.0 yedeklerini kabul etmiyoruz. Sunucunun sürüm anlaşmasını doğru şekilde yapabilmesi ve tercihen TLS 1.2'yi desteklemesi için güncellenmesi gerekiyor.

@@ -1,0 +1,18 @@
+<h3>Derinimo funkcijos</h3>
+    <br>
+    Galite įgalinti derinimo funkcijas „Chrome“ OS įrenginyje, kad įdiegtumėte ir išbandytumėte tinkintą kodą savo įrenginyje. Tada galėsite:<br>
+    <ul>
+      <li>Pašalinti „Rootfs“ patvirtinimą, kad galėtumėte pakeisti OS failus
+      <li>Įgalinti SSH prieigą prie įrenginio naudodami įprastus bandomuosius raktus, kad galėtumėte naudoti tokius įrankius kaip <span style="color:grey;font-family:monospace">„cros flash“</span> įrenginiui pasiekti
+      <li>Įgalinti paleidimą iš USB, kad galėtumėte įdiegti OS vaizdą iš USB disko
+      <li>Nustatyti kūrėjo ir sistemos šakninį prisijungimo slaptažodį į tinkintą vertę, kad galėtumėte neautomatiškai naudoti funkciją SSH įrenginyje
+    </ul>
+    <br>
+    Įgalinus dauguma derinimo funkcijų liks įgalintos, net paleidus funkciją „Powerwash“ ar išvalius duomenis įmonės tvarkomame įrenginyje. Kad visiškai išjungtumėte visas derinimo funkcijas, atlikite „Chrome“ OS atkūrimo procesą (https://support.google.com/chromebook/answer/1080595).
+    <br>
+    <br>
+    Jei reikia daugiau informacijos apie derinimo funkcijas, žr.:<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>Pastaba:</b> vykdant procesą sistema bus paleista iš naujo.

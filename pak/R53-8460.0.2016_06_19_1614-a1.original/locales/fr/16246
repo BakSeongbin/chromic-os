@@ -1,0 +1,1 @@
+Force le déclenchement de l'actualisation sans validation lors du balayage vers le bas pour actualiser l'affichage (l'actualisation valide normalement le cache lorsque l'indicateur est désactivé).

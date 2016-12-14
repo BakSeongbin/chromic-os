@@ -1,0 +1,1 @@
+{COUNT,plural, =0{brez}=1{1 element}one{# element}two{# elementa}few{# elementi}other{# elementov}}

@@ -1,0 +1,1 @@
+Google এ <a jsvalues="href:searchUrl;.jstdata:$this" onclick="linkClicked(this.jstdata)" jscontent="searchTerms" id="search-link"></a> এর অনুসন্ধান করুন

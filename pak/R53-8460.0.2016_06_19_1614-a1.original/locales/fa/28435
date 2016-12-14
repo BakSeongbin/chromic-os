@@ -1,0 +1,1 @@
+دسترسی به یک <a jsvalues="href:urlCorrection;.jstdata:$this" onmousedown="linkClicked(this.jstdata)">نسخه ذخیره شده در حافظه پنهان</a> از <span jscontent="originalUrlForDisplay"></span>

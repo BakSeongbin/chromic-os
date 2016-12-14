@@ -1,0 +1,1 @@
+Forces pull-to-refresh trigger non-validating reload (while it usually means regular, cache-validating reload when the flag is disabled).

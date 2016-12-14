@@ -1,0 +1,1 @@
+Bật chế độ nền cho API Push. Điều này cho phép Chrome tiếp tục chạy sau khi cửa sổ cuối cùng đóng và khởi chạy khi khởi động OS nếu API Push cần.

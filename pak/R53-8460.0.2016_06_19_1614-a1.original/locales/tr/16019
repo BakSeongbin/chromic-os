@@ -1,0 +1,1 @@
+2D canvas komutlarının kaydedilmesi için ekran listelerinin kullanımını etkinleştirir. Bu, canvas piskelleştirmesinin ayrı bir iş parçacığında gerçekleştirilmesine olanak tanır.

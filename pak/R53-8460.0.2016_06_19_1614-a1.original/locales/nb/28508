@@ -1,0 +1,2 @@
+Mottok flere distinkte Content-Disposition-overskrifter. Dette er forbudt, for
+    å hindre angrep som splitter HTTP-svar.

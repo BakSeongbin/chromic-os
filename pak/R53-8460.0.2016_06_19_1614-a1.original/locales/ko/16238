@@ -1,0 +1,1 @@
+Push API에 백그라운드 모드를 사용 설정합니다. 이렇게 하면 Push API에서 Chrome이 필요할 때 마지막 창이 닫힌 후에도 Chrome이 계속 실행되고 OS 시작 시 Chrome을 실행합니다.

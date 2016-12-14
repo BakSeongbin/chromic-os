@@ -1,0 +1,1 @@
+Normalment, si es configura el servidor intermediari, s'impedeix l'autorització en diferents portals captius. Això permet obrir el quadre de diàleg d'autorització per a portals captius en una altra finestra, on es passa per alt la configuració del servidor intermediari.

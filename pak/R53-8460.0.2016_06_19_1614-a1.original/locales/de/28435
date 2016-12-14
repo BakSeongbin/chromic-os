@@ -1,0 +1,1 @@
+Rufen Sie eine <a jsvalues="href:urlCorrection;.jstdata:$this" onmousedown="linkClicked(this.jstdata)">im Cache gespeicherte Kopie</a> von <span jscontent="originalUrlForDisplay"></span> auf.

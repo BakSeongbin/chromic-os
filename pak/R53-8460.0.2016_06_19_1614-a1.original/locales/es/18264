@@ -1,0 +1,1 @@
+Modo de rendimiento altamente experimental en el que los iframes entre sitios web se mantienen en un proceso separado con respecto al documento principal. En este modo, se permite que los iframes de los distintos sitios web de terceros compartan un proceso.

@@ -1,0 +1,1 @@
+Kan ikke pakke ut utvidelse. For å kunne pakke ut en utvidelse på en sikker måte, må det finnes en bane til profilkatalogen din som ikke inneholder en symlink. Det finnes ingen slik bane for profilen din.

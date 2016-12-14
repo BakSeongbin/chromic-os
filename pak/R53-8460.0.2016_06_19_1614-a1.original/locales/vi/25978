@@ -1,0 +1,1 @@
+{0,select, single{Ứng dụng "{1}" đang yêu cầu quyền truy cập vào một trong các thiết bị của bạn.}multiple{Ứng dụng "{1}" đang yêu cầu quyền truy cập vào một hoặc nhiều thiết bị của bạn.}other{UNUSED}}

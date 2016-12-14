@@ -1,0 +1,1 @@
+Yêu cầu luồng đầu ra âm thanh kiểm tra xem các bố cục kênh không phải là bố cục phần cứng mặc định có khả dụng không. Bật tùy chọn này sẽ cho phép OS mở rộng âm thanh nổi thành âm thanh vòm nếu được hỗ trợ. Có thể dính lỗi của trình điều khiển của bên thứ ba, lưu ý khi sử dụng.

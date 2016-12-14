@@ -1,0 +1,4 @@
+Ha proxyszervert használ, tekintse át a proxybeállításokat, vagy
+    forduljon hálózati rendszergazdájához, hogy ellenőrizze a proxyszerver
+    működését. Ha úgy véli, hogy nem kellene proxyszervert használnia,
+    módosítsa a $1proxybeállításokat$2.

@@ -1,0 +1,1 @@
+Écriture avec MTP possible dans l'API File System (et le gestionnaire de fichiers). Les opérations de modification instantanée ne sont pas acceptées.

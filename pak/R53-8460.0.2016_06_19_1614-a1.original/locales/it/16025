@@ -1,0 +1,1 @@
+Consente la chiusura veloce di schede/finestre - viene eseguito il gestore onunload js di una scheda indipendentemente dalla GUI.

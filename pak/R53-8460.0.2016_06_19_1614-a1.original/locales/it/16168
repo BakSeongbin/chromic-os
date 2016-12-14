@@ -1,0 +1,1 @@
+Consente di non mostrare la barra delle informazioni quando un'estensione viene collegata a una pagina tramite l'API chrome.debugger. Questa opzione è necessaria per il debug di pagine in background delle estensioni.

@@ -1,0 +1,1 @@
+Utiliza un orden de ventana estable en modo de vista general para intentar minimizar el movimiento de ventanas al entrar o salir de la vista general y entre las sesiones de vista general.

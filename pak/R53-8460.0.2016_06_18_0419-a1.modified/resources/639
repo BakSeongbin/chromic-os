@@ -1,0 +1,1777 @@
+<!doctype html>
+<html i18n-values="dir:textdirection;lang:language">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="chrome://resources/css/chrome_shared.css">
+<link rel="stylesheet" href="chrome://resources/css/overlay.css">
+
+<style>/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+body {
+  position: relative;
+}
+
+#main-content {
+  bottom: 0;
+  display: -webkit-box;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+#mainview {
+  -webkit-box-align: stretch;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1;
+}
+
+#mainview-content {
+  min-height: 100%;
+  position: relative;
+}
+
+#page-container {
+  box-sizing: border-box;
+  max-width: 888px;
+  min-width: 600px;
+}
+
+body #searchBox {
+  position: fixed;
+  z-index: 4;
+}
+
+div.disabled {
+  color: #999;
+}
+
+.settings-row {
+  display: block;
+  margin: 0.65em 0;
+}
+
+.hbox {
+  -webkit-box-orient: horizontal;
+  display: -webkit-box;
+}
+
+.vbox {
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+}
+
+.box-align-center {
+  -webkit-box-align: center;
+}
+
+.stretch {
+  -webkit-box-flex: 1;
+}
+
+.raw-button,
+.raw-button:hover,
+.raw-button:active {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  border: none;
+  box-shadow: none;
+  min-width: 0;
+  padding: 1px 6px;
+}
+
+.bottom-strip {
+  border-top: none;
+  bottom: 0;
+  padding: 12px;
+  position: absolute;
+  right: 0;
+}
+
+/* Omit top padding (currently only on #settings) whenever the search page is
+ * showing.
+ */
+#searchPage:not([hidden]) + #settings {
+  padding-top: 0;
+}
+
+.page list {
+  /* Min height is a multiple of the list item height (32) */
+  min-height: 192px;
+}
+
+.option {
+  margin-top: 0;
+}
+
+.touch-slider {
+  -webkit-appearance: slider-horizontal;
+}
+
+.settings-list,
+.settings-list-empty {
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+}
+
+.settings-list-empty {
+  background-color: #f4f4f4;
+  box-sizing: border-box;
+  min-height: 125px;
+  padding-left: 20px;
+  padding-top: 20px;
+}
+
+
+/* Editable text field properties */
+.editable-text-field > * {
+  -webkit-box-align: center;
+  -webkit-transition: 150ms background-color;
+  border: none;
+  box-sizing: border-box;
+  display: -webkit-box;
+  height: 20px;
+  margin: 0;
+}
+
+.editable-text-field > .spacer {
+  /* The above height rule should not apply to spacers. */
+  height: 0;
+}
+
+.editable-text-field .editable-text {
+  padding: 2px 3px;
+}
+
+.editable-text-field .static-text {
+  height: 24px;
+  overflow: hidden;
+  padding: 3px 4px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editable-text-field:not([editable]) > [displaymode='edit'] {
+  display: none;
+}
+
+.editable-text-field[editable] > [displaymode='static'] {
+  display: none;
+}
+
+.editable-text-field[empty] > input[type='text'] {
+  color: #ccc;
+  font-style: italic;
+}
+
+.editable-text-field[disabled] {
+  opacity: 0.6;
+}
+
+/* Editable List properties */
+list > * {
+  -webkit-box-align: center;
+  -webkit-transition: 150ms background-color;
+  border: none;
+  border-radius: 0;  /* TODO(dbeam): Is this necessary? */
+  box-sizing: border-box;
+  display: -webkit-box;
+  height: 32px;
+  margin: 0;
+}
+
+list > .spacer {
+  /* The above height rule should not apply to spacers. When redraw is called
+     on the list they will be given an explicit element height but this ensures
+     they have 0 height to begin with. */
+  height: 0;
+}
+
+list:not([disabled]) > :hover {
+  background-color: rgb(228, 236, 247);
+}
+
+/* Note: If this becomes the list style for other WebUI pages these rules can be
+ * simplified (since they wont need to override other rules). */
+
+list:not([has-element-focus]) > [selected],
+list:not([has-element-focus]) > [lead][selected] {
+  background-color: #d0d0d0;
+  background-image: none;
+}
+
+list[has-element-focus] > [selected],
+list[has-element-focus] > [lead][selected],
+list:not([has-element-focus]) > [selected]:hover,
+list:not([has-element-focus]) > [selected][lead]:hover {
+  background-color: rgb(187, 206, 233);
+  background-image: none;
+}
+
+.settings-list[has-element-focus] > [lead],
+.settings-list[has-element-focus] > [lead][selected] {
+  border-bottom: 1px solid rgb(120, 146, 180);
+  border-top: 1px solid rgb(120, 146, 180);
+}
+
+.settings-list[has-element-focus] > [lead]:nth-child(2),
+.settings-list[has-element-focus] > [lead][selected]:nth-child(2) {
+  border-top: 1px solid transparent;
+}
+
+.settings-list[has-element-focus] > [lead]:nth-last-child(2),
+.settings-list[has-element-focus] > [lead][selected]:nth-last-child(2) {
+  border-bottom: 1px solid transparent;
+}
+
+.settings-list[disabled] > [lead][selected],
+.settings-list[disabled]:focus > [lead][selected] {
+  border: none;
+}
+
+list[disabled] {
+  opacity: 0.6;
+}
+
+list > .heading {
+  color: #666;
+}
+
+list > .heading:hover {
+  background-color: transparent;
+  border-color: transparent;
+}
+
+list .deletable-item {
+  -webkit-box-align: center;
+  outline: none;
+}
+
+list .deletable-item > :first-child {
+  -webkit-box-align: center;
+  -webkit-box-flex: 1;
+  -webkit-padding-end: 5px;
+  display: -webkit-box;
+}
+
+list .row-delete-button {
+  -webkit-transition: 150ms opacity;
+  background-color: transparent;
+  background-image: -webkit-image-set(
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAiElEQVR42r2RsQrDMAxEBRdl8SDcX8lQPGg1GBI6lvz/h7QyRRXV0qUULwfvwZ1tenw5PxToRPWMC52eA9+WDnlh3HFQ/xBQl86NFYJqeGflkiogrOvVlIFhqURFVho3x1moGAa3deMs+LS30CAhBN5nNxeT5hbJ1zwmji2k+aF6NENIPf/hs54f0sZFUVAMigAAAABJRU5ErkJggg==) 1x,
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAA9UlEQVR4Xu3UsWrCUByH0fMEouiuhrg4xohToJVGH0CHLBncEwfx/VvIFHLJBWmHDvKbv7PcP9f3L/fXwBsApZSRpUpEgbOnxwiReng6x4AvjdrNXRLkibubWqMcB9Yujk7qjhjmtZOji/U4wELuoBwQXa50kFsQA5jK+kQ/l5kSA4ZEK5Fo+3kcCIlGM8ijQEhUqkEeBUKiUPTyl4C5vZ1cbmdv/iqwclXY6aZwtXoFSLQqhVwmkytUWglxAMG7T0yCu4gD0v7ZBKeVxoEwFxIxYBPmIWEzDnyEeUj4HAfYdvmMcGYdsSUGsOzlIbHEv/uV38APrreiBRBIs3QAAAAASUVORK5CYII=) 2x);
+  border: none;
+  display: block;
+  height: 16px;
+  opacity: 1;
+  width: 16px;
+}
+
+list > *:not(:hover):not([selected]):not([lead]) .row-delete-button,
+list:not([has-element-focus]) > *:not(:hover):not([selected])
+    .row-delete-button,
+list[disabled] .row-delete-button,
+list .row-delete-button[disabled] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* HostedApp entries use the disabled closing button to display the App's
+ * favicon, as an indicator that instead of deleting the permission here
+ * the user has to remove the hosted app.*/
+list div[role='listitem'][managedby='HostedApp'] .row-delete-button {
+  opacity: 1;
+}
+
+list .row-delete-button:hover {
+  background-image: -webkit-image-set(
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAqUlEQVR4XqWRMQqEMBBF/1E8Ra6x6V3FRnS9QbCxtJg6Z7CzE9lTiIXXyUb3C8EULixDIMM8Zt4kcDfxM5A45U+cgeXnC1tREgkzAgob3hiq3CUHvGLG4FTQoSgxQGDrzN8WTLBGnx2IVDksen9GH7Z9hA5E6uxABMJyCHDMCEGHzugLQPPlBCBNGq+5YtpnGw1Bv+te15ypljTpVzdak5Opy+z+qf//zQ+Lg+07ay5KsgAAAABJRU5ErkJggg==) 1x,
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAB4UlEQVR42u2VsWoCQRBAh+MUFP0C1V9QD4NEOxs9xBQHQVCwSJFWVBAtBNXCxk6wTkBJYUTwEwQLC61E8QP0NzZzt5g5726DkC7EYWHZ8T3WndkV2C/jLwn4hwVYBIdLn9vkLp79QcBCTDMiy3w2gQ9XeTYkEHA8vqj2rworXu3HF1YFfSWgp5QFnKVLvYvzDEKEZ5hW70oXOCtcEbQLIkx7+IQtfMBSOjU6XEF4oyOdYInZbXyOuajjDlpNeQgleIUJKUz4BDMledhqOu/AzVSmzZ49CUjCC0yvim98iqtJT2L2jKsqczsdok9XrHNexaww415lnTNwn6CM/KxJIR8bnUZHPhLO6yMoIyk2pNjLewFuE5AiY1KMMQx8Q7hQYFek4AkjxXFe1rsF84I/BTFQMGL+1Lxwl4DwdtM1gjwKohgxyLtG7SYpxALqugOMcfOKN+bFXeBsLB1uulNcRqq7/tt36k41zoL6QlxGjtd6lrahiqCi1iOFYyvXuxY8yzK33VnvUivbLlOlj/jktm0s3YnXrNIXXufHNxuOGasi8S68zkwrlnV8ZcJJsTIUxbLgQcFZWE8N0gau2p40VVcM0gYeFpSRK6445UhBuKiRgiyKw+34rLt59nb1/7+RwReVkaFtqvNBuwAAAABJRU5ErkJggg==) 2x);
+}
+
+list .row-delete-button:active {
+  background-image: -webkit-image-set(
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAQklEQVR4AWP4TwBSTQGDHcMZIIYAKA9VwRkwtINJgyCaCTAlCBaKAoQ+hFmoCqBKENKkK8C0gpAjCXuTyICiQ2QBAPSwyG3ByZlCAAAAAElFTkSuQmCC)
+          1x,
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAA/ElEQVR4Xu3UsWrCUBiG4efGlIBoIMFbcnYolYJ3pg4iKGrGYFTRwaUFhYAekiDt0EG++X2W83N8/3J/DbwBMJJSsdQItcDY1VlCOImzq3Ed8OmicHASB3ns5KBw8VUNpDJrW7uAiJ3sbK1l0mqArpmFTUlQ5jYWZrrUAUSmT0SZm4qoA56JvVhs/5g3A7RLolA85A1ASOTye65NMxASK6syfxGITMzvMxG9CvRkliWwlOm9AsSOcitzU1NzK7mjuBkQvHtLK7iLBiB5PhttJSGpB8I8vM6kDuiHeUjoVwMfYR4SRtUAw1veIZzOjRhSBzCoyKFjgH/3K7+BHzg+Cgw0eSW3AAAAAElFTkSuQmCC)
+          2x);
+}
+
+list .static-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+list[type='text'][inlineeditable] input {
+  box-sizing: border-box;
+  margin: 0;
+  width: 100%;
+}
+
+list > :not([editing]) [displaymode='edit'] {
+  display: none;
+}
+
+list > [editing] [displaymode='static'] {
+  /* Don't use display:none or visibility:hidden because we need to keep an
+   * element focusable.
+   * We shrink only height.  We don't shrink width to avoid to change the size
+   * of containing boxes.
+   */
+  border-bottom: 0 !important;
+  border-top: 0 !important;
+  height: 0 !important;
+  margin-bottom: 0 !important;
+  margin-top: 0 !important;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+list > [editing] input:invalid {
+  background-color: pink;
+}
+
+.list-inline-button {
+  -webkit-appearance: none;
+  -webkit-transition: opacity 150ms;
+  background: rgb(138, 170, 237);
+  border: none;
+  border-radius: 2px;
+  color: white;
+  font-weight: bold;
+  opacity: 0.7;
+}
+
+.list-inline-button:hover {
+  opacity: 1;
+}
+
+.option-name {
+  -webkit-padding-end: 5px;
+}
+
+.favicon-cell {
+  -webkit-padding-start: 20px;
+  background-position: left;
+  background-repeat: no-repeat;
+  background-size: 16px;
+}
+
+input[type='url'].favicon-cell {
+  -webkit-padding-start: 22px;
+  background-position-x: 4px;
+}
+
+html[dir=rtl] input.favicon-cell,
+input[dir=rtl].favicon-cell {
+  background-position-x: -webkit-calc(100% - 4px);
+}
+
+list .favicon-cell {
+  -webkit-margin-start: 7px;
+  -webkit-padding-start: 26px;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html[dir=rtl] list .favicon-cell {
+  background-position: right;
+}
+
+html[enable-background-mode=false] #background-mode-section {
+ display: none;
+}
+
+/* UI Controls */
+
+/* LIST */
+.settings-list[has-element-focus] {
+outline: 1px solid rgba(0, 128, 256, 0.5);
+  outline-offset: -2px;
+
+}
+
+.suboption {
+  -webkit-margin-start: 23px;
+}
+
+list.autocomplete-suggestions {
+  background-color: white;
+  border: 1px solid #aaa;
+  border-radius: 2px;
+  min-height: 0;
+  opacity: 0.9;
+  position: fixed;
+  z-index: 3;
+}
+
+list.autocomplete-suggestions > div {
+  height: auto;
+}
+
+list.autocomplete-suggestions:not([has-element-focus]) > [selected],
+list.autocomplete-suggestions:not([has-element-focus]) > [lead][selected] {
+  background-color: rgb(187, 206, 233);
+}
+
+html:not(.focus-outline-visible)
+:enabled:focus:-webkit-any(input[type='checkbox'], input[type='radio']) {
+  /* Cancel border-color for :focus specified in widgets.css. */
+  border-color: rgba(0, 0, 0, 0.25);
+}
+
+html:not([hasFlashPlugin]) .flash-plugin-area,
+/* If the Flash plug-in supports the NPP_ClearSiteData API, we don't need to
+ * show the link to the Flash storage settings manager:
+ */
+html[flashPluginSupportsClearSiteData] .flash-plugin-area,
+html:not([flashPluginSupportsClearSiteData]) .clear-plugin-lso-data-enabled,
+html[flashPluginSupportsClearSiteData] .clear-plugin-lso-data-disabled,
+html:not([enablePepperFlashSettings]) .pepper-flash-settings {
+  display: none;
+}
+
+.standalone-action-link {
+  padding: 0;
+}
+
+:-webkit-any(.checkbox, .radio) label ~ a {
+  display: inline-block;
+  /* Matches padding of -webkit-any(.checkbox, .radio) */
+  padding-bottom: 7px;
+  vertical-align: bottom;
+}
+</style>
+<style>/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+.bluetooth-device-list {
+  margin: 10px 0;
+  padding: 5px 10px;
+}
+
+.bluetooth-device[notconnectable] {
+  color: gray;
+}
+
+.bluetooth-device[connected] {
+  font-weight: bold; /* semibold */
+}
+
+#bluetooth-options .bluetooth-device-list {
+  margin: 0 10px;
+}
+
+#bluetooth-options .button-strip {
+  -webkit-box-pack: justify;
+}
+
+#bluetooth-options .button-strip #bluetooth-scanning-label,
+#bluetooth-options .button-strip #bluetooth-scan-stopped-label {
+  -webkit-box-flex: 1;
+  display: block;
+}
+
+#bluetooth-scanning-label,
+#bluetooth-scan-stopped-label {
+  -webkit-margin-start: 5px;
+  color: #999;
+}
+
+#bluetooth-scanning-icon {
+  height: 20px;
+  opacity: 0.66;
+  vertical-align: middle;
+  width: 20px;
+}
+
+#bluetooth-paired-devices-list {
+  min-height: 96px !important;
+}
+
+#bluetooth-paired-devices-list,
+#bluetooth-unpaired-devices-list {
+  /* Prevent dialog from expanding if many devices are found. */
+  max-height: 192px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.bluetooth-empty-list-label {
+  box-sizing: border-box;
+  color: #999;
+  padding-top: 32px;
+  text-align: center;
+}
+
+#bluetooth-paired-devices-list-empty-placeholder {
+  height: 96px;
+}
+
+#bluetooth-unpaired-devices-list-empty-placeholder {
+  height: 192px;
+}
+
+/* Fix the dimensions of the message area so that the dialog does not change
+   change size during the pairing process as the message changes. Sized
+   generously to accomodate the longest of the messages. */
+#bluetooth-pairing-message-area {
+  display: table;
+  height: 160px;
+  padding: 6px 0 !important;
+  width: 420px;
+}
+
+/* Force the message to be vertical centered so that a shorter message does not
+   look out of place when there is room for a much longer message. */
+#bluetooth-pairing-message-contents {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+#bluetooth-pairing-instructions,
+#bluetooth-pairing-passkey-display,
+#bluetooth-pairing-passkey-entry,
+#bluetooth-pairing-pincode-entry,
+#bluetooth-passkey,
+#bluetooth-pincode {
+  text-align: center;
+}
+
+#bluetooth-pairing-instructions {
+  margin: 10px;
+}
+
+#bluetooth-pairing-passkey-display,
+#bluetooth-pairing-passkey-entry,
+#bluetooth-pairing-pincode-entry {
+  margin: 40px 0;
+}
+
+.bluetooth-keyboard-button {
+  -webkit-padding-end: 15px;
+  -webkit-padding-start: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px #222;
+  color: #222;
+  display: inline-block;
+  font-size: 16px;
+  height: 38px;
+  line-height: 38px;
+  margin: 0 10px 0 0;
+  position: relative;
+  text-align: center;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+  vertical-align: baseline;
+}
+
+.bluetooth-keyboard-button:last-child {
+  margin: 0;
+}
+
+#bluetooth-enter-key {
+  min-width: 54px;
+}
+
+.bluetooth-passkey-char {
+  -webkit-margin-start: 45px;
+  color: #999;
+  font-size: 20px;
+  font-weight: 600; /* semibold */
+  padding-bottom: 5px;
+}
+
+.bluetooth-passkey-char:first-child {
+  -webkit-margin-start: 0;
+}
+
+.bluetooth-keyboard-button.key-typed {
+  color: #222;
+}
+
+.bluetooth-keyboard-button.key-next {
+  background: rgb(77, 144, 254);
+  background-image: none;
+  border: 2px solid rgb(77, 144, 254);
+  box-shadow: none;
+  color: #fff;
+}
+
+.bluetooth-keyboard-button.key-untyped {
+  border: 1px solid #d4d4d4;
+  box-shadow: 0 0 0 1px #888;
+  color: #666;
+}
+</style>
+<style>/* Copyright (c) 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+.close-button {
+  display: none;
+}
+
+#bluetooth-pairing {
+  border: 0;
+  box-shadow: none;
+}
+
+.overlay .page h1 {
+  display: none;
+}
+</style>
+
+<script src="chrome://resources/js/cr.js"></script>
+<script src="chrome://resources/js/event_tracker.js"></script>
+<script src="chrome://resources/js/cr/event_target.js"></script>
+<script src="chrome://resources/js/cr/ui.js"></script>
+<script src="chrome://resources/js/cr/ui/array_data_model.js"></script>
+<script src="chrome://resources/js/cr/ui/focus_manager.js"></script>
+<script src="chrome://resources/js/cr/ui/focus_outline_manager.js"></script>
+<script src="chrome://resources/js/cr/ui/touch_handler.js"></script>
+<script src="chrome://resources/js/load_time_data.js"></script>
+<script src="chrome://resources/js/util.js"></script>
+<script src="chrome://resources/js/cr/ui/page_manager/page_manager.js"></script>
+<script src="chrome://resources/js/cr/ui/page_manager/page.js"></script>
+<script src="chrome://bluetooth-pairing/strings.js"></script>
+
+<script>// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('options', function() {
+  /** @const */ var FocusOutlineManager = cr.ui.FocusOutlineManager;
+
+  var OptionsPage = {
+    /**
+     * This is the absolute difference maintained between standard and
+     * fixed-width font sizes. Refer http://crbug.com/91922.
+     * @const
+     */
+    SIZE_DIFFERENCE_FIXED_STANDARD: 3,
+
+    /**
+     * Initializes the complete options page. This will cause all C++ handlers
+     * to be invoked to do final setup.
+     */
+    initialize: function() {
+      chrome.send('coreOptionsInitialize');
+    },
+
+    /**
+     * Shows the tab contents for the given navigation tab.
+     * @param {Node} tab The tab that the user clicked.
+     */
+    showTab: function(tab) {
+      // Search parents until we find a tab, or the nav bar itself. This allows
+      // tabs to have child nodes, e.g. labels in separately-styled spans.
+      while (tab && tab.classList &&
+             !tab.classList.contains('subpages-nav-tabs') &&
+             !tab.classList.contains('tab')) {
+        tab = tab.parentNode;
+      }
+      if (!tab || !tab.classList || !tab.classList.contains('tab'))
+        return;
+
+      // Find tab bar of the tab.
+      var tabBar = tab;
+      while (tabBar && tabBar.classList &&
+             !tabBar.classList.contains('subpages-nav-tabs')) {
+        tabBar = tabBar.parentNode;
+      }
+      if (!tabBar || !tabBar.classList)
+        return;
+
+      if (tabBar.activeNavTab != null) {
+        tabBar.activeNavTab.classList.remove('active-tab');
+        $(tabBar.activeNavTab.getAttribute('tab-contents')).classList.
+            remove('active-tab-contents');
+      }
+
+      tab.classList.add('active-tab');
+      $(tab.getAttribute('tab-contents')).classList.add('active-tab-contents');
+      tabBar.activeNavTab = tab;
+    },
+
+    /**
+     * Shows or hides options for clearing Flash LSOs.
+     * @param {boolean} enabled Whether plugin data can be cleared.
+     */
+    setClearPluginLSODataEnabled: function(enabled) {
+      if (enabled) {
+        document.documentElement.setAttribute(
+            'flashPluginSupportsClearSiteData', '');
+      } else {
+        document.documentElement.removeAttribute(
+            'flashPluginSupportsClearSiteData');
+      }
+      if (navigator.plugins['Shockwave Flash'])
+        document.documentElement.setAttribute('hasFlashPlugin', '');
+    },
+
+    /**
+     * Shows or hides Pepper Flash settings.
+     * @param {boolean} enabled Whether Pepper Flash settings should be enabled.
+     */
+    setPepperFlashSettingsEnabled: function(enabled) {
+      if (enabled) {
+        document.documentElement.setAttribute(
+            'enablePepperFlashSettings', '');
+      } else {
+        document.documentElement.removeAttribute(
+            'enablePepperFlashSettings');
+      }
+    },
+
+    /**
+     * Sets whether Settings is shown as a standalone page in a window for the
+     * app launcher settings "app".
+     * @param {boolean} isSettingsApp Whether this page is shown standalone.
+     */
+    setIsSettingsApp: function(isSettingsApp) {
+      document.documentElement.classList.toggle('settings-app', isSettingsApp);
+    },
+
+    /**
+     * Returns true if Settings is shown as an "app" (in a window by itself)
+     * for the app launcher settings "app".
+     * @return {boolean} Whether this page is shown standalone.
+     */
+    isSettingsApp: function() {
+      return document.documentElement.classList.contains('settings-app');
+    },
+  };
+
+  // Export
+  return {
+    OptionsPage: OptionsPage
+  };
+});
+</script>
+<script>// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * Enumeration of possible states during pairing.  The value associated with
+ * each state maps to a localized string in the global variable
+ * |loadTimeData|.
+ * @enum {string}
+ */
+var BluetoothPairingEventType = {
+  CONNECTING: 'bluetoothStartConnecting',
+  ENTER_PIN_CODE: 'bluetoothEnterPinCode',
+  ENTER_PASSKEY: 'bluetoothEnterPasskey',
+  REMOTE_PIN_CODE: 'bluetoothRemotePinCode',
+  REMOTE_PASSKEY: 'bluetoothRemotePasskey',
+  CONFIRM_PASSKEY: 'bluetoothConfirmPasskey',
+  CONNECT_FAILED: 'bluetoothConnectFailed',
+  CANCELED: 'bluetoothPairingCanceled',
+  DISMISSED: 'bluetoothPairingDismissed', // pairing dismissed (succeeded or
+                                          // canceled).
+  NOOP: ''  // Update device but do not show or update the dialog.
+};
+
+/**
+ * @typedef {{pairing: (BluetoothPairingEventType|undefined),
+ *            device: !chrome.bluetooth.Device,
+ *            pincode: (string|undefined),
+ *            passkey: (number|undefined),
+ *            enteredKey: (number|undefined)}}
+ */
+var BluetoothPairingEvent;
+
+/**
+ * Returns a BluetoothPairingEventType corresponding to |event_type|.
+ * @param {!chrome.bluetoothPrivate.PairingEventType} event_type
+ * @return {BluetoothPairingEventType}
+ */
+function GetBluetoothPairingEvent(event_type) {
+  switch (event_type) {
+    case chrome.bluetoothPrivate.PairingEventType.REQUEST_PINCODE:
+      return BluetoothPairingEventType.ENTER_PIN_CODE;
+    case chrome.bluetoothPrivate.PairingEventType.DISPLAY_PINCODE:
+      return BluetoothPairingEventType.REMOTE_PIN_CODE;
+    case chrome.bluetoothPrivate.PairingEventType.REQUEST_PASSKEY:
+      return BluetoothPairingEventType.ENTER_PASSKEY;
+    case chrome.bluetoothPrivate.PairingEventType.DISPLAY_PASSKEY:
+      return BluetoothPairingEventType.REMOTE_PASSKEY;
+    case chrome.bluetoothPrivate.PairingEventType.KEYS_ENTERED:
+      return BluetoothPairingEventType.NOOP;
+    case chrome.bluetoothPrivate.PairingEventType.CONFIRM_PASSKEY:
+      return BluetoothPairingEventType.CONFIRM_PASSKEY;
+    case chrome.bluetoothPrivate.PairingEventType.REQUEST_AUTHORIZATION:
+      return BluetoothPairingEventType.NOOP;
+    case chrome.bluetoothPrivate.PairingEventType.COMPLETE:
+      return BluetoothPairingEventType.NOOP;
+  }
+  return BluetoothPairingEventType.NOOP;
+}
+
+cr.define('options', function() {
+  /** @const */ var Page = cr.ui.pageManager.Page;
+  /** @const */ var PageManager = cr.ui.pageManager.PageManager;
+
+  /**
+   * List of IDs for conditionally visible elements in the dialog.
+   * @type {Array<string>}
+   * @const
+   */
+  var ELEMENTS = ['bluetooth-pairing-passkey-display',
+                  'bluetooth-pairing-passkey-entry',
+                  'bluetooth-pairing-pincode-entry',
+                  'bluetooth-pair-device-connect-button',
+                  'bluetooth-pair-device-cancel-button',
+                  'bluetooth-pair-device-accept-button',
+                  'bluetooth-pair-device-reject-button',
+                  'bluetooth-pair-device-dismiss-button'];
+
+  /**
+   * Encapsulated handling of the Bluetooth device pairing page.
+   * @constructor
+   * @extends {cr.ui.pageManager.Page}
+   */
+  function BluetoothPairing() {
+    Page.call(this, 'bluetoothPairing',
+              loadTimeData.getString('bluetoothOptionsPageTabTitle'),
+              'bluetooth-pairing');
+  }
+
+  cr.addSingletonGetter(BluetoothPairing);
+
+  BluetoothPairing.prototype = {
+    __proto__: Page.prototype,
+
+    /**
+     * Device pairing event.
+     * @type {?BluetoothPairingEvent}
+     * @private
+     */
+    event_: null,
+
+    /**
+     * Can the dialog be programmatically dismissed.
+     * @type {boolean}
+     */
+    dismissible_: true,
+
+    /** @override */
+    initializePage: function() {
+      Page.prototype.initializePage.call(this);
+      var self = this;
+      $('bluetooth-pair-device-cancel-button').onclick = function() {
+        PageManager.closeOverlay();
+      };
+      $('bluetooth-pair-device-reject-button').onclick = function() {
+        var options = {
+          device: self.event_.device,
+          response: chrome.bluetoothPrivate.PairingResponse.REJECT
+        };
+        chrome.bluetoothPrivate.setPairingResponse(options);
+        self.event_.pairing = BluetoothPairingEventType.DISMISSED;
+        PageManager.closeOverlay();
+      };
+      $('bluetooth-pair-device-connect-button').onclick = function() {
+        // Prevent sending a 'connect' command twice.
+        $('bluetooth-pair-device-connect-button').disabled = true;
+
+        var options = {
+          device: self.event_.device,
+          response: chrome.bluetoothPrivate.PairingResponse.CONFIRM
+        };
+        var passkey = self.event_.passkey;
+        if (passkey) {
+          options.passkey = passkey;
+        } else if (!$('bluetooth-pairing-passkey-entry').hidden) {
+          options.passkey = parseInt($('bluetooth-passkey').value, 10);
+        } else if (!$('bluetooth-pairing-pincode-entry').hidden) {
+          options.pincode = $('bluetooth-pincode').value;
+        } else {
+          BluetoothPairing.connect(self.event_.device);
+          return;
+        }
+        chrome.bluetoothPrivate.setPairingResponse(options);
+        var event = /** @type {!BluetoothPairingEvent} */ ({
+          pairing: BluetoothPairingEventType.CONNECTING,
+          device: self.event_.device
+        });
+        BluetoothPairing.showDialog(event);
+      };
+      $('bluetooth-pair-device-accept-button').onclick = function() {
+        var options = {
+          device: self.event_.device,
+          response: chrome.bluetoothPrivate.PairingResponse.CONFIRM
+        };
+        chrome.bluetoothPrivate.setPairingResponse(options);
+        // Prevent sending a 'accept' command twice.
+        $('bluetooth-pair-device-accept-button').disabled = true;
+      };
+      $('bluetooth-pair-device-dismiss-button').onclick = function() {
+        PageManager.closeOverlay();
+      };
+      $('bluetooth-passkey').oninput = function() {
+        var inputField = $('bluetooth-passkey');
+        var value = inputField.value;
+        // Note that using <input type="number"> is insufficient to restrict
+        // the input as it allows negative numbers and does not limit the
+        // number of charactes typed even if a range is set.  Furthermore,
+        // it sometimes produces strange repaint artifacts.
+        var filtered = value.replace(/[^0-9]/g, '');
+        if (filtered != value)
+          inputField.value = filtered;
+        $('bluetooth-pair-device-connect-button').disabled =
+            inputField.value.length == 0;
+      };
+      $('bluetooth-pincode').oninput = function() {
+        $('bluetooth-pair-device-connect-button').disabled =
+            $('bluetooth-pincode').value.length == 0;
+      };
+      $('bluetooth-passkey').addEventListener('keydown',
+          this.keyDownEventHandler_.bind(this));
+      $('bluetooth-pincode').addEventListener('keydown',
+          this.keyDownEventHandler_.bind(this));
+    },
+
+    /** @override */
+    didClosePage: function() {
+      if (this.event_ &&
+          this.event_.pairing != BluetoothPairingEventType.DISMISSED &&
+          this.event_.pairing != BluetoothPairingEventType.CONNECT_FAILED) {
+        this.event_.pairing = BluetoothPairingEventType.CANCELED;
+        var options = {
+          device: this.event_.device,
+          response: chrome.bluetoothPrivate.PairingResponse.CANCEL
+        };
+        chrome.bluetoothPrivate.setPairingResponse(options);
+      }
+    },
+
+    /**
+     * Override to prevent showing the overlay if the Bluetooth device details
+     * have not been specified.  Prevents showing an empty dialog if the user
+     * quits and restarts Chrome while in the process of pairing with a device.
+     * @return {boolean} True if the overlay can be displayed.
+     */
+    canShowPage: function() {
+      return !!(this.event_ && this.event_.device.address &&
+                this.event_.pairing);
+    },
+
+    /**
+     * Sets input focus on the passkey or pincode field if appropriate.
+     */
+    didShowPage: function() {
+      if (!$('bluetooth-pincode').hidden)
+        $('bluetooth-pincode').focus();
+      else if (!$('bluetooth-passkey').hidden)
+        $('bluetooth-passkey').focus();
+    },
+
+    /**
+     * Configures the overlay for pairing a device.
+     * @param {!BluetoothPairingEvent} event
+     * @param {boolean=} opt_notDismissible
+     */
+    update: function(event, opt_notDismissible) {
+      assert(event);
+      assert(event.device);
+      if (this.event_ == undefined ||
+          this.event_.device.address != event.device.address) {
+        // New event or device, create a new BluetoothPairingEvent.
+        this.event_ =
+            /** @type {BluetoothPairingEvent} */ ({device: event.device});
+      } else {
+        // Update to an existing event; just update |device| in case it changed.
+        this.event_.device = event.device;
+      }
+
+      if (event.pairing)
+        this.event_.pairing = event.pairing;
+
+      if (!this.event_.pairing)
+        return;
+
+      if (this.event_.pairing == BluetoothPairingEventType.CANCELED) {
+        // If we receive an update after canceling a pairing (e.g. a key
+        // press), ignore it and clear the device so that future updates for
+        // the device will also be ignored.
+        this.event_.device.address = '';
+        return;
+      }
+
+      if (event.pincode != undefined)
+        this.event_.pincode = event.pincode;
+      if (event.passkey != undefined)
+        this.event_.passkey = event.passkey;
+      if (event.enteredKey != undefined)
+        this.event_.enteredKey = event.enteredKey;
+
+      // Update the list model (in case, e.g. the name changed).
+      if (this.event_.device.name) {
+        var list = $('bluetooth-unpaired-devices-list');
+        if (list) {  // May be undefined in tests.
+          var index = list.find(this.event_.device.address);
+          if (index != undefined)
+            list.dataModel.splice(index, 1, this.event_.device);
+        }
+      }
+
+      // Update the pairing instructions.
+      var instructionsEl = assert($('bluetooth-pairing-instructions'));
+      this.clearElement_(instructionsEl);
+      this.dismissible_ = opt_notDismissible !== true;
+      var message = loadTimeData.getString(this.event_.pairing);
+      assert(typeof this.event_.device.name == 'string');
+      message = message.replace(
+          '%1', /** @type {string} */(this.event_.device.name));
+      instructionsEl.textContent = message;
+
+      // Update visibility of dialog elements.
+      if (this.event_.passkey) {
+        this.updatePasskey_(String(this.event_.passkey));
+        if (this.event_.pairing == BluetoothPairingEventType.CONFIRM_PASSKEY) {
+          // Confirming a match between displayed passkeys.
+          this.displayElements_(['bluetooth-pairing-passkey-display',
+                                 'bluetooth-pair-device-accept-button',
+                                 'bluetooth-pair-device-reject-button']);
+          $('bluetooth-pair-device-accept-button').disabled = false;
+        } else {
+          // Remote entering a passkey.
+          this.displayElements_(['bluetooth-pairing-passkey-display',
+                                 'bluetooth-pair-device-cancel-button']);
+        }
+      } else if (this.event_.pincode) {
+        this.updatePasskey_(String(this.event_.pincode));
+        this.displayElements_(['bluetooth-pairing-passkey-display',
+                               'bluetooth-pair-device-cancel-button']);
+      } else if (this.event_.pairing ==
+                 BluetoothPairingEventType.ENTER_PIN_CODE) {
+        // Prompting the user to enter a PIN code.
+        this.displayElements_(['bluetooth-pairing-pincode-entry',
+                               'bluetooth-pair-device-connect-button',
+                               'bluetooth-pair-device-cancel-button']);
+        $('bluetooth-pincode').value = '';
+      } else if (this.event_.pairing ==
+                 BluetoothPairingEventType.ENTER_PASSKEY) {
+        // Prompting the user to enter a passkey.
+        this.displayElements_(['bluetooth-pairing-passkey-entry',
+                               'bluetooth-pair-device-connect-button',
+                               'bluetooth-pair-device-cancel-button']);
+        $('bluetooth-passkey').value = '';
+      } else if (this.event_.pairing == BluetoothPairingEventType.CONNECTING) {
+        // Starting the pairing process.
+        this.displayElements_(['bluetooth-pair-device-cancel-button']);
+      } else {
+        // Displaying an error message.
+        this.displayElements_(['bluetooth-pair-device-dismiss-button']);
+      }
+      // User is required to enter a passkey or pincode before the connect
+      // button can be enabled.  The 'oninput' methods for the input fields
+      // determine when the connect button becomes active.
+      $('bluetooth-pair-device-connect-button').disabled = true;
+    },
+
+    /**
+     * Handles the ENTER key for the passkey or pincode entry field.
+     * @param {Event} event A keydown event.
+     * @private
+     */
+    keyDownEventHandler_: function(event) {
+      /** @const */ var ENTER_KEY_CODE = 13;
+      if (event.keyCode == ENTER_KEY_CODE) {
+        var button = $('bluetooth-pair-device-connect-button');
+        if (!button.hidden)
+          button.click();
+      }
+    },
+
+    /**
+     * Updates the visibility of elements in the dialog.
+     * @param {Array<string>} list List of conditionally visible elements that
+     *     are to be made visible.
+     * @private
+     */
+    displayElements_: function(list) {
+      var enabled = {};
+      for (var i = 0; i < list.length; i++) {
+        var key = list[i];
+        enabled[key] = true;
+      }
+      for (var i = 0; i < ELEMENTS.length; i++) {
+        var key = ELEMENTS[i];
+        $(key).hidden = !enabled[key];
+      }
+    },
+
+    /**
+     * Removes all children from an element.
+     * @param {!Element} element Target element to clear.
+     */
+    clearElement_: function(element) {
+      var child = element.firstChild;
+      while (child) {
+        element.removeChild(child);
+        child = element.firstChild;
+      }
+    },
+
+    /**
+     * Formats an element for displaying the passkey or PIN code.
+     * @param {string} key Passkey or PIN to display.
+     */
+    updatePasskey_: function(key) {
+      var passkeyEl = assert($('bluetooth-pairing-passkey-display'));
+      var keyClass =
+          (this.event_.pairing == BluetoothPairingEventType.REMOTE_PASSKEY ||
+           this.event_.pairing == BluetoothPairingEventType.REMOTE_PIN_CODE) ?
+              'bluetooth-keyboard-button' :
+              'bluetooth-passkey-char';
+      this.clearElement_(passkeyEl);
+      // Passkey should always have 6 digits.
+      key = '000000'.substring(0, 6 - key.length) + key;
+      var progress = this.event_.enteredKey;
+      for (var i = 0; i < key.length; i++) {
+        var keyEl = document.createElement('span');
+        keyEl.textContent = key.charAt(i);
+        keyEl.className = keyClass;
+        if (progress != undefined) {
+          if (i < progress)
+            keyEl.classList.add('key-typed');
+          else if (i == progress)
+            keyEl.classList.add('key-next');
+          else
+            keyEl.classList.add('key-untyped');
+        }
+        passkeyEl.appendChild(keyEl);
+      }
+      if (this.event_.pairing == BluetoothPairingEventType.REMOTE_PASSKEY ||
+          this.event_.pairing == BluetoothPairingEventType.REMOTE_PIN_CODE) {
+        // Add enter key.
+        var label = loadTimeData.getString('bluetoothEnterKey');
+        var keyEl = document.createElement('span');
+        keyEl.textContent = label;
+        keyEl.className = keyClass;
+        keyEl.id = 'bluetooth-enter-key';
+        if (progress != undefined) {
+          if (progress > key.length)
+            keyEl.classList.add('key-typed');
+          else if (progress == key.length)
+            keyEl.classList.add('key-next');
+          else
+            keyEl.classList.add('key-untyped');
+        }
+        passkeyEl.appendChild(keyEl);
+      }
+      passkeyEl.hidden = false;
+    },
+  };
+
+  /**
+   * Configures the device pairing instructions and displays the pairing
+   * overlay.
+   * @param {!BluetoothPairingEvent} event
+   * @param {boolean=} opt_notDismissible If set to true, the dialog can not
+   *     be dismissed.
+   */
+  BluetoothPairing.showDialog = function(event, opt_notDismissible) {
+    BluetoothPairing.getInstance().update(event, opt_notDismissible);
+    PageManager.showPageByName('bluetoothPairing', false);
+  };
+
+
+  /**
+   * Handles bluetoothPrivate onPairing events.
+   * @param {!chrome.bluetoothPrivate.PairingEvent} event
+   */
+  BluetoothPairing.onBluetoothPairingEvent = function(event) {
+    var dialog = BluetoothPairing.getInstance();
+    if (!dialog.event_ || dialog.event_.device.address != event.device.address)
+      return;  // Ignore events not associated with an active connect or pair.
+    var pairingEvent = /** @type {!BluetoothPairingEvent} */ ({
+      pairing: GetBluetoothPairingEvent(event.pairing),
+      device: event.device,
+      pincode: event.pincode,
+      passkey: event.passkey,
+      enteredKey: event.enteredKey
+    });
+    dialog.update(pairingEvent);
+    PageManager.showPageByName('bluetoothPairing', false);
+  };
+
+  /**
+   * Displays a message from the Bluetooth adapter.
+   * @param {{message: string, address: string}} data Data for constructing the
+   *     message. |data.message| is the name of message to show. |data.address|
+   *     is the device address.
+   */
+  BluetoothPairing.showMessage = function(data) {
+    /** @type {string} */ var name = data.address;
+    if (name.length == 0)
+      return;
+    var dialog = BluetoothPairing.getInstance();
+    if (dialog.event_ && name == dialog.event_.device.address &&
+        dialog.event_.pairing == BluetoothPairingEventType.CANCELED) {
+      // Do not show any error message after cancelation of the pairing.
+      return;
+    }
+
+    var list = $('bluetooth-paired-devices-list');
+    if (list) {
+      var index = list.find(name);
+      if (index == undefined) {
+        list = $('bluetooth-unpaired-devices-list');
+        index = list.find(name);
+      }
+      if (index != undefined) {
+        var entry = list.dataModel.item(index);
+        if (entry && entry.name)
+          name = /** @type {string} */ (entry.name);
+      }
+    }
+    var event = /** @type {!BluetoothPairingEvent} */ ({
+      pairing: /** @type {BluetoothPairingEventType} */ (data.message),
+      device: /** @type {!chrome.bluetooth.Device} */ ({
+        name: name,
+        address: data.address,
+      })
+    });
+    BluetoothPairing.showDialog(event, true /* not dismissible */);
+  };
+
+  /**
+   * Sends a connect request to the bluetoothPrivate API. If there is an error
+   * the pairing dialog will be shown with the error message.
+   * @param {!chrome.bluetooth.Device} device
+   * @param {boolean=} opt_showConnecting If true, show 'connecting' message in
+   *     the pairing dialog.
+   */
+  BluetoothPairing.connect = function(device, opt_showConnecting) {
+    if (opt_showConnecting) {
+      var event = /** @type {!BluetoothPairingEvent} */ (
+          {pairing: BluetoothPairingEventType.CONNECTING, device: device});
+      BluetoothPairing.showDialog(event);
+    }
+    var address = device.address;
+    chrome.bluetoothPrivate.connect(address, function(result) {
+      BluetoothPairing.connectCompleted_(address, result);
+    });
+  };
+
+  /**
+   * Connect request completion callback.
+   * @param {string} address
+   * @param {chrome.bluetoothPrivate.ConnectResultType} result
+   */
+  BluetoothPairing.connectCompleted_ = function(address, result) {
+    var message;
+    if (chrome.runtime.lastError) {
+      var errorMessage = chrome.runtime.lastError.message;
+      if (errorMessage != 'Connect failed') {
+        console.error('bluetoothPrivate.connect: Unexpected error for: ' +
+                      address + ': ' + errorMessage);
+      }
+    }
+    switch (result) {
+      case chrome.bluetoothPrivate.ConnectResultType.SUCCESS:
+      case chrome.bluetoothPrivate.ConnectResultType.ALREADY_CONNECTED:
+        BluetoothPairing.dismissDialog();
+        return;
+      case chrome.bluetoothPrivate.ConnectResultType.UNKNOWN_ERROR:
+        message = 'bluetoothConnectUnknownError';
+        break;
+      case chrome.bluetoothPrivate.ConnectResultType.IN_PROGRESS:
+        message = 'bluetoothConnectInProgress';
+        break;
+      case chrome.bluetoothPrivate.ConnectResultType.FAILED:
+        message = 'bluetoothConnectFailed';
+        break;
+      case chrome.bluetoothPrivate.ConnectResultType.AUTH_FAILED:
+        message = 'bluetoothConnectAuthFailed';
+        break;
+      case chrome.bluetoothPrivate.ConnectResultType.AUTH_CANCELED:
+        message = 'bluetoothConnectAuthCanceled';
+        break;
+      case chrome.bluetoothPrivate.ConnectResultType.AUTH_REJECTED:
+        message = 'bluetoothConnectAuthRejected';
+        break;
+      case chrome.bluetoothPrivate.ConnectResultType.AUTH_TIMEOUT:
+        message = 'bluetoothConnectAuthTimeout';
+        break;
+      case chrome.bluetoothPrivate.ConnectResultType.UNSUPPORTED_DEVICE:
+        message = 'bluetoothConnectUnsupportedDevice';
+        break;
+      case chrome.bluetoothPrivate.ConnectResultType.ATTRIBUTE_LENGTH_INVALID:
+        message = 'bluetoothConnectAttributeLengthInvalid';
+        break;
+      case chrome.bluetoothPrivate.ConnectResultType.CONNECTION_CONGESTED:
+        message = 'bluetoothConnectConnectionCongested';
+        break;
+      case chrome.bluetoothPrivate.ConnectResultType.INSUFFICIENT_ENCRYPTION:
+        message = 'bluetoothConnectInsufficientEncryption';
+        break;
+      case chrome.bluetoothPrivate.ConnectResultType.OFFSET_INVALID:
+        message = 'bluetoothConnectOffsetInvalid';
+        break;
+      case chrome.bluetoothPrivate.ConnectResultType.READ_NOT_PERMITTED:
+        message = 'bluetoothConnectReadNotPermitted';
+        break;
+      case chrome.bluetoothPrivate.ConnectResultType.REQUEST_NOT_SUPPORTED:
+        message = 'bluetoothConnectRequestNotSupported';
+        break;
+      case chrome.bluetoothPrivate.ConnectResultType.WRITE_NOT_PERMITTED:
+        message = 'bluetoothConnectWriteNotPermitted';
+        break;
+    }
+    if (message)
+      BluetoothPairing.showMessage({message: message, address: address});
+  };
+
+  /**
+   * Closes the Bluetooth pairing dialog.
+   */
+  BluetoothPairing.dismissDialog = function() {
+    var overlay = PageManager.getTopmostVisiblePage();
+    var dialog = BluetoothPairing.getInstance();
+    if (overlay == dialog && dialog.dismissible_) {
+      if (dialog.event_)
+        dialog.event_.pairing = BluetoothPairingEventType.DISMISSED;
+      PageManager.closeOverlay();
+    }
+  };
+
+  // Export
+  return {
+    BluetoothPairing: BluetoothPairing
+  };
+});
+</script>
+<script>// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview A collection of utility methods for UberPage and its contained
+ *     pages.
+ */
+
+cr.define('uber', function() {
+  /**
+   * Fixed position header elements on the page to be shifted by handleScroll.
+   * @type {NodeList}
+   */
+  var headerElements;
+
+  /**
+   * This should be called by uber content pages when DOM content has loaded.
+   */
+  function onContentFrameLoaded() {
+    headerElements = document.getElementsByTagName('header');
+    document.addEventListener('scroll', handleScroll);
+    document.addEventListener('mousedown', handleMouseDownInFrame, true);
+
+    invokeMethodOnParent('ready');
+
+    // Prevent the navigation from being stuck in a disabled state when a
+    // content page is reloaded while an overlay is visible (crbug.com/246939).
+    invokeMethodOnParent('stopInterceptingEvents');
+
+    // Trigger the scroll handler to tell the navigation if our page started
+    // with some scroll (happens when you use tab restore).
+    handleScroll();
+
+    window.addEventListener('message', handleWindowMessage);
+  }
+
+  /**
+   * Handles scroll events on the document. This adjusts the position of all
+   * headers and updates the parent frame when the page is scrolled.
+   */
+  function handleScroll() {
+    var scrollLeft = scrollLeftForDocument(document);
+    var offset = scrollLeft * -1;
+    for (var i = 0; i < headerElements.length; i++) {
+      // As a workaround for http://crbug.com/231830, set the transform to
+      // 'none' rather than 0px.
+      headerElements[i].style.webkitTransform = offset ?
+          'translateX(' + offset + 'px)' : 'none';
+    }
+
+    invokeMethodOnParent('adjustToScroll', scrollLeft);
+  }
+
+  /**
+   * Tells the parent to focus the current frame if the mouse goes down in the
+   * current frame (and it doesn't already have focus).
+   * @param {Event} e A mousedown event.
+   */
+  function handleMouseDownInFrame(e) {
+    if (!e.isSynthetic && !document.hasFocus())
+      window.focus();
+  }
+
+  /**
+   * Handles 'message' events on window.
+   * @param {Event} e The message event.
+   */
+  function handleWindowMessage(e) {
+    e = /** @type {!MessageEvent<!{method: string, params: *}>} */(e);
+    if (e.data.method === 'frameSelected') {
+      handleFrameSelected();
+    } else if (e.data.method === 'mouseWheel') {
+      handleMouseWheel(
+          /** @type {{deltaX: number, deltaY: number}} */(e.data.params));
+    } else if (e.data.method === 'mouseDown') {
+      handleMouseDown();
+    } else if (e.data.method === 'popState') {
+      handlePopState(e.data.params.state, e.data.params.path);
+    }
+  }
+
+  /**
+   * This is called when a user selects this frame via the navigation bar
+   * frame (and is triggered via postMessage() from the uber page).
+   */
+  function handleFrameSelected() {
+    setScrollTopForDocument(document, 0);
+  }
+
+  /**
+   * Called when a user mouse wheels (or trackpad scrolls) over the nav frame.
+   * The wheel event is forwarded here and we scroll the body.
+   * There's no way to figure out the actual scroll amount for a given delta.
+   * It differs for every platform and even initWebKitWheelEvent takes a
+   * pixel amount instead of a wheel delta. So we just choose something
+   * reasonable and hope no one notices the difference.
+   * @param {{deltaX: number, deltaY: number}} params A structure that holds
+   *     wheel deltas in X and Y.
+   */
+  function handleMouseWheel(params) {
+    window.scrollBy(-params.deltaX * 49 / 120, -params.deltaY * 49 / 120);
+  }
+
+  /**
+   * Fire a synthetic mousedown on the body to dismiss transient things like
+   * bubbles or menus that listen for mouse presses outside of their UI. We
+   * dispatch a fake mousedown rather than a 'mousepressedinnavframe' so that
+   * settings/history/extensions don't need to know about their embedder.
+   */
+  function handleMouseDown() {
+    var mouseEvent = new MouseEvent('mousedown');
+    mouseEvent.isSynthetic = true;
+    document.dispatchEvent(mouseEvent);
+  }
+
+  /**
+   * Called when the parent window restores some state saved by uber.pushState
+   * or uber.replaceState. Simulates a popstate event.
+   * @param {PopStateEvent} state A state object for replaceState and pushState.
+   * @param {string} path The path the page navigated to.
+   * @suppress {checkTypes}
+   */
+  function handlePopState(state, path) {
+    window.history.replaceState(state, '', path);
+    window.dispatchEvent(new PopStateEvent('popstate', {state: state}));
+  }
+
+  /**
+   * @return {boolean} Whether this frame has a parent.
+   */
+  function hasParent() {
+    return window != window.parent;
+  }
+
+  /**
+   * Invokes a method on the parent window (UberPage). This is a convenience
+   * method for API calls into the uber page.
+   * @param {string} method The name of the method to invoke.
+   * @param {?=} opt_params Optional property bag of parameters to pass to the
+   *     invoked method.
+   */
+  function invokeMethodOnParent(method, opt_params) {
+    if (!hasParent())
+      return;
+
+    invokeMethodOnWindow(window.parent, method, opt_params, 'chrome://chrome');
+  }
+
+  /**
+   * Invokes a method on the target window.
+   * @param {string} method The name of the method to invoke.
+   * @param {?=} opt_params Optional property bag of parameters to pass to the
+   *     invoked method.
+   * @param {string=} opt_url The origin of the target window.
+   */
+  function invokeMethodOnWindow(targetWindow, method, opt_params, opt_url) {
+    var data = {method: method, params: opt_params};
+    targetWindow.postMessage(data, opt_url ? opt_url : '*');
+  }
+
+  /**
+   * Updates the page's history state. If the page is embedded in a child,
+   * forward the information to the parent for it to manage history for us. This
+   * is a replacement of history.replaceState and history.pushState.
+   * @param {Object} state A state object for replaceState and pushState.
+   * @param {string} path The path the page navigated to.
+   * @param {boolean} replace If true, navigate with replacement.
+   */
+  function updateHistory(state, path, replace) {
+    var historyFunction = replace ?
+        window.history.replaceState :
+        window.history.pushState;
+
+    if (hasParent()) {
+      // If there's a parent, always replaceState. The parent will do the actual
+      // pushState.
+      historyFunction = window.history.replaceState;
+      invokeMethodOnParent('updateHistory', {
+        state: state, path: path, replace: replace});
+    }
+    historyFunction.call(window.history, state, '', '/' + path);
+  }
+
+  /**
+   * Sets the current title for the page. If the page is embedded in a child,
+   * forward the information to the parent. This is a replacement for setting
+   * document.title.
+   * @param {string} title The new title for the page.
+   */
+  function setTitle(title) {
+    document.title = title;
+    invokeMethodOnParent('setTitle', {title: title});
+  }
+
+  /**
+   * Pushes new history state for the page. If the page is embedded in a child,
+   * forward the information to the parent; when embedded, all history entries
+   * are attached to the parent. This is a replacement of history.pushState.
+   * @param {Object} state A state object for replaceState and pushState.
+   * @param {string} path The path the page navigated to.
+   */
+  function pushState(state, path) {
+    updateHistory(state, path, false);
+  }
+
+  /**
+   * Replaces the page's history state. If the page is embedded in a child,
+   * forward the information to the parent; when embedded, all history entries
+   * are attached to the parent. This is a replacement of history.replaceState.
+   * @param {Object} state A state object for replaceState and pushState.
+   * @param {string} path The path the page navigated to.
+   */
+  function replaceState(state, path) {
+    updateHistory(state, path, true);
+  }
+
+  return {
+    invokeMethodOnParent: invokeMethodOnParent,
+    invokeMethodOnWindow: invokeMethodOnWindow,
+    onContentFrameLoaded: onContentFrameLoaded,
+    pushState: pushState,
+    replaceState: replaceState,
+    setTitle: setTitle,
+  };
+});
+</script>
+
+<script>// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('options', function() {
+  /** @const */ var Page = cr.ui.pageManager.Page;
+
+  /**
+   * Encapsulated handling of the BluetoothOptions calls from
+   * BluetoothOptionsHandler that is registered by the webUI,
+   * ie, BluetoothPairingUI.
+   * @constructor
+   */
+  function BluetoothOptions() {
+    Page.call(this, 'bluetooth', '', 'bluetooth-container');
+  }
+
+  cr.addSingletonGetter(BluetoothOptions);
+
+  BluetoothOptions.prototype = {
+    __proto__: Page.prototype,
+  };
+
+  BluetoothOptions.updateDiscovery = function() {
+  };
+
+  // Export
+  return {
+    BluetoothOptions: BluetoothOptions
+  };
+});
+</script>
+<script>// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cr.define('options', function() {
+  /** @const */ var Page = cr.ui.pageManager.Page;
+
+  /**
+   * Encapsulated handling of the BrowserOptions calls from
+   * BluetoothOptionsHandler that is registered by the webUI,
+   * ie, BluetoothPairingUI.
+   * @constructor
+   */
+  function BrowserOptions() {
+    Page.call(this, 'bluetooth', '', 'bluetooth-container');
+  }
+
+  cr.addSingletonGetter(BrowserOptions);
+
+  BrowserOptions.prototype = {
+    __proto__: Page.prototype,
+
+    /** @override */
+    initializePage: function() {
+      chrome.bluetoothPrivate.onPairing.addListener(
+          BluetoothPairing.onBluetoothPairingEvent);
+    }
+  };
+
+  // Export
+  return {
+    BrowserOptions: BrowserOptions
+  };
+});
+</script>
+<script>// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO(dbeam): should these be global like this?
+var Page = cr.ui.pageManager.Page;
+var PageManager = cr.ui.pageManager.PageManager;
+var BluetoothPairing = options.BluetoothPairing;
+
+/** @override */
+PageManager.closeOverlay = function() {
+  chrome.send('dialogClose');
+};
+
+/**
+ * Listener for the |beforeunload| event.
+ * TODO(dbeam): probably ought to be using addEventListener() instead.
+ */
+window.onbeforeunload = function() {
+  PageManager.willClose();
+};
+
+/**
+ * Override calls from BluetoothOptionsHandler.
+ */
+cr.define('options', function() {
+  function BluetoothOptions() {}
+
+  BluetoothOptions.startDeviceDiscovery = function() {};
+  BluetoothOptions.updateDiscoveryState = function() {};
+  BluetoothOptions.dismissOverlay = function() {
+    PageManager.closeOverlay();
+  };
+
+  return {
+    BluetoothOptions: BluetoothOptions
+  };
+});
+
+/**
+ * DOMContentLoaded handler, sets up the page.
+ */
+function load() {
+  if (cr.isChromeOS)
+    document.documentElement.setAttribute('os', 'chromeos');
+
+  // Decorate the existing elements in the document.
+  cr.ui.decorate('input[pref][type=checkbox]', options.PrefCheckbox);
+  cr.ui.decorate('input[pref][type=number]', options.PrefNumber);
+  cr.ui.decorate('input[pref][type=radio]', options.PrefRadio);
+  cr.ui.decorate('input[pref][type=range]', options.PrefRange);
+  cr.ui.decorate('select[pref]', options.PrefSelect);
+  cr.ui.decorate('input[pref][type=text]', options.PrefTextField);
+  cr.ui.decorate('input[pref][type=url]', options.PrefTextField);
+
+  // TODO(ivankr): remove when http://crosbug.com/20660 is resolved.
+  var inputs = document.querySelectorAll('input[pref]');
+  for (var i = 0, el; el = inputs[i]; i++) {
+    el.addEventListener('keyup', function(e) {
+      cr.dispatchSimpleEvent(this, 'change');
+    });
+  }
+
+  chrome.send('coreOptionsInitialize');
+
+  var pairingPage = new Page('bluetooth', '', 'bluetooth-container');
+  PageManager.register(pairingPage);
+  PageManager.registerOverlay(BluetoothPairing.getInstance(), pairingPage);
+
+  // Since this UI is used to host a BluetoothPairing dialog we need to add
+  // an onPairing observer. (Normally that would be added in browser_options).
+  chrome.bluetoothPrivate.onPairing.addListener(
+      BluetoothPairing.onBluetoothPairingEvent);
+
+  // Show the BluetoothPairing dialog.
+  var args = JSON.parse(chrome.getVariableValue('dialogArguments'));
+  var device = /** @type {!chrome.bluetooth.Device} */ (args);
+  BluetoothPairing.connect(device, true);
+}
+
+document.addEventListener('DOMContentLoaded', load);
+</script>
+</head>
+
+<body>
+<div id="overlay-container" class="overlay">
+  <div id="bluetooth-pairing" class="page" hidden>
+  <div class="close-button"></div>
+  <h1 i18n-content="bluetoothAddDeviceTitle"></h1>
+  <div id="bluetooth-pairing-message-area" class="content-area">
+    <div id="bluetooth-pairing-message-contents">
+      <div id="bluetooth-pairing-instructions"></div>
+      <div id="bluetooth-pairing-passkey-display" hidden></div>
+      <div id="bluetooth-pairing-passkey-entry" hidden>
+         <input id="bluetooth-passkey" maxlength="6" type="text">
+      </div>
+      <div id="bluetooth-pairing-pincode-entry" hidden>
+         <input id="bluetooth-pincode" maxlength="16" type="text">
+      </div>
+    </div>
+  </div>
+  <div class="action-area button-strip">
+    <button id="bluetooth-pair-device-cancel-button" type="reset"
+        i18n-content="cancel" hidden></button>
+    <button id="bluetooth-pair-device-connect-button" type="reset"
+        i18n-content="bluetoothConnectDevice" hidden></button>
+    <button id="bluetooth-pair-device-reject-button" type="reset"
+        i18n-content="bluetoothRejectPasskey" hidden></button>
+    <button id="bluetooth-pair-device-accept-button" type="reset"
+        i18n-content="bluetoothAcceptPasskey" hidden></button>
+    <button id="bluetooth-pair-device-dismiss-button" type="reset"
+        i18n-content="bluetoothDismissError" hidden></button>
+  </div>
+</div>
+
+</div>
+<div id="page-container">
+  <div id="bluetooth-container"></div>
+</div>
+<div id="searchBox" hidden><input id="search-field" type=text></div>
+<script src="chrome://resources/js/i18n_template.js"></script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+Vis appvinduer efter den første tilføjelse. Vinduer vises betydeligt senere for tunge apps, der indlæser ressourcer synkront. Dog vil det ikke påvirke apps, der indlæser de fleste af deres ressourcer asynkront.

@@ -1,0 +1,2 @@
+Dies ist für die Verwendung zusammen mit dem Attribut "trace-upload-url" vorgesehen.
+        Hinweis: Bei Aktivierung speichert Chrome Leistungsdaten für jeden Navigationsablauf und lädt diese unter der im Attribut "trace-upload-url" festgelegten URL hoch. Dieser Trace kann personenbezogene Daten wie Titel und URLs von besuchten Websites enthalten.

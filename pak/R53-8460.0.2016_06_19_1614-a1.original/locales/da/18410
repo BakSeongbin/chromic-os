@@ -1,0 +1,1 @@
+Dette flag gør Chrome usikker. Du bør kun bruge det, hvis du har begreb om, hvad det forårsager. Bemærk, at dette flag kan blive fjernet uden varsel. Hvis det er aktiveret, kan rammer med en oprindelig https bruge WebSockets med en usikker webadresse (ws://).

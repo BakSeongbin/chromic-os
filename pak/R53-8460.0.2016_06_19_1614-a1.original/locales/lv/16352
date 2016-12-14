@@ -1,0 +1,1 @@
+Rādīt lietotņu logus pēc pirmās krāsas parādīšanas. Logi tiks rādīti ievērojami vēlāk apjomīgām lietotnēm, kuru resursi tiek ielādēti sinhroni, taču tie nebūs aktuāli lietotnēm, kurām lielākā daļa resursu tiek ielādēti asinhroni.

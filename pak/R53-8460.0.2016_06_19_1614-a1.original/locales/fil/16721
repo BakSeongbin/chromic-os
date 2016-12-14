@@ -1,0 +1,1 @@
+{COUNT,plural, =0{kahit 1 item sa mga naka-sync na device}=1{1 item (at higit pa sa mga naka-sync na device)}one{# item (at higit pa sa mga naka-sync na device)}other{# na item (at higit pa sa mga naka-sync na device)}}

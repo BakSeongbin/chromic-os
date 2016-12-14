@@ -1,0 +1,18 @@
+<h3>调试功能</h3>
+    <br>
+    您可以在 Chrome 操作系统设备上启用调试功能，以便在该设备上安装和测试自定义代码。启用这些功能后，您可以：<br>
+    <ul>
+      <li>取消根文件系统验证，以便修改操作系统文件
+      <li>允许使用标准测试密钥以 SSH 方式访问设备，以便使用 <span style="color:grey;font-family:monospace">cros flash</span> 等工具访问设备
+      <li>允许从 U 盘启动设备，以便通过 U 盘安装操作系统映像
+      <li>将 Dev 和系统根登录密码均设为自定义值，以便手动以 SSH 方式访问设备
+    </ul>
+    <br>
+    启用此项后，即使在企业管理的设备上执行了 Powerwash 或数据擦除操作，大部分调试功能仍将保持启用状态。要完全停用所有调试功能，请执行 Chrome 操作系统恢复过程 (https://support.google.com/chromebook/answer/1080595)。
+    <br>
+    <br>
+    如需详细了解调试功能，请访问：<br>
+    http://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <br>
+    <br>
+    <b>注意</b>：在恢复过程中，系统将重启。

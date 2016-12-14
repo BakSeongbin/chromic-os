@@ -1,0 +1,1 @@
+Afișează ferestrele aplicațiilor după prima desenare. Ferestrele vor fi afișate cu întârziere semnificativă în cazul aplicațiilor complexe care își încarcă resurse în mod sincron, dar întârzierea va fi nesemnificativă în cazul aplicațiilor care își încarcă majoritatea resursele în mod asincron.

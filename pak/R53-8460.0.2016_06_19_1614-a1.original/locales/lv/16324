@@ -1,0 +1,1 @@
+Atiestatīt lietotņu palaidēja instalēšanas stāvokli pēc katras restartēšanas. Iestatot šo atzīmi, katrā startēšanas reizē Chrome aizmirsīs, ka palaidējs ir instalēts. Tas tiek izmantots, lai pārbaudītu lietotņu palaidēja instalēšanas plūsmu.

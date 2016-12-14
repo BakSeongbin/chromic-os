@@ -1,0 +1,1 @@
+Razširitvam omogoča ustvarjanje podoken, ki se odpirajo zunaj okvira brskalnika. Če to ni omogočeno, se pri poskusu odpiranja podokna odpre pojavno okno. V privzetem načinu delovanja so podokna dovoljena samo za razširitve s seznama dovoljenih. Omogočen način delovanja jih dovoljuje za vse razširitve. Onemogočen način delovanja podoken ne dovoljuje za nobeno razširitev.

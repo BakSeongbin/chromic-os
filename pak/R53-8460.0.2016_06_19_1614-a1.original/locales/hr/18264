@@ -1,0 +1,1 @@
+Vrlo eksperimentalni način izvedbe u kojem se iframeovi za više web-lokacija zadržavaju u zasebnom procesu od glavnog dokumenta. U tom je načinu iframeovima s različitih web-lokacija trećih strana dopušteno dijeljenje procesa.

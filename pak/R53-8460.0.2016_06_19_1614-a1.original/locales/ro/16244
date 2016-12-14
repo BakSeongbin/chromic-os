@@ -1,0 +1,1 @@
+Impune ca acțiunea „reîncarcă interfața de utilizare” să declanșeze reîncărcarea fără validare (ceea ce înseamnă, de obicei, că atunci când semnalizatorul este dezactivat reîncărcarea este efectuată normal, cu validarea memoriei cache).

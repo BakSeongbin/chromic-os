@@ -1,0 +1,1 @@
+Tilsidesætter kontrol af brugerengagement i forbindelse med visning af appbannere, som f.eks. kræver, at brugerne har besøgt siden inden, og at banneret ikke er blevet vist for nylig. Dermed kan udviklere teste, om andre kvalifikationskrav for visning af appbannere, som f.eks. at have et manifest, er blevet opfyldt.

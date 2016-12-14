@@ -1,0 +1,1 @@
+Si s'activa aquesta opció, els elements de posició fixa tindran les seves pròpies capes compostes. Tingueu en compte que, perquè això funcioni, els elements de posició fixa també han de crear contexts d'apilament.

@@ -1,0 +1,1 @@
+Aktiverar alternativet att skicka extra autentiseringsuppgifter i det första SYN-paketet för tidigare anslutna klienter, så att autentiseringen går snabbare.

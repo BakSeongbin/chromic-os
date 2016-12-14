@@ -1,0 +1,1 @@
+Réinitialiser l'état d'installation du lanceur d'applications à chaque redémarrage. Lorsque cet indicateur est activé, Chrome oublie que le lanceur est installé à chaque démarrage. Cet indicateur permet de tester le flux d'installation du lanceur d'applications.

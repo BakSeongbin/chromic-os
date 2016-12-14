@@ -1,0 +1,1 @@
+Se ativar esta opção, os elementos de posição fixa terão as suas próprias camadas compostas. Tenha em atenção que os elementos de posição fixa também têm de criar contextos de empilhamento para que esta opção funcione.

@@ -1,0 +1,8 @@
+Atveriet
+        Chromium izvēlni >
+        <span jscontent="settingsTitle"></span>
+        >
+        <span jscontent="advancedTitle"></span>
+        un noņemiet atzīmi no izvēles rūtiņas “<span jscontent="noNetworkPredictionTitle"></span>”.
+        Ja problēmu neizdodas novērst, ieteicams atkal atlasīt šo opciju,
+        lai uzlabotu veiktspēju.

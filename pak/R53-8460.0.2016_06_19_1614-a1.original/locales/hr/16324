@@ -1,0 +1,1 @@
+Vrati stanje instaliranja Pokretača aplikacija na zadano pri svakom ponovnom pokretanju. Kad je ta oznaka postavljena, Chrome će pri svakom pokretanju zaboraviti da je pokretač instaliran. Svrha toga testiranje je tijeka instaliranja Pokretača aplikacija.

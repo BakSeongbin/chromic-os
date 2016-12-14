@@ -1,0 +1,1 @@
+Zastępuje wbudowaną listę renderowania programowego i włącza przyspieszanie za pomocą procesora GPU w przypadku nieobsługiwanej konfiguracji systemu.

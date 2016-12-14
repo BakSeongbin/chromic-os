@@ -1,0 +1,3 @@
+Megtörtént a(z) $1 nevű felügyelt felhasználó létrehozása. A(z) <a target="_blank" href="$3">$4</a> oldalon konfigurálható korlátozások és beállítások segítségével adhatja meg, hogy ez a felügyelt felhasználó mely webhelyeket tekintheti meg. Ha nem módosítja az alapértelmezett beállításokat, akkor $1 az internet valamennyi webhelyén böngészhet.
+
+  A jelenlegi és a további utasításokért nézze meg e-mailjeit a következő fiókban: $2.

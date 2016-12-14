@@ -1,0 +1,1 @@
+Gjør at utgående lydstrømmer sjekker om andre kanaloppsett enn standardoppsettet for maskinvaren er tilgjengelige. Når denne innstillingen slås på, kan operativsystemet utvide fra stereo til surround hvis dette støttes. Dette kan avdekke feil i drivere fra tredjeparter – må brukes med forsiktighet.

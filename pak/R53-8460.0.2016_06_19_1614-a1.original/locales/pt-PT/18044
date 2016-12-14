@@ -1,0 +1,3 @@
+<p>Ao executar o $1 num ambiente de trabalho suportado, são utilizadas as definições de proxy do sistema. No entanto, o seu sistema não é suportado ou ocorreu um problema no início da configuração do sistema.</p>
+
+        <p>Porém, pode ainda configurar através da linha de comandos. Consulte <code>man $2</code> para obter mais informações acerca de sinalizadores e variáveis do ambiente.</p>

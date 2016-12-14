@@ -1,0 +1,1 @@
+{DAYS,plural, =1{Il y a 1 jour}one{Il y a # jour}other{Il y a # jours}}

@@ -1,0 +1,1 @@
+Tillad, at udvidelser opretter panelvinduer, der åbner uden for browseren. Forsøg på at åbne et panel åbner et pop op-vindue i stedet, hvis dette ikke er aktiveret. Standardadfærden er kun at tillade dette for hvidlistede udvidelser. Aktiveret adfærd er at tillade dette for alle udvidelser. Deaktiveret adfærd er ikke at tillade paneler for nogen udvidelser.

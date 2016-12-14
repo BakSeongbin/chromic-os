@@ -1,0 +1,1 @@
+Compatibilitate foarte experimentală pentru redarea de cadre iframe între site-uri în procese separate. În acest mod, documentele vor folosi același proces de redare numai dacă provin de pe același site.

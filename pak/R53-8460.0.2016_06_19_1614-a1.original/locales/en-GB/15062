@@ -1,0 +1,1 @@
+{NUM_DOWNLOAD,plural, =1{A download is currently in progress. Do you want to cancel the download and exit incognito mode?}other{# downloads are currently in progress. Do you want to cancel the downloads and exit incognito mode?}}

@@ -1,0 +1,1 @@
+Dacă proxy-ul este configurat, de obicei, împiedică autorizarea în diferite portaluri captive. Această opțiune activează deschiderea casetei de dialog pentru autorizarea prin portalul captiv într-o fereastră separată, care ignoră setările de proxy.

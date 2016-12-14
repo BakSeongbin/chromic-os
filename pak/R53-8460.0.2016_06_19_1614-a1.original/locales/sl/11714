@@ -1,0 +1,1 @@
+{SECONDS,plural, =1{Chromium se bo znova zagnal čez 1 sekundo.}one{Chromium se bo znova zagnal čez # sekundo.}two{Chromium se bo znova zagnal čez # sekundi.}few{Chromium se bo znova zagnal čez # sekunde.}other{Chromium se bo znova zagnal čez # sekund.}}

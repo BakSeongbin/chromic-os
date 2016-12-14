@@ -1,0 +1,1 @@
+Tentou aceder a <strong>$1</strong>, mas o certificado que o servidor apresentou foi revogado pelo emissor. Isto significa que as credenciais de segurança apresentadas pelo servidor não deverão, em circunstância alguma, ser consideradas fidedignas. Pode estar a comunicar com um utilizador mal intencionado.

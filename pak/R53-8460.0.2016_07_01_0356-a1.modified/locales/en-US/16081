@@ -1,0 +1,1 @@
+Enabling this option will make fixed position elements have their own composited layers. Note that fixed position elements must also create stacking contexts for this to work.

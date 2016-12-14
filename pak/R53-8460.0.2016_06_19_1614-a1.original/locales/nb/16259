@@ -1,0 +1,1 @@
+Aktivér eksperimentell implementering av Cache-Control: «stale-while-revalidate»-direktivet. Dette gjør at servere kan spesifisere at noen ressurser kan forlenges i bakgrunnen for å bedre tidsforsinkelser.

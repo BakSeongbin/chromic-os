@@ -1,0 +1,2 @@
+Dette skal bruges sammen med markeringen trace-upload-url.
+        ADVARSEL! Når funktionen er slået til, registrerer Chrome data om ydeevne for hver eneste navigation og uploader dem til den webadresse, der er angivet af markeringen trace-upload-url. Sporet kan indeholde personidentificerende oplysninger, som f.eks. titlerne og webadresserne til de websites, du besøger.

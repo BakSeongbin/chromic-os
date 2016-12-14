@@ -1,0 +1,1 @@
+Un resguardo TLS 1.0 pudo establecer un protocolo de enlace con el servidor, pero ya no aceptamos resguardos TLS 1.0. El servidor debe actualizarse para implementar correctamente la negociación de versión y admitir preferiblemente TLS 1.2.

@@ -1,0 +1,1 @@
+Consente di utilizzare un thread secondario per la composizione delle pagine web. Consente lo scorrimento uniforme anche quando il thread principale non risponde.

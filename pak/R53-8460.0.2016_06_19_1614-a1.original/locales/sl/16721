@@ -1,0 +1,1 @@
+{COUNT,plural, =0{vsaj en element v sinhroniziranih napravah}=1{1 element (in več v sinhroniziranih napravah)}one{# element (in več v sinhroniziranih napravah)}two{# elemena (in več v sinhroniziranih napravah)}few{# elementi (in več v sinhroniziranih napravah)}other{# elementov (in več v sinhroniziranih napravah)}}

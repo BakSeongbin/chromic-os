@@ -1,0 +1,1 @@
+Ez a jelölő bekapcsolható annak ellenőrzésére, hogy a webáruházból származó bővítményekhez tartozó fájlok tartalma a lemezen megegyezik-e az elvárt tartalommal. Segítségével a funkció bekapcsolható, ha az egyébként nem lenne bekapcsolva, viszont nem kapcsolható ki (mivel a beállítást egy rosszindulatú program meghiúsíthatja).

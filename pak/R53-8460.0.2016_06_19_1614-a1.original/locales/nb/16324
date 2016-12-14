@@ -1,0 +1,1 @@
+Tilbakestill installeringstilstanden til appvelgeren ved hver oppstart. Når dette flagget er angitt, anser Chrome appvelgeren som ikke-installert ved alle oppstarter. Dette gjøres for å teste installeringsflyten til appvelgeren.

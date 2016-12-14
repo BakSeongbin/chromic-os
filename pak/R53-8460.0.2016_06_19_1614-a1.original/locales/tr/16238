@@ -1,0 +1,1 @@
+Push API'sı için arka plan modunu etkinleştirin. Bu mod, Chrome'un, son pencere kapatıldıktan sonra çalışmaya devam etmesine ve Push API'sı ihtiyaç duyarsa OS başlatılırken açılmasına olanak tanır.

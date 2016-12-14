@@ -1,0 +1,2150 @@
+<!doctype html>
+<html i18n-values="dir:textdirection;
+                   build:buildType;
+                   highlight:highlightStrength;
+                   lang:language">
+<head>
+<meta charset="utf-8">
+<meta name="google" value="notranslate">
+<title i18n-content="title"></title>
+
+<!--
+This file is included for OOBE, login, and the lock screen. Only files which are
+needed by all three scenarios should be included here. If a file should only be
+shared between OOBE and login, add it to login_non_lock_shared.html.
+
+Any additional include increases the lock screen initialization time.
+-->
+
+<link rel="stylesheet" href="chrome://resources/css/butter_bar.css">
+<link rel="stylesheet" href="chrome://resources/css/dialogs.css">
+<link rel="stylesheet" href="chrome://resources/css/list.css">
+<link rel="stylesheet" href="chrome://resources/css/menu_button.css">
+<link rel="stylesheet" href="chrome://resources/css/menu.css">
+<link rel="stylesheet" href="chrome://resources/css/spinner.css">
+<link rel="stylesheet" href="chrome://resources/css/throbber.css">
+<link rel="stylesheet" href="chrome://resources/css/widgets.css">
+
+<style>/* Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+.apps-menu-item {
+  -webkit-padding-start: 24px;
+  background: no-repeat 4px 50%;
+  background-size: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+</style>
+<style>/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ *
+ * Css based bubble.
+ */
+
+.bubble {
+  -webkit-transition: opacity 200ms ease-in-out;
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-size: 12px;
+  margin: 2px;
+  max-width: 250px;
+  padding: 16px;
+  position: absolute;
+}
+
+.bubble::before {
+  border-style: solid;
+  border-width: 8px;
+  content: '';
+  display: block;
+  position: absolute;
+}
+
+.bubble-top::before {
+  border-color: rgba(0, 0, 0, 0.25) transparent transparent transparent;
+  bottom: -16px;
+}
+
+html[dir=ltr] .bubble-top::before {
+  left: 17px;
+}
+
+html[dir=rtl] .bubble-top::before {
+  right: 17px;
+}
+
+html[dir=ltr] .bubble-right::before,
+html[dir=rtl] .bubble-left::before {
+  border-color: transparent rgba(0, 0, 0, 0.25) transparent transparent;
+  left: -16px;
+  top: 17px;
+}
+
+.bubble-bottom::before {
+  border-color: transparent transparent rgba(0, 0, 0, 0.25) transparent;
+  top: -16px;
+}
+
+html[dir=ltr] .bubble-bottom::before {
+  left: 17px;
+}
+
+html[dir=rtl] .bubble-bottom::before {
+  right: 17px;
+}
+
+html[dir=ltr] .bubble-left::before,
+html[dir=rtl] .bubble-right::before {
+  border-color: transparent transparent transparent rgba(0, 0, 0, 0.25);
+  right: -16px;
+  top: 17px;
+}
+
+.bubble::after {
+  border-style: solid;
+  border-width: 8px;
+  content: '';
+  display: block;
+  position: absolute;
+}
+
+.bubble-top::after {
+  border-color: white transparent transparent transparent;
+  bottom: -15px;
+}
+
+html[dir=ltr] .bubble-top::after {
+  left: 17px;
+}
+
+html[dir=rtl] .bubble-top::after {
+  right: 17px;
+}
+
+html[dir=ltr] .bubble-right::after,
+html[dir=rtl] .bubble-left::after {
+  border-color: transparent white transparent transparent;
+  left: -15px;
+  top: 17px;
+}
+
+.bubble-bottom::after {
+  border-color: transparent transparent white transparent;
+  top: -15px;
+}
+
+html[dir=ltr] .bubble-bottom::after {
+  left: 17px;
+}
+
+html[dir=rtl] .bubble-bottom::after {
+  right: 17px;
+}
+
+html[dir=ltr] .bubble-left::after,
+html[dir=rtl] .bubble-right::after {
+  border-color: transparent transparent transparent white;
+  right: -15px;
+  top: 17px;
+}
+
+.error-message-bubble {
+  -webkit-padding-start: 30px;
+  background: -webkit-image-set(url(chrome://theme/IDR_WARNING) 1x, url(chrome://theme/IDR_WARNING@2x) 2x) left top no-repeat;
+  background-size: 24px;
+}
+
+.error-message-bubble-padding {
+  margin-bottom: 10px;
+}
+
+html[dir=rtl] .error-message-bubble {
+  background-position: right top;
+}
+</style>
+<style>/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#login-header-bar {
+  -webkit-padding-start: 15px;
+  border-bottom: 3px solid black;
+  bottom: 0;
+  left: 0;
+  padding-bottom: 7px;
+  position: absolute;
+  right: 0;
+}
+
+#login-header-bar {
+  /* Using copy of Ash launcher background with 0.8 opacity applied to it.
+     Otherwise if opacity: 0.8 is set here it will affect button text as well.
+     Have to position background differently so that opacity is not applied
+     to child elements. */
+  background-image: -webkit-image-set(url(chrome://theme/IDR_LAUNCHER_BACKGROUND) 1x, url(chrome://theme/IDR_LAUNCHER_BACKGROUND@2x) 2x);
+  padding-top: 7px;
+}
+
+html[screen=lock] .login-header-bar-hidden,
+html[screen=oobe] .login-header-bar-hidden {
+  opacity: 0;
+}
+
+html[screen=lock] .login-header-bar-animate-fast,
+html[screen=oobe] .login-header-bar-animate-fast {
+  -webkit-transition: opacity 200ms ease-out;
+}
+
+html[screen=lock] .login-header-bar-animate-slow,
+html[screen=oobe] .login-header-bar-animate-slow {
+  -webkit-transition: opacity 2s ease-out;
+}
+
+#login-header-bar button,
+#login-header-bar button:active,
+#login-header-bar button:focus,
+#login-header-bar button:hover {
+  background: transparent none;
+  box-shadow: none;
+  cursor: pointer;
+  height: 34px;
+  margin: 0;
+  min-width: 0;
+  opacity: 0.6;
+  padding: 5px 8px;
+  vertical-align: middle;
+}
+
+#login-header-bar button:not(.button-restricted),
+#login-header-bar button:active:not(.button-restricted),
+#login-header-bar button:focus:not(.button-restricted),
+#login-header-bar button:hover:not(.button-restricted) {
+  color: white !important;
+  opacity: 1 !important;
+}
+
+.header-bar-item {
+  display: inline-block;
+  height: 34px;
+}
+
+.add-supervised-user-menu {
+  display: none;
+}
+
+#more-settings-header-bar-item.active button.add-supervised-user-menu {
+  background-color: white;
+  border: 1px solid lightgray;
+  border-radius: 2px;
+  bottom: 15px;
+  color: black !important;
+  display: block;
+  font-size: 13px;
+  height: auto;
+  left: 15px;
+  margin: 0 0 -10px -10px;
+  min-height: 34px;
+  position: absolute;
+  text-align: center;
+  width: 180px;
+}
+
+html[dir=rtl] #more-settings-header-bar-item.active
+                button.add-supervised-user-menu {
+  right: 0;
+}
+
+html[dir=rtl] .header-bar-item {
+  background-position: right center;
+}
+
+#login-header-bar #shutdown-button,
+#login-header-bar #restart-button,
+#login-header-bar #add-user-button,
+#login-header-bar #guest-user-button,
+#login-header-bar #more-settings-button,
+#login-header-bar #cancel-multiple-sign-in-button {
+  -webkit-padding-start: 24px;
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-size: 24px;
+}
+
+html[dir=rtl] #login-header-bar #shutdown-button,
+html[dir=rtl] #login-header-bar #restart-button,
+html[dir=rtl] #login-header-bar #add-user-button,
+html[dir=rtl] #login-header-bar #more-settings-button,
+html[dir=rtl] #login-header-bar #guest-user-button,
+html[dir=rtl] #login-header-bar #cancel-multiple-sign-in-button {
+  background-position: right center;
+}
+
+#login-header-bar #more-settings-header-bar-item {
+  position: relative;
+}
+
+#login-header-bar #shutdown-button {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_ICON_POWER_WHITE) 1x, url(chrome://theme/IDR_ICON_POWER_WHITE@2x) 2x);
+}
+
+#login-header-bar #restart-button {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_ICON_POWER_WHITE) 1x, url(chrome://theme/IDR_ICON_POWER_WHITE@2x) 2x);
+}
+
+#login-header-bar #add-user-button {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_ICON_ADD_USER_WHITE) 1x, url(chrome://theme/IDR_ICON_ADD_USER_WHITE@2x) 2x);
+}
+
+#login-header-bar #more-settings-button {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_ICON_MORE_VERT_WHITE) 1x, url(chrome://theme/IDR_ICON_MORE_VERT_WHITE@2x) 2x);
+}
+
+#login-header-bar #guest-user-button {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_ICON_GUEST_WHITE) 1x, url(chrome://theme/IDR_ICON_GUEST_WHITE@2x) 2x);
+}
+
+#login-header-bar #cancel-multiple-sign-in-button {
+  /* TODO(dzhioev): replace with appropriate image when possible. */
+  background-image: -webkit-image-set(url(chrome://theme/IDR_PANEL_CLOSE) 1x, url(chrome://theme/IDR_PANEL_CLOSE@2x) 2x);
+}
+
+.button-restricted {
+  border: 1px solid transparent;
+  color: white !important;
+  opacity: 0.4 !important;
+}
+</style>
+<style>/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ *
+ * This is the stylesheet used by the Out of the box experience (OOBE) flow,
+ * sign in and lock screens.
+ */
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background-color: transparent;
+  cursor: default;
+  font-size: 14px;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  position: fixed;
+  top: 0;
+}
+
+body.solid {
+  background-color: white;
+}
+
+button {
+  font-family: inherit;
+  outline: none;
+}
+
+/* Follow same focus coloring as in widgets.css */
+/* Do not apply this style to restricted button state. */
+button.custom-appearance:not(.button-restricted):not(.button-fancy):not(
+    [is="gaia-icon-button"]) {
+  -webkit-transition: border-color 200ms;
+  border: 1px solid transparent;
+  /* Don't grey out disabled buttons. */
+  color: buttontext !important;
+}
+
+/* ':focus' used three times to increase specificity. */
+button.custom-appearance:focus:focus:focus {
+  border-color: rgb(77, 144, 254);
+}
+
+button:not(.custom-appearance) {
+  min-width: 72px !important;
+}
+
+button.button-fancy {
+  min-width: 72px !important;
+}
+
+button.button-blue {
+  background-image: linear-gradient(rgb(93, 154, 255),
+                                    rgb(93, 154, 255) 38%,
+                                    rgb(88, 145, 240));
+  border: 1px solid rgba(45, 102, 195, 1);
+  border-radius: 2px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15), inset 0 1px 2px
+              rgba(255, 255, 255, 0.4);
+  color: #fff;
+  font-size: 14px;
+  margin: 0 1px 0 0;
+  min-height: 2em;
+  min-width: 4em;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+
+button.button-blue:hover {
+  background-image: linear-gradient(rgb(101, 158, 253),
+                                    rgb(101, 158, 253) 38%,
+                                    rgb(96, 151, 241));
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25), inset 0 1px 2px
+              rgba(255, 255, 255, 0.4);
+}
+
+button.button-blue:active {
+  background-image: linear-gradient(rgb(96, 149, 237),
+                                    rgb(96, 149, 237) 38%,
+                                    rgb(96, 149, 237));
+  border: 1px solid rgba(38, 84, 160, 1);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+button.button-red {
+  background-image: linear-gradient(rgb(221, 75, 57),
+                                    rgb(221, 75, 57) 38%,
+                                    rgb(197, 66, 49));
+  border: 1px solid rgba(167, 57, 44, 1);
+  border-radius: 2px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15), inset 0 1px 2px
+      rgba(255, 255, 255, 0.4);
+  color: #fff;
+  margin: 0 1px 0 0;
+  min-height: 2em;
+  min-width: 4em;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
+}
+
+button.button-red:hover {
+  background-image: linear-gradient(rgb(231, 78, 59),
+                                    rgb(231, 78, 59) 38%,
+                                    rgb(209, 70, 52));
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25), inset 0 1px 2px
+      rgba(255, 255, 255, 0.4);
+}
+
+button.button-red:active {
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.label,
+.flexible-label {
+  display: block;
+  margin: 5px 5px 5px 0;
+  padding: 5px 5px 5px 0;
+}
+
+.label {
+  width: 170px;
+}
+
+.flexible-label {
+  max-width: 250px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+#bubble {
+  -webkit-transition: 250ms opacity;
+}
+
+span.bold {
+  font-weight: bold;
+}
+
+#version-labels {
+  -webkit-transition: all 500ms linear;
+  color: #fff;
+  font-size: 11px;
+  margin: 10px;
+  text-align: end;
+  text-shadow:
+      0 0 4px rgba(0,0,0,.6),
+      0 1px 2px rgba(0,0,0,.8),
+      0 -1px 2px rgba(0,0,0,1);
+}
+
+#background {
+  -webkit-transition: 700ms opacity;
+  background-size: 100% 100%;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.background-initial {
+  opacity: 0;
+}
+
+.throbber {
+  -webkit-margin-end: 0.5em;
+  margin-top: 1px;
+}
+</style>
+<style>/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+.popup-overlay {
+  -webkit-transition: 250ms opacity;
+  align-items: center;
+  background: rgba(255, 255, 255, .75);
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  padding: 20px;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 5;
+}
+
+.oobe-popup {
+  background: white;
+  border: 1px solid rgb(188, 193, 208);
+  border-radius: 2px;
+  box-shadow: 0 5px 80px #505050;
+  min-height: 250px;
+  position: relative;
+  width: 460px;
+  z-index: 10;
+}
+
+.oobe-popup h1 {
+  -webkit-padding-end: 24px;
+  -webkit-user-select: none;
+  background: linear-gradient(white, #F8F8F8);
+  color: rgb(83, 99, 125);
+  font-size: 105%;
+  font-weight: bold;
+  margin: 0;
+  padding: 10px 15px 8px 15px;
+  text-shadow: white 0 1px 2px;
+}
+
+.popup-content-area {
+  padding: 20px 20px 60px 20px;
+}
+</style>
+<style>/* Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ *
+ * This contains common styling for all the OOBE screens.
+ */
+
+.step {
+  box-sizing: border-box;
+  position: absolute;
+}
+
+.step.animated:not(.faded) {
+  -webkit-transition: -webkit-transform 200ms ease-in-out,
+                      opacity 200ms ease-in-out,
+                      visibility 200ms ease-in-out;
+}
+
+.step.hidden {
+  visibility: hidden;
+}
+
+.faded,
+.left,
+.right {
+  opacity: 0;
+}
+
+.step.right {
+  -webkit-transform: translateX(50px);
+}
+
+.step.left {
+  -webkit-transform: translateX(-50px)
+}
+
+.step.fullscreen {
+  height: 100%;
+  left: 0;
+  right: 0;
+  top: 0;
+  width: 100%;
+}
+
+.step-controls {
+  bottom: 21px;
+  box-sizing: border-box;
+  display: flex;
+  height: 28px;
+  justify-content: flex-end;
+  padding-right: 34px;  /* Double the padding of .step */
+  position: absolute;
+  width: 100%;
+}
+
+html[dir=rtl] .step-controls {
+  /* Hack as -webkit-padding-end doesn't catch direction. crbug.com/363836 */
+  padding-left: 34px;
+}
+
+.animation .step-controls button {
+  /* Don't grey out disabled buttons during animation. */
+  color: buttontext !important;
+}
+
+.step.loading .step-contents,
+.step.loading .step-controls,
+.step.loading .step-extra-controls {
+  visibility: hidden;
+}
+
+.step:not(.loading) #user-images-loading {
+  visibility: hidden;
+}
+
+.step:not(.loading) #eula-busy {
+  visibility: hidden;
+}
+
+.step-loading {
+  align-items: center;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+/* Fixes perfomance problem caused by http://crbug.com/229405 . */
+.step.hidden .throbber,
+.step.hidden .spinner,
+.step.hidden .inline-spinner {
+  display: none;
+}
+
+#security-info a,
+#eula a,
+.step-extra-controls a {
+  color: rgb(49, 106, 197); /* same as 'Learn more' link */
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.step-extra-controls {
+  bottom: 26px;
+  left: 49px;
+  position: absolute;
+}
+
+/* EULA screen extra controls have 2 elements
+   so they require different alignment. */
+#eula-extra-controls {
+  bottom: 17px;
+}
+
+#security-info a:focus,
+#eula a:focus,
+.step-extra-controls a:focus {
+  -webkit-transition: outline-color 200ms;
+  /* Note: May use 1px solid here. */
+  outline-color: rgb(77, 144, 254);
+}
+
+.step-extra-controls > *:not(:first-child) {
+  margin-top: 7px;
+}
+
+html[dir=rtl] .step-extra-controls {
+  left: auto;
+  right: 49px;
+}
+
+#oobe.autolaunch #autolaunch-confirm-button,
+#oobe.autolaunch #autolaunch-cancel-button,
+#oobe.connect #continue-button,
+#oobe.eula #accept-button,
+#oobe.eula #back-button,
+#oobe.kiosk-enable #kiosk-cancel-button,
+#oobe.kiosk-enable #kiosk-enable-button,
+#oobe.user-image #ok-button {
+  display: block;
+}
+
+#autolaunch-confirm-button,
+#back-button,
+#kiosk-enable-button,
+#reset-button,
+#password-changed-back-button,
+#tos-back-button {
+  -webkit-margin-end: 8px;
+}
+
+.menu-area {
+  margin: 5px;
+}
+
+.menu-control {
+  color: #444;
+  font-family: inherit;
+  line-height: 20px;
+  position: relative;
+  width: 250px;
+}
+
+html[highlight=strong] #security-info a:focus,
+html[highlight=strong] #eula a:focus,
+html[highlight=strong] .step-extra-controls a:focus,
+html[highlight=strong] .menu-control:focus,
+html[highlight=strong] input[type='button']:focus,
+html[highlight=strong] button:focus {
+  box-shadow: 0 0 23px rgb(77, 144, 254) !important;
+}
+
+</style>
+
+<style>/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#outer-container {
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
+  -webkit-perspective: 1px; /* Workaround, see http://crbug.com/360567 */
+  bottom: 57px;  /* Leave space for the header bar */
+  display: -webkit-box;
+  left: 0;
+  min-height: 717px; /* This enables scrolling. Min resolution: 1024x768 */
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1;
+}
+
+.oobe-display #outer-container {
+  -webkit-perspective: 600px;
+}
+
+#pin-container {
+  opacity: 0; /* Opacity is set to 1 after the pin element is loaded. */
+  transition: opacity 200ms ease-in-out;
+}
+
+#scroll-container {
+  bottom: 0;        /* Allows content overlap with control bar. */
+  left: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+#scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+#inner-container {
+  border-radius: 2px;
+  padding: 0;
+  position: relative;
+}
+
+#inner-container.animation {
+  overflow: hidden;
+}
+
+#inner-container.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Screens that have a border and background. */
+#oobe.auto-enrollment-check #inner-container,
+#oobe.autolaunch #inner-container,
+#oobe.confirm-password #inner-container,
+#oobe.connect #inner-container,
+#oobe.debugging #inner-container,
+#oobe.enrollment #inner-container,
+#oobe.eula #inner-container,
+#oobe.fatal-error #inner-container,
+#oobe.gaia-signin #inner-container,
+#oobe.hid-detection #inner-container,
+#oobe.kiosk-enable #inner-container,
+#oobe.oauth-enrollment #inner-container,
+#oobe.password-changed #inner-container,
+#oobe.reset #inner-container,
+#oobe.supervised-user-creation #inner-container,
+#oobe.supervised-user-creation-dialog #inner-container,
+#oobe.terms-of-service #inner-container,
+#oobe.update #inner-container,
+#oobe.user-image #inner-container,
+#oobe.wrong-hwid #inner-container,
+#oobe.unrecoverable-cryptohome-error #inner-container {
+  background: white;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3),
+              0 4px 23px 5px rgba(0, 0, 0, 0.2),
+              0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+#oobe.error-message #inner-container,
+#oobe.tpm-error-message #inner-container {
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3),
+              0 4px 23px 5px rgba(0, 0, 0, 0.2),
+              0 2px 6px rgba(0, 0, 0, 0.15);
+
+}
+
+/* Only play this animation when 'down' class is removed. */
+.oobe-display #inner-container:not(.down) {
+  -webkit-transition: transform 200ms ease-in-out;
+}
+
+.oobe-display #inner-container.down {
+  transform: translateY(50px) rotateX(-2.5deg);
+}
+
+#step-logo {
+  -webkit-margin-start: 17px;
+  display: -webkit-box;
+  position: absolute;
+  top: 15px;
+}
+
+#progress-dots {
+  -webkit-box-pack: center;
+  -webkit-transition: opacity 200ms ease-in-out,
+                      visibility 200ms ease-in-out;
+  display: -webkit-box;
+  margin-top: 15px;
+}
+
+/* Hidden for the duration of initial transition. */
+.oobe-display #progress-dots.down {
+  visibility: hidden;
+}
+
+.progdot {
+  -webkit-margin-end: 12px;
+  background: white;
+  height: 10px;
+  opacity: 0.4;
+  width: 10px;
+}
+
+.progdot-active {
+  opacity: 0.5;
+}
+
+#account-picker-dot,
+#app-launch-splash-dot,
+#auto-enrollment-check-dot,
+#autolaunch-dot,
+#confirm-password-dot,
+#controller-pairing-dot,
+#debugging-dot,
+#device-disabled-dot,
+#enrollment-dot,
+#error-message-dot,
+#fatal-error-dot,
+#hid-detection-dot,
+#host-pairing-dot,
+#kiosk-enable-dot,
+#oauth-enrollment-dot,
+#password-changed-dot,
+#reset-dot,
+#supervised-user-creation-dialog-dot,
+#supervised-user-creation-dot,
+#terms-of-service-dot,
+#tpm-error-message-dot,
+#wrong-hwid-dot,
+#unrecoverable-cryptohome-error-dot {
+  display: none;
+}
+
+#oobe.connect #connect-dot,
+#oobe.enrollment #gaia-signin-dot,
+#oobe.enrollment #signin-dot,
+#oobe.eula #eula-dot,
+#oobe.gaia-signin #gaia-signin-dot,
+#oobe.oauth-enrollment #gaia-signin-dot,
+#oobe.oauth-enrollment #signin-dot,
+#oobe.signin #signin-dot,
+#oobe.update #update-dot,
+#oobe.user-image #user-image-dot {
+  opacity: 1;
+}
+
+#oobe.debugging #progress-dots,
+#oobe.reset #progress-dots,
+#oobe.host-pairing #progress-dots,
+#oobe.controller-pairing #progress-dots {
+  visibility: hidden;
+}
+
+body:not(.oobe-display) #inner-container {
+  height: 262px;
+  padding: 0;
+  width: 1100px;
+}
+
+body:not(.oobe-display) #progress-dots {
+  display: none;
+}
+
+#outer-container.fullscreen,
+#outer-container.fullscreen #oobe,
+#outer-container.fullscreen #oobe #inner-container {
+  height: 100%;
+  width: 100%;
+}
+
+html[build=chrome] #header-sections {
+  -webkit-margin-start: -48px;
+  margin-top: -1px;
+}
+
+html[build=chromium] #header-sections {
+  -webkit-margin-start: 5px;
+  margin-top: -1px;
+}
+
+.header-section {
+  color: rgb(119, 120, 123);  /* Should matching text color of the logo. */
+  display: none;
+  font-size: 23px;
+  line-height: 31px;
+  text-transform: lowercase;
+  width: 23em;
+}
+
+.header-section::before {
+  /* Divider in header between product name and title,
+   * like "[Product name] > [step header]". */
+  content: '\00A0\203A\00A0\00A0';
+}
+</style>
+<style>/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+.account-picker.flying-pods #account-picker {
+  -webkit-transition: width 180ms ease,
+                      height 180ms ease;
+}
+
+#bubble {
+  z-index: 1;
+}
+
+#signin-banner-container1 {
+  bottom: 100%;
+  margin-bottom: 10px;
+  position: absolute;
+  width: 100%;
+}
+
+#signin-banner-container2 {
+  display: inline-block;
+  position: relative;
+  right: -50%;
+}
+
+html[dir=rtl] #signin-banner-container2 {
+  left: -50%;
+  right: auto;
+}
+
+#signin-banner {
+  background-color: rgba(0, 0, 0, 0.75);
+  border-radius: 4px;
+  color: whitesmoke;
+  display: none;
+  font-size: 15px;
+  left: -50%;
+  padding: 20px;
+  position: relative;
+  text-align: center;
+  width: 722px;
+}
+
+html[dir=rtl] #signin-banner {
+  left: auto;
+  right: -50%;
+}
+
+html[screen=user-adding] #signin-banner {
+  display: inline-block;
+}
+
+html[screen=lock] #signin-banner {
+  display: inline-block;
+  opacity: 0;
+  visibility: hidden;
+}
+
+html[screen=lock] #signin-banner.message-set {
+  -webkit-transition: opacity 1s;
+  opacity: 1;
+  visibility: visible;
+}
+</style>
+<style>/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ *
+ * This is the stylesheet used by user pods row of account picker UI.
+ */
+
+podrow {
+  /* Temporarily disabled because animation interferes with updating screen's
+   size. */
+  height: 100%;
+  overflow: visible;
+  position: absolute;
+  width: 100%;
+}
+
+/* Hide the pod row while images are loading. */
+podrow.images-loading {
+  visibility: hidden;
+}
+
+.pod {
+  -webkit-tap-highlight-color: transparent;
+  background-color: white;
+  border-radius: 2px;
+  box-shadow: 0 4px 23px 5px rgba(0, 0, 0, 0.2),
+              0 2px 6px rgba(0, 0, 0, 0.15),
+              0 3px 0 rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  height: 213px;
+  outline: none;
+  position: absolute;
+  transform: scale3d(0.9, 0.9, 0.9);
+  width: 180px;
+  z-index: 0;
+}
+
+.account-picker.flying-pods .pod {
+  transition: all 180ms;
+}
+
+.pod.faded {
+  opacity: .75;
+}
+
+podrow[ncolumns='6'] .pod {
+  transform: scale3d(0.8, 0.8, 0.8);
+}
+
+.pod.focused {
+  /* Focused pod has the same size no matter how many pods. */
+  cursor: default;
+  transform: scale3d(1, 1, 1) !important;
+  z-index: 1;
+}
+
+.pod.focused[auth-type='userClick'] {
+  cursor: pointer;
+}
+
+.user-image-pane {
+  background-color: white;
+  height: 160px;
+  left: 10px;
+  position: absolute;
+  top: 10px;
+  width: 160px;
+  z-index: 3;
+}
+
+html[dir=rtl] .user-image-pane {
+  left: auto;
+  right: 10px;
+}
+
+.user-image-container {
+  align-items: center;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  width: 100%;
+}
+
+.pod .user-image {
+  flex: none;
+}
+
+/* TODO(noms): Refactor this out into a CrOS-specific file and simplify the
+ style rule once it is included on CrOS only. crbug.com/397638 */
+html:not([screen=login-add-user]) .pod .user-image {
+  max-height: 160px;
+  max-width: 160px;
+  opacity: 0.7;
+}
+
+html:not([screen=login-add-user]) .pod.focused .user-image {
+  opacity: 1;
+}
+
+.pod.multiprofiles-policy-applied .user-image {
+  -webkit-filter: grayscale(100%);
+}
+
+.signed-in-indicator {
+  display: none;
+}
+
+.pod.signed-in .signed-in-indicator {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  display: block;
+  font-size: small;
+  padding: 3px 0;
+  position: absolute;
+  text-align: center;
+  top: 0;
+  width: 100%;
+}
+
+.main-pane {
+  left: 10px;
+  position: absolute;
+  top: 10px;
+  z-index: 2;
+}
+
+html[dir=rtl] .main-pane {
+  left: auto;
+  right: 10px;
+}
+
+.name-container,
+.pod.focused:not(.multiprofiles-policy-applied) .auth-container {
+  background-color: white;
+  display: flex;
+  position: absolute;
+  top: 160px;
+  width: 160px;
+}
+
+.name-container {
+  transition: transform 180ms;
+}
+
+.pod.focused .name-container {
+  display: none;
+}
+
+.pod.focused.multiprofiles-policy-applied .name-container {
+  display: flex;
+}
+
+.name {
+  color: #565656;
+  /* This should be 15.6px - the equivalent of 14px at 90% scale. */
+  flex: auto;
+  font-size: 16px;
+  margin-top: 12px;
+  outline: none;
+  overflow: hidden;
+  padding: 0 6px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.learn-more-container,
+.auth-container,
+.password-entry-container,
+.reauth-hint-container {
+  display: none;
+}
+
+.pod[auth-type='offlinePassword'].focused .password-entry-container,
+.pod[auth-type='forceOfflinePassword'].focused .password-entry-container {
+  display: flex;
+  flex: auto;
+}
+
+.password-container {
+  flex: auto;
+}
+
+.pod input[type='password'] {
+  background-color: white;
+  border: none;
+  padding: 4px 6px;
+  position: relative;
+  top: 6px;
+  width: 100%;
+}
+
+.capslock-hint-container {
+  display: none;
+}
+
+.capslock-on .capslock-hint-container {
+  display: block;
+  flex: none;
+}
+
+.capslock-hint {
+  -webkit-margin-end: 6px;
+  -webkit-margin-start: -2px;
+  position: relative;
+  top: 11px;
+}
+
+.password-label,
+.signin-transition-container {
+  display: none;
+}
+
+.pod[auth-type='userClick']:not(.signing-in) .password-label,
+.pod[auth-type='userClick'].signing-in .signin-transition-container {
+  color: grey;
+  display: block;
+  flex: auto;
+  margin-top: 11px;
+  outline: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.custom-icon {
+  -webkit-margin-end: 0;
+  -webkit-margin-start: auto;
+  background-position: center;
+  background-repeat: no-repeat;
+  flex: none;
+  height: 27px;
+  width: 27px;
+}
+
+.custom-icon.faded {
+  -webkit-transition: opacity 200ms ease-in-out,
+                      visibility 200ms ease-in-out;
+}
+
+.custom-icon-hardlocked {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_HARDLOCKED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_HARDLOCKED@2x) 2x);
+}
+
+.custom-icon-hardlocked.icon-with-tooltip:hover {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_HARDLOCKED_HOVER) 1x, url(chrome://theme/IDR_EASY_UNLOCK_HARDLOCKED_HOVER@2x) 2x);
+}
+
+.custom-icon-hardlocked.interactive-custom-icon:active {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_HARDLOCKED_PRESSED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_HARDLOCKED_PRESSED@2x) 2x);
+}
+
+.custom-icon-locked {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED@2x) 2x);
+}
+
+.custom-icon-locked.icon-with-tooltip:hover {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_HOVER) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_HOVER@2x) 2x);
+}
+
+.custom-icon-locked.interactive-custom-icon:active {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_PRESSED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_PRESSED@2x) 2x);
+}
+
+.custom-icon-locked-to-be-activated {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED@2x) 2x);
+}
+
+.custom-icon-locked-to-be-activated.icon-with-tooltip:hover {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED_HOVER) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED_HOVER@2x) 2x);
+}
+
+.custom-icon-locked-to-be-activated.interactive-custom-icon:active {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED_PRESSED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED_PRESSED@2x) 2x);
+}
+
+.custom-icon-locked-with-proximity-hint {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT@2x) 2x);
+}
+
+.custom-icon-locked-with-proximity-hint.icon-with-tooltip:hover {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT_HOVER) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT_HOVER@2x) 2x);
+}
+
+.custom-icon-locked-with-proximity-hint.interactive-custom-icon:active {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT_PRESSED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT_PRESSED@2x) 2x);
+}
+
+.custom-icon-unlocked {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_UNLOCKED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_UNLOCKED@2x) 2x);
+}
+
+.custom-icon-unlocked.icon-with-tooltip:hover {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_UNLOCKED_HOVER) 1x, url(chrome://theme/IDR_EASY_UNLOCK_UNLOCKED_HOVER@2x) 2x);
+}
+
+.custom-icon-unlocked.interactive-custom-icon:active {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_UNLOCKED_PRESSED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_UNLOCKED_PRESSED@2x) 2x);
+}
+
+/**
+ * Preloads resources for custom icon. Without this, the resources will be
+ * loaded when CSS properties using them are first applied, which has visible
+ * delay and may cause a short white flash when the icon background changes.
+ */
+.custom-icon::after {
+  content: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_HARDLOCKED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_HARDLOCKED@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_HARDLOCKED_HOVER) 1x, url(chrome://theme/IDR_EASY_UNLOCK_HARDLOCKED_HOVER@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_HARDLOCKED_PRESSED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_HARDLOCKED_PRESSED@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_HOVER) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_HOVER@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_PRESSED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_PRESSED@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED_HOVER) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED_HOVER@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED_PRESSED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED_PRESSED@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT_HOVER) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT_HOVER@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT_PRESSED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT_PRESSED@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_UNLOCKED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_UNLOCKED@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_UNLOCKED_HOVER) 1x, url(chrome://theme/IDR_EASY_UNLOCK_UNLOCKED_HOVER@2x) 2x)
+    -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_UNLOCKED_PRESSED) 1x, url(chrome://theme/IDR_EASY_UNLOCK_UNLOCKED_PRESSED@2x) 2x);
+  display: none;
+}
+
+.custom-icon-spinner {
+  -webkit-animation: easy-unlock-spinner-animation 2s steps(45) infinite;
+  background-image: -webkit-image-set(url(chrome://theme/IDR_EASY_UNLOCK_SPINNER) 1x, url(chrome://theme/IDR_EASY_UNLOCK_SPINNER@2x) 2x);
+}
+
+@-webkit-keyframes easy-unlock-spinner-animation {
+  from { background-position: 0 }
+  to { background-position: -1215px }
+}
+
+.interactive-custom-icon {
+  cursor: pointer;
+}
+
+.custom-icon-container {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  height: 40px;
+  justify-content: center;
+  width: 40px;
+}
+
+.launch-app-button-container {
+  display: block;
+  flex: auto;
+  text-align: center;
+}
+
+.launch-app-button {
+  display: inline;
+  margin-top: 6px !important;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pod[auth-type='onlineSignIn'] .reauth-hint-container {
+  display: flex;
+  margin-top: 8px;
+  width: 100%;
+  justify-content: center;
+}
+
+.reauth-hint-container .reauth-warning {
+  -webkit-mask-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0iIzYyNjI2MiI+CiAgICA8cGF0aCBkPSJNMCAwaDQ4djQ4SDB6IiBmaWxsPSJub25lIi8+CiAgICA8cGF0aCBkPSJNMiA0Mmg0NEwyNCA0IDIgNDJ6bTI0LTZoLTR2LTRoNHY0em0wLThoLTR2LThoNHY4eiIvPgo8L3N2Zz4K);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 20px;
+  background-color: #f4b400;
+  height: 24px;
+  width: 24px;
+}
+
+.reauth-hint-container .reauth-name-hint {
+  align-self: center;
+  color: #565656;
+  font-size: 16px;
+  outline: none;
+  overflow: hidden;
+  padding: 0 6px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.action-box-area,
+.user-type-icon-area {
+  background-color: white;
+  border-radius: 2px;
+  position: absolute;
+  top: 0;
+}
+
+.action-box-area {
+  opacity: 0;
+  outline: none;
+  right: 0;
+  transition: opacity 100ms;
+  z-index: 4;
+}
+
+html[dir=rtl] .action-box-area {
+  left: 0;
+  right: auto;
+}
+
+.action-box-area:focus,
+.action-box-area.hovered,
+.action-box-area.active,
+.action-box-area.forced {
+  opacity: 1;
+}
+
+.action-box-button {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_OOBE_ACTION_BOX_BUTTON_NORMAL) 1x, url(chrome://theme/IDR_OOBE_ACTION_BOX_BUTTON_NORMAL@2x) 2x);
+  height: 13px;
+  margin: 5px;
+  width: 13px;
+}
+
+.action-box-button:hover {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_OOBE_ACTION_BOX_BUTTON_HOVER) 1x, url(chrome://theme/IDR_OOBE_ACTION_BOX_BUTTON_HOVER@2x) 2x);
+}
+
+.action-box-area.active .action-box-button {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_OOBE_ACTION_BOX_BUTTON_PRESSED) 1x, url(chrome://theme/IDR_OOBE_ACTION_BOX_BUTTON_PRESSED@2x) 2x);
+}
+
+.action-box-area .action-box-icon {
+  /* overriden in chrome/browser/resources/md_user_manager/user_manager.css */
+  display: none;
+}
+
+.user-image-gradient-area {
+  /* overriden in chrome/browser/resources/md_user_manager/user_manager.css */
+  display: none;
+}
+
+.user-type-icon-area {
+  left: 0;
+  z-index: 5;
+}
+
+html[dir=rtl] .user-type-icon-area {
+  left: auto;
+  right: 0;
+}
+
+.user-type-icon-image {
+  height: 16px;
+  margin: 5px;
+  width: 16px;
+}
+
+.user-type-icon-area.legacySupervised .user-type-icon-image {
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0iIzYyNjI2MiI+CiAgICA8cGF0aCBkPSJNMCAwaDQ4djQ4SDB6IiBmaWxsPSJub25lIi8+CiAgICA8cGF0aCBkPSJNMzMgMjRjMi43NiAwIDQuOTgtMi4yNCA0Ljk4LTVzLTIuMjItNS00Ljk4LTVjLTIuNzYgMC01IDIuMjQtNSA1czIuMjQgNSA1IDV6bS0xNS0yYzMuMzEgMCA1Ljk4LTIuNjkgNS45OC02cy0yLjY3LTYtNS45OC02Yy0zLjMxIDAtNiAyLjY5LTYgNnMyLjY5IDYgNiA2em0xNSA2Yy0zLjY3IDAtMTEgMS44NC0xMSA1LjVWMzhoMjJ2LTQuNWMwLTMuNjYtNy4zMy01LjUtMTEtNS41em0tMTUtMmMtNC42NyAwLTE0IDIuMzQtMTQgN3Y1aDE0di00LjVjMC0xLjcuNjctNC42NyA0Ljc0LTYuOTRDMjEgMjYuMTkgMTkuMzEgMjYgMTggMjZ6Ii8+Cjwvc3ZnPgo=);
+  background-size: 18px;
+}
+
+.user-type-icon-area.child .user-type-icon-image {
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0iIzYyNjI2MiI+CiAgICA8cGF0aCBkPSJNMjQgNGMzLjMxIDAgNiAyLjY5IDYgNnMtMi42OSA2LTYgNi02LTIuNjktNi02IDIuNjktNiA2LTZ6Ii8+CiAgICA8cGF0aCBmaWxsPSJub25lIiBkPSJNMCAwaDQ4djQ4SDBWMHoiLz4KICAgIDxjaXJjbGUgZmlsbD0ibm9uZSIgY3g9IjI0IiBjeT0iMjYiIHI9IjQiLz4KICAgIDxwYXRoIGQ9Ik0yNCAxOGMtNi4xNiAwLTEzIDMuMTItMTMgNy4yM3YxMS41NGMwIDIuMzIgMi4xOSA0LjMzIDUuMiA1LjYzIDIuMzIgMSA1LjEyIDEuNTkgNy44IDEuNTkuNjYgMCAxLjMzLS4wNiAyLS4xNHYtNS4yYy0uNjcuMDgtMS4zNC4xNC0yIC4xNC0yLjYzIDAtNS4zOS0uNTctNy42OC0xLjU1LjY3LTIuMTIgNC4zNC0zLjY1IDcuNjgtMy42NS44NiAwIDEuNzUuMTEgMi42LjI5IDIuNzkuNjIgNS4yIDIuMTUgNS4yIDQuMDR2NC40N2MzLjAxLTEuMzEgNS4yLTMuMzEgNS4yLTUuNjNWMjUuMjNDMzcgMjEuMTIgMzAuMTYgMTggMjQgMTh6bTAgMTJjLTIuMjEgMC00LTEuNzktNC00czEuNzktNCA0LTQgNCAxLjc5IDQgNC0xLjc5IDQtNCA0eiIvPgo8L3N2Zz4K);
+  background-size: 18px;
+}
+
+.user-type-icon-area.policy .user-type-icon-image {
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0iIzYyNjI2MiI+CiAgICA8cGF0aCBkPSJNMCAwaDQ4djQ4SDB6IiBmaWxsPSJub25lIi8+CiAgICA8cGF0aCBkPSJNMjQgMTRWNkg0djM2aDQwVjE0SDI0ek0xMiAzOEg4di00aDR2NHptMC04SDh2LTRoNHY0em0wLThIOHYtNGg0djR6bTAtOEg4di00aDR2NHptOCAyNGgtNHYtNGg0djR6bTAtOGgtNHYtNGg0djR6bTAtOGgtNHYtNGg0djR6bTAtOGgtNHYtNGg0djR6bTIwIDI0SDI0di00aDR2LTRoLTR2LTRoNHYtNGgtNHYtNGgxNnYyMHptLTQtMTZoLTR2NGg0di00em0wIDhoLTR2NGg0di00eiIvPgo8L3N2Zz4K);
+  background-size: 18px;
+}
+
+.user-type-icon-area.app .user-type-icon-image {
+  background-image: -webkit-image-set(url(chrome://theme/IDR_KIOSK_APP_USER_POD_ICON) 1x, url(chrome://theme/IDR_KIOSK_APP_USER_POD_ICON@2x) 2x);
+}
+
+.action-box-menu {
+  display: none;
+  z-index: 6;
+}
+
+.action-box-area.active ~ .action-box-menu {
+  background-color: white;
+  border: 1px solid lightgray;
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  position: absolute;
+  right: 5px;
+  width: 220px;
+}
+
+.action-box-area.active ~ .action-box-menu.left-edge-offset {
+  left: 0 !important;
+}
+
+.action-box-area.active ~ .action-box-menu.right-edge-offset {
+  right: 0 !important;
+}
+
+.action-box-area.active ~ .action-box-menu:not(.menu-moved-up) {
+  top: 18px;
+}
+
+.action-box-area.active ~ .action-box-menu.menu-moved-up {
+  bottom: 207px;
+}
+
+.action-box-area.menu-moved-up {
+  transform: rotate(180deg);
+}
+
+html[dir=rtl] .action-box-area.active ~ .action-box-menu {
+  left: 5px;
+  right: auto;
+}
+
+.action-box-menu-title {
+  color: #757575;
+  display: flex;
+  flex-direction: column;
+  padding: 7px 20px;
+}
+
+.action-box-menu-title:focus {
+  outline-style: none;
+}
+
+.action-box-menu-title-name,
+.action-box-menu-title-email {
+  flex: none;
+  height: 23px;
+  line-height: 19px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.action-box-menu-remove {
+  border-top: 1px solid lightgray;
+  line-height: 19px;
+  min-height: 24px;
+  outline: none;
+  padding: 12px 20px 7px;
+}
+
+.action-box-menu-remove:hover,
+.action-box-menu-remove:focus {
+  background-color: #f3f3f3;
+}
+
+.action-box-remove-user-warning {
+  border-top: 1px solid lightgray;
+  font-size: 12px;
+  line-height: 18px;
+  padding: 20px;
+}
+
+.action-box-remove-user-warning > div,
+.action-box-remove-user-warning > table {
+  padding-bottom: 20px;
+}
+
+.total-count {
+  font-weight: bold;
+}
+
+.action-box-remove-user-warning-table-nonsync {
+  border-spacing: 0;
+  width: 100%;
+}
+
+.action-box-remove-user-warning-table td {
+  padding: 0;
+}
+
+.action-box-remove-user-warning-table-numbers {
+  color: #757575;
+  text-align: end;
+}
+
+/* Hide dialog elements not in a correct category. Only combinations currently
+   in use are included here. */
+.pod.legacy-supervised .non-sync,
+.pod.legacy-supervised .action-box-remove-user-warning-text,
+.pod:not(.legacy-supervised)
+    .action-box-remove-legacy-supervised-user-warning-text,
+.pod.synced .non-sync,
+.pod.has-no-stats .has-stats {
+  display: none;
+}
+
+.user-type-bubble {
+  background-color: white;
+  border: 1px solid lightgray;
+  border-radius: 2px;
+  left: 5px;
+  opacity: 0;
+  padding: 17px;
+  position: absolute;
+  top: 20px;
+  transition: all 100ms;
+  visibility: hidden;
+  width: 200px;
+  z-index: 7;
+}
+
+html[dir=rtl] .user-type-bubble {
+  left: auto;
+  right: 5px;
+}
+
+.bubble-shown,
+.user-type-icon-area.policy:hover ~ .user-type-bubble {
+  opacity: 1;
+  visibility: visible;
+}
+
+.user-type-bubble-header {
+  font-weight: bold;
+  margin-bottom: 14px;
+}
+
+/**** Public account user pod rules *******************************************/
+
+.pod.public-account.expanded {
+  width: 500px;
+}
+
+.pod.public-account.expanded.advanced {
+  width: 610px;
+}
+
+.pod.public-account.focused .name-container {
+  display: flex;
+}
+
+.pod.public-account.expanded .name-container {
+  transform: translateY(-34px);
+}
+
+.pod.public-account .learn-more-container {
+  display: block;
+  flex: none;
+}
+
+.pod.public-account .learn-more {
+  top: 15px;
+}
+
+.expanded-pane {
+  display: none;
+}
+
+.pod.public-account.animating .expanded-pane,
+.pod.public-account.expanded .expanded-pane {
+  display: block;
+  font-size: 12px;
+  margin: 10px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.expanded-pane-contents {
+  display: flex;
+  flex-direction: column;
+  float: right;
+  height: 193px;
+  width: 490px;
+}
+
+.pod.public-account.transitioning-to-advanced .expanded-pane-contents {
+  transition: width 180ms;
+}
+
+.pod.public-account.expanded.advanced .expanded-pane-contents {
+  width: 600px;
+}
+
+html[dir=rtl] .expanded-pane-contents {
+  float: left;
+}
+
+.side-container {
+  -webkit-margin-start: 200px;
+  flex: auto;
+}
+
+.expanded-pane-name {
+  font-size: 19px;
+  margin-bottom: 11px;
+  margin-top: -2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reminder {
+  font-weight: bold;
+}
+
+.language-and-input-section {
+  display: none;
+}
+
+.pod.public-account.transitioning-to-advanced .language-and-input-section {
+  display: block;
+  opacity: 0;
+  transition: opacity 180ms ease 180ms;
+}
+
+.pod.public-account.expanded.advanced .language-and-input-section {
+  display: block;
+  opacity: 1;
+}
+
+.select-with-label {
+  display: flex;
+  margin-top: 20px;
+}
+
+.language-select-label,
+.keyboard-select-label {
+  flex: none;
+  margin-top: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 170px;
+}
+
+.select-container {
+  flex: auto;
+}
+
+.language-select,
+.keyboard-select {
+  width: 100%;
+}
+
+.bottom-container {
+  -webkit-margin-start: 10px;
+  display: flex;
+  flex: none;
+  font-size: 13px;
+}
+
+.expanded-pane-learn-more-container,
+.enter-button {
+  flex: none;
+}
+
+.expanded-pane-learn-more,
+.pod.public-account .learn-more {
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0iIzYyNjI2MiI+CiAgICA8cGF0aCBkPSJNMCAwaDQ4djQ4SDB6IiBmaWxsPSJub25lIi8+CiAgICA8cGF0aCBkPSJNMjQgMTRWNkg0djM2aDQwVjE0SDI0ek0xMiAzOEg4di00aDR2NHptMC04SDh2LTRoNHY0em0wLThIOHYtNGg0djR6bTAtOEg4di00aDR2NHptOCAyNGgtNHYtNGg0djR6bTAtOGgtNHYtNGg0djR6bTAtOGgtNHYtNGg0djR6bTAtOGgtNHYtNGg0djR6bTIwIDI0SDI0di00aDR2LTRoLTR2LTRoNHYtNGgtNHYtNGgxNnYyMHptLTQtMTZoLTR2NGg0di00em0wIDhoLTR2NGg0di00eiIvPgo8L3N2Zz4K);
+  background-size: 18px;
+  height: 18px;
+  position: relative;
+  width: 18px;
+}
+
+.expanded-pane-learn-more {
+  top: 5px;
+}
+
+.info {
+  flex: auto;
+  margin: 5px 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.language-and-input-container {
+  -webkit-margin-end: 25px;
+  flex: none;
+}
+
+.language-and-input {
+  color: rgb(49, 106, 197);
+  position: relative;
+  text-decoration: none;
+  top: 4px;
+}
+
+.pod.public-account.expanded.advanced .language-and-input-container {
+  display: none;
+}
+
+.enter-button {
+  font-size: 14px;
+}
+
+/* Animations for the animated ellipsis: */
+.animated-ellipsis-component0 {
+  -webkit-animation: ellipsis-component0 1.5s infinite;
+}
+
+@-webkit-keyframes ellipsis-component0 {
+  0% { opacity: 0; }
+  25% { opacity: 1; }
+  50% { opacity: 1; }
+  75% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.animated-ellipsis-component1 {
+  -webkit-animation: ellipsis-component1 1.5s infinite;
+}
+
+@-webkit-keyframes ellipsis-component1 {
+  0% { opacity: 0; }
+  25% { opacity: 0; }
+  50% { opacity: 1; }
+  75% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.animated-ellipsis-component2 {
+  -webkit-animation: ellipsis-component2 1.5s infinite;
+}
+
+@-webkit-keyframes ellipsis-component2 {
+  0% { opacity: 0; }
+  25% { opacity: 0; }
+  50% { opacity: 0; }
+  75% { opacity: 1; }
+  100% { opacity: 0; }
+}
+</style>
+
+<script src="chrome://resources/js/cr.js"></script>
+<script src="chrome://resources/js/event_tracker.js"></script>
+<script src="chrome://resources/js/cr/event_target.js"></script>
+<script src="chrome://resources/js/cr/ui.js"></script>
+<script src="chrome://resources/js/cr/ui/touch_handler.js"></script>
+<script src="chrome://resources/js/cr/ui/array_data_model.js"></script>
+<script src="chrome://resources/js/cr/ui/dialogs.js"></script>
+<script src="chrome://resources/js/cr/ui/list_selection_controller.js"></script>
+<script src="chrome://resources/js/cr/ui/list_selection_model.js"></script>
+<script src="chrome://resources/js/cr/ui/list_single_selection_model.js"></script>
+<script src="chrome://resources/js/cr/ui/list_item.js"></script>
+<script src="chrome://resources/js/cr/ui/list.js"></script>
+<script src="chrome://resources/js/cr/ui/grid.js"></script>
+<script src="chrome://resources/js/cr/ui/position_util.js"></script>
+<script src="chrome://resources/js/cr/ui/menu_item.js"></script>
+<script src="chrome://resources/js/cr/ui/menu.js"></script>
+<script src="chrome://resources/js/cr/ui/menu_button.js"></script>
+<script src="chrome://resources/js/load_time_data.js"></script>
+<script src="chrome://resources/js/util.js"></script>
+<script src="chrome://oobe/strings.js"></script>
+
+
+<!-- custom_elements.html (polymer) gets lazily-loaded in lock.js -->
+
+<script src="chrome://oobe/lock.js"></script>
+
+</head>
+<body i18n-values=".style.fontFamily:fontfamily;">
+  <div id="background" class="background-initial"></div>
+<div id="version-labels" hidden>
+  <div id="version"></div>
+  <div id="asset-id"></div>
+</div>
+
+<div id="api-keys-notice-container" hidden>
+  <div id="api-keys-notice" i18n-content="missingAPIKeysNotice"></div>
+</div>
+
+<div id="scroll-container">
+  <div id="outer-container" class="down">
+    <!-- TODO(jdufault): Place this in a better location in DOM once we know how
+                         the PIN element will look w.r.t. user pods. -->
+    <div id="pin-container">
+      <pin-keyboard id="pin-keyboard"></pin-keyboard>
+    </div>
+    <div id="oobe" class="faded">
+      <div id="inner-container" class="down">
+        <div id="step-logo" hidden>
+          <img src="chrome://theme/IDR_PRODUCT_LOGO" alt style="content: -webkit-image-set(url('chrome://theme/IDR_PRODUCT_LOGO') 1x, url('chrome://theme/IDR_PRODUCT_LOGO@2x') 2x);">
+          <div id="header-sections">
+          </div>
+        </div>
+        <div id="account-picker" class="step faded hidden no-logo" hidden>
+  <div id="signin-banner-container1">
+    <div id="signin-banner-container2">
+      <div id="signin-banner"
+          i18n-content="signinBannerText"></div>
+    </div>
+  </div>
+  <podrow id="pod-row" class="podrow images-loading"></podrow>
+</div>
+
+      </div>
+      <div id="progress-dots" class="down"></div>
+    </div>
+  </div>
+</div>
+<div id="bubble" class="bubble faded" hidden></div>
+<div id="login-header-bar" hidden class="login-header-bar-hidden">
+  <div id="shutdown-header-bar-item" class="header-bar-item">
+    <button id="shutdown-button" class="custom-appearance"
+        i18n-content="shutDown"></button>
+  </div>
+  <div id="restart-header-bar-item" class="header-bar-item">
+    <button id="restart-button" class="custom-appearance"
+        i18n-content="restart"></button>
+  </div>
+  <div id="apps-header-bar-item" class="header-bar-item" hidden>
+    <button id="show-apps-button" class="custom-appearance"
+        i18n-content="showApps"></button>
+  </div>
+  <div id="guest-user-header-bar-item" class="header-bar-item" hidden>
+    <button id="guest-user-button" class="custom-appearance"
+        i18n-content="browseAsGuest"></button>
+  </div>
+  <div id="add-user-header-bar-item" class="header-bar-item" hidden>
+    <button id="add-user-button" class="custom-appearance"
+        i18n-content="addUser"></button>
+  </div>
+  <div id="more-settings-header-bar-item" class="header-bar-item">
+    <button id="more-settings-button" class="custom-appearance"
+        i18n-values="aria-label:moreOptions"></button>
+    <button class="add-supervised-user-menu custom-appearance"
+        id="add-supervised-user-menu" tabindex="0"
+        i18n-content="addSupervisedUser">
+    </button>
+  </div>
+  <div id="sign-out-user-item" class="header-bar-item" hidden>
+    <button id="sign-out-user-button" class="custom-appearance"
+        i18n-content="signOutUser"></button>
+  </div>
+  <div id="cancel-multiple-sign-in-item" class="header-bar-item" hidden>
+    <button id="cancel-multiple-sign-in-button" class="custom-appearance"
+        i18n-content="cancel"></button>
+  </div>
+</div>
+
+<div id="user-pod-template" class="pod" hidden>
+  <div class="user-image-pane">
+    <div class="user-image-container">
+      <img class="user-image" alt>
+    </div>
+    <div class="signed-in-indicator" i18n-content="signedIn"></div>
+    <div class="indicator-container">
+      <div class="indicator legacy-supervised-indicator"></div>
+      <div class="indicator child-indicator"></div>
+      <div class="indicator locked-indicator"></div>
+    </div>
+  </div>
+  <div class="main-pane">
+    <div class="name-container">
+      <div class="name"></div>
+      <div class="learn-more-container">
+        <div class="learn-more"></div>
+      </div>
+    </div>
+    <div class="auth-container">
+      <!-- Password Authentication -->
+      <div class="password-entry-container">
+        <div class="password-container">
+          <input type="password" class="password"
+                 i18n-values="placeholder:passwordHint">
+        </div>
+        <div class="capslock-hint-container">
+          <img class="capslock-hint"
+               src="chrome://theme/IDR_LOGIN_PASSWORD_CAPS_LOCK" alt style="content: -webkit-image-set(url('chrome://theme/IDR_LOGIN_PASSWORD_CAPS_LOCK') 1x, url('chrome://theme/IDR_LOGIN_PASSWORD_CAPS_LOCK@2x') 2x);">
+        </div>
+      </div>
+      <!-- User Click Authentication -->
+      <div class="password-label"></div>
+      <div class="signin-transition-container">
+        <span class="signing-in-label" i18n-content="signingIn"></span>
+        <span class="animated-ellipsis-component0">.</span>
+        <span class="animated-ellipsis-component1">.</span>
+        <span class="animated-ellipsis-component2">.</span>
+      </div>
+      <div class="custom-icon-container" hidden></div>
+      <div class="reauth-hint-container">
+        <span class="reauth-warning"></span>
+        <span class="reauth-name-hint"></span>
+      </div>
+      <div class="launch-app-button-container" hidden>
+        <button class="launch-app-button" i18n-content="launchAppButton">
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="action-box-area">
+    <div class="custom-appearance action-box-button"></div>
+    <!-- iron-icon is imported inside user_manager.html -->
+    <iron-icon icon="cr:more-vert" class="action-box-icon"></iron-icon>
+  </div>
+  <div class="user-image-gradient-area">
+  </div>
+  <div class="user-type-icon-area" hidden>
+    <div class="custom-appearance user-type-icon-image"></div>
+  </div>
+  <div class="action-box-menu">
+    <div class="action-box-menu-title">
+      <span class="action-box-menu-title-name"></span>
+      <span class="action-box-menu-title-email"></span>
+    </div>
+    <div class="action-box-menu-remove">
+      <span class="action-box-menu-remove-command"/>
+    </div>
+    <div class="action-box-remove-user-warning" hidden>
+      <div class="action-box-remove-user-warning-text"></div>
+      <table class="action-box-remove-user-warning-table-nonsync
+                    non-sync has-stats">
+        <tbody>
+          <tr>
+            <td i18n-content="removeUserWarningTextHistory"></td>
+            <td class="action-box-remove-user-warning-history
+                       action-box-remove-user-warning-table-numbers"
+                i18n-content="removeUserWarningTextCalculating"></td>
+          </tr>
+          <tr>
+            <td i18n-content="removeUserWarningTextPasswords"></td>
+            <td class="action-box-remove-user-warning-passwords
+                       action-box-remove-user-warning-table-numbers"
+                i18n-content="removeUserWarningTextCalculating"></td>
+          </tr>
+          <tr>
+            <td i18n-content="removeUserWarningTextBookmarks"></td>
+            <td class="action-box-remove-user-warning-bookmarks
+                       action-box-remove-user-warning-table-numbers"
+                i18n-content="removeUserWarningTextCalculating"></td>
+          </tr>
+          <tr>
+            <td i18n-content="removeUserWarningTextSettings"></td>
+            <td class="action-box-remove-user-warning-settings
+                       action-box-remove-user-warning-table-numbers"
+                i18n-content="removeUserWarningTextCalculating"></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="action-box-remove-legacy-supervised-user-warning-text"
+          i18n-content="removeLegacySupervisedUserWarningText"></div>
+      <!-- paper-button is imported inside user_manager.html -->
+      <paper-button class="remove-warning-button"
+          i18n-content="removeUserWarningButtonTitle"></paper-button>
+    </div>
+  </div>
+  <div class="user-type-bubble">
+    <div class="user-type-bubble-header">
+      <span class="mp-policy-title"
+          i18n-content="multiProfilesRestrictedPolicyTitle"></span>
+    </div>
+    <div class="user-type-bubble-body">
+      <span class="mp-policy-not-allowed-msg"
+          i18n-content="multiProfilesNotAllowedPolicyMsg" hidden></span>
+      <span class="mp-policy-primary-only-msg"
+          i18n-content="multiProfilesPrimaryOnlyPolicyMsg" hidden></span>
+      <span class="mp-owner-primary-only-msg"
+          i18n-content="multiProfilesOwnerPrimaryOnlyMsg" hidden></span>
+    </div>
+  </div>
+</div>
+
+<!-- Extra elements that are appended to above "user-pod-template" for public
+     account user pod. Note that only the children of the template div are
+     appended. -->
+<div id="public-account-user-pod-extras-template" hidden>
+  <div class="expanded-pane">
+    <div class="expanded-pane-contents">
+      <div class="side-container">
+        <div class="expanded-pane-name"></div>
+        <div class="reminder" i18n-content="publicAccountReminder"></div>
+        <div class="language-and-input-section">
+          <div class="select-with-label">
+            <label class="language-select-label"
+                   i18n-content="publicSessionSelectLanguage">
+            </label>
+            <div class="select-container">
+              <select class="language-select"></select>
+            </div>
+          </div>
+          <div class="select-with-label">
+            <label class="keyboard-select-label"
+                   i18n-content="publicSessionSelectKeyboard">
+            </label>
+            <div class="select-container">
+              <select class="keyboard-select"></select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bottom-container">
+        <div class="expanded-pane-learn-more-container">
+          <div class="expanded-pane-learn-more"></div>
+        </div>
+        <div class="info"></div>
+        <div class="language-and-input-container">
+          <a class="language-and-input" href="#" role="button"
+             i18n-content="publicSessionLanguageAndInput"></a>
+        </div>
+        <button class="enter-button"
+                i18n-content="publicAccountEnter"
+                i18n-values="aria-label:publicAccountEnterAccessibleName">
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="overlay-reset" class="popup-overlay" hidden>
+<div id="reset-confirm-overlay" class="oobe-popup not-resizable">
+  <h1 i18n-content="confirmPowerwashTitle" class="powerwash-proposal-specific">
+  </h1>
+  <h1 i18n-content="confirmRollbackTitle" class="rollback-proposal-specific">
+  </h1>
+  <div class="popup-content-area">
+    <div id="reset-confirm-info"
+      class="content-area reset-text">
+      <div id="powerwash-confirm-message"
+          i18n-content="confirmPowerwashMessage"
+          class="powerwash-proposal-specific">
+      </div>
+      <div id="rollback-confirm-message"
+          i18n-content="confirmRollbackMessage"
+          class="rollback-proposal-specific">
+      </div>
+    </div>
+  </div>
+  <div id="reset-buttons" class="button-strip">
+    <button id="reset-confirm-commit" i18n-content="confirmResetButton">
+    </button>
+    <button id="reset-confirm-dismiss" i18n-content="cancel"></button>
+  </div>
+</div>
+</div>
+
+
+  <script src="chrome://resources/js/i18n_template.js"></script>
+</body>
+</html>

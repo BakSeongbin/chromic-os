@@ -1,0 +1,1 @@
+{COUNT,plural, =0{cel puțin un element pe dispozitivele sincronizate}=1{un element (și mai multe pe dispozitivele sincronizate)}few{# elemente (și mai multe pe dispozitivele sincronizate)}other{# de elemente (și mai multe pe dispozitivele sincronizate)}}

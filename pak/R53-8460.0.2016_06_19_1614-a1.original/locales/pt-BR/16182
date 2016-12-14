@@ -1,0 +1,1 @@
+Se uma política de referenciador explícita não estiver definida para uma página, a definição desta sinalização reduzirá a quantidade de informações no cabeçalho do "referencial" para os pedidos de origem cruzada.

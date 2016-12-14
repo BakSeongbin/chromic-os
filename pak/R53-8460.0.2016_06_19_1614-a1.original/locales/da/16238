@@ -1,0 +1,1 @@
+Aktivér baggrundstilstanden for Push API. Dette gør, at Chrome kan fortsætte med at køre, efter det sidste vindue er blevet lukket, og at Chrome kan starte ved opstart af operativsystemet, hvis det er nødvendigt for Push API.

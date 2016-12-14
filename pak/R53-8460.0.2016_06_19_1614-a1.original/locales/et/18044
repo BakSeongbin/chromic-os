@@ -1,0 +1,3 @@
+<p>Kui toodet $1 käitatakse toetatud töölaua keskkonnas, kasutatakse süsteemi puhverserveri seadeid. Kuid teie süsteemi ei toetata või tekkis probleem süsteemi konfiguratsiooni käivitamisel.</p>
+
+          <p>Saate ikka seadistada käsurea abil. Vaadake lisateavet (<code>man $2</code>) märgistuste ja keskkonna muutujate kohta.</p>

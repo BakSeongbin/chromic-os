@@ -1,0 +1,1 @@
+Gerenciamento encadeado de eventos de entrada relacionados à rolagem. A desativação desse recurso obriga todos esses eventos de rolagem a serem gerenciados no encadeamento principal. Isso pode prejudicar drasticamente o desempenho da rolagem da maioria dos websites e destina-se apenas a testes.

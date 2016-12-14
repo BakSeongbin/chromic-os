@@ -1,0 +1,1 @@
+Bật nhánh gỡ lỗi GDB. Thao tác này sẽ ngừng ứng dụng Native Client khi khởi động và chờ nacl-gdb (từ NaCl SDK) để đính kèm vào ứng dụng.

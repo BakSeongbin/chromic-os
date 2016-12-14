@@ -1,0 +1,1 @@
+Reuse a cached font in the renderer to serve different sizes of font for faster layout.

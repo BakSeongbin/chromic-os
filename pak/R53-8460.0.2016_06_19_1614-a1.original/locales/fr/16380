@@ -1,0 +1,1 @@
+Active la synchronisation des paramètres du réseau Wi-Fi entre les appareils. Lorsque cette option est activée, le type de données des identifiants Wi-Fi est enregistré auprès de la synchronisation Chrome et les identifiants Wi-Fi sont synchronisés en fonction des préférences de l'utilisateur. (Voir aussi chrome://settings/syncSetup)

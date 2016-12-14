@@ -1,0 +1,1 @@
+When possible, puts the scrolling contents of an overflow scrolling element onto a composited layer for faster scrolling.

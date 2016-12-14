@@ -1,0 +1,3 @@
+<p>Saat mengoperasikan $1 pada lingkungan desktop yang didukung, setelan proxy sistem akan digunakan. Akan tetapi, tampaknya kami tidak dapat mendukung sistem Anda atau mungkin ada masalah saat meluncurkan konfigurasi sistem.</p>
+
+        <p>Namun demikian, Anda tetap dapat mengonfigurasi setelan melalui baris perintah.  Lihat <code>man $2</code> untuk informasi selengkapnya mengenai tanda dan variabel lingkungan.</p>

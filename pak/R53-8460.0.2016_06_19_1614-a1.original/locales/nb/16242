@@ -1,0 +1,2 @@
+Dette skal brukes sammen med «Spor nettadresser for opplastinger»-flagget.
+        ADVARSEL: Når dette er slått på, registrerer Chrome ytelsesdata for all navigasjon og laster dem opp til den nettadressen som er spesifisert i trace-upload-url-flagget. Det kan hende sporet inneholder personlig identifiserende informasjon (PII), for eksempel titlene og nettadressene til nettstedene du besøker.

@@ -1,0 +1,1 @@
+Vysoko experimentálna podpora pre vykreslenie prvkov iframe na viacerých stránkach v samostatných procesoch. V tomto režime budú dokumenty zdieľať proces vykresľovania iba vtedy, keď pochádzajú z rovnakého webu.

@@ -1,0 +1,1 @@
+Use secondary thread for GPU rasterization of web content. Requires GPU rasterization to be enabled.

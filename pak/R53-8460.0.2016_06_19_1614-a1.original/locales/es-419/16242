@@ -1,0 +1,2 @@
+Esto se debe usar junto con la marca trace-upload-url.
+        ADVERTENCIA: En caso de estar habilitado, Chrome registrará los datos de rendimiento de cada navegación y los subirá a la URL especificada en la marca trace-upload-url. El seguimiento puede incluir información de identificación personal (PII, por sus siglas en inglés), como los títulos y las URL de los sitios web que se visitan.

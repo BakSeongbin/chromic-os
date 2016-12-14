@@ -1,0 +1,3 @@
+<p>Apabila menjalankan $1 di bawah persekitaran desktop yang disokong, tetapan proksi sistem akan digunakan. Bagaimanapun, sama ada sistem anda tidak disokong atau terdapat masalah melancarkan konfigurasi sistem anda.</p>
+
+          <p>Tetapi anda masih boleh mengkonfigurasi melalui garis perintah. Sila lihat <code>man $2</code> untuk mendapatkan maklumat lanjut mengenai bendera dan pemboleh ubah persekitaran.</p>

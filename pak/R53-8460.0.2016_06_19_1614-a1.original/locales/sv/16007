@@ -1,0 +1,1 @@
+Experiment med att låta alla API:er spegla layoutens visningsområde. Då fungerar fönstrets rullningsegenskaper (window.scroll) relativt visningsområdet i layouten.

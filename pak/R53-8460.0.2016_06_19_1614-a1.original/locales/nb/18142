@@ -1,0 +1,9 @@
+Administrerte brukere kan utforske nettet med veiledning fra deg. Som administrator av overvåkede brukere i Chrome kan du
+
+ • tillate eller forby visse nettsteder
+ • gå gjennom nettsteder de administrerte brukerne har brukt
+ • administrere andre innstillinger
+
+Det opprettes ingen Google-kontoer når du oppretter administrerte brukere, og slike brukeres bokmerker, nettleserlogg og andre preferanser følger ikke med dem til andre enheter ved hjelp av Chrome-synkronisering.
+
+Når du har opprettet en ny administrert bruker, kan du når som helst – og fra en hvilken som helst enhet – administrere innstillingene til vedkommende ved å gå til $1. <a target="_blank" href="https://support.google.com/chrome/?p=ui_supervised_users&hl=no">Finn ut mer om administrerte brukere</a>.

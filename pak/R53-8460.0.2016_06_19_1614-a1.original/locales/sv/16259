@@ -1,0 +1,1 @@
+Aktiverar den experimentella implementeringen av direktivet stale-while-revalidate för cacheminnet. Det tillåter att servrar anger att vissa resurser kan valideras om i bakgrunden för att förbättra latensen.

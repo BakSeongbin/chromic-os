@@ -1,0 +1,2 @@
+Musi być używana razem z flagą trace-upload-url.
+        OSTRZEŻENIE: gdy ta flaga jest włączona, Chrome będzie rejestrować dane o wydajności dla każdej operacji nawigacji i wysyłać je na adres URL ustawiony we fladze trace-upload-url. Te dane mogą zawierać informacje umożliwiające identyfikację osoby, takie jak tytuły i adresy URL odwiedzanych stron.

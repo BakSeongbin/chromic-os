@@ -1,0 +1,1 @@
+Poskusili ste dostopati do domene <strong>$1</strong>, vendar ima strežnik potrdilo, podpisano s šibkim podpisnim algoritmom. To pomeni, da so varnostne poverilnice, ki jih je poslal strežnik, morda ponarejene in strežnik morda ni tisti, ki ga pričakujete (morda komunicirate z napadalcem).

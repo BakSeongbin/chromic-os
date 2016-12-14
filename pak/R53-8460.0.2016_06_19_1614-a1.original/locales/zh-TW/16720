@@ -1,0 +1,1 @@
+{COUNT,plural, =0{無}=1{1 個項目}other{# 個項目}}

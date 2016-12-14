@@ -1,0 +1,1 @@
+Dette flag kan bruges til at aktivere en kontrol af, om indholdet af filerne på disken til udvidelser fra webstoren er i overensstemmelse med det forventede. Det kan bruges til at aktivere denne funktion, hvis den ellers ikke ville være blevet aktiveret, men kan ikke bruges til at deaktivere den (fordi indstillingen er sårbar over for malware).

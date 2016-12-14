@@ -1,0 +1,4 @@
+Si utilizas un servidor proxy, comprueba la configuración de
+    proxy o ponte en contacto con el administrador de red para
+    comprobar si funciona el servidor proxy. Si crees que no debes
+    usar un servidor proxy, cambia tu $1configuración de proxy$2.

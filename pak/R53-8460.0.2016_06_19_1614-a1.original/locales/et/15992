@@ -1,0 +1,1 @@
+Jätab rakenduste bännerite kuvamisel vahele kasutaja seotuse kontrollid, näiteks nõude, et kasutaja on varem saiti külastanud ja bännerit ei ole hiljuti kuvatud. See võimaldab arendajatel veenduda, et rakenduste bännerite kuvamise muud sobilikkused nõuded, näiteks manifesti olemasolu, oleksid täidetud.

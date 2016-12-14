@@ -1,0 +1,1 @@
+Hiermee wordt foutopsporing op basis van GDB voor de Native Client-app beperkt op URL of manifestbestand. Foutopsporing op basis van GDB moet zijn ingeschakeld; anders werkt deze optie niet.

@@ -1,0 +1,1 @@
+Lubatakse vahemälu juhtimise katseline juurutamine: direktiiv stale-while-revalidate. See lubab serveritel määrata osade ressursside taustal uuesti valideerimise, et parandada latentsust.

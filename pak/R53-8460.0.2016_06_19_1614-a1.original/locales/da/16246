@@ -1,0 +1,1 @@
+Gennemtvinger genindlæsning uden validering ved Træk for at opdatere (hvor det normalt betyder almindelig indlæsning med cachevalidering, når indstillingen er deaktiveret).

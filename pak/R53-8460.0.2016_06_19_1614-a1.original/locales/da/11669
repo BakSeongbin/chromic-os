@@ -1,0 +1,1 @@
+Profilen ser ud til at være i brug i en anden Chromium-proces ($1) på en anden computer ($2). Chromium har låst profilen, så den ikke bliver beskadiget. Hvis du er sikker på, at ingen andre processer anvender denne profil, kan du fjerne blokeringen af profilen og genstarte Chromium.

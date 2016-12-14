@@ -1,0 +1,1 @@
+Zezwalaj rozszerzeniom na otwieranie okien paneli poza ramką przeglądarki. W przypadku braku tego zezwolenia przy próbie otwarcia panelu pojawia się wyskakujące okienko. Domyślnie uprawnienie to mają tylko rozszerzenia z białej listy. Gdy zasada jest ustawiona jako włączona lub wyłączona, zezwolenie lub zakaz dotyczy wszystkich rozszerzeń.

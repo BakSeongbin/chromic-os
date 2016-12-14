@@ -1,0 +1,1 @@
+Paksa touchstart, touchmove, penggulir mouse, dan pemroses kejadian gulir (yang belum diminta) diperlakukan sebagai pasif. Tindakan ini akan memutus perilaku sentuh/gulir di beberapa situs web, namun berguna untuk menunjukkan potensi manfaat performa dari penerapan pemroses kejadian pasif.

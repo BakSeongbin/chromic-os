@@ -1,0 +1,1 @@
+Omogočanje razreševalnika za proxy mehanizma V8 zunaj postopka.Izvaja razreševalnik za proxy mehanizma V8 v procesu pripomočka, namesto znotraj procesa brskalnika.

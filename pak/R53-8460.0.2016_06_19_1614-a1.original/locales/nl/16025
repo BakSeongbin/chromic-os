@@ -1,0 +1,1 @@
+Snel sluiten van tabbladen/vensters inschakelen. Hiervoor wordt de onunload js handler van een tabblad onafhankelijk van de GUI uitgevoerd.

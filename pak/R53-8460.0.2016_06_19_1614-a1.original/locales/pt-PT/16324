@@ -1,0 +1,1 @@
+Repor o estado da instalação do App Launcher em cada reinício. Enquanto este sinalizador estiver definido, o Chrome esquecerá que o Launcher esteve instalado sempre que iniciar. Isto é utilizado para testar o fluxo de instalação do App Launcher.

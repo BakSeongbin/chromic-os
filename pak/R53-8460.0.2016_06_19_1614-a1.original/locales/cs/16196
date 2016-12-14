@@ -1,0 +1,1 @@
+Umožňuje uživateli požádat o stránky pro tablety. Webový obsah je často optimalizovaný pro tablety. Pokud je vybrána tato možnost, řetězec „user agent“ se změní tak, aby signalizoval tablet. Na aktuální kartě se pak načte webový obsah optimalizovaný pro tablety.

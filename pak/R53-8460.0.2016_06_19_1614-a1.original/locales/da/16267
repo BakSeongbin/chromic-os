@@ -1,0 +1,1 @@
+Aktivér V8-proxyresolver, der ikke kører. Kører V8-proxyresolveren i en værktøjsproces i stedet for inde i browserprocessen.

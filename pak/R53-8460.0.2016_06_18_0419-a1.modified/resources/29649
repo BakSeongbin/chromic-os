@@ -1,0 +1,1548 @@
+<!doctype html>
+<html i18n-values="dir:textdirection;lang:language">
+<head>
+<meta name="viewport" content="width=device-width">
+<meta charset="utf-8">
+<title i18n-content="blockPageTitle"></title>
+<style>/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* This file defines styles for form controls. The order of rule blocks is
+ * important as there are some rules with equal specificity that rely on order
+ * as a tiebreaker. These are marked with OVERRIDE. */
+
+/* Copyright 2015 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+[is='action-link'] {
+  cursor: pointer;
+  display: inline-block;
+  text-decoration: none;
+}
+
+[is='action-link']:hover {
+  text-decoration: underline;
+}
+
+[is='action-link']:active {
+  color: rgb(5, 37, 119);
+  text-decoration: underline;
+}
+
+[is='action-link'][disabled] {
+  color: #999;
+  cursor: default;
+  pointer-events: none;
+  text-decoration: none;
+}
+
+[is='action-link'].no-outline {
+  outline: none;
+}
+
+
+/* Default state **************************************************************/
+
+:-webkit-any(button,
+             input[type='button'],
+             input[type='submit']):not(.custom-appearance),
+select,
+input[type='checkbox'],
+input[type='radio'] {
+  -webkit-appearance: none;
+  -webkit-user-select: none;
+  background-image: -webkit-linear-gradient(#ededed, #ededed 38%, #dedede);
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 2px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08),
+      inset 0 1px 2px rgba(255, 255, 255, 0.75);
+  color: #444;
+  font: inherit;
+  margin: 0 1px 0 0;
+  outline: none;
+  text-shadow: 0 1px 0 rgb(240, 240, 240);
+}
+
+:-webkit-any(button,
+             input[type='button'],
+             input[type='submit']):not(.custom-appearance),
+select {
+  min-height: 2em;
+  min-width: 4em;
+  padding-top: 1px;
+  padding-bottom: 1px;
+
+}
+
+:-webkit-any(button,
+             input[type='button'],
+             input[type='submit']):not(.custom-appearance) {
+  -webkit-padding-end: 10px;
+  -webkit-padding-start: 10px;
+}
+
+select {
+  -webkit-appearance: none;
+  -webkit-padding-end: 24px;
+  -webkit-padding-start: 10px;
+  /* OVERRIDE */
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAAICAQAAACxSAwfAAAAUklEQVQY02P4z0AMRGZGMaShwCisyhITmb8huMzfEhOxKvuvsGAh208Ik+3ngoX/FbBbClcIUcSAw21QhXxfIIrwKAMpfNsEUYRXGVCEFc6CQwBqq4CCCtU4VgAAAABJRU5ErkJggg==),
+      -webkit-linear-gradient(#ededed, #ededed 38%, #dedede);
+  background-position: right center;
+  background-repeat: no-repeat;
+}
+
+html[dir='rtl'] select {
+  background-position: center left;
+}
+
+input[type='checkbox'] {
+  height: 13px;
+  position: relative;
+  vertical-align: middle;
+  width: 13px;
+}
+
+input[type='radio'] {
+  /* OVERRIDE */
+  border-radius: 100%;
+  height: 15px;
+  position: relative;
+  vertical-align: middle;
+  width: 15px;
+}
+
+/* TODO(estade): add more types here? */
+input[type='number'],
+input[type='password'],
+input[type='search'],
+input[type='text'],
+input[type='url'],
+input:not([type]),
+textarea {
+  border: 1px solid #bfbfbf;
+  border-radius: 2px;
+  box-sizing: border-box;
+  color: #444;
+  font: inherit;
+  margin: 0;
+  /* Use min-height to accommodate addditional padding for touch as needed. */
+  min-height: 2em;
+  padding: 3px;
+  outline: none;
+
+}
+
+input[type='search'] {
+  -webkit-appearance: textfield;
+  /* NOTE: Keep a relatively high min-width for this so we don't obscure the end
+   * of the default text in relatively spacious languages (i.e. German). */
+  min-width: 160px;
+}
+
+/* Remove when https://bugs.webkit.org/show_bug.cgi?id=51499 is fixed.
+ * TODO(dbeam): are there more types that would benefit from this? */
+input[type='search']::-webkit-textfield-decoration-container {
+  direction: inherit;
+}
+
+/* Checked ********************************************************************/
+
+input[type='checkbox']:checked::before {
+  -webkit-user-select: none;
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAQAAAADpb+tAAAAaElEQVR4Xl3PIQoCQQCF4Y8JW42D1bDZ4iVEjDbxFpstYhC7eIVBZHkXFGw734sv/TqDQQ8Xb1udja/I8igeIm7Aygj2IpoKTGZnVRNxAHYi4iPiDlA9xX+aNQDFySziqDN6uSp6y7ofEMwZ05uUZRkAAAAASUVORK5CYII=);
+  background-size: 100% 100%;
+  content: '';
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+input[type='radio']:checked::before {
+  background-color: #666;
+  border-radius: 100%;
+  bottom: 3px;
+  content: '';
+  display: block;
+  left: 3px;
+  position: absolute;
+  right: 3px;
+  top: 3px;
+}
+
+/* Hover **********************************************************************/
+
+:enabled:hover:-webkit-any(
+    select,
+    input[type='checkbox'],
+    input[type='radio'],
+    :-webkit-any(
+        button,
+        input[type='button'],
+        input[type='submit']):not(.custom-appearance)) {
+  background-image: -webkit-linear-gradient(#f0f0f0, #f0f0f0 38%, #e0e0e0);
+  border-color: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12),
+      inset 0 1px 2px rgba(255, 255, 255, 0.95);
+  color: black;
+}
+
+:enabled:hover:-webkit-any(select) {
+  /* OVERRIDE */
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAAICAQAAACxSAwfAAAAUklEQVQY02P4z0AMRGZGMaShwCisyhITmb8huMzfEhOxKvuvsGAh208Ik+3ngoX/FbBbClcIUcSAw21QhXxfIIrwKAMpfNsEUYRXGVCEFc6CQwBqq4CCCtU4VgAAAABJRU5ErkJggg==),
+      -webkit-linear-gradient(#f0f0f0, #f0f0f0 38%, #e0e0e0);
+}
+
+/* Active *********************************************************************/
+
+:enabled:active:-webkit-any(
+    select,
+    input[type='checkbox'],
+    input[type='radio'],
+    :-webkit-any(
+        button,
+        input[type='button'],
+        input[type='submit']):not(.custom-appearance)) {
+  background-image: -webkit-linear-gradient(#e7e7e7, #e7e7e7 38%, #d7d7d7);
+  box-shadow: none;
+  text-shadow: none;
+}
+
+:enabled:active:-webkit-any(select) {
+  /* OVERRIDE */
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAAICAQAAACxSAwfAAAAUklEQVQY02P4z0AMRGZGMaShwCisyhITmb8huMzfEhOxKvuvsGAh208Ik+3ngoX/FbBbClcIUcSAw21QhXxfIIrwKAMpfNsEUYRXGVCEFc6CQwBqq4CCCtU4VgAAAABJRU5ErkJggg==),
+      -webkit-linear-gradient(#e7e7e7, #e7e7e7 38%, #d7d7d7);
+}
+
+/* Disabled *******************************************************************/
+
+:disabled:-webkit-any(
+    button,
+    input[type='button'],
+    input[type='submit']):not(.custom-appearance),
+select:disabled {
+  background-image: -webkit-linear-gradient(#f1f1f1, #f1f1f1 38%, #e6e6e6);
+  border-color: rgba(80, 80, 80, 0.2);
+  box-shadow: 0 1px 0 rgba(80, 80, 80, 0.08),
+      inset 0 1px 2px rgba(255, 255, 255, 0.75);
+  color: #aaa;
+}
+
+select:disabled {
+  /* OVERRIDE */
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAAICAQAAACxSAwfAAAASklEQVQY02P4z0AMRGZGMaShwCisyhITG/4jw8RErMr+KyxYiFC0YOF/BeyWIikEKWLA4Ta4QogiPMpACt82QRThVQYUYYWz4BAAGr6Ii6kEPacAAAAASUVORK5CYII=),
+      -webkit-linear-gradient(#f1f1f1, #f1f1f1 38%, #e6e6e6);
+}
+
+input:disabled:-webkit-any([type='checkbox'],
+                           [type='radio']) {
+  opacity: .75;
+}
+
+input:disabled:-webkit-any([type='password'],
+                           [type='search'],
+                           [type='text'],
+                           [type='url'],
+                           :not([type])) {
+  color: #999;
+}
+
+/* Focus **********************************************************************/
+
+:enabled:focus:-webkit-any(
+    select,
+    input[type='checkbox'],
+    input[type='number'],
+    input[type='password'],
+    input[type='radio'],
+    input[type='search'],
+    input[type='text'],
+    input[type='url'],
+    input:not([type]),
+    :-webkit-any(
+         button,
+         input[type='button'],
+         input[type='submit']):not(.custom-appearance)) {
+  /* OVERRIDE */
+  -webkit-transition: border-color 200ms;
+  /* We use border color because it follows the border radius (unlike outline).
+   * This is particularly noticeable on mac. */
+  border-color: rgb(77, 144, 254);
+  outline: none;
+}
+
+/* Checkbox/radio helpers ******************************************************
+ *
+ * .checkbox and .radio classes wrap labels. Checkboxes and radios should use
+ * these classes with the markup structure:
+ *
+ *   <div class="checkbox">
+ *     <label>
+ *       <input type="checkbox"></input>
+ *       <span>
+ *     </label>
+ *   </div>
+ */
+
+:-webkit-any(.checkbox, .radio) label {
+  -webkit-user-select: none;
+  /* Don't expand horizontally: <http://crbug.com/112091>. */
+  align-items: center;
+  display: inline-flex;
+  padding-bottom: 7px;
+  padding-top: 7px;
+}
+
+:-webkit-any(.checkbox, .radio) label input {
+  flex-shrink: 0;
+}
+
+:-webkit-any(.checkbox, .radio) label input ~ span {
+  -webkit-margin-start: 0.6em;
+  /* Make sure long spans wrap at the same horizontal position they start. */
+  display: block;
+}
+
+:-webkit-any(.checkbox, .radio) label:hover {
+  color: black;
+}
+
+label > input:disabled:-webkit-any([type='checkbox'], [type='radio']) ~ span {
+  color: #999;
+}
+
+extensionview {
+  display: inline-block;
+  height: 300px;
+  width: 300px;
+}
+</style>
+<style>/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+body {
+  background-color: rgb(247, 247, 247);
+  font-size: 10pt;
+  margin: 150px 60px 0 30px;
+}
+
+#main-frame-blocked {
+  margin: auto;
+  max-width: 600px;
+  min-width: 200px;
+}
+
+h1 {
+  font-size: 1.8em;
+  font-weight: normal;
+  margin: 5px 0 25px 0;
+}
+
+.avatar-img {
+  -webkit-user-select: none;
+  border: 3px solid rgb(251, 251, 251);
+  border-radius: 50%;
+  content: -webkit-image-set(
+      url(data:image/png;base64,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) 1x,
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAALZ0lEQVR4Xu1da2wU1xWeJmmbJlRVf1Rp1afaplWUVP1bVapa9YGSklaRWqXtj5YU8qAxOIGQkAYCxWkAYxtiREkNGGNjgzHG4De4FNt4ZheDCYQYPDOGoEaiIf2TErw7M/cOc7vfWpaIG7DXszM7Z/ce6ZNXu97du/udnXvueSr5JkKI21TT+0bM5L/QDLdYM/iGmO42x0y3X9P5OdVg76o6uxrTmZX6ex3AbdyHx2K6O4z/xXPSzzXcRZrJHx4wxNfx2oqUaOHEqPfluO7+RjP5phRpcdVkYykCRTBg1/AeMZNXxkbdR4+b3pckAyGj95K4M67zh0C4qvNREJNLqAY3xxWCP4i1SYYCwPCw+ER8lP9SM1h9zGQfgIAoIr21GKwOWwbWLJnzicHz3rdiJi+L6ew/IIAUdPaeZvDS+AXvXslkZkbcx+Im/1nMcA+BgHyAarjdms5/gs8mGb6l9c5/pZrumyAgT3Fa0/kjkxRB/uI1g8/BlwMCCgGa4Q7BaCx48gdGnfs13e3xQQD5rSFuePcVHPFnznh3jztomAsCChuMw9AduizuKgjyVZPPVk12aTIBEvwiDMW8JR4arhl8y1QESPDKvHMoDRjOd2MmH5kmARKG+5Z2wXkgL8jXRt3fI9giic3Yq5jQDPe3dH32veIO+Ov9ESChmbyiSYjbaRl6I96nNdPtyg4BEprutuHkRIL8/vPeF4Jw6sgtwT0Vv+jdE21j76L4SqAhWrkdGJHNQUhn4ejsX8ESIAEfCrKTIvfLD5d8qQS4EkRmz8/NZV9uB7AJcm7tS4Mvt1FFnA5yds6PxlFPHhFz4ieIlpNHOotCd+9KAqIFuI1DC+xE07cvYwcIIAUe0o12VE9GEQMNJccM/jdJQMRh8NcCy+SRBNBA1jOLeofFLEJpXBI6vxB7x/uUki1BAme+EDCgu6LjDS72HueiXmMAbqfvU/V8OhXw0qylblPO3tVSaB7koqzDEc/WWWLu35PiD69/NPDY4l2WKO900s/RiGcbqyPet30XbVDN2z824oqqfzqiqMYCuTPCwtRzq446eC2qitDh99I/hyL5tceYWFA9Qbx/LNhhiTqVEY0c8tkzrtWjFujpPcfFymYbpAWCVc226DvHqSnByRnVIqJQkxL5XWf4xOU+UBTttET3GVpKgN4KGe/9lKp029/g4qntafJDwVPVlug4zUnlE2Z0FUB9PhXyD7/JsUeDmFABG+PwWU7pKvCjDFy+7iEilj6OdiAkJ1hcb1HyHXRk0JaFhlaXtjsgIqcoa3fo2AOj3jeVqQSlyhTIP3iSi7k5Jn/CedR6ilMJFK2bshsXlYZML+yxQEAksGyPRSVn4MrQkPi4cjPBcYEA+XDTgoBIYf8JTqQrCf/5LTx/rJ6CAqxusSOnACUtNpHYCNt50w6caIUadfL7zrvij1UgIFqYtzUp+kdIbAP/7TK9TyqTBe1XKWjwbo2BgEhiT4xGvAB+Hqpp3gjVRlYBKjodKrkCG5TJQqW866W9VmQV4KUmi0ofopH/a7lOxJkRRsDHV/4Ale8RNZ3KhKDfPpWFP74NBEQSqbVZlKqJfk2yzGs8pSuSwNoIdSnlG5UJwRQMKguftzW6CjC/KkmpiES7oUs3GyOycB+h31BCxJRKya4iRyDd2oVSdsvS3ZFVAMQnaGVMv+19VcF0LUqLXnPQjqwCrG21SSkAnH8KRqtRWnR1X3QdQTv6GbWaiaepVf0gDSuaJ4AUes5SyxjmZTgBNPsnRtoBy3ZbFMvJmxRMyfRPitwGavoYRQU4qmCcKr1uGNE6Dj5dYwnVoFg15J5VMC+XYslTda8jf/2+wf6twCFAter3+QYr92f/3RbdKmKdva9QbviEEq35W3Mb/Dl0llNuLJVUMD4dd1BFg8ZyESDCeyI7iXpnsevkFQDYdjR0ewA2CAigrwD50vNvR184V4LHUu9RM8njR3wLmDAC6WPfIEdELshoH2oSSJM+2QicdAykjyPDXJQEUDfwykFbHB2mT/7kYyBcwcO4I9+ASp0/N/q/GiAJteVkBsQTcwT5cAWTaR6BdG109ph+cudOC8/Bc/O9texR38EgapHEBpWJzT2OWN/uiL8esAHcxn14DA0nCqm3cJOfcDB9yDkD69ENZJEkgC78J4SY/GFJAFn4TwnDDDpJQGEC4/7SaeEBlIVLECgTR1q4j8IQCeI+APXGxlCVkgCy8F8iHht1H5UEFBbQCliZEMyhlQQUFgYvic8rN4pqcFMSUDC//vMTvOe1HaAa472EESbeeYyJ1484YkO3I9a2jbuBS/bb6Y5jr6Rur2110v7/LT1OOt7fdJynU84GjAKZNBob5Q9SJhu5ebsGmKhMEYy+/otqMR4mO6lfCA6t3GeLjV0O3oN+vMDgP/3INnFUkkM0wxWtQ1xs+YcjXk4R82R1+NnBaE8PpcAasBbNoJMEgo6wN+kSzuqiSjomdWAUDC7ZT2yLXmkY1oQtpbafYXJJhBWA71BuIpGLC/TrbnrvXr7XQi4eCCABrBUdw1Aw0nc+WgqArX6qZtHvRaETOIy0+VUggDbQ0gaf5UAEsoqQ/nfLZtEABg7mymKvG2BTVPvQxnMNVvozakbOrP81ylQSv+DdG3aJF0ayFWeQskUc+KywZ0IvKUM7IGU6ohpudxjk47K4pN4H8cTxXL0lWsJqM6+77cp0BdOnAzXuRlzk4YVd0hXZziKlbU4IncbZDzMaGxfU0EgMaV44+XIvAccVspCjMzxS0/kjARRyBlvNS//EgO8oiNDvnJkNjjbcoSyRD+tXXvKn53qG7yObRvbxDH79wcQHGmMsQ0eOVILGLA2fgD2n+BC/JwK0TpOX/Zk1n0Ahi9+YSaviV+KGd19MZ+5MF7GiyZaEzrwu0ceZnzH4dHxQ73uYJGLq/giQwHc4U6/fq0q2ZOiyuCtm8osZLgLRMX8ESCC3YSazAEyE931Q7t85hMHOj/kO5khgRJ6q+5gU7gO+0sY6T2fp8i+B2cQ+0r38YvJwScN9azoL2RtnWSFAIqMj4Zn0UMggRbvgPKDqLDENx0+WCJCoV6ejAOwaTmxKGKIZ7u+ipQBSAdJTwMIUlBZFQwGkAiCJRwlbmoS4XdPdttwqgFQA1XRbwIWSC+kdFrNU3T2VEwWQCgDyB+GjUXIp8YvePZrJjXAVQCoAyruOmd7nlCgIiktVk10KRwGkAmgmfztmeF9UoiRoNQMlCFYBpAKA/PiI+JoSRcEUcmwHQSmAVAA+4uOXH55NgEyi7CqAVAAYfD72/PBPB1uP2CezQ4DEtj47nrb2KckqIe5Y3WLF5/oiQKaMrz5gD+C7VKjKunZrw/yqMS8zAiQe35rw1rVZ65R8kE1H7IeKa5PJ6REgsbgukdjcg2TOPJKqIfGZVc3W0K1Tw2U2cMl+6/jmXjFLyVep6LCLF9aMsQ8TIFFUk3Be62YLlEKQhgHx2ZIWWx1PGZMpXyUH7D5cIZVCk8ouPvuFRutKoZL/YqN9edNh/mOl0KW8w176zK7EWKEQ/2x98oON3axYkfLhWsSKTusvz+xK5q0iLNmVvFbaYa+YolZPKkJZNyt+fo99BVZxPlj2yxqsd8s7rSJJfIao7GE/TB0dY09uH7tOjfgnqseur9pvqZu62Q8kkz5R0yvuXN9hL1/emBidX5Xwouy9W7E3aZR32S9izZK5AFB22Lu7vIMtXdFknSqqTdq59tUX1Sbslc3WUHmnvaSqLfSAjZSKTuc7r7ZaFfAyLqlPXA0y7oDXxnus3GcNrWmzyjd3O/dLBqIXhbyt/BD7fmlbckXJAatpZZN1ImWEvZOywN9fVJu0/rQ94WIbmVcFA20cuI378Bj+B/+L57zcbA3iNfBaFT3se3jtfCPgf7/fE1HD7nWzAAAAAElFTkSuQmCC) 2x);
+  margin-bottom: 5px;
+  margin-right: 15px;
+  margin-top: 5px;
+  max-width: 45px;
+  position: relative;
+}
+
+#feedback {
+  margin-top: 50px;
+}
+
+#feedback-link {
+  color: rgb(66, 133, 244);
+}
+
+#request-access-button {
+  background-color: rgb(66, 133, 244);
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  min-width: 88px;
+  padding: 10px 15px;
+  transition: box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition-delay: 200ms;
+}
+
+#request-access-button:hover {
+  background-color: rgb(30, 136, 229);
+}
+
+#request-access-button:active {
+  background-color: rgb(25,118,210);
+  box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2);
+  transition-delay: 0s;
+}
+
+#details-button-container {
+  color: rgb(97,97,97);
+  cursor: pointer;
+  display: inline;
+  font-size: 12px;
+  text-decoration: underline;
+}
+
+#button-container {
+  align-items: baseline;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 60px;
+}
+
+#details {
+  color: rgb(97,97,97);
+  font-size: 14px;
+}
+
+#details-header {
+  font-weight: bold;
+}
+
+.custodian-information {
+  align-items: center;
+  display: flex;
+  font-size: 12px;
+}
+
+.custodian-name {
+  color: rgb(97,97,97);
+  padding: 1px 0;
+}
+
+.custodian-email {
+  color: rgb(183, 183, 183);
+  padding: 1px 0;
+}
+
+@media (max-width: 600px) {
+  #button-container {
+    display: flex;
+    flex-flow: column;
+    justify-content: flex-start;
+    order: 2;
+    text-transform: uppercase;
+  }
+
+  #details-button-container {
+    font-weight: bold;
+    margin: auto;
+    order: 2;
+  }
+
+  #request-access-button {
+    margin-bottom: 30px;
+    order: 1;
+    text-align: center
+  }
+
+  .button {
+    width: 100%;
+  }
+
+  #details {
+    margin: auto;
+    order: 1;
+  }
+
+  .hidden-on-mobile {
+    display: none;
+  }
+
+  #main-frame-blocked {
+    display: flex;
+    flex-flow: column;
+  }
+
+  #feedback {
+    margin-top: 35px;
+  }
+}
+</style>
+<script>// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * The global object.
+ * @type {!Object}
+ * @const
+ */
+var global = this;
+
+/** @typedef {{eventName: string, uid: number}} */
+var WebUIListener;
+
+/** Platform, package, object property, and Event support. **/
+var cr = cr || function() {
+  'use strict';
+
+  /**
+   * Builds an object structure for the provided namespace path,
+   * ensuring that names that already exist are not overwritten. For
+   * example:
+   * "a.b.c" -> a = {};a.b={};a.b.c={};
+   * @param {string} name Name of the object that this file defines.
+   * @param {*=} opt_object The object to expose at the end of the path.
+   * @param {Object=} opt_objectToExportTo The object to add the path to;
+   *     default is {@code global}.
+   * @return {!Object} The last object exported (i.e. exportPath('cr.ui')
+   *     returns a reference to the ui property of window.cr).
+   * @private
+   */
+  function exportPath(name, opt_object, opt_objectToExportTo) {
+    var parts = name.split('.');
+    var cur = opt_objectToExportTo || global;
+
+    for (var part; parts.length && (part = parts.shift());) {
+      if (!parts.length && opt_object !== undefined) {
+        // last part and we have an object; use it
+        cur[part] = opt_object;
+      } else if (part in cur) {
+        cur = cur[part];
+      } else {
+        cur = cur[part] = {};
+      }
+    }
+    return cur;
+  }
+
+  /**
+   * Fires a property change event on the target.
+   * @param {EventTarget} target The target to dispatch the event on.
+   * @param {string} propertyName The name of the property that changed.
+   * @param {*} newValue The new value for the property.
+   * @param {*} oldValue The old value for the property.
+   */
+  function dispatchPropertyChange(target, propertyName, newValue, oldValue) {
+    var e = new Event(propertyName + 'Change');
+    e.propertyName = propertyName;
+    e.newValue = newValue;
+    e.oldValue = oldValue;
+    target.dispatchEvent(e);
+  }
+
+  /**
+   * Converts a camelCase javascript property name to a hyphenated-lower-case
+   * attribute name.
+   * @param {string} jsName The javascript camelCase property name.
+   * @return {string} The equivalent hyphenated-lower-case attribute name.
+   */
+  function getAttributeName(jsName) {
+    return jsName.replace(/([A-Z])/g, '-$1').toLowerCase();
+  }
+
+  /**
+   * The kind of property to define in {@code defineProperty}.
+   * @enum {string}
+   * @const
+   */
+  var PropertyKind = {
+    /**
+     * Plain old JS property where the backing data is stored as a "private"
+     * field on the object.
+     * Use for properties of any type. Type will not be checked.
+     */
+    JS: 'js',
+
+    /**
+     * The property backing data is stored as an attribute on an element.
+     * Use only for properties of type {string}.
+     */
+    ATTR: 'attr',
+
+    /**
+     * The property backing data is stored as an attribute on an element. If the
+     * element has the attribute then the value is true.
+     * Use only for properties of type {boolean}.
+     */
+    BOOL_ATTR: 'boolAttr'
+  };
+
+  /**
+   * Helper function for defineProperty that returns the getter to use for the
+   * property.
+   * @param {string} name The name of the property.
+   * @param {PropertyKind} kind The kind of the property.
+   * @return {function():*} The getter for the property.
+   */
+  function getGetter(name, kind) {
+    switch (kind) {
+      case PropertyKind.JS:
+        var privateName = name + '_';
+        return function() {
+          return this[privateName];
+        };
+      case PropertyKind.ATTR:
+        var attributeName = getAttributeName(name);
+        return function() {
+          return this.getAttribute(attributeName);
+        };
+      case PropertyKind.BOOL_ATTR:
+        var attributeName = getAttributeName(name);
+        return function() {
+          return this.hasAttribute(attributeName);
+        };
+    }
+
+    // TODO(dbeam): replace with assertNotReached() in assert.js when I can coax
+    // the browser/unit tests to preprocess this file through grit.
+    throw 'not reached';
+  }
+
+  /**
+   * Helper function for defineProperty that returns the setter of the right
+   * kind.
+   * @param {string} name The name of the property we are defining the setter
+   *     for.
+   * @param {PropertyKind} kind The kind of property we are getting the
+   *     setter for.
+   * @param {function(*, *):void=} opt_setHook A function to run after the
+   *     property is set, but before the propertyChange event is fired.
+   * @return {function(*):void} The function to use as a setter.
+   */
+  function getSetter(name, kind, opt_setHook) {
+    switch (kind) {
+      case PropertyKind.JS:
+        var privateName = name + '_';
+        return function(value) {
+          var oldValue = this[name];
+          if (value !== oldValue) {
+            this[privateName] = value;
+            if (opt_setHook)
+              opt_setHook.call(this, value, oldValue);
+            dispatchPropertyChange(this, name, value, oldValue);
+          }
+        };
+
+      case PropertyKind.ATTR:
+        var attributeName = getAttributeName(name);
+        return function(value) {
+          var oldValue = this[name];
+          if (value !== oldValue) {
+            if (value == undefined)
+              this.removeAttribute(attributeName);
+            else
+              this.setAttribute(attributeName, value);
+            if (opt_setHook)
+              opt_setHook.call(this, value, oldValue);
+            dispatchPropertyChange(this, name, value, oldValue);
+          }
+        };
+
+      case PropertyKind.BOOL_ATTR:
+        var attributeName = getAttributeName(name);
+        return function(value) {
+          var oldValue = this[name];
+          if (value !== oldValue) {
+            if (value)
+              this.setAttribute(attributeName, name);
+            else
+              this.removeAttribute(attributeName);
+            if (opt_setHook)
+              opt_setHook.call(this, value, oldValue);
+            dispatchPropertyChange(this, name, value, oldValue);
+          }
+        };
+    }
+
+    // TODO(dbeam): replace with assertNotReached() in assert.js when I can coax
+    // the browser/unit tests to preprocess this file through grit.
+    throw 'not reached';
+  }
+
+  /**
+   * Defines a property on an object. When the setter changes the value a
+   * property change event with the type {@code name + 'Change'} is fired.
+   * @param {!Object} obj The object to define the property for.
+   * @param {string} name The name of the property.
+   * @param {PropertyKind=} opt_kind What kind of underlying storage to use.
+   * @param {function(*, *):void=} opt_setHook A function to run after the
+   *     property is set, but before the propertyChange event is fired.
+   */
+  function defineProperty(obj, name, opt_kind, opt_setHook) {
+    if (typeof obj == 'function')
+      obj = obj.prototype;
+
+    var kind = /** @type {PropertyKind} */ (opt_kind || PropertyKind.JS);
+
+    if (!obj.__lookupGetter__(name))
+      obj.__defineGetter__(name, getGetter(name, kind));
+
+    if (!obj.__lookupSetter__(name))
+      obj.__defineSetter__(name, getSetter(name, kind, opt_setHook));
+  }
+
+  /**
+   * Counter for use with createUid
+   */
+  var uidCounter = 1;
+
+  /**
+   * @return {number} A new unique ID.
+   */
+  function createUid() {
+    return uidCounter++;
+  }
+
+  /**
+   * Returns a unique ID for the item. This mutates the item so it needs to be
+   * an object
+   * @param {!Object} item The item to get the unique ID for.
+   * @return {number} The unique ID for the item.
+   */
+  function getUid(item) {
+    if (item.hasOwnProperty('uid'))
+      return item.uid;
+    return item.uid = createUid();
+  }
+
+  /**
+   * Dispatches a simple event on an event target.
+   * @param {!EventTarget} target The event target to dispatch the event on.
+   * @param {string} type The type of the event.
+   * @param {boolean=} opt_bubbles Whether the event bubbles or not.
+   * @param {boolean=} opt_cancelable Whether the default action of the event
+   *     can be prevented. Default is true.
+   * @return {boolean} If any of the listeners called {@code preventDefault}
+   *     during the dispatch this will return false.
+   */
+  function dispatchSimpleEvent(target, type, opt_bubbles, opt_cancelable) {
+    var e = new Event(type, {
+      bubbles: opt_bubbles,
+      cancelable: opt_cancelable === undefined || opt_cancelable
+    });
+    return target.dispatchEvent(e);
+  }
+
+  /**
+   * Calls |fun| and adds all the fields of the returned object to the object
+   * named by |name|. For example, cr.define('cr.ui', function() {
+   *   function List() {
+   *     ...
+   *   }
+   *   function ListItem() {
+   *     ...
+   *   }
+   *   return {
+   *     List: List,
+   *     ListItem: ListItem,
+   *   };
+   * });
+   * defines the functions cr.ui.List and cr.ui.ListItem.
+   * @param {string} name The name of the object that we are adding fields to.
+   * @param {!Function} fun The function that will return an object containing
+   *     the names and values of the new fields.
+   */
+  function define(name, fun) {
+    var obj = exportPath(name);
+    var exports = fun();
+    for (var propertyName in exports) {
+      // Maybe we should check the prototype chain here? The current usage
+      // pattern is always using an object literal so we only care about own
+      // properties.
+      var propertyDescriptor = Object.getOwnPropertyDescriptor(exports,
+                                                               propertyName);
+      if (propertyDescriptor)
+        Object.defineProperty(obj, propertyName, propertyDescriptor);
+    }
+  }
+
+  /**
+   * Adds a {@code getInstance} static method that always return the same
+   * instance object.
+   * @param {!Function} ctor The constructor for the class to add the static
+   *     method to.
+   */
+  function addSingletonGetter(ctor) {
+    ctor.getInstance = function() {
+      return ctor.instance_ || (ctor.instance_ = new ctor());
+    };
+  }
+
+  /**
+   * Forwards public APIs to private implementations.
+   * @param {Function} ctor Constructor that have private implementations in its
+   *     prototype.
+   * @param {Array<string>} methods List of public method names that have their
+   *     underscored counterparts in constructor's prototype.
+   * @param {string=} opt_target Selector for target node.
+   */
+  function makePublic(ctor, methods, opt_target) {
+    methods.forEach(function(method) {
+      ctor[method] = function() {
+        var target = opt_target ? document.getElementById(opt_target) :
+                     ctor.getInstance();
+        return target[method + '_'].apply(target, arguments);
+      };
+    });
+  }
+
+  /**
+   * The mapping used by the sendWithPromise mechanism to tie the Promise
+   * returned to callers with the corresponding WebUI response. The mapping is
+   * from ID to the PromiseResolver helper; the ID is generated by
+   * sendWithPromise and is unique across all invocations of said method.
+   * @type {!Object<!PromiseResolver>}
+   */
+  var chromeSendResolverMap = {};
+
+  /**
+   * The named method the WebUI handler calls directly in response to a
+   * chrome.send call that expects a response. The handler requires no knowledge
+   * of the specific name of this method, as the name is passed to the handler
+   * as the first argument in the arguments list of chrome.send. The handler
+   * must pass the ID, also sent via the chrome.send arguments list, as the
+   * first argument of the JS invocation; additionally, the handler may
+   * supply any number of other arguments that will be included in the response.
+   * @param {string} id The unique ID identifying the Promise this response is
+   *     tied to.
+   * @param {boolean} isSuccess Whether the request was successful.
+   * @param {*} response The response as sent from C++.
+   */
+  function webUIResponse(id, isSuccess, response) {
+    var resolver = chromeSendResolverMap[id];
+    delete chromeSendResolverMap[id];
+
+    if (isSuccess)
+      resolver.resolve(response);
+    else
+      resolver.reject(response);
+  }
+
+  /**
+   * A variation of chrome.send, suitable for messages that expect a single
+   * response from C++.
+   * @param {string} methodName The name of the WebUI handler API.
+   * @param {...*} var_args Varibale number of arguments to be forwarded to the
+   *     C++ call.
+   * @return {!Promise}
+   */
+  function sendWithPromise(methodName, var_args) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    var promiseResolver = new PromiseResolver();
+    var id = methodName + '_' + createUid();
+    chromeSendResolverMap[id] = promiseResolver;
+    chrome.send(methodName, [id].concat(args));
+    return promiseResolver.promise;
+  }
+
+  /**
+   * A map of maps associating event names with listeners. The 2nd level map
+   * associates a listener ID with the callback function, such that individual
+   * listeners can be removed from an event without affecting other listeners of
+   * the same event.
+   * @type {!Object<!Object<!Function>>}
+   */
+  var webUIListenerMap = {};
+
+  /**
+   * The named method the WebUI handler calls directly when an event occurs.
+   * The WebUI handler must supply the name of the event as the first argument
+   * of the JS invocation; additionally, the handler may supply any number of
+   * other arguments that will be forwarded to the listener callbacks.
+   * @param {string} event The name of the event that has occurred.
+   * @param {...*} var_args Additional arguments passed from C++.
+   */
+  function webUIListenerCallback(event, var_args) {
+    var eventListenersMap = webUIListenerMap[event];
+    if (!eventListenersMap) {
+      // C++ event sent for an event that has no listeners.
+      // TODO(dpapad): Should a warning be displayed here?
+      return;
+    }
+
+    var args = Array.prototype.slice.call(arguments, 1);
+    for (var listenerId in eventListenersMap) {
+      eventListenersMap[listenerId].apply(null, args);
+    }
+  }
+
+  /**
+   * Registers a listener for an event fired from WebUI handlers. Any number of
+   * listeners may register for a single event.
+   * @param {string} eventName The event to listen to.
+   * @param {!Function} callback The callback run when the event is fired.
+   * @return {!WebUIListener} An object to be used for removing a listener via
+   *     cr.removeWebUIListener. Should be treated as read-only.
+   */
+  function addWebUIListener(eventName, callback) {
+    webUIListenerMap[eventName] = webUIListenerMap[eventName] || {};
+    var uid = createUid();
+    webUIListenerMap[eventName][uid] = callback;
+    return {eventName: eventName, uid: uid};
+  }
+
+  /**
+   * Removes a listener. Does nothing if the specified listener is not found.
+   * @param {!WebUIListener} listener The listener to be removed (as returned by
+   *     addWebUIListener).
+   * @return {boolean} Whether the given listener was found and actually
+   *     removed.
+   */
+  function removeWebUIListener(listener) {
+    var listenerExists = webUIListenerMap[listener.eventName] &&
+        webUIListenerMap[listener.eventName][listener.uid];
+    if (listenerExists) {
+      delete webUIListenerMap[listener.eventName][listener.uid];
+      return true;
+    }
+    return false;
+  }
+
+  return {
+    addSingletonGetter: addSingletonGetter,
+    createUid: createUid,
+    define: define,
+    defineProperty: defineProperty,
+    dispatchPropertyChange: dispatchPropertyChange,
+    dispatchSimpleEvent: dispatchSimpleEvent,
+    exportPath: exportPath,
+    getUid: getUid,
+    makePublic: makePublic,
+    PropertyKind: PropertyKind,
+
+    // C++ <-> JS communication related methods.
+    addWebUIListener: addWebUIListener,
+    removeWebUIListener: removeWebUIListener,
+    sendWithPromise: sendWithPromise,
+    webUIListenerCallback: webUIListenerCallback,
+    webUIResponse: webUIResponse,
+
+    get doc() {
+      return document;
+    },
+
+    /** Whether we are using a Mac or not. */
+    get isMac() {
+      return /Mac/.test(navigator.platform);
+    },
+
+    /** Whether this is on the Windows platform or not. */
+    get isWindows() {
+      return /Win/.test(navigator.platform);
+    },
+
+    /** Whether this is on chromeOS or not. */
+    get isChromeOS() {
+      return /CrOS/.test(navigator.userAgent);
+    },
+
+    /** Whether this is on vanilla Linux (not chromeOS). */
+    get isLinux() {
+      return /Linux/.test(navigator.userAgent);
+    },
+
+    /** Whether this is on Android. */
+    get isAndroid() {
+      return /Android/.test(navigator.userAgent);
+    }
+  };
+}();
+</script>
+<script>// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// // Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview Assertion support.
+ */
+
+/**
+ * Verify |condition| is truthy and return |condition| if so.
+ * @template T
+ * @param {T} condition A condition to check for truthiness.  Note that this
+ *     may be used to test whether a value is defined or not, and we don't want
+ *     to force a cast to Boolean.
+ * @param {string=} opt_message A message to show on failure.
+ * @return {T} A non-null |condition|.
+ */
+function assert(condition, opt_message) {
+  if (!condition) {
+    var message = 'Assertion failed';
+    if (opt_message)
+      message = message + ': ' + opt_message;
+    var error = new Error(message);
+    var global = function() { return this; }();
+    if (global.traceAssertionsForTesting)
+      console.warn(error.stack);
+    throw error;
+  }
+  return condition;
+}
+
+/**
+ * Call this from places in the code that should never be reached.
+ *
+ * For example, handling all the values of enum with a switch() like this:
+ *
+ *   function getValueFromEnum(enum) {
+ *     switch (enum) {
+ *       case ENUM_FIRST_OF_TWO:
+ *         return first
+ *       case ENUM_LAST_OF_TWO:
+ *         return last;
+ *     }
+ *     assertNotReached();
+ *     return document;
+ *   }
+ *
+ * This code should only be hit in the case of serious programmer error or
+ * unexpected input.
+ *
+ * @param {string=} opt_message A message to show when this is hit.
+ */
+function assertNotReached(opt_message) {
+  assert(false, opt_message || 'Unreachable code hit');
+}
+
+/**
+ * @param {*} value The value to check.
+ * @param {function(new: T, ...)} type A user-defined constructor.
+ * @param {string=} opt_message A message to show when this is hit.
+ * @return {T}
+ * @template T
+ */
+function assertInstanceof(value, type, opt_message) {
+  // We don't use assert immediately here so that we avoid constructing an error
+  // message if we don't have to.
+  if (!(value instanceof type)) {
+    assertNotReached(opt_message || 'Value ' + value +
+                     ' is not a[n] ' + (type.name || typeof type));
+  }
+  return value;
+}
+
+
+/**
+ * Alias for document.getElementById. Found elements must be HTMLElements.
+ * @param {string} id The ID of the element to find.
+ * @return {HTMLElement} The found element or null if not found.
+ */
+function $(id) {
+  var el = document.getElementById(id);
+  return el ? assertInstanceof(el, HTMLElement) : null;
+}
+
+// TODO(devlin): This should return SVGElement, but closure compiler is missing
+// those externs.
+/**
+ * Alias for document.getElementById. Found elements must be SVGElements.
+ * @param {string} id The ID of the element to find.
+ * @return {Element} The found element or null if not found.
+ */
+function getSVGElement(id) {
+  var el = document.getElementById(id);
+  return el ? assertInstanceof(el, Element) : null;
+}
+
+/**
+ * Add an accessible message to the page that will be announced to
+ * users who have spoken feedback on, but will be invisible to all
+ * other users. It's removed right away so it doesn't clutter the DOM.
+ * @param {string} msg The text to be pronounced.
+ */
+function announceAccessibleMessage(msg) {
+  var element = document.createElement('div');
+  element.setAttribute('aria-live', 'polite');
+  element.style.position = 'relative';
+  element.style.left = '-9999px';
+  element.style.height = '0px';
+  element.innerText = msg;
+  document.body.appendChild(element);
+  window.setTimeout(function() {
+    document.body.removeChild(element);
+  }, 0);
+}
+
+/**
+ * Generates a CSS url string.
+ * @param {string} s The URL to generate the CSS url for.
+ * @return {string} The CSS url string.
+ */
+function url(s) {
+  // http://www.w3.org/TR/css3-values/#uris
+  // Parentheses, commas, whitespace characters, single quotes (') and double
+  // quotes (") appearing in a URI must be escaped with a backslash
+  var s2 = s.replace(/(\(|\)|\,|\s|\'|\"|\\)/g, '\\$1');
+  // WebKit has a bug when it comes to URLs that end with \
+  // https://bugs.webkit.org/show_bug.cgi?id=28885
+  if (/\\\\$/.test(s2)) {
+    // Add a space to work around the WebKit bug.
+    s2 += ' ';
+  }
+  return 'url("' + s2 + '")';
+}
+
+/**
+ * Parses query parameters from Location.
+ * @param {Location} location The URL to generate the CSS url for.
+ * @return {Object} Dictionary containing name value pairs for URL
+ */
+function parseQueryParams(location) {
+  var params = {};
+  var query = unescape(location.search.substring(1));
+  var vars = query.split('&');
+  for (var i = 0; i < vars.length; i++) {
+    var pair = vars[i].split('=');
+    params[pair[0]] = pair[1];
+  }
+  return params;
+}
+
+/**
+ * Creates a new URL by appending or replacing the given query key and value.
+ * Not supporting URL with username and password.
+ * @param {Location} location The original URL.
+ * @param {string} key The query parameter name.
+ * @param {string} value The query parameter value.
+ * @return {string} The constructed new URL.
+ */
+function setQueryParam(location, key, value) {
+  var query = parseQueryParams(location);
+  query[encodeURIComponent(key)] = encodeURIComponent(value);
+
+  var newQuery = '';
+  for (var q in query) {
+    newQuery += (newQuery ? '&' : '?') + q + '=' + query[q];
+  }
+
+  return location.origin + location.pathname + newQuery + location.hash;
+}
+
+/**
+ * @param {Node} el A node to search for ancestors with |className|.
+ * @param {string} className A class to search for.
+ * @return {Element} A node with class of |className| or null if none is found.
+ */
+function findAncestorByClass(el, className) {
+  return /** @type {Element} */(findAncestor(el, function(el) {
+    return el.classList && el.classList.contains(className);
+  }));
+}
+
+/**
+ * Return the first ancestor for which the {@code predicate} returns true.
+ * @param {Node} node The node to check.
+ * @param {function(Node):boolean} predicate The function that tests the
+ *     nodes.
+ * @return {Node} The found ancestor or null if not found.
+ */
+function findAncestor(node, predicate) {
+  var last = false;
+  while (node != null && !(last = predicate(node))) {
+    node = node.parentNode;
+  }
+  return last ? node : null;
+}
+
+function swapDomNodes(a, b) {
+  var afterA = a.nextSibling;
+  if (afterA == b) {
+    swapDomNodes(b, a);
+    return;
+  }
+  var aParent = a.parentNode;
+  b.parentNode.replaceChild(a, b);
+  aParent.insertBefore(b, afterA);
+}
+
+/**
+ * Disables text selection and dragging, with optional whitelist callbacks.
+ * @param {function(Event):boolean=} opt_allowSelectStart Unless this function
+ *    is defined and returns true, the onselectionstart event will be
+ *    surpressed.
+ * @param {function(Event):boolean=} opt_allowDragStart Unless this function
+ *    is defined and returns true, the ondragstart event will be surpressed.
+ */
+function disableTextSelectAndDrag(opt_allowSelectStart, opt_allowDragStart) {
+  // Disable text selection.
+  document.onselectstart = function(e) {
+    if (!(opt_allowSelectStart && opt_allowSelectStart.call(this, e)))
+      e.preventDefault();
+  };
+
+  // Disable dragging.
+  document.ondragstart = function(e) {
+    if (!(opt_allowDragStart && opt_allowDragStart.call(this, e)))
+      e.preventDefault();
+  };
+}
+
+/**
+ * TODO(dbeam): DO NOT USE. THIS IS DEPRECATED. Use an action-link instead.
+ * Call this to stop clicks on <a href="#"> links from scrolling to the top of
+ * the page (and possibly showing a # in the link).
+ */
+function preventDefaultOnPoundLinkClicks() {
+  document.addEventListener('click', function(e) {
+    var anchor = findAncestor(/** @type {Node} */(e.target), function(el) {
+      return el.tagName == 'A';
+    });
+    // Use getAttribute() to prevent URL normalization.
+    if (anchor && anchor.getAttribute('href') == '#')
+      e.preventDefault();
+  });
+}
+
+/**
+ * Check the directionality of the page.
+ * @return {boolean} True if Chrome is running an RTL UI.
+ */
+function isRTL() {
+  return document.documentElement.dir == 'rtl';
+}
+
+/**
+ * Get an element that's known to exist by its ID. We use this instead of just
+ * calling getElementById and not checking the result because this lets us
+ * satisfy the JSCompiler type system.
+ * @param {string} id The identifier name.
+ * @return {!HTMLElement} the Element.
+ */
+function getRequiredElement(id) {
+  return assertInstanceof($(id), HTMLElement,
+                          'Missing required element: ' + id);
+}
+
+/**
+ * Query an element that's known to exist by a selector. We use this instead of
+ * just calling querySelector and not checking the result because this lets us
+ * satisfy the JSCompiler type system.
+ * @param {string} selectors CSS selectors to query the element.
+ * @param {(!Document|!DocumentFragment|!Element)=} opt_context An optional
+ *     context object for querySelector.
+ * @return {!HTMLElement} the Element.
+ */
+function queryRequiredElement(selectors, opt_context) {
+  var element = (opt_context || document).querySelector(selectors);
+  return assertInstanceof(element, HTMLElement,
+                          'Missing required element: ' + selectors);
+}
+
+// Handle click on a link. If the link points to a chrome: or file: url, then
+// call into the browser to do the navigation.
+document.addEventListener('click', function(e) {
+  if (e.defaultPrevented)
+    return;
+
+  var el = e.target;
+  if (el.nodeType == Node.ELEMENT_NODE &&
+      el.webkitMatchesSelector('A, A *')) {
+    while (el.tagName != 'A') {
+      el = el.parentElement;
+    }
+
+    if ((el.protocol == 'file:' || el.protocol == 'about:') &&
+        (e.button == 0 || e.button == 1)) {
+      chrome.send('navigateToUrl', [
+        el.href,
+        el.target,
+        e.button,
+        e.altKey,
+        e.ctrlKey,
+        e.metaKey,
+        e.shiftKey
+      ]);
+      e.preventDefault();
+    }
+  }
+});
+
+/**
+ * Creates a new URL which is the old URL with a GET param of key=value.
+ * @param {string} url The base URL. There is not sanity checking on the URL so
+ *     it must be passed in a proper format.
+ * @param {string} key The key of the param.
+ * @param {string} value The value of the param.
+ * @return {string} The new URL.
+ */
+function appendParam(url, key, value) {
+  var param = encodeURIComponent(key) + '=' + encodeURIComponent(value);
+
+  if (url.indexOf('?') == -1)
+    return url + '?' + param;
+  return url + '&' + param;
+}
+
+/**
+ * Creates an element of a specified type with a specified class name.
+ * @param {string} type The node type.
+ * @param {string} className The class name to use.
+ * @return {Element} The created element.
+ */
+function createElementWithClassName(type, className) {
+  var elm = document.createElement(type);
+  elm.className = className;
+  return elm;
+}
+
+/**
+ * webkitTransitionEnd does not always fire (e.g. when animation is aborted
+ * or when no paint happens during the animation). This function sets up
+ * a timer and emulate the event if it is not fired when the timer expires.
+ * @param {!HTMLElement} el The element to watch for webkitTransitionEnd.
+ * @param {number=} opt_timeOut The maximum wait time in milliseconds for the
+ *     webkitTransitionEnd to happen. If not specified, it is fetched from |el|
+ *     using the transitionDuration style value.
+ */
+function ensureTransitionEndEvent(el, opt_timeOut) {
+  if (opt_timeOut === undefined) {
+    var style = getComputedStyle(el);
+    opt_timeOut = parseFloat(style.transitionDuration) * 1000;
+
+    // Give an additional 50ms buffer for the animation to complete.
+    opt_timeOut += 50;
+  }
+
+  var fired = false;
+  el.addEventListener('webkitTransitionEnd', function f(e) {
+    el.removeEventListener('webkitTransitionEnd', f);
+    fired = true;
+  });
+  window.setTimeout(function() {
+    if (!fired)
+      cr.dispatchSimpleEvent(el, 'webkitTransitionEnd', true);
+  }, opt_timeOut);
+}
+
+/**
+ * Alias for document.scrollTop getter.
+ * @param {!HTMLDocument} doc The document node where information will be
+ *     queried from.
+ * @return {number} The Y document scroll offset.
+ */
+function scrollTopForDocument(doc) {
+  return doc.documentElement.scrollTop || doc.body.scrollTop;
+}
+
+/**
+ * Alias for document.scrollTop setter.
+ * @param {!HTMLDocument} doc The document node where information will be
+ *     queried from.
+ * @param {number} value The target Y scroll offset.
+ */
+function setScrollTopForDocument(doc, value) {
+  doc.documentElement.scrollTop = doc.body.scrollTop = value;
+}
+
+/**
+ * Alias for document.scrollLeft getter.
+ * @param {!HTMLDocument} doc The document node where information will be
+ *     queried from.
+ * @return {number} The X document scroll offset.
+ */
+function scrollLeftForDocument(doc) {
+  return doc.documentElement.scrollLeft || doc.body.scrollLeft;
+}
+
+/**
+ * Alias for document.scrollLeft setter.
+ * @param {!HTMLDocument} doc The document node where information will be
+ *     queried from.
+ * @param {number} value The target X scroll offset.
+ */
+function setScrollLeftForDocument(doc, value) {
+  doc.documentElement.scrollLeft = doc.body.scrollLeft = value;
+}
+
+/**
+ * Replaces '&', '<', '>', '"', and ''' characters with their HTML encoding.
+ * @param {string} original The original string.
+ * @return {string} The string with all the characters mentioned above replaced.
+ */
+function HTMLEscape(original) {
+  return original.replace(/&/g, '&amp;')
+                 .replace(/</g, '&lt;')
+                 .replace(/>/g, '&gt;')
+                 .replace(/"/g, '&quot;')
+                 .replace(/'/g, '&#39;');
+}
+
+/**
+ * Shortens the provided string (if necessary) to a string of length at most
+ * |maxLength|.
+ * @param {string} original The original string.
+ * @param {number} maxLength The maximum length allowed for the string.
+ * @return {string} The original string if its length does not exceed
+ *     |maxLength|. Otherwise the first |maxLength| - 1 characters with '...'
+ *     appended.
+ */
+function elide(original, maxLength) {
+  if (original.length <= maxLength)
+    return original;
+  return original.substring(0, maxLength - 1) + '\u2026';
+}
+
+/**
+ * Quote a string so it can be used in a regular expression.
+ * @param {string} str The source string.
+ * @return {string} The escaped string.
+ */
+function quoteString(str) {
+  return str.replace(/([\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:])/g, '\\$1');
+}
+</script>
+<script>// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+function sendCommand(cmd) {
+  window.domAutomationController.setAutomationId(1);
+  window.domAutomationController.send(cmd);
+}
+
+function makeImageSet(url1x, url2x) {
+  return '-webkit-image-set(url(' + url1x + ') 1x, url(' + url2x + ') 2x)';
+}
+
+function initialize() {
+  if (loadTimeData.getBoolean('allowAccessRequests')) {
+    $('request-access-button').onclick = function(event) {
+      $('request-access-button').hidden = true;
+      sendCommand('request');
+    };
+  } else {
+    $('request-access-button').hidden = true;
+  }
+  var avatarURL1x = loadTimeData.getString('avatarURL1x');
+  var avatarURL2x = loadTimeData.getString('avatarURL2x');
+  var custodianName = loadTimeData.getString('custodianName');
+  if (custodianName) {
+    $('custodians-information').hidden = false;
+    if (avatarURL1x) {
+      $('custodian-avatar-img').style.content =
+          makeImageSet(avatarURL1x, avatarURL2x);
+    }
+    $('custodian-name').innerHTML = custodianName;
+    $('custodian-email').innerHTML = loadTimeData.getString('custodianEmail');
+    var secondAvatarURL1x = loadTimeData.getString('secondAvatarURL1x');
+    var secondAvatarURL2x = loadTimeData.getString('secondAvatarURL2x');
+    var secondCustodianName = loadTimeData.getString('secondCustodianName');
+    if (secondCustodianName) {
+      $('second-custodian-information').hidden = false;
+      $('second-custodian-avatar-img').hidden = false;
+      if (secondAvatarURL1x) {
+        $('second-custodian-avatar-img').style.content =
+            makeImageSet(secondAvatarURL1x, secondAvatarURL2x);
+      }
+      $('second-custodian-name').innerHTML = secondCustodianName;
+      $('second-custodian-email').innerHTML = loadTimeData.getString(
+          'secondCustodianEmail');
+    }
+  }
+  var showDetailsLink = loadTimeData.getString('showDetailsLink');
+  $('show-details-link').hidden = !showDetailsLink;
+  $('back-button').hidden = showDetailsLink;
+  $('back-button').onclick = function(event) {
+    sendCommand('back');
+  };
+  $('show-details-link').onclick = function(event) {
+    $('details').hidden = false;
+    $('show-details-link').hidden = true;
+    $('hide-details-link').hidden = false;
+    $('information-container').classList.add('hidden-on-mobile');
+    $('request-access-button').classList.add('hidden-on-mobile');
+  };
+  $('hide-details-link').onclick = function(event) {
+    $('details').hidden = true;
+    $('show-details-link').hidden = false;
+    $('hide-details-link').hidden = true;
+    $('information-container').classList.remove('hidden-on-mobile');
+    $('request-access-button').classList.remove('hidden-on-mobile');
+  };
+  if (loadTimeData.getBoolean('showFeedbackLink')) {
+    $('feedback-link').onclick = function(event) {
+      sendCommand('feedback');
+    };
+  } else {
+    $('feedback').hidden = true;
+  }
+}
+
+/**
+ * Updates the interstitial to show that the request failed or was sent.
+ * @param {boolean} isSuccessful Whether the request was successful or not.
+ */
+function setRequestStatus(isSuccessful) {
+  $('block-page-message').hidden = true;
+  if (isSuccessful) {
+    $('request-failed-message').hidden = true;
+    $('request-sent-message').hidden = false;
+    $('show-details-link').hidden = true;
+    $('hide-details-link').hidden = true;
+    $('details').hidden = true;
+    $('back-button').hidden = false;
+    $('request-access-button').hidden = true;
+  } else {
+    $('request-failed-message').hidden = false;
+    $('request-access-button').hidden = false;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', initialize);
+</script>
+</head>
+
+<body>
+<div id="main-frame-blocked">
+  <div id="information-container">
+    <h1>
+      <div id="block-page-message" i18n-content="blockPageMessage"></div>
+      <div id="request-failed-message" i18n-content="requestFailedMessage"
+          hidden></div>
+      <div id="request-sent-message" i18n-content="requestSentMessage" hidden>
+      </div>
+    </h1>
+    <div id="custodians-information" hidden>
+      <div id="custodian-information" class="custodian-information">
+        <img id="custodian-avatar-img" class="avatar-img">
+        <div id="custodian-contact">
+          <div id="custodian-name" class="custodian-name"></div>
+          <div id="custodian-email" class="custodian-email"></div>
+        </div>
+      </div>
+      <div id="second-custodian-information" class="custodian-information" hidden>
+        <img id="second-custodian-avatar-img" class="avatar-img" hidden>
+        <div id="second-custodian-contact">
+          <div id="second-custodian-name" class="custodian-name"></div>
+          <div id="second-custodian-email" class="custodian-email"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="button-container">
+    <div id="details-button-container">
+      <a id="show-details-link" i18n-content="showDetailsLink"
+          hidden class="button">
+      </a>
+      <a id="hide-details-link" i18n-content="hideDetailsLink"
+          hidden class="button"></a>
+      <a id="back-button" i18n-content="backButton"
+          hidden class="button"></a>
+    </div>
+    <div id="request-access-button" class="button"
+        i18n-content="requestAccessButton">
+    </div> 
+  </div>
+  <div id="details" hidden>
+    <p id="details-header" i18n-content="blockReasonHeader"></p>
+    <p id="details-message" i18n-content="blockReasonMessage"></p>
+    <p id="feedback" i18n-values=".innerHTML:feedbackLink"></p>
+  </div>
+</div>
+</body>
+</html>
