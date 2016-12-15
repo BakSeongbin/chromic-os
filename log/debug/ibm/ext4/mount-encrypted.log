@@ -1,0 +1,7 @@
+[pid:503] Starting.
+[pid:503] VFS mount state sanity check ok.
+[pid:503] Using UUID as system key.
+ERROR[pid:503] keyfile_read (../../../cryptohome-0.0.1/platform2/cryptohome/mount-helpers.c, 688): EVP_DecryptFinalerror:06065064:digital envelope routines:EVP_DecryptFinal_ex:bad decrypt
+[pid:503] /mnt/stateful_partition/encrypted.needs-finalization does not exist.
+[pid:503] Generating new encryption key.
+Illegal instruction

@@ -1,0 +1,29 @@
+[pid:777] Starting.
+TPM: no
+ChromeOS: no
+CR48: no
+NVRAM: not present
+rootdir: /
+stateful_mount: /mnt/stateful_partition
+key_path: /mnt/stateful_partition/encrypted.key
+block_path: /mnt/stateful_partition/encrypted.block
+encrypted_mount: /mnt/stateful_partition/encrypted
+dmcrypt_name: encstateful
+dmcrypt_dev: /dev/mapper/encstateful
+bind mounts:
+	src:/mnt/stateful_partition/encrypted/var
+	dst:/var
+	previous:/mnt/stateful_partition/var
+	pending:/mnt/stateful_partition/.var
+	owner:root
+	mode:755
+	submount:0
+
+	src:/mnt/stateful_partition/encrypted/chronos
+	dst:/home/chronos
+	previous:/mnt/stateful_partition/home/chronos
+	pending:/mnt/stateful_partition/home/.chronos
+	owner:chronos
+	mode:755
+	submount:1
+

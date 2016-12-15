@@ -1,0 +1,27 @@
+export EXIT_STATUS='0'
+export INSTANCE=''
+export JOB='pre-startup'
+export PATH='/usr/bin:/usr/sbin:/sbin:/bin:/usr/local/sbin:/usr/local/bin'
+export PROCESS='main'
+export PWD='/'
+export RESULT='failed'
+export TERM='linux'
+export UPSTART_EVENTS='stopped'
+export UPSTART_INSTANCE=''
+export UPSTART_JOB='startup'
+-
+/dev/sda3 on / type ext2 (rw,relatime)
+devtmpfs on /dev type devtmpfs (rw,nosuid,noexec,relatime,size=509268k,nr_inodes=127317,mode=755)
+none on /proc type proc (rw,nosuid,nodev,noexec,relatime)
+none on /sys type sysfs (rw,nosuid,nodev,noexec,relatime)
+tmp on /tmp type tmpfs (rw,nosuid,nodev,noexec,relatime)
+run on /run type tmpfs (rw,nosuid,nodev,noexec,relatime,mode=755)
+debugfs on /sys/kernel/debug type debugfs (rw,nosuid,nodev,noexec,relatime,gid=236,mode=750)
+shmfs on /dev/shm type tmpfs (rw,nosuid,nodev,noexec,relatime)
+devpts on /dev/pts type devpts (rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000)
+/dev/sda2 on /mnt/stateful_partition type ext2 (rw,nosuid,nodev,noexec,relatime,commit=600)
+/dev/sda2 on /home type ext2 (rw,nosuid,nodev,noexec,relatime,commit=600)
+/dev/mapper/encstateful on /mnt/stateful_partition/encrypted type ext4 (rw,nosuid,nodev,noexec,relatime,discard,commit=600,data=ordered)
+/dev/mapper/encstateful on /var type ext4 (rw,nosuid,nodev,noexec,relatime,discard,commit=600,data=ordered)
+/dev/mapper/encstateful on /home/chronos type ext4 (rw,nosuid,nodev,noexec,relatime,discard,commit=600,data=ordered)
+media on /media type tmpfs (rw,nosuid,nodev,noexec,relatime)

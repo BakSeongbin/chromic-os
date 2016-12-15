@@ -1,0 +1,7 @@
+[pid:995] Starting.
+[pid:995] VFS mount state sanity check ok.
+[pid:995] Using UUID as system key.
+[pid:995] /mnt/stateful_partition/encrypted.key does not exist.
+[pid:995] /mnt/stateful_partition/encrypted.needs-finalization does not exist.
+[pid:995] Generating new encryption key.
+Illegal instruction

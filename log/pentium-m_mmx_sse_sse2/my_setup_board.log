@@ -1,0 +1,61 @@
+INFO    : Elapsed time (run_chroot_version_hooks): 0m0s
+INFO    : Updating chroot
+INFO    : Clearing shadow utils lockfiles under /
+INFO    : Updating cross-compilers
+Determining required toolchain updates...
+Nothing to update!
+INFO    : Updating the SDK
+
+Local copy of remote index is up-to-date and will be used.
+
+Local copy of remote index is up-to-date and will be used.
+
+Local copy of remote index is up-to-date and will be used.
+
+Local copy of remote index is up-to-date and will be used.
+
+Local copy of remote index is up-to-date and will be used.
+
+Local copy of remote index is up-to-date and will be used.
+Starting fast-emerge.
+ Building package virtual/target-sdk world on root
+Calculating deps...
+Deps calculated in 0m28.0s
+
+Total: 0 packages, Size of downloads: 0 KiB
+Done
+Scanning Configuration files...
+Exiting: Nothing left to do; exiting. :)
+INFO    : Elapsed time (update_chroot): 0m41s
+--force set.  Re-creating /build/x86-generic...
+INFO    : Selecting profile: /mnt/host/source/src/overlays/overlay-x86-generic/profiles/base for /build/x86-generic
+INFO    : Updating libc in the board.
+Installing the toolchain into the board root.
+
+bzip2: (stdin): trailing garbage after EOF ignored
+
+bzip2: (stdin): trailing garbage after EOF ignored
+00:10:08: INFO: RunCommand: /mnt/host/source/.cache/common/gsutil_4.16.tar.gz/gsutil/gsutil -o 'Boto:num_retries=10' cp -v -- gs://chromeos-prebuilt/board/x86-generic/full-2016.03.21.164811/packages/Packages /tmp/tmpgwSF_V.tmp
+00:10:14: INFO: RunCommand: /mnt/host/source/.cache/common/gsutil_4.16.tar.gz/gsutil/gsutil -o 'Boto:num_retries=10' cp -v -- gs://chromeos-prebuilt/board/x86-generic/paladin-R51-8095.0.0-rc3/packages/Packages /tmp/tmpN3NXTw.tmp
+00:10:18: INFO: RunCommand: /mnt/host/source/.cache/common/gsutil_4.16.tar.gz/gsutil/gsutil -o 'Boto:num_retries=10' cp -v -- gs://chromeos-prebuilt/board/x86-generic/chrome-R51-8091.0.0-rc2/packages/Packages /tmp/tmpu7W1QK.tmp
+
+Local copy of remote index is up-to-date and will be used.
+
+Local copy of remote index is up-to-date and will be used.
+
+Local copy of remote index is up-to-date and will be used.
+
+Local copy of remote index is up-to-date and will be used.
+
+Local copy of remote index is up-to-date and will be used.
+
+Local copy of remote index is up-to-date and will be used.
+>>> Emerging binary (1 of 2) sys-kernel/linux-headers-4.0-r3::chromiumos for /build/x86-generic/
+>>> Installing (1 of 2) sys-kernel/linux-headers-4.0-r3::chromiumos to /build/x86-generic/
+>>> Recording sys-kernel/linux-headers in "world" favorites file...
+>>> Emerging binary (2 of 2) sys-libs/gcc-libs-4.9.2-r32::chromiumos for /build/x86-generic/
+>>> Installing (2 of 2) sys-libs/gcc-libs-4.9.2-r32::chromiumos to /build/x86-generic/
+>>> Recording sys-libs/gcc-libs in "world" favorites file...
+INFO    : Elapsed time (setup_board): 1m35s
+Done!
+The SYSROOT is: /build/x86-generic

@@ -1,0 +1,136 @@
+ChromeOS version information:
+    CHROME_BRANCH=51
+    CHROME_VERSION=
+    CHROMEOS_VERSION_STRING=8095.0.2016_03_24_0524
+    CHROME_BASE=
+INFO    : The following images will be built  chromiumos_base_image.bin.
+INFO    : Clearing shadow utils lockfiles under /build/x86-generic
+>>> Building file list for packages cleaning...
+>>> Cleaning binary packages...
+ [  658.6 K ] app-admin/sudo-1.8.12
+ [   55.4 K ] chromeos-base/chromeos-factoryinstall-0.0.1-r171
+ [  456.8 K ] chromeos-base/chromeos-installer-0.0.1-r1807
+ [   10.1 K ] chromeos-base/chromeos-installshim-0.0.1-r12
+ [   35.0 K ] chromeos-base/chromeos-trim-0.0.1-r61
+ [   52.0 K ] chromeos-base/crosh-0.0.1-r1592
+ [  484.8 K ] chromeos-base/update_engine-0.0.3-r1892
+ [   37.5 K ] chromeos-base/userfeedback-0.0.1-r1571
+ [    8.6 K ] virtual/editor-0
+ [   19.9 K ] virtual/target-chromium-os-1-r49
+ [   13.0 K ] virtual/target-chromium-os-dev-1-r16
+ [    7.5 K ] virtual/target-chromium-os-factory-shim-1-r1
+ [   15.5 K ] virtual/target-chromium-os-test-1-r37
+ [    7.3 K ] virtual/target-os-1-r3
+ [    7.3 K ] virtual/target-os-dev-1-r3
+ [    7.6 K ] virtual/target-os-factory-shim-1-r1
+ [    7.4 K ] virtual/target-os-test-1-r2
+
+
+ [   17.3 K ] Packages Index
+ ===========
+ [    1.9 M ] Total space from 17 files were freed in the packages directory
+INFO    : Verifying that the base image does not contain a blacklisted package.
+INFO    : Generating list of packages for virtual/target-os.
+INFO    : No blacklisted packages found.
+INFO    : Using image type usb
+INFO    : Using disk layout /mnt/host/source/src/scripts/build_library/legacy_disk_layout.json
+1+0 records in
+1+0 records out
+512 bytes (512 B) copied, 7.8823e-05 s, 6.5 MB/s
+WARNING: Primary GPT header is invalid
+WARNING: Secondary GPT header is invalid
+70AD6DA0-8C19-0D45-AE6C-6C61B0CE0526
+       start        size    part  contents
+           0           1          PMBR (Boot GUID: 70AD6DA0-8C19-0D45-AE6C-6C61B0CE0526)
+           1           1          Pri GPT header
+           2          32          Pri GPT table
+    14095155     2490368       1  Label: "STATE"
+                                  Type: Linux data
+                                  UUID: 63B365BB-AA43-2A4A-904C-9E97CCF438C0
+       20480       32768       2  Label: "KERN-A"
+                                  Type: ChromeOS kernel
+                                  UUID: 0F77822B-089C-3548-9F9A-21511A47EE35
+                                  Attr: priority=15 tries=15 successful=0
+     4448256     9646899       3  Label: "ROOT-A"
+                                  Type: ChromeOS rootfs
+                                  UUID: 842629F4-DCC8-FB49-8602-4896BEA9DB6E
+       53248       32768       4  Label: "KERN-B"
+                                  Type: ChromeOS kernel
+                                  UUID: E1EC57BE-06C2-6545-B647-F667D8A36177
+                                  Attr: priority=0 tries=0 successful=0
+     4444160        4096       5  Label: "ROOT-B"
+                                  Type: ChromeOS rootfs
+                                  UUID: 2AC909D3-5D03-6545-BC59-C708C2062B1C
+       16448           1       6  Label: "KERN-C"
+                                  Type: ChromeOS kernel
+                                  UUID: 75B755E5-D4D3-AE46-B5C5-4B54FA0FDF3B
+                                  Attr: priority=0 tries=0 successful=0
+       16449           1       7  Label: "ROOT-C"
+                                  Type: ChromeOS rootfs
+                                  UUID: C1647A33-199A-6249-BC65-D4EC2DC50DC2
+       86016       32768       8  Label: "OEM"
+                                  Type: Linux data
+                                  UUID: 3A36CCD9-815C-144A-B2DA-CEA0A705D840
+       16450           1       9  Label: "reserved"
+                                  Type: ChromeOS reserved
+                                  UUID: 5D22FEF3-BC0B-2F48-8498-81FCD183FE39
+       16451           1      10  Label: "reserved"
+                                  Type: ChromeOS reserved
+                                  UUID: 655ADC30-FA87-624F-9BE1-217FD6BF05FA
+          64       16384      11  Label: "RWFW"
+                                  Type: ChromeOS firmware
+                                  UUID: BECD4232-5214-D444-B040-E0D0B55499B7
+      249856     4194304      12  Label: "EFI-SYSTEM"
+                                  Type: EFI System Partition
+                                  UUID: 70AD6DA0-8C19-0D45-AE6C-6C61B0CE0526
+    16618194          32          Sec GPT table
+    16618226           1          Sec GPT header
+INFO    : Creating FS for partition 8 with format ext4.
+tune2fs 1.42.12 (29-Aug-2014)
+Setting maximal mount count to -1
+Setting error behavior to 2
+Setting interval between checks to 0 seconds
+Setting reserved blocks percentage to 0% (0 blocks)
+Setting reserved blocks count to 0
+Setting time filesystem last checked to Thu Nov 19 11:00:00 2009
+
+INFO    : Creating FS for partition 12 with format vfat.
+mkfs.fat 3.0.26 (2014-03-07)
+Loop device does not match a floppy size, using default hd params
+INFO    : Creating FS for partition 3 with format ext2.
+tune2fs 1.42.12 (29-Aug-2014)
+Setting maximal mount count to -1
+Setting error behavior to 2
+Setting interval between checks to 0 seconds
+Setting reserved blocks percentage to 0% (0 blocks)
+Setting reserved blocks count to 0
+Setting time filesystem last checked to Thu Nov 19 11:00:00 2009
+
+INFO    : Creating FS for partition 1 with format ext4.
+tune2fs 1.42.12 (29-Aug-2014)
+Setting maximal mount count to -1
+Setting error behavior to 2
+Setting interval between checks to 0 seconds
+Setting reserved blocks percentage to 0% (0 blocks)
+Setting reserved blocks count to 0
+Setting time filesystem last checked to Thu Nov 19 11:00:00 2009
+
+Setting up symlinks for /usr/local for /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_24_0524-a1/stateful/dev_image
+INFO    : Image specified by /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_24_0524-a1 mounted at /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_24_0524-a1/rootfs successfully.
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/loop0      4.0G  8.1M  4.0G   1% /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_24_0524-a1/rootfs
+Setting up symlinks for /usr/local for /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_24_0524-a1/stateful/dev_image
+pbzip2: *WARNING: Trailing garbage after EOF ignored!
+
+emerge: there are no ebuilds to satisfy "virtual/target-os" for /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_24_0524-a1/rootfs/.
+
+emerge: searching for similar names...
+emerge: Maybe you meant any of these: virtual/target-os-factory, virtual/assets, virtual/ttf-fonts?
+Starting fast-emerge.
+ Building package virtual/target-os on /build/x86-generic
+Calculating deps...
+INFO    : Unmounting image from /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_24_0524-a1/stateful and /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_24_0524-a1/rootfs
+Cleaning up /usr/local symlinks for /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_24_0524-a1/stateful/dev_image
+An error occurred in your build so your latest output directory is invalid.
+Running in non-interactive mode so deleting output directory.
+Deleted /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_24_0524-a1

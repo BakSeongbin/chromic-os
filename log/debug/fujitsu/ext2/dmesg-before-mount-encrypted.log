@@ -1,0 +1,1209 @@
+[    0.000000] Initializing cgroup subsys cpuset
+[    0.000000] Initializing cgroup subsys cpu
+[    0.000000] Initializing cgroup subsys cpuacct
+[    0.000000] Linux version 3.14.0-test6 (dev1@ubuntu64) (gcc version 4.9.x-google 20150123 (prerelease) (4.9.2_cos_gg_b6125c7_4.9.2-r113) ) #1 SMP Fri Jan 15 23:30:49 KST 2016
+[    0.000000] KERNEL supported cpus:
+[    0.000000]   Intel GenuineIntel
+[    0.000000]   AMD AuthenticAMD
+[    0.000000]   NSC Geode by NSC
+[    0.000000]   Cyrix CyrixInstead
+[    0.000000]   Centaur CentaurHauls
+[    0.000000]   Transmeta GenuineTMx86
+[    0.000000]   Transmeta TransmetaCPU
+[    0.000000]   UMC UMC UMC UMC
+[    0.000000] e820: BIOS-provided physical RAM map:
+[    0.000000] BIOS-e820: [mem 0x0000000000000000-0x000000000009f7ff] usable
+[    0.000000] BIOS-e820: [mem 0x000000000009f800-0x000000000009ffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000000dc000-0x00000000000fffff] reserved
+[    0.000000] BIOS-e820: [mem 0x0000000000100000-0x000000003f65ffff] usable
+[    0.000000] BIOS-e820: [mem 0x000000003f660000-0x000000003f668fff] ACPI data
+[    0.000000] BIOS-e820: [mem 0x000000003f669000-0x000000003f6fffff] ACPI NVS
+[    0.000000] BIOS-e820: [mem 0x000000003f700000-0x000000003fffffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000f8000000-0x00000000fbffffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000fec00000-0x00000000fed8ffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000fee00000-0x00000000fee00fff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000ff000000-0x00000000ffffffff] reserved
+[    0.000000] Notice: NX (Execute Disable) protection cannot be enabled: non-PAE kernel!
+[    0.000000] SMBIOS 2.4 present.
+[    0.000000] DMI: FUJITSU A6020/FJNB1C2, BIOS Version 1.13  04/26/2007
+[    0.000000] e820: update [mem 0x00000000-0x00000fff] usable ==> reserved
+[    0.000000] e820: remove [mem 0x000a0000-0x000fffff] usable
+[    0.000000] e820: last_pfn = 0x3f660 max_arch_pfn = 0x100000
+[    0.000000] MTRR default type: uncachable
+[    0.000000] MTRR fixed ranges enabled:
+[    0.000000]   00000-9FFFF write-back
+[    0.000000]   A0000-BFFFF uncachable
+[    0.000000]   C0000-D3FFF write-protect
+[    0.000000]   D4000-DBFFF uncachable
+[    0.000000]   DC000-DFFFF write-back
+[    0.000000]   E0000-FFFFF write-protect
+[    0.000000] MTRR variable ranges enabled:
+[    0.000000]   0 base 000000000 mask FC0000000 write-back
+[    0.000000]   1 base 03F700000 mask FFFF00000 uncachable
+[    0.000000]   2 base 03F800000 mask FFF800000 uncachable
+[    0.000000]   3 disabled
+[    0.000000]   4 disabled
+[    0.000000]   5 disabled
+[    0.000000]   6 disabled
+[    0.000000]   7 disabled
+[    0.000000] x86 PAT enabled: cpu 0, old 0x7040600070406, new 0x7010600070106
+[    0.000000] Scanning 1 areas for low memory corruption
+[    0.000000] initial memory mapped: [mem 0x00000000-0x033fffff]
+[    0.000000] Base memory trampoline at [8009b000] 9b000 size 16384
+[    0.000000] init_memory_mapping: [mem 0x00000000-0x000fffff]
+[    0.000000]  [mem 0x00000000-0x000fffff] page 4k
+[    0.000000] init_memory_mapping: [mem 0x3f000000-0x3f3fffff]
+[    0.000000]  [mem 0x3f000000-0x3f3fffff] page 2M
+[    0.000000] init_memory_mapping: [mem 0x38000000-0x3effffff]
+[    0.000000]  [mem 0x38000000-0x3effffff] page 2M
+[    0.000000] init_memory_mapping: [mem 0x00100000-0x37ffffff]
+[    0.000000]  [mem 0x00100000-0x003fffff] page 4k
+[    0.000000]  [mem 0x00400000-0x37ffffff] page 2M
+[    0.000000] init_memory_mapping: [mem 0x3f400000-0x3f65ffff]
+[    0.000000]  [mem 0x3f400000-0x3f65ffff] page 4k
+[    0.000000] BRK [0x02c67000, 0x02c67fff] PGTABLE
+[    0.000000] ACPI: RSDP 000f5d80 000014 (v00 FUJ   )
+[    0.000000] ACPI: RSDT 3f661e26 000040 (v01 FUJ    PC       01130000 FUJ  00000100)
+[    0.000000] ACPI: FACP 3f668f8c 000074 (v01 FUJ    PC       01130000 FUJ  00000100)
+[    0.000000] ACPI: DSDT 3f661e76 0062EC (v01 FUJ    FJNB1C2  01130000 MSFT 0100000E)
+[    0.000000] ACPI: FACS 3f669fc0 000040
+[    0.000000] ACPI: MCFG 3f668162 00003C (v01 FUJ    FJNB1C2  01130000 FUJ  00000100)
+[    0.000000] ACPI: SSDT 3f66819e 0004DC (v01 FUJ    FJNB1C2  01130000 INTL 20050624)
+[    0.000000] ACPI: APIC 3f668d4e 000068 (v01 FUJ    FJNB1C2  01130000  LTP 00000000)
+[    0.000000] ACPI: HPET 3f668db6 000038 (v01 FUJ    FJNB1C2  01130000 FUJ  00000100)
+[    0.000000] ACPI: BOOT 3f668dee 000028 (v01 FUJ    FJNB1C2  01130000 FUJ  00000100)
+[    0.000000] ACPI: SLIC 3f668e16 000176 (v01 FUJ    PC       01130000 FUJ  00000100)
+[    0.000000] ACPI: Local APIC address 0xfee00000
+[    0.000000] 0MB HIGHMEM available.
+[    0.000000] 1014MB LOWMEM available.
+[    0.000000]   mapped low ram: 0 - 3f660000
+[    0.000000]   low ram: 0 - 3f660000
+[    0.000000] BRK [0x02c68000, 0x02c68fff] PGTABLE
+[    0.000000] Zone ranges:
+[    0.000000]   DMA      [mem 0x00001000-0x00ffffff]
+[    0.000000]   Normal   [mem 0x01000000-0x3f65ffff]
+[    0.000000]   HighMem  empty
+[    0.000000] Movable zone start for each node
+[    0.000000] Early memory node ranges
+[    0.000000]   node   0: [mem 0x00001000-0x0009efff]
+[    0.000000]   node   0: [mem 0x00100000-0x3f65ffff]
+[    0.000000] On node 0 totalpages: 259582
+[    0.000000] free_area_init_node: node 0, pgdat 82ae3ac0, node_mem_map bee70020
+[    0.000000]   DMA zone: 32 pages used for memmap
+[    0.000000]   DMA zone: 0 pages reserved
+[    0.000000]   DMA zone: 3998 pages, LIFO batch:0
+[    0.000000]   Normal zone: 1997 pages used for memmap
+[    0.000000]   Normal zone: 255584 pages, LIFO batch:31
+[    0.000000] Using APIC driver default
+[    0.000000] ACPI: PM-Timer IO Port: 0x1008
+[    0.000000] ACPI: Local APIC address 0xfee00000
+[    0.000000] ACPI: LAPIC (acpi_id[0x00] lapic_id[0x00] enabled)
+[    0.000000] ACPI: LAPIC (acpi_id[0x01] lapic_id[0x01] enabled)
+[    0.000000] ACPI: LAPIC_NMI (acpi_id[0x00] high edge lint[0x1])
+[    0.000000] ACPI: LAPIC_NMI (acpi_id[0x01] high edge lint[0x1])
+[    0.000000] ACPI: IOAPIC (id[0x02] address[0xfec00000] gsi_base[0])
+[    0.000000] IOAPIC[0]: apic_id 2, version 32, address 0xfec00000, GSI 0-23
+[    0.000000] ACPI: INT_SRC_OVR (bus 0 bus_irq 0 global_irq 2 high edge)
+[    0.000000] ACPI: INT_SRC_OVR (bus 0 bus_irq 9 global_irq 9 high level)
+[    0.000000] ACPI: IRQ0 used by override.
+[    0.000000] ACPI: IRQ2 used by override.
+[    0.000000] ACPI: IRQ9 used by override.
+[    0.000000] Using ACPI (MADT) for SMP configuration information
+[    0.000000] ACPI: HPET id: 0x8086a201 base: 0xfed00000
+[    0.000000] smpboot: Allowing 2 CPUs, 0 hotplug CPUs
+[    0.000000] nr_irqs_gsi: 40
+[    0.000000] e820: [mem 0x40000000-0xf7ffffff] available for PCI devices
+[    0.000000] Booting paravirtualized kernel on bare hardware
+[    0.000000] setup_percpu: NR_CPUS:8 nr_cpumask_bits:8 nr_cpu_ids:2 nr_node_ids:1
+[    0.000000] PERCPU: Embedded 14 pages/cpu @bee4b000 s34432 r0 d22912 u57344
+[    0.000000] pcpu-alloc: s34432 r0 d22912 u57344 alloc=14*4096
+[    0.000000] pcpu-alloc: [0] 0 [0] 1 
+[    0.000000] Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 257553
+[    0.000000] Kernel command line: init=/sbin/init boot=local rootwait rw noresume noswap loglevel=7 noinitrd console=tty2 root=/dev/sda3 i915.modeset=1 cros_legacy BOOT_IMAGE=vmlinuz.test6 
+[    0.000000] PID hash table entries: 4096 (order: 2, 16384 bytes)
+[    0.000000] Dentry cache hash table entries: 131072 (order: 7, 524288 bytes)
+[    0.000000] Inode-cache hash table entries: 65536 (order: 6, 262144 bytes)
+[    0.000000] Initializing CPU#0
+[    0.000000] Initializing HighMem for node 0 (00000000:00000000)
+[    0.000000] Memory: 1018520K/1038328K available (6042K kernel code, 648K rwdata, 2472K rodata, 660K init, 752K bss, 19808K reserved, 0K highmem)
+[    0.000000] virtual kernel memory layout:
+    fixmap  : 0xfff13000 - 0xfffff000   ( 944 kB)
+    pkmap   : 0xff800000 - 0xffc00000   (4096 kB)
+    vmalloc : 0xbfe60000 - 0xff7fe000   (1017 MB)
+    lowmem  : 0x80000000 - 0xbf660000   (1014 MB)
+      .init : 0x82af4000 - 0x82b99000   ( 660 kB)
+      .data : 0x827e6e34 - 0x82af4000   (3124 kB)
+      .text : 0x82200000 - 0x827e6e34   (6043 kB)
+[    0.000000] Checking if this processor honours the WP bit even in supervisor mode...Ok.
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=2, Nodes=1
+[    0.000000] Hierarchical RCU implementation.
+[    0.000000] 	RCU restricting CPUs from NR_CPUS=8 to nr_cpu_ids=2.
+[    0.000000] RCU: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=2
+[    0.000000] NR_IRQS:2304 nr_irqs:512 16
+[    0.000000] CPU 0 irqstacks, hard=be808000 soft=be80a000
+[    0.000000] Console: colour VGA+ 80x25
+[    0.000000] console [tty2] enabled
+[    0.000000] hpet clockevent registered
+[    0.000000] Initial TSC value: 38025573352
+[    0.000000] tsc: Fast TSC calibration using PIT
+[    0.000000] Initial usec timer 21992812
+[    0.000000] tsc: Detected 1729.166 MHz processor
+[    0.001003] Calibrating delay loop (skipped), value calculated using timer frequency.. 3458.33 BogoMIPS (lpj=1729166)
+[    0.001120] pid_max: default: 32768 minimum: 301
+[    0.001184] ACPI: Core revision 20131218
+[    0.007055] ACPI: All ACPI Tables successfully acquired
+[    0.007185] acpi_enable!
+[    0.008015] ACPI mode enable smi_command = 0xb2 val = 0xf0
+[    0.008130] Security Framework initialized
+[    0.009006] Yama: becoming mindful.
+[    0.009066] Chromium OS LSM: enabled
+[    0.009123] Mount-cache hash table entries: 2048 (order: 1, 8192 bytes)
+[    0.009230] Mountpoint-cache hash table entries: 2048 (order: 1, 8192 bytes)
+[    0.009615] Initializing cgroup subsys devices
+[    0.009674] Initializing cgroup subsys freezer
+[    0.009755] CPU: Physical Processor ID: 0
+[    0.009811] CPU: Processor Core ID: 0
+[    0.009868] mce: CPU supports 6 MCE banks
+[    0.009930] CPU0: Thermal monitoring enabled (TM2)
+[    0.010020] Last level iTLB entries: 4KB 128, 2MB 4, 4MB 4
+Last level dTLB entries: 4KB 256, 2MB 0, 4MB 32, 1GB 0
+tlb_flushall_shift: -1
+[    0.010405] Freeing SMP alternatives memory: 16K (82b99000 - 82b9d000)
+[    0.010948] ftrace: allocating 30397 entries in 60 pages
+[    0.022145] Enabling APIC mode:  Flat.  Using 1 I/O APICs
+[    0.022689] ..TIMER: vector=0x30 apic1=0 pin1=2 apic2=-1 pin2=-1
+[    0.032810] smpboot: CPU0: Intel(R) Core(TM)2 CPU         T5300  @ 1.73GHz (fam: 06, model: 0f, stepping: 02)
+[    0.033000] Performance Events: PEBS fmt0-, 4-deep LBR, Core2 events, Intel PMU driver.
+[    0.033000] perf_event_intel: PEBS disabled due to CPU errata
+[    0.033000] ... version:                2
+[    0.033000] ... bit width:              40
+[    0.033000] ... generic registers:      2
+[    0.033000] ... value mask:             000000ffffffffff
+[    0.033000] ... max period:             000000007fffffff
+[    0.033000] ... fixed-purpose events:   3
+[    0.033000] ... event mask:             0000000700000003
+[    0.034458] CPU 1 irqstacks, hard=be8e2000 soft=be8e4000
+[    0.034461] x86: Booting SMP configuration:
+[    0.034517] .... node  #0, CPUs:      #1
+[    0.002000] Initializing CPU#1
+[    0.046060] x86: Booted up 1 node, 2 CPUs
+[    0.046220] smpboot: Total of 2 processors activated (6916.66 BogoMIPS)
+[    0.047115] NMI watchdog: enabled on all CPUs, permanently consumes one hw-PMU counter.
+[    0.049060] devtmpfs: initialized
+[    0.049379] PM: Registering ACPI NVS region [mem 0x3f669000-0x3f6fffff] (618496 bytes)
+[    0.051593] pinctrl core: initialized pinctrl subsystem
+[    0.051734] RTC time: 18:53:52, date: 02/17/16
+[    0.051859] NET: Registered protocol family 16
+[    0.052457] cpuidle: using governor ladder
+[    0.052514] cpuidle: using governor menu
+[    0.053000] Switched to clocksource hpet
+[    0.053074] ACPI: bus type PCI registered
+[    0.053213] PCI: MMCONFIG for domain 0000 [bus 00-3f] at [mem 0xf8000000-0xfbffffff] (base 0xf8000000)
+[    0.053304] PCI: MMCONFIG at [mem 0xf8000000-0xfbffffff] reserved in E820
+[    0.053365] PCI: Using MMCONFIG for extended config space
+[    0.053423] PCI: Using configuration type 1 for base access
+[    0.060622] bio: create slab <bio-0> at 0
+[    0.060863] ACPI: Added _OSI(Module Device)
+[    0.060922] ACPI: Added _OSI(Processor Device)
+[    0.060979] ACPI: Added _OSI(3.0 _SCP Extensions)
+[    0.061047] ACPI: Added _OSI(Processor Aggregator Device)
+[    0.067115] ACPI: SSDT 3f6695c3 000893 (v01 FUJ    FJNB1C2  01130000 INTL 20050624)
+[    0.068035] ACPI: Dynamic OEM Table Load:
+[    0.068158] ACPI: SSDT   (null) 000893 (v01 FUJ    FJNB1C2  01130000 INTL 20050624)
+[    0.069909] ACPI: SSDT 3f66867a 0001E8 (v01 FUJ    FJNB1C2  01130000 INTL 20050624)
+[    0.070632] ACPI: Dynamic OEM Table Load:
+[    0.070755] ACPI: SSDT   (null) 0001E8 (v01 FUJ    FJNB1C2  01130000 INTL 20050624)
+[    0.071043] ACPI: SSDT 3f668af9 0001D0 (v01 FUJ    FJNB1C2  01130000 INTL 20050624)
+[    0.071737] ACPI: Dynamic OEM Table Load:
+[    0.071858] ACPI: SSDT   (null) 0001D0 (v01 FUJ    FJNB1C2  01130000 INTL 20050624)
+[    0.072353] ACPI: SSDT 3f668a72 000087 (v01 FUJ    FJNB1C2  01130000 INTL 20050624)
+[    0.073064] ACPI: Dynamic OEM Table Load:
+[    0.073186] ACPI: SSDT   (null) 000087 (v01 FUJ    FJNB1C2  01130000 INTL 20050624)
+[    0.073448] ACPI: SSDT 3f668cc9 000085 (v01 FUJ    FJNB1C2  01130000 INTL 20050624)
+[    0.074155] ACPI: Dynamic OEM Table Load:
+[    0.074278] ACPI: SSDT   (null) 000085 (v01 FUJ    FJNB1C2  01130000 INTL 20050624)
+[    0.074799] ACPI: Interpreter enabled
+[    0.074866] ACPI Exception: AE_NOT_FOUND, While evaluating Sleep State [\_S1_] (20131218/hwxface-580)
+[    0.075026] ACPI Exception: AE_NOT_FOUND, While evaluating Sleep State [\_S2_] (20131218/hwxface-580)
+[    0.075186] ACPI: (supports S0 S3 S5)
+[    0.075242] ACPI: Using IOAPIC for interrupt routing
+[    0.075339] PCI: Ignoring host bridge windows from ACPI; if necessary, use "pci=use_crs" and report a bug
+[    0.075677] ACPI: No dock devices found.
+[    0.089201] ACPI: PCI Root Bridge [PCI0] (domain 0000 [bus 00-ff])
+[    0.089268] acpi PNP0A08:00: _OSC: OS supports [ExtendedConfig ASPM ClockPM Segments MSI]
+[    0.089352] acpi PNP0A08:00: _OSC failed (AE_NOT_FOUND); disabling ASPM
+[    0.090367] acpi PNP0A08:00: host bridge window [io  0x0000-0x0cf7] (ignored)
+[    0.090372] acpi PNP0A08:00: host bridge window [io  0x0d00-0xffff] (ignored)
+[    0.090377] acpi PNP0A08:00: host bridge window [mem 0x000a0000-0x000bffff] (ignored)
+[    0.090382] acpi PNP0A08:00: host bridge window [mem 0x000d4000-0x000d7fff] (ignored)
+[    0.090387] acpi PNP0A08:00: host bridge window [mem 0x000d8000-0x000dbfff] (ignored)
+[    0.090392] acpi PNP0A08:00: host bridge window [mem 0x40000000-0xfebfffff] (ignored)
+[    0.090396] PCI: root bus 00: using default resources
+[    0.090401] acpi PNP0A08:00: [Firmware Info]: MMCONFIG for domain 0000 [bus 00-3f] only partially covers this bridge
+[    0.090547] PCI host bridge to bus 0000:00
+[    0.090605] pci_bus 0000:00: root bus resource [bus 00-ff]
+[    0.090664] pci_bus 0000:00: root bus resource [io  0x0000-0xffff]
+[    0.090724] pci_bus 0000:00: root bus resource [mem 0x00000000-0xffffffff]
+[    0.090799] pci 0000:00:00.0: [8086:27a0] type 00 class 0x060000
+[    0.090977] pci 0000:00:02.0: [8086:27a2] type 00 class 0x030000
+[    0.090996] pci 0000:00:02.0: reg 0x10: [mem 0xf0300000-0xf037ffff]
+[    0.091019] pci 0000:00:02.0: reg 0x14: [io  0x1800-0x1807]
+[    0.091030] pci 0000:00:02.0: reg 0x18: [mem 0xe0000000-0xefffffff pref]
+[    0.091040] pci 0000:00:02.0: reg 0x1c: [mem 0xf0400000-0xf043ffff]
+[    0.091210] pci 0000:00:02.1: [8086:27a6] type 00 class 0x038000
+[    0.091226] pci 0000:00:02.1: reg 0x10: [mem 0xf0380000-0xf03fffff]
+[    0.091467] pci 0000:00:1b.0: [8086:27d8] type 00 class 0x040300
+[    0.091496] pci 0000:00:1b.0: reg 0x10: [mem 0xf0640000-0xf0643fff 64bit]
+[    0.091635] pci 0000:00:1b.0: PME# supported from D0 D3hot D3cold
+[    0.091711] pci 0000:00:1b.0: System wakeup disabled by ACPI
+[    0.091857] pci 0000:00:1c.0: [8086:27d0] type 01 class 0x060400
+[    0.092013] pci 0000:00:1c.0: PME# supported from D0 D3hot D3cold
+[    0.092170] pci 0000:00:1c.1: [8086:27d2] type 01 class 0x060400
+[    0.092305] pci 0000:00:1c.1: PME# supported from D0 D3hot D3cold
+[    0.092463] pci 0000:00:1c.2: [8086:27d4] type 01 class 0x060400
+[    0.092597] pci 0000:00:1c.2: PME# supported from D0 D3hot D3cold
+[    0.092760] pci 0000:00:1d.0: [8086:27c8] type 00 class 0x0c0300
+[    0.092828] pci 0000:00:1d.0: reg 0x20: [io  0x1820-0x183f]
+[    0.092956] pci 0000:00:1d.0: System wakeup disabled by ACPI
+[    0.093109] pci 0000:00:1d.1: [8086:27c9] type 00 class 0x0c0300
+[    0.093178] pci 0000:00:1d.1: reg 0x20: [io  0x1840-0x185f]
+[    0.093304] pci 0000:00:1d.1: System wakeup disabled by ACPI
+[    0.093443] pci 0000:00:1d.2: [8086:27ca] type 00 class 0x0c0300
+[    0.093511] pci 0000:00:1d.2: reg 0x20: [io  0x1860-0x187f]
+[    0.093636] pci 0000:00:1d.2: System wakeup disabled by ACPI
+[    0.093773] pci 0000:00:1d.3: [8086:27cb] type 00 class 0x0c0300
+[    0.093841] pci 0000:00:1d.3: reg 0x20: [io  0x1880-0x189f]
+[    0.093965] pci 0000:00:1d.3: System wakeup disabled by ACPI
+[    0.094130] pci 0000:00:1d.7: [8086:27cc] type 00 class 0x0c0320
+[    0.094161] pci 0000:00:1d.7: reg 0x10: [mem 0xf0644000-0xf06443ff]
+[    0.094290] pci 0000:00:1d.7: PME# supported from D0 D3hot D3cold
+[    0.094384] pci 0000:00:1d.7: System wakeup disabled by ACPI
+[    0.094528] pci 0000:00:1e.0: [8086:2448] type 01 class 0x060401
+[    0.094682] pci 0000:00:1e.0: System wakeup disabled by ACPI
+[    0.094829] pci 0000:00:1f.0: [8086:27b9] type 00 class 0x060100
+[    0.094962] pci 0000:00:1f.0: address space collision: [io  0x1000-0x107f] conflicts with ACPI CPU throttle [??? 0x00001010-0x00001015 flags 0x80000000]
+[    0.095067] pci 0000:00:1f.0: quirk: [io  0x1180-0x11bf] claimed by ICH6 GPIO
+[    0.095133] pci 0000:00:1f.0: ICH7 LPC Generic IO decode 1 PIO at fd00 (mask 007f)
+[    0.095386] pci 0000:00:1f.3: [8086:27da] type 00 class 0x0c0500
+[    0.095472] pci 0000:00:1f.3: reg 0x20: [io  0x18a0-0x18bf]
+[    0.095776] pci 0000:02:00.0: [11ab:4363] type 00 class 0x020000
+[    0.095820] pci 0000:02:00.0: reg 0x10: [mem 0xf0000000-0xf0003fff 64bit]
+[    0.095844] pci 0000:02:00.0: reg 0x18: [io  0x2000-0x20ff]
+[    0.095924] pci 0000:02:00.0: reg 0x30: [mem 0x00000000-0x0001ffff pref]
+[    0.096069] pci 0000:02:00.0: supports D1 D2
+[    0.096073] pci 0000:02:00.0: PME# supported from D0 D1 D2 D3hot D3cold
+[    0.096139] pci 0000:02:00.0: System wakeup disabled by ACPI
+[    0.098046] pci 0000:00:1c.0: PCI bridge to [bus 02]
+[    0.098108] pci 0000:00:1c.0:   bridge window [io  0x2000-0x2fff]
+[    0.098116] pci 0000:00:1c.0:   bridge window [mem 0xf0000000-0xf00fffff]
+[    0.098229] pci 0000:00:1c.1: PCI bridge to [bus 03-04]
+[    0.098292] pci 0000:00:1c.1:   bridge window [io  0x0000-0x0fff]
+[    0.098300] pci 0000:00:1c.1:   bridge window [mem 0x00000000-0x000fffff]
+[    0.098311] pci 0000:00:1c.1:   bridge window [mem 0x00000000-0x000fffff 64bit pref]
+[    0.098529] pci 0000:05:00.0: [8086:4222] type 00 class 0x028000
+[    0.098591] pci 0000:05:00.0: reg 0x10: [mem 0xf0100000-0xf0100fff]
+[    0.099076] pci 0000:05:00.0: PME# supported from D0 D3hot D3cold
+[    0.099264] pci 0000:05:00.0: disabling ASPM on pre-1.1 PCIe device.  You can enable it with 'pcie_aspm=force'
+[    0.099424] pci 0000:00:1c.2: PCI bridge to [bus 05-07]
+[    0.099487] pci 0000:00:1c.2:   bridge window [io  0x0000-0x0fff]
+[    0.099495] pci 0000:00:1c.2:   bridge window [mem 0x00000000-0x000fffff]
+[    0.099506] pci 0000:00:1c.2:   bridge window [mem 0x00000000-0x000fffff 64bit pref]
+[    0.099601] pci 0000:08:03.0: [1217:7136] type 02 class 0x060700
+[    0.099633] pci 0000:08:03.0: reg 0x10: [mem 0x00000000-0x00000fff]
+[    0.099686] pci 0000:08:03.0: supports D1 D2
+[    0.099690] pci 0000:08:03.0: PME# supported from D0 D1 D2 D3hot D3cold
+[    0.099798] pci 0000:08:03.2: [1217:7120] type 00 class 0x080501
+[    0.099830] pci 0000:08:03.2: reg 0x10: [mem 0xf0202800-0xf02028ff]
+[    0.099968] pci 0000:08:03.2: supports D1 D2
+[    0.099972] pci 0000:08:03.2: PME# supported from D0 D1 D2 D3hot D3cold
+[    0.100087] pci 0000:08:03.3: [1217:7130] type 00 class 0x018000
+[    0.100119] pci 0000:08:03.3: reg 0x10: [mem 0xf0200000-0xf0200fff]
+[    0.100257] pci 0000:08:03.3: supports D1 D2
+[    0.100261] pci 0000:08:03.3: PME# supported from D0 D1 D2 D3hot D3cold
+[    0.100364] pci 0000:08:03.4: [1217:00f7] type 00 class 0x0c0010
+[    0.100391] pci 0000:08:03.4: reg 0x10: [mem 0xf0201000-0xf0201fff]
+[    0.100407] pci 0000:08:03.4: reg 0x14: [mem 0xf0202000-0xf02027ff]
+[    0.100510] pci 0000:08:03.4: supports D1 D2
+[    0.100514] pci 0000:08:03.4: PME# supported from D0 D1 D2 D3hot
+[    0.100665] pci 0000:00:1e.0: PCI bridge to [bus 08-09] (subtractive decode)
+[    0.100735] pci 0000:00:1e.0:   bridge window [mem 0xf0200000-0xf02fffff]
+[    0.100746] pci 0000:00:1e.0:   bridge window [io  0x0000-0xffff] (subtractive decode)
+[    0.100751] pci 0000:00:1e.0:   bridge window [mem 0x00000000-0xffffffff] (subtractive decode)
+[    0.100838] pci_bus 0000:09: busn_res: can not insert [bus 09-ff] under [bus 08-09] (conflicts with (null) [bus 08-09])
+[    0.100847] pci_bus 0000:09: busn_res: [bus 09-ff] end is updated to 0c
+[    0.100853] pci_bus 0000:09: busn_res: can not insert [bus 09-0c] under [bus 08-09] (conflicts with (null) [bus 08-09])
+[    0.100860] pci_bus 0000:09: [bus 09-0c] partially hidden behind transparent bridge 0000:08 [bus 08-09]
+[    0.100984] pci_bus 0000:00: on NUMA node 0
+[    0.101655] ACPI: PCI Interrupt Link [LNKA] (IRQs 1 3 4 5 6 7 10 12 14 15) *11
+[    0.102258] ACPI: PCI Interrupt Link [LNKB] (IRQs 1 3 4 5 6 7 *11 12 14 15)
+[    0.102800] ACPI: PCI Interrupt Link [LNKC] (IRQs 1 3 4 5 6 7 10 12 14 15) *11
+[    0.103399] ACPI: PCI Interrupt Link [LNKD] (IRQs 1 3 4 5 6 7 *11 12 14 15)
+[    0.103937] ACPI: PCI Interrupt Link [LNKE] (IRQs 1 3 4 5 6 7 10 12 14 15) *11
+[    0.104535] ACPI: PCI Interrupt Link [LNKF] (IRQs 1 3 4 5 6 7 *11 12 14 15)
+[    0.105086] ACPI: PCI Interrupt Link [LNKG] (IRQs 1 3 4 5 6 7 10 12 14 15) *11
+[    0.105673] ACPI: PCI Interrupt Link [LNKH] (IRQs 3 4 5 6 7 *11 12 14 15)
+[    0.106391] ACPI: Enabled 3 GPEs in block 00 to 1F
+[    0.106548] ACPI : EC: GPE = 0x17, I/O: command/status = 0x66, data = 0x62
+[    0.106803] SCSI subsystem initialized
+[    0.106941] libata version 3.00 loaded.
+[    0.106999] ACPI: bus type USB registered
+[    0.107108] usbcore: registered new interface driver usbfs
+[    0.107186] usbcore: registered new interface driver hub
+[    0.107314] usbcore: registered new device driver usb
+[    0.107412] pps_core: LinuxPPS API ver. 1 registered
+[    0.107469] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    0.107553] PTP clock support registered
+[    0.107786] wmi: Mapper loaded
+[    0.107902] chromeos_acpi: installed
+[    0.107957] chromeos_acpi: chromeos_acpi: enabling S3 USB wake
+[    0.108033] chromeos_acpi: chromeos_acpi: failed to enable S3 USB wake
+[    0.108119] Advanced Linux Sound Architecture Driver Initialized.
+[    0.108179] PCI: Using ACPI for IRQ routing
+[    0.111297] PCI: pci_cache_line_size set to 64 bytes
+[    0.111328] pci 0000:05:00.0: no compatible bridge window for [mem 0xf0100000-0xf0100fff]
+[    0.111473] e820: reserve RAM buffer [mem 0x0009f800-0x0009ffff]
+[    0.111477] e820: reserve RAM buffer [mem 0x3f660000-0x3fffffff]
+[    0.112180] HPET: 3 timers in total, 0 timers will be used for per-cpu timer
+[    0.112247] hpet0: at MMIO 0xfed00000, IRQs 2, 8, 0
+[    0.112440] hpet0: 3 comparators, 64-bit 14.318180 MHz counter
+[    0.114715] Could not create debugfs 'set_ftrace_filter' entry
+[    0.114776] Could not create debugfs 'set_ftrace_notrace' entry
+[    0.131104] pnp: PnP ACPI init
+[    0.131202] ACPI: bus type PNP registered
+[    0.131398] system 00:00: [mem 0xf8000000-0xfbffffff] has been reserved
+[    0.131465] system 00:00: Plug and Play ACPI device, IDs PNP0c02 (active)
+[    0.131750] system 00:01: [io  0x04d0-0x04d1] has been reserved
+[    0.131813] system 00:01: [io  0x0800-0x080f] has been reserved
+[    0.131874] system 00:01: [io  0x1000-0x107f] could not be reserved
+[    0.131936] system 00:01: [io  0x1080-0x10ff] has been reserved
+[    0.131997] system 00:01: [io  0x1100-0x111f] has been reserved
+[    0.132070] system 00:01: [io  0x1180-0x11bf] has been reserved
+[    0.132131] system 00:01: [io  0xf800-0xf87f] has been reserved
+[    0.132192] system 00:01: [io  0xf880-0xf8ff] has been reserved
+[    0.132253] system 00:01: [io  0xfc00-0xfc7f] has been reserved
+[    0.132313] system 00:01: [io  0xfc80-0xfcff] has been reserved
+[    0.132374] system 00:01: [io  0xfd0c-0xfd7f] has been reserved
+[    0.132436] system 00:01: [io  0xfe00-0xfe01] has been reserved
+[    0.132497] system 00:01: [mem 0xf8000000-0xfbffffff] has been reserved
+[    0.132560] system 00:01: [mem 0xfed14000-0xfed17fff] has been reserved
+[    0.132622] system 00:01: [mem 0xfed18000-0xfed18fff] has been reserved
+[    0.132685] system 00:01: [mem 0xfed19000-0xfed19fff] has been reserved
+[    0.132748] system 00:01: [mem 0xfed1c000-0xfed1ffff] has been reserved
+[    0.132810] system 00:01: [mem 0xfed20000-0xfed3ffff] has been reserved
+[    0.132872] system 00:01: [mem 0xfed45000-0xfed8ffff] has been reserved
+[    0.132935] system 00:01: [mem 0xfec00000-0xfec00fff] could not be reserved
+[    0.132998] system 00:01: [mem 0xfee00000-0xfee00fff] has been reserved
+[    0.133069] system 00:01: [mem 0xfef00000-0xfeffffff] has been reserved
+[    0.133131] system 00:01: [mem 0x000cec00-0x000cefff] has been reserved
+[    0.133194] system 00:01: [mem 0xffb00000-0xffbfffff] has been reserved
+[    0.133256] system 00:01: [mem 0xfed40000-0xfed44fff] has been reserved
+[    0.133320] system 00:01: Plug and Play ACPI device, IDs PNP0c02 (active)
+[    0.133458] pnp 00:02: [dma 4]
+[    0.133512] pnp 00:02: Plug and Play ACPI device, IDs PNP0200 (active)
+[    0.133621] pnp 00:03: Plug and Play ACPI device, IDs PNP0b00 (active)
+[    0.133690] pnp 00:04: Plug and Play ACPI device, IDs PNP0800 (active)
+[    0.133769] pnp 00:05: Plug and Play ACPI device, IDs PNP0c04 (active)
+[    0.133844] pnp 00:06: Plug and Play ACPI device, IDs PNP0303 (active)
+[    0.133918] pnp 00:07: Plug and Play ACPI device, IDs PNP0f13 (active)
+[    0.134121] system 00:08: [mem 0xfed00000-0xfed003ff] has been reserved
+[    0.134186] system 00:08: Plug and Play ACPI device, IDs PNP0103 PNP0c01 (active)
+[    0.134927] pnp: PnP ACPI: found 9 devices
+[    0.134983] ACPI: bus type PNP unregistered
+[    0.208987] pci 0000:00:1c.0: bridge window [mem 0x00100000-0x001fffff pref] to [bus 02] add_size 200000
+[    0.209018] pci 0000:00:1c.1: bridge window [io  0x1000-0x0fff] to [bus 03-04] add_size 1000
+[    0.209025] pci 0000:00:1c.1: bridge window [mem 0x00100000-0x000fffff 64bit pref] to [bus 03-04] add_size 200000
+[    0.209030] pci 0000:00:1c.1: bridge window [mem 0x00100000-0x000fffff] to [bus 03-04] add_size 200000
+[    0.209051] pci 0000:00:1c.2: bridge window [io  0x1000-0x0fff] to [bus 05-07] add_size 1000
+[    0.209057] pci 0000:00:1c.2: bridge window [mem 0x00100000-0x000fffff 64bit pref] to [bus 05-07] add_size 200000
+[    0.209063] pci 0000:00:1c.2: bridge window [mem 0x00100000-0x001fffff] to [bus 05-07] add_size 200000
+[    0.209087] pci 0000:08:03.0: res[7]=[io  0x0100-0x00ff] get_res_add_size add_size 100
+[    0.209092] pci 0000:08:03.0: res[8]=[io  0x0100-0x00ff] get_res_add_size add_size 100
+[    0.209098] pci 0000:00:1e.0: bridge window [io  0x1000-0x0fff] to [bus 08-09] add_size 1000
+[    0.209103] pci 0000:08:03.0: res[9]=[mem 0x04000000-0x03ffffff pref] get_res_add_size add_size 4000000
+[    0.209109] pci 0000:00:1e.0: bridge window [mem 0x04000000-0x03ffffff pref] to [bus 08-09] add_size 4000000
+[    0.209119] pci 0000:00:1f.0: BAR 7: [io  0x1000-0x107f] has bogus alignment
+[    0.209188] pci 0000:00:1e.0: res[9]=[mem 0x04000000-0x03ffffff pref] get_res_add_size add_size 4000000
+[    0.209193] pci 0000:00:1c.0: res[9]=[mem 0x00100000-0x001fffff pref] get_res_add_size add_size 200000
+[    0.209198] pci 0000:00:1c.1: res[8]=[mem 0x00100000-0x000fffff] get_res_add_size add_size 200000
+[    0.209204] pci 0000:00:1c.1: res[9]=[mem 0x00100000-0x000fffff 64bit pref] get_res_add_size add_size 200000
+[    0.209209] pci 0000:00:1c.2: res[8]=[mem 0x00100000-0x001fffff] get_res_add_size add_size 200000
+[    0.209214] pci 0000:00:1c.2: res[9]=[mem 0x00100000-0x000fffff 64bit pref] get_res_add_size add_size 200000
+[    0.209219] pci 0000:00:1c.1: res[7]=[io  0x1000-0x0fff] get_res_add_size add_size 1000
+[    0.209223] pci 0000:00:1c.2: res[7]=[io  0x1000-0x0fff] get_res_add_size add_size 1000
+[    0.209228] pci 0000:00:1e.0: res[7]=[io  0x1000-0x0fff] get_res_add_size add_size 1000
+[    0.209238] pci 0000:00:1e.0: BAR 9: assigned [mem 0x40000000-0x43ffffff pref]
+[    0.209316] pci 0000:00:1c.0: BAR 9: assigned [mem 0x44000000-0x442fffff pref]
+[    0.209393] pci 0000:00:1c.1: BAR 8: assigned [mem 0x44300000-0x444fffff]
+[    0.209456] pci 0000:00:1c.1: BAR 9: assigned [mem 0x44500000-0x446fffff 64bit pref]
+[    0.209534] pci 0000:00:1c.2: BAR 8: assigned [mem 0x44700000-0x449fffff]
+[    0.209598] pci 0000:00:1c.2: BAR 9: assigned [mem 0x44a00000-0x44bfffff 64bit pref]
+[    0.209677] pci 0000:00:1c.1: BAR 7: assigned [io  0x3000-0x3fff]
+[    0.209738] pci 0000:00:1c.2: BAR 7: assigned [io  0x4000-0x4fff]
+[    0.209800] pci 0000:00:1e.0: BAR 7: assigned [io  0x5000-0x5fff]
+[    0.209866] pci 0000:02:00.0: BAR 6: assigned [mem 0x44000000-0x4401ffff pref]
+[    0.209944] pci 0000:00:1c.0: PCI bridge to [bus 02]
+[    0.210014] pci 0000:00:1c.0:   bridge window [io  0x2000-0x2fff]
+[    0.210080] pci 0000:00:1c.0:   bridge window [mem 0xf0000000-0xf00fffff]
+[    0.210145] pci 0000:00:1c.0:   bridge window [mem 0x44000000-0x442fffff pref]
+[    0.210227] pci 0000:00:1c.1: PCI bridge to [bus 03-04]
+[    0.210288] pci 0000:00:1c.1:   bridge window [io  0x3000-0x3fff]
+[    0.210354] pci 0000:00:1c.1:   bridge window [mem 0x44300000-0x444fffff]
+[    0.210419] pci 0000:00:1c.1:   bridge window [mem 0x44500000-0x446fffff 64bit pref]
+[    0.210504] pci 0000:05:00.0: BAR 0: assigned [mem 0x44700000-0x44700fff]
+[    0.210577] pci 0000:00:1c.2: PCI bridge to [bus 05-07]
+[    0.210638] pci 0000:00:1c.2:   bridge window [io  0x4000-0x4fff]
+[    0.210703] pci 0000:00:1c.2:   bridge window [mem 0x44700000-0x449fffff]
+[    0.210769] pci 0000:00:1c.2:   bridge window [mem 0x44a00000-0x44bfffff 64bit pref]
+[    0.210856] pci 0000:08:03.0: res[9]=[mem 0x04000000-0x03ffffff pref] get_res_add_size add_size 4000000
+[    0.210861] pci 0000:08:03.0: res[10]=[mem 0x04000000-0x03ffffff] get_res_add_size add_size 4000000
+[    0.210866] pci 0000:08:03.0: res[7]=[io  0x0100-0x00ff] get_res_add_size add_size 100
+[    0.210871] pci 0000:08:03.0: res[8]=[io  0x0100-0x00ff] get_res_add_size add_size 100
+[    0.210878] pci 0000:08:03.0: BAR 0: assigned [mem 0xf4000000-0xf4000fff]
+[    0.210944] pci 0000:08:03.0: BAR 9: assigned [mem 0x40000000-0x43ffffff pref]
+[    0.211034] pci 0000:08:03.0: BAR 10: assigned [mem 0x48000000-0x4bffffff]
+[    0.211097] pci 0000:08:03.0: BAR 7: assigned [io  0x5000-0x50ff]
+[    0.211159] pci 0000:08:03.0: BAR 8: assigned [io  0x5400-0x54ff]
+[    0.211222] pci 0000:08:03.0: CardBus bridge to [bus 09-0c]
+[    0.211283] pci 0000:08:03.0:   bridge window [io  0x5000-0x50ff]
+[    0.211348] pci 0000:08:03.0:   bridge window [io  0x5400-0x54ff]
+[    0.211413] pci 0000:08:03.0:   bridge window [mem 0x40000000-0x43ffffff pref]
+[    0.213980] pci 0000:08:03.0:   bridge window [mem 0x48000000-0x4bffffff]
+[    0.214054] pci 0000:00:1e.0: PCI bridge to [bus 08-09]
+[    0.214115] pci 0000:00:1e.0:   bridge window [io  0x5000-0x5fff]
+[    0.214181] pci 0000:00:1e.0:   bridge window [mem 0xf0200000-0xf02fffff]
+[    0.214246] pci 0000:00:1e.0:   bridge window [mem 0x40000000-0x43ffffff pref]
+[    0.214330] pci_bus 0000:00: resource 4 [io  0x0000-0xffff]
+[    0.214335] pci_bus 0000:00: resource 5 [mem 0x00000000-0xffffffff]
+[    0.214339] pci_bus 0000:02: resource 0 [io  0x2000-0x2fff]
+[    0.214344] pci_bus 0000:02: resource 1 [mem 0xf0000000-0xf00fffff]
+[    0.214348] pci_bus 0000:02: resource 2 [mem 0x44000000-0x442fffff pref]
+[    0.214352] pci_bus 0000:03: resource 0 [io  0x3000-0x3fff]
+[    0.214357] pci_bus 0000:03: resource 1 [mem 0x44300000-0x444fffff]
+[    0.214361] pci_bus 0000:03: resource 2 [mem 0x44500000-0x446fffff 64bit pref]
+[    0.214367] pci_bus 0000:05: resource 0 [io  0x4000-0x4fff]
+[    0.214371] pci_bus 0000:05: resource 1 [mem 0x44700000-0x449fffff]
+[    0.214376] pci_bus 0000:05: resource 2 [mem 0x44a00000-0x44bfffff 64bit pref]
+[    0.214380] pci_bus 0000:08: resource 0 [io  0x5000-0x5fff]
+[    0.214384] pci_bus 0000:08: resource 1 [mem 0xf0200000-0xf02fffff]
+[    0.214389] pci_bus 0000:08: resource 2 [mem 0x40000000-0x43ffffff pref]
+[    0.214393] pci_bus 0000:08: resource 4 [io  0x0000-0xffff]
+[    0.214397] pci_bus 0000:08: resource 5 [mem 0x00000000-0xffffffff]
+[    0.214402] pci_bus 0000:09: resource 0 [io  0x5000-0x50ff]
+[    0.214406] pci_bus 0000:09: resource 1 [io  0x5400-0x54ff]
+[    0.214410] pci_bus 0000:09: resource 2 [mem 0x40000000-0x43ffffff pref]
+[    0.214414] pci_bus 0000:09: resource 3 [mem 0x48000000-0x4bffffff]
+[    0.214472] NET: Registered protocol family 2
+[    0.214764] TCP established hash table entries: 8192 (order: 3, 32768 bytes)
+[    0.214856] TCP bind hash table entries: 8192 (order: 5, 163840 bytes)
+[    0.215033] TCP: Hash tables configured (established 8192 bind 8192)
+[    0.215134] TCP: reno registered
+[    0.215191] UDP hash table entries: 512 (order: 2, 24576 bytes)
+[    0.215268] UDP-Lite hash table entries: 512 (order: 2, 24576 bytes)
+[    0.215429] NET: Registered protocol family 1
+[    0.215507] pci 0000:00:02.0: Boot video device
+[    0.217202] PCI: CLS 64 bytes, default 64
+[    0.217665] Simple Boot Flag at 0x7b set to 0x1
+[    0.217923] microcode: CPU0 sig=0x6f2, pf=0x20, revision=0x57
+[    0.217994] microcode: CPU1 sig=0x6f2, pf=0x20, revision=0x57
+[    0.218142] microcode: Microcode Update Driver: v2.00 <tigran@aivazian.fsnet.co.uk>, Peter Oruba
+[    0.218501] Scanning for low memory corruption every 60 seconds
+[    0.219146] futex hash table entries: 512 (order: 3, 32768 bytes)
+[    0.223578] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    0.223895] msgmni has been set to 1989
+[    0.224687] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 250)
+[    0.224764] io scheduler noop registered
+[    0.224819] io scheduler deadline registered
+[    0.224985] io scheduler cfq registered (default)
+[    0.225360] pcieport 0000:00:1c.0: irq 40 for MSI/MSI-X
+[    0.225495] pcieport 0000:00:1c.1: enabling device (0000 -> 0003)
+[    0.225740] pcieport 0000:00:1c.1: irq 41 for MSI/MSI-X
+[    0.225871] pcieport 0000:00:1c.2: enabling device (0000 -> 0003)
+[    0.226129] pcieport 0000:00:1c.2: irq 42 for MSI/MSI-X
+[    0.226309] pci_hotplug: PCI Hot Plug PCI Core version: 0.5
+[    0.226397] pciehp: PCI Express Hot Plug Controller Driver version: 0.4
+[    0.226523] intel_idle: does not run on family 6 model 15
+[    0.226711] ACPI: AC Adapter [AC] (on-line)
+[    0.227000] input: Lid Switch as /devices/LNXSYSTM:00/device:00/PNP0C0D:00/input/input0
+[    0.227129] ACPI: Lid Switch [LID]
+[    0.227276] input: Power Button as /devices/LNXSYSTM:00/device:00/PNP0C0C:00/input/input1
+[    0.227356] ACPI: Power Button [PWRB]
+[    0.227503] input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input2
+[    0.227580] ACPI: Power Button [PWRF]
+[    0.227795] ACPI: Video Device [GFX0] (multi-head: yes  rom: no  post: no)
+[    0.229732] acpi device:02: registered as cooling_device0
+[    0.229903] input: Video Bus as /devices/LNXSYSTM:00/device:00/PNP0A08:00/LNXVIDEO:00/input/input3
+[    0.230138] tsc: Marking TSC unstable due to TSC halts in idle
+[    0.230209] ACPI: acpi_idle registered with cpuidle
+[    0.230890] thermal LNXTHERM:00: registered as thermal_zone0
+[    0.230950] ACPI: Thermal Zone [TZ00] (27 C)
+[    0.231310] thermal LNXTHERM:01: registered as thermal_zone1
+[    0.231370] ACPI: Thermal Zone [TZ01] (27 C)
+[    0.232497] ACPI: Battery Slot [CMB1] (battery present)
+[    0.232650] Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
+[    0.233816] Non-volatile memory driver v1.3
+[    0.233938] intel_rng: FWH not detected
+[    0.234130] Linux agpgart interface v0.103
+[    0.234248] agpgart-intel 0000:00:00.0: Intel 945GM Chipset
+[    0.234360] agpgart-intel 0000:00:00.0: detected gtt size: 262144K total, 262144K mappable
+[    0.235076] agpgart-intel 0000:00:00.0: detected 8192K stolen memory
+[    0.235370] agpgart-intel 0000:00:00.0: AGP aperture is 256M @ 0xe0000000
+[    0.235516] [drm] Initialized drm 1.1.0 20060810
+[    0.236662] [drm] Memory usable by graphics device = 256M
+[    0.237089] [drm] Supports vblank timestamp caching Rev 2 (21.10.2013).
+[    0.237149] [drm] Driver supports precise vblank timestamp query.
+[    0.242725] [drm] initialized overlay support
+[    0.242830] [drm] Initialized i915 1.6.0 20080730 for 0000:00:02.0 on minor 0
+[    0.243278] [drm] Initialized vgem 1.0.0 20120112 on minor 1
+[    0.243391] usbcore: registered new interface driver udl
+[    0.245284] loop: module loaded
+[    0.245345] lkdtm: No crash points registered, enable through debugfs
+[    0.245497] ACPI Warning: SystemIO range 0x00001028-0x0000102f conflicts with OpRegion 0x00001000-0x00001066 (\_SB_.PCI0.LPCB.OPIO) (20131218/utaddress-258)
+[    0.245675] ACPI Warning: SystemIO range 0x00001028-0x0000102f conflicts with OpRegion 0x00001000-0x0000107f (\_SB_.PCI0.LPCB.PMIO) (20131218/utaddress-258)
+[    0.245850] ACPI: If an ACPI driver is available for this device, you should use it instead of the native driver
+[    0.245947] ACPI Warning: SystemIO range 0x000011b0-0x000011bf conflicts with OpRegion 0x00001180-0x000011bb (\_SB_.PCI0.LPCB.OGIO) (20131218/utaddress-258)
+[    0.246133] ACPI: If an ACPI driver is available for this device, you should use it instead of the native driver
+[    0.246228] ACPI Warning: SystemIO range 0x00001180-0x000011af conflicts with OpRegion 0x00001180-0x000011bb (\_SB_.PCI0.LPCB.OGIO) (20131218/utaddress-258)
+[    0.246403] ACPI: If an ACPI driver is available for this device, you should use it instead of the native driver
+[    0.246499] lpc_ich: Resource conflict(s) found affecting gpio_ich
+[    0.247177] e100: Intel(R) PRO/100 Network Driver, 3.5.24-k2-NAPI
+[    0.247239] e100: Copyright(c) 1999-2006 Intel Corporation
+[    0.247347] e1000: Intel(R) PRO/1000 Network Driver - version 7.3.21-k8-NAPI
+[    0.247410] e1000: Copyright (c) 1999-2006 Intel Corporation.
+[    0.247515] e1000e: Intel(R) PRO/1000 Network Driver - 2.3.2-k
+[    0.247576] e1000e: Copyright(c) 1999 - 2013 Intel Corporation.
+[    0.247684] sky2: driver version 1.30
+[    0.247880] sky2 0000:02:00.0: Yukon-2 EC Ultra chip revision 2
+[    0.248054] sky2 0000:02:00.0: irq 43 for MSI/MSI-X
+[    0.248389] sky2 0000:02:00.0 eth0: addr 00:17:42:43:34:5b
+[    0.248704] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+[    0.248771] ehci-pci: EHCI PCI platform driver
+[    0.249074] ehci-pci 0000:00:1d.7: EHCI Host Controller
+[    0.249232] ehci-pci 0000:00:1d.7: new USB bus registered, assigned bus number 1
+[    0.249335] ehci-pci 0000:00:1d.7: debug port 1
+[    0.253313] ehci-pci 0000:00:1d.7: cache line size of 64 is not supported
+[    0.253339] ehci-pci 0000:00:1d.7: irq 23, io mem 0xf0644000
+[    0.259041] ehci-pci 0000:00:1d.7: USB 2.0 started, EHCI 1.00
+[    0.259193] usb usb1: New USB device found, idVendor=1d6b, idProduct=0002
+[    0.259261] usb usb1: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    0.259342] usb usb1: Product: EHCI Host Controller
+[    0.259404] usb usb1: Manufacturer: Linux 3.14.0-test6 ehci_hcd
+[    0.259468] usb usb1: SerialNumber: 0000:00:1d.7
+[    0.259605] ------------[ cut here ]------------
+[    0.259671] WARNING: CPU: 1 PID: 44 at /tmp/v3.14/drivers/gpu/drm/drm_modeset_lock.c:123 modeset_lock.part.2+0x36/0x162()
+[    0.259752] Modules linked in:
+[    0.259769] hub 1-0:1.0: USB hub found
+[    0.259781] hub 1-0:1.0: 8 ports detected
+
+[    0.259999] CPU: 1 PID: 44 Comm: kworker/u4:1 Not tainted 3.14.0-test6 #1
+[    0.260074] Hardware name: FUJITSU A6020/FJNB1C2, BIOS Version 1.13  04/26/2007
+[    0.260152] Workqueue: events_unbound async_run_entry_fn
+[    0.260245]  00000000 3b967a39 00000000 beb39c54
+[    0.260404] ohci_hcd: USB 1.1 'Open' Host Controller (OHCI) Driver
+[    0.260409] ohci-pci: OHCI PCI platform driver
+[    0.260434] uhci_hcd: USB Universal Host Controller Interface driver
+[    0.260593]  827e080d
+[    0.260629] uhci_hcd 0000:00:1d.0: UHCI Host Controller
+[    0.260696] uhci_hcd 0000:00:1d.0: new USB bus registered, assigned bus number 2
+[    0.260732] uhci_hcd 0000:00:1d.0: irq 23, io base 0x00001820
+[    0.260806] usb usb2: New USB device found, idVendor=1d6b, idProduct=0001
+[    0.260809] usb usb2: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    0.260811] usb usb2: Product: UHCI Host Controller
+[    0.260814] usb usb2: Manufacturer: Linux 3.14.0-test6 uhci_hcd
+[    0.260816] usb usb2: SerialNumber: 0000:00:1d.0
+[    0.261033] hub 2-0:1.0: USB hub found
+[    0.261045] hub 2-0:1.0: 2 ports detected
+[    0.261332]  00000000 beb39c6c 8223ba4e
+[    0.261431] uhci_hcd 0000:00:1d.1: UHCI Host Controller
+[    0.261498] uhci_hcd 0000:00:1d.1: new USB bus registered, assigned bus number 3
+[    0.261554] uhci_hcd 0000:00:1d.1: irq 20, io base 0x00001840
+[    0.261630] usb usb3: New USB device found, idVendor=1d6b, idProduct=0001
+[    0.261633] usb usb3: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    0.261636] usb usb3: Product: UHCI Host Controller
+[    0.261638] usb usb3: Manufacturer: Linux 3.14.0-test6 uhci_hcd
+[    0.261640] usb usb3: SerialNumber: 0000:00:1d.1
+[    0.261843] hub 3-0:1.0: USB hub found
+[    0.261856] hub 3-0:1.0: 2 ports detected
+
+[    0.262195]  8247f3e5 be84d194
+[    0.262256] uhci_hcd 0000:00:1d.2: UHCI Host Controller
+[    0.262323] uhci_hcd 0000:00:1d.2: new USB bus registered, assigned bus number 4
+[    0.262376] uhci_hcd 0000:00:1d.2: irq 18, io base 0x00001860
+[    0.262450] usb usb4: New USB device found, idVendor=1d6b, idProduct=0001
+[    0.262453] usb usb4: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    0.262455] usb usb4: Product: UHCI Host Controller
+[    0.262458] usb usb4: Manufacturer: Linux 3.14.0-test6 uhci_hcd
+[    0.262460] usb usb4: SerialNumber: 0000:00:1d.2
+[    0.262664] hub 4-0:1.0: USB hub found
+[    0.262674] hub 4-0:1.0: 2 ports detected
+[    0.262914]  beb39d64
+[    0.262999]  be84f000 beb39c7c
+[    0.263076] uhci_hcd 0000:00:1d.3: UHCI Host Controller
+[    0.263149] uhci_hcd 0000:00:1d.3: new USB bus registered, assigned bus number 5
+[    0.263189] uhci_hcd 0000:00:1d.3: irq 16, io base 0x00001880
+[    0.263266] usb usb5: New USB device found, idVendor=1d6b, idProduct=0001
+[    0.263268] usb usb5: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    0.263271] usb usb5: Product: UHCI Host Controller
+[    0.263273] usb usb5: Manufacturer: Linux 3.14.0-test6 uhci_hcd
+[    0.263275] usb usb5: SerialNumber: 0000:00:1d.3
+[    0.263483] hub 5-0:1.0: USB hub found
+[    0.263495] hub 5-0:1.0: 2 ports detected
+[    0.263751] usbcore: registered new interface driver cdc_acm
+[    0.263752] cdc_acm: USB Abstract Control Model driver for USB modems and ISDN adapters
+[    0.263777] usbcore: registered new interface driver usblp
+[    0.263823] usbcore: registered new interface driver usb-storage
+[    0.263844] usbcore: registered new interface driver ums-realtek
+[    0.263894] usbcore: registered new interface driver usbserial
+[    0.263912] usbcore: registered new interface driver usbserial_generic
+[    0.263925] usbserial: USB Serial support registered for generic
+[    0.264015] i8042: PNP: PS/2 Controller [PNP0303:KBC,PNP0f13:PS2M] at 0x60,0x64 irq 1,12
+[    0.266894] i8042: Detected active multiplexing controller, rev 1.1
+[    0.267010]  8223bb10
+[    0.267104]  00000009 00000000
+[    0.267227]  beb39cb0 8247f3e5 c0000000 00000000 824d0000 beb64610 3b967a39 beb31000
+[    0.267590] Call Trace:
+[    0.267650]  [<827e080d>] dump_stack+0x41/0x52
+[    0.267712]  [<8223ba4e>] warn_slowpath_common+0x66/0x7d
+[    0.267778]  [<8247f3e5>] ? modeset_lock.part.2+0x36/0x162
+[    0.267840]  [<8223bb10>] warn_slowpath_null+0x14/0x18
+[    0.267905]  [<8247f3e5>] modeset_lock.part.2+0x36/0x162
+[    0.267967]  [<824d0000>] ? intel_gen6_powersave_work+0xaba/0xad3
+[    0.268044]  [<8247f5d5>] drm_modeset_lock+0x1b/0x2b
+[    0.268121]  [<824b2ee2>] intel_get_load_detect_pipe+0xa1/0x3cd
+[    0.268186]  [<8226363b>] ? update_stats_wait_end+0x93/0xdf
+[    0.268248]  [<8226459b>] ? set_next_entity+0x39/0xac
+[    0.268278] serio: i8042 KBD port at 0x60,0x64 irq 1
+[    0.268286] serio: i8042 AUX0 port at 0x60,0x64 irq 12
+[    0.268346] serio: i8042 AUX1 port at 0x60,0x64 irq 12
+[    0.268394] serio: i8042 AUX2 port at 0x60,0x64 irq 12
+[    0.268443] serio: i8042 AUX3 port at 0x60,0x64 irq 12
+[    0.268593]  [<824d199b>] ? intel_tv_detect+0x70/0x485
+[    0.268632] mousedev: PS/2 mouse device common for all mice
+[    0.268711]  [<824d1a48>] intel_tv_detect+0x11d/0x485
+[    0.268772]  [<827e4cc9>] ? _raw_spin_unlock_irq+0x12/0x14
+[    0.268833]  [<827e2a42>] ? __schedule+0x407/0x5a9
+[    0.268899]  [<82479fd4>] ? drm_probe_ddc+0x2d/0x52
+[    0.268966]  [<824668c2>] drm_helper_probe_single_connector_modes+0xab/0x28a
+[    0.269045]  [<824684f7>] drm_fb_helper_initial_config+0x195/0x412
+[    0.269098] rtc_cmos 00:03: RTC can wake from S4
+[    0.269250]  [<824dfcfc>] intel_fbdev_initial_config+0x18/0x1a
+[    0.269311] rtc_cmos 00:03: rtc core: registered rtc_cmos as rtc0
+[    0.269318]  [<82258d7b>] async_run_entry_fn+0x5e/0x107
+[    0.269322]  [<8224f194>] process_one_work+0x13d/0x245
+[    0.269326]  [<8224fc38>] worker_thread+0x124/0x1cd
+[    0.269329]  [<8224fb14>] ? rescuer_thread+0x246/0x246
+[    0.269332]  [<82253e68>] kthread+0xbc/0xc1
+[    0.269336]  [<827e5c3b>] ret_from_kernel_thread+0x1b/0x30
+[    0.269339]  [<82253dac>] ? kthread_stop+0x9e/0x9e
+[    0.269348] ---[ end trace 18628cde9bfc4b71 ]---
+[    0.269349] ------------[ cut here ]------------
+[    0.269353] WARNING: CPU: 1 PID: 44 at /tmp/v3.14/drivers/gpu/drm/drm_modeset_lock.c:124 modeset_lock.part.2+0x4b/0x162()
+[    0.269354] Modules linked in:
+[    0.269357] CPU: 1 PID: 44 Comm: kworker/u4:1 Tainted: G        W    3.14.0-test6 #1
+[    0.269358] Hardware name: FUJITSU A6020/FJNB1C2, BIOS Version 1.13  04/26/2007
+[    0.269362] Workqueue: events_unbound async_run_entry_fn
+[    0.269367]  00000000 3b967a39 00000000 beb39c54 827e080d 00000000 beb39c6c 8223ba4e
+[    0.269372]  8247f3fa be84d194 beb39d64 be84f000 beb39c7c 8223bb10 00000009 00000000
+[    0.269379]  beb39cb0 8247f3fa c0000000 00000000 824d0000 beb64610 3b967a39 beb31000
+[    0.269380] Call Trace:
+[    0.269385]  [<827e080d>] dump_stack+0x41/0x52
+[    0.269388]  [<8223ba4e>] warn_slowpath_common+0x66/0x7d
+[    0.269391]  [<8247f3fa>] ? modeset_lock.part.2+0x4b/0x162
+[    0.269394]  [<8223bb10>] warn_slowpath_null+0x14/0x18
+[    0.269398]  [<8247f3fa>] modeset_lock.part.2+0x4b/0x162
+[    0.269401]  [<824d0000>] ? intel_gen6_powersave_work+0xaba/0xad3
+[    0.269404]  [<8247f5d5>] drm_modeset_lock+0x1b/0x2b
+[    0.269408]  [<824b2ee2>] intel_get_load_detect_pipe+0xa1/0x3cd
+[    0.269412]  [<8226363b>] ? update_stats_wait_end+0x93/0xdf
+[    0.269415]  [<8226459b>] ? set_next_entity+0x39/0xac
+[    0.269418]  [<824d199b>] ? intel_tv_detect+0x70/0x485
+[    0.269422]  [<824d1a48>] intel_tv_detect+0x11d/0x485
+[    0.269425]  [<827e4cc9>] ? _raw_spin_unlock_irq+0x12/0x14
+[    0.269428]  [<827e2a42>] ? __schedule+0x407/0x5a9
+[    0.269432]  [<82479fd4>] ? drm_probe_ddc+0x2d/0x52
+[    0.269437]  [<824668c2>] drm_helper_probe_single_connector_modes+0xab/0x28a
+[    0.269442]  [<824684f7>] drm_fb_helper_initial_config+0x195/0x412
+[    0.269445]  [<824dfcfc>] intel_fbdev_initial_config+0x18/0x1a
+[    0.269448]  [<82258d7b>] async_run_entry_fn+0x5e/0x107
+[    0.269451]  [<8224f194>] process_one_work+0x13d/0x245
+[    0.269455]  [<8224fc38>] worker_thread+0x124/0x1cd
+[    0.269458]  [<8224fb14>] ? rescuer_thread+0x246/0x246
+[    0.269461]  [<82253e68>] kthread+0xbc/0xc1
+[    0.269464]  [<827e5c3b>] ret_from_kernel_thread+0x1b/0x30
+[    0.269467]  [<82253dac>] ? kthread_stop+0x9e/0x9e
+[    0.269469] ---[ end trace 18628cde9bfc4b72 ]---
+[    0.269477] ------------[ cut here ]------------
+[    0.269480] WARNING: CPU: 1 PID: 44 at /tmp/v3.14/drivers/gpu/drm/drm_modeset_lock.c:123 modeset_lock.part.2+0x36/0x162()
+[    0.269482] Modules linked in:
+[    0.269484] CPU: 1 PID: 44 Comm: kworker/u4:1 Tainted: G        W    3.14.0-test6 #1
+[    0.269485] Hardware name: FUJITSU A6020/FJNB1C2, BIOS Version 1.13  04/26/2007
+[    0.269488] Workqueue: events_unbound async_run_entry_fn
+[    0.269494]  00000000 3b967a39 00000000 beb39c54 827e080d 00000000 beb39c6c 8223ba4e
+[    0.269501]  8247f3e5 be815014 beb39d64 be84f000 beb39c7c 8223bb10 00000009 00000000
+[    0.269509]  beb39cb0 8247f3e5 be84d1c8 00000000 824d0000 beb64610 3b967a39 beb31000
+[    0.269510] Call Trace:
+[    0.269514]  [<827e080d>] dump_stack+0x41/0x52
+[    0.269517]  [<8223ba4e>] warn_slowpath_common+0x66/0x7d
+[    0.269521]  [<8247f3e5>] ? modeset_lock.part.2+0x36/0x162
+[    0.269524]  [<8223bb10>] warn_slowpath_null+0x14/0x18
+[    0.269527]  [<8247f3e5>] modeset_lock.part.2+0x36/0x162
+[    0.269530]  [<824d0000>] ? intel_gen6_powersave_work+0xaba/0xad3
+[    0.269534]  [<8247f5d5>] drm_modeset_lock+0x1b/0x2b
+[    0.269538]  [<824b2fa3>] intel_get_load_detect_pipe+0x162/0x3cd
+[    0.269541]  [<8226363b>] ? update_stats_wait_end+0x93/0xdf
+[    0.269544]  [<8226459b>] ? set_next_entity+0x39/0xac
+[    0.269548]  [<824d199b>] ? intel_tv_detect+0x70/0x485
+[    0.269551]  [<824d1a48>] intel_tv_detect+0x11d/0x485
+[    0.269555]  [<827e4cc9>] ? _raw_spin_unlock_irq+0x12/0x14
+[    0.269557]  [<827e2a42>] ? __schedule+0x407/0x5a9
+[    0.269561]  [<82479fd4>] ? drm_probe_ddc+0x2d/0x52
+[    0.269566]  [<824668c2>] drm_helper_probe_single_connector_modes+0xab/0x28a
+[    0.269571]  [<824684f7>] drm_fb_helper_initial_config+0x195/0x412
+[    0.269574]  [<824dfcfc>] intel_fbdev_initial_config+0x18/0x1a
+[    0.269577]  [<82258d7b>] async_run_entry_fn+0x5e/0x107
+[    0.269581]  [<8224f194>] process_one_work+0x13d/0x245
+[    0.269584]  [<8224fc38>] worker_thread+0x124/0x1cd
+[    0.269587]  [<8224fb14>] ? rescuer_thread+0x246/0x246
+[    0.269590]  [<82253e68>] kthread+0xbc/0xc1
+[    0.269593]  [<827e5c3b>] ret_from_kernel_thread+0x1b/0x30
+[    0.269596]  [<82253dac>] ? kthread_stop+0x9e/0x9e
+[    0.269598] ---[ end trace 18628cde9bfc4b73 ]---
+[    0.269599] ------------[ cut here ]------------
+[    0.269602] WARNING: CPU: 1 PID: 44 at /tmp/v3.14/drivers/gpu/drm/drm_modeset_lock.c:124 modeset_lock.part.2+0x4b/0x162()
+[    0.269604] Modules linked in:
+[    0.269606] CPU: 1 PID: 44 Comm: kworker/u4:1 Tainted: G        W    3.14.0-test6 #1
+[    0.269607] Hardware name: FUJITSU A6020/FJNB1C2, BIOS Version 1.13  04/26/2007
+[    0.269611] Workqueue: events_unbound async_run_entry_fn
+[    0.269616]  00000000 3b967a39 00000000 beb39c54 827e080d 00000000 beb39c6c 8223ba4e
+[    0.269621]  8247f3fa be815014 beb39d64 be84f000 beb39c7c 8223bb10 00000009 00000000
+[    0.269627]  beb39cb0 8247f3fa be84d1c8 00000000 824d0000 beb64610 3b967a39 beb31000
+[    0.269628] Call Trace:
+[    0.269633]  [<827e080d>] dump_stack+0x41/0x52
+[    0.269636]  [<8223ba4e>] warn_slowpath_common+0x66/0x7d
+[    0.269639]  [<8247f3fa>] ? modeset_lock.part.2+0x4b/0x162
+[    0.269642]  [<8223bb10>] warn_slowpath_null+0x14/0x18
+[    0.269645]  [<8247f3fa>] modeset_lock.part.2+0x4b/0x162
+[    0.269649]  [<824d0000>] ? intel_gen6_powersave_work+0xaba/0xad3
+[    0.269652]  [<8247f5d5>] drm_modeset_lock+0x1b/0x2b
+[    0.269656]  [<824b2fa3>] intel_get_load_detect_pipe+0x162/0x3cd
+[    0.269659]  [<8226363b>] ? update_stats_wait_end+0x93/0xdf
+[    0.269663]  [<8226459b>] ? set_next_entity+0x39/0xac
+[    0.269666]  [<824d199b>] ? intel_tv_detect+0x70/0x485
+[    0.269669]  [<824d1a48>] intel_tv_detect+0x11d/0x485
+[    0.269673]  [<827e4cc9>] ? _raw_spin_unlock_irq+0x12/0x14
+[    0.269676]  [<827e2a42>] ? __schedule+0x407/0x5a9
+[    0.269679]  [<82479fd4>] ? drm_probe_ddc+0x2d/0x52
+[    0.269684]  [<824668c2>] drm_helper_probe_single_connector_modes+0xab/0x28a
+[    0.269689]  [<824684f7>] drm_fb_helper_initial_config+0x195/0x412
+[    0.269693]  [<824dfcfc>] intel_fbdev_initial_config+0x18/0x1a
+[    0.269696]  [<82258d7b>] async_run_entry_fn+0x5e/0x107
+[    0.269699]  [<8224f194>] process_one_work+0x13d/0x245
+[    0.269702]  [<8224fc38>] worker_thread+0x124/0x1cd
+[    0.269705]  [<8224fb14>] ? rescuer_thread+0x246/0x246
+[    0.269708]  [<82253e68>] kthread+0xbc/0xc1
+[    0.269712]  [<827e5c3b>] ret_from_kernel_thread+0x1b/0x30
+[    0.269714]  [<82253dac>] ? kthread_stop+0x9e/0x9e
+[    0.269716] ---[ end trace 18628cde9bfc4b74 ]---
+[    0.276799] rtc_cmos 00:03: alarms up to one month, y3k, 114 bytes nvram, hpet irqs
+[    0.280220] i801_smbus 0000:00:1f.3: SMBus using PCI Interrupt
+[    0.280475] coretemp coretemp.0: Using relative temperature scale!
+[    0.280554] coretemp coretemp.0: Using relative temperature scale!
+[    0.280628] iTCO_wdt: Intel TCO WatchDog Timer Driver v1.10
+[    0.280723] iTCO_wdt: Found a ICH7-M or ICH7-U TCO device (Version=2, TCOBASE=0x1060)
+[    0.280943] iTCO_wdt: initialized. heartbeat=30 sec (nowayout=0)
+[    0.281025] iTCO_vendor_support: vendor-support=0
+[    0.281273] device-mapper: ioctl: 4.27.0-ioctl (2013-10-30) initialised: dm-devel@redhat.com
+[    0.281462] device-mapper: verity-chromeos: dm-verity-chromeos registered
+[    0.281524] device-mapper: bootcache: version 0.1.0 loaded
+[    0.281635] sdhci: Secure Digital Host Controller Interface driver
+[    0.281695] sdhci: Copyright(c) Pierre Ossman
+[    0.281778] sdhci-pci 0000:08:03.2: SDHCI controller found [1217:7120] (rev 2)
+[    0.282061] mmc0: SDHCI controller on PCI [0000:08:03.2] using PIO
+[    0.282180] hidraw: raw HID events driver (C) Jiri Kosina
+[    0.282484] usbcore: registered new interface driver usbhid
+[    0.282542] usbhid: USB HID core driver
+[    0.282662] ashmem: initialized
+[    0.282733] goldfish_pdev_bus goldfish_pdev_bus: unable to reserve Goldfish MMIO.
+[    0.282811] goldfish_pdev_bus: probe of goldfish_pdev_bus failed with error -16
+[    0.283221] Netfilter messages via NETLINK v0.30.
+[    0.283306] nf_conntrack version 0.5.0 (15914 buckets, 63656 max)
+[    0.283552] ctnetlink v0.93: registering with nfnetlink.
+[    0.283742] ip_tables: (C) 2000-2006 Netfilter Core Team
+[    0.283831] TCP: cubic registered
+[    0.283885] Initializing XFRM netlink socket
+[    0.284252] NET: Registered protocol family 10
+[    0.284746] NET: Registered protocol family 17
+[    0.285451] Using IPI No-Shortcut mode
+[    0.286791]   Magic number: 4:501:898
+[    0.286940] console [netcon0] enabled
+[    0.286995] netconsole: network logging started
+[    0.287523] ALSA device list:
+[    0.287582]   No soundcards found.
+[    0.299910] input: AT Translated Set 2 keyboard as /devices/platform/i8042/serio0/input/input4
+[    0.320384] atkbd serio1: GETID failed
+[    0.341345] atkbd serio1: atkbd: SETLEDS failed
+[    0.341415] atkbd serio1: probe failed
+[    0.362067] atkbd serio2: GETID failed
+[    0.382713] atkbd serio2: atkbd: SETLEDS failed
+[    0.382771] atkbd serio2: probe failed
+[    0.388591] ------------[ cut here ]------------
+[    0.388657] WARNING: CPU: 1 PID: 44 at /tmp/v3.14/drivers/gpu/drm/i915/intel_display.c:9698 __intel_set_mode+0x938/0xfc0()
+[    0.388738] Modules linked in:
+[    0.388828] CPU: 1 PID: 44 Comm: kworker/u4:1 Tainted: G        W    3.14.0-test6 #1
+[    0.388904] Hardware name: FUJITSU A6020/FJNB1C2, BIOS Version 1.13  04/26/2007
+[    0.388981] Workqueue: events_unbound async_run_entry_fn
+[    0.389081]  00000000 3b967a39 00000000 beb39c70 827e080d 00000000 beb39c88 8223ba4e
+[    0.389423]  824afcbc be815000 be84d27c be84d264 beb39c98 8223bb10 00000009 00000000
+[    0.389764]  beb39cfc 824afcbc beb39cfc 827e24db beb39ca8 00000000 00000000 15a176fc
+[    0.390114] Call Trace:
+[    0.390172]  [<827e080d>] dump_stack+0x41/0x52
+[    0.390231]  [<8223ba4e>] warn_slowpath_common+0x66/0x7d
+[    0.390291]  [<824afcbc>] ? __intel_set_mode+0x938/0xfc0
+[    0.390351]  [<8223bb10>] warn_slowpath_null+0x14/0x18
+[    0.390411]  [<824afcbc>] __intel_set_mode+0x938/0xfc0
+[    0.390471]  [<827e24db>] ? schedule_hrtimeout_range_clock+0xb6/0xe6
+[    0.390534]  [<824b206b>] intel_set_mode+0x17/0x2f
+[    0.390594]  [<824b2118>] intel_release_load_detect_pipe+0x95/0xd4
+[    0.390657]  [<824d1cf5>] intel_tv_detect+0x3ca/0x485
+[    0.390718]  [<82479fd4>] ? drm_probe_ddc+0x2d/0x52
+[    0.390781]  [<824668c2>] drm_helper_probe_single_connector_modes+0xab/0x28a
+[    0.390844]  [<824684f7>] drm_fb_helper_initial_config+0x195/0x412
+[    0.390906]  [<824dfcfc>] intel_fbdev_initial_config+0x18/0x1a
+[    0.390967]  [<82258d7b>] async_run_entry_fn+0x5e/0x107
+[    0.391038]  [<8224f194>] process_one_work+0x13d/0x245
+[    0.391098]  [<8224fc38>] worker_thread+0x124/0x1cd
+[    0.391157]  [<8224fb14>] ? rescuer_thread+0x246/0x246
+[    0.391217]  [<82253e68>] kthread+0xbc/0xc1
+[    0.391276]  [<827e5c3b>] ret_from_kernel_thread+0x1b/0x30
+[    0.391336]  [<82253dac>] ? kthread_stop+0x9e/0x9e
+[    0.391395] ---[ end trace 18628cde9bfc4b76 ]---
+[    0.391590] ------------[ cut here ]------------
+[    0.391650] WARNING: CPU: 1 PID: 44 at /tmp/v3.14/drivers/gpu/drm/drm_modeset_lock.c:100 drm_modeset_drop_locks+0x22/0x4c()
+[    0.391731] Modules linked in:
+[    0.391819] CPU: 1 PID: 44 Comm: kworker/u4:1 Tainted: G        W    3.14.0-test6 #1
+[    0.391894] Hardware name: FUJITSU A6020/FJNB1C2, BIOS Version 1.13  04/26/2007
+[    0.391970] Workqueue: events_unbound async_run_entry_fn
+[    0.392073]  00000000 3b967a39 00000000 beb39ce0 827e080d 00000000 beb39cf8 8223ba4e
+[    0.392414]  8247f31b beb39d64 be84f000 beb39d58 beb39d08 8223bb10 00000009 00000000
+[    0.392753]  beb39d1c 8247f31b beb31000 be84f000 beb39d58 beb39d40 824b2147 bea4bd98
+[    0.393115] Call Trace:
+[    0.393201]  [<827e080d>] dump_stack+0x41/0x52
+[    0.393259]  [<8223ba4e>] warn_slowpath_common+0x66/0x7d
+[    0.393319]  [<8247f31b>] ? drm_modeset_drop_locks+0x22/0x4c
+[    0.393379]  [<8223bb10>] warn_slowpath_null+0x14/0x18
+[    0.393439]  [<8247f31b>] drm_modeset_drop_locks+0x22/0x4c
+[    0.393500]  [<824b2147>] intel_release_load_detect_pipe+0xc4/0xd4
+[    0.393562]  [<824d1cf5>] intel_tv_detect+0x3ca/0x485
+[    0.393622]  [<82479fd4>] ? drm_probe_ddc+0x2d/0x52
+[    0.393683]  [<824668c2>] drm_helper_probe_single_connector_modes+0xab/0x28a
+[    0.393747]  [<824684f7>] drm_fb_helper_initial_config+0x195/0x412
+[    0.393810]  [<824dfcfc>] intel_fbdev_initial_config+0x18/0x1a
+[    0.393870]  [<82258d7b>] async_run_entry_fn+0x5e/0x107
+[    0.393930]  [<8224f194>] process_one_work+0x13d/0x245
+[    0.393990]  [<8224fc38>] worker_thread+0x124/0x1cd
+[    0.394059]  [<8224fb14>] ? rescuer_thread+0x246/0x246
+[    0.394127]  [<82253e68>] kthread+0xbc/0xc1
+[    0.394185]  [<827e5c3b>] ret_from_kernel_thread+0x1b/0x30
+[    0.394245]  [<82253dac>] ? kthread_stop+0x9e/0x9e
+[    0.394303] ---[ end trace 18628cde9bfc4b77 ]---
+[    0.397192] fbcon: inteldrmfb (fb0) is primary device
+[    0.403398] atkbd serio3: GETID failed
+[    0.424419] atkbd serio3: atkbd: SETLEDS failed
+[    0.424423] atkbd serio3: probe failed
+[    0.429295] atkbd serio4: bad keyboard id 0
+[    0.429299] atkbd serio4: probe failed
+[    0.449453] psmouse serio1: GETID probe failed, retrying...
+[    0.511747] psmouse serio2: GETID probe failed, retrying...
+[    0.562159] usb 1-5: new high-speed USB device number 2 using ehci-pci
+[    0.574150] psmouse serio3: GETID probe failed, retrying...
+[    0.678120] usb 1-5: New USB device found, idVendor=0781, idProduct=5580
+[    0.678126] usb 1-5: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+[    0.678131] usb 1-5: Product: Extreme
+[    0.678136] usb 1-5: Manufacturer: SanDisk
+[    0.678141] usb 1-5: SerialNumber: AA010429132345397396
+[    0.678733] usb-storage 1-5:1.0: USB Mass Storage device detected
+[    0.679113] scsi0 : usb-storage 1-5:1.0
+[    0.930876] ------------[ cut here ]------------
+[    0.930882] WARNING: CPU: 1 PID: 44 at /tmp/v3.14/drivers/gpu/drm/i915/intel_display.c:9698 __intel_set_mode+0x938/0xfc0()
+[    0.930884] Modules linked in:
+[    0.930886] CPU: 1 PID: 44 Comm: kworker/u4:1 Tainted: G        W    3.14.0-test6 #1
+[    0.930888] Hardware name: FUJITSU A6020/FJNB1C2, BIOS Version 1.13  04/26/2007
+[    0.930891] Workqueue: events_unbound async_run_entry_fn
+[    0.930897]  00000000 3b967a39 00000000 beb39be0 827e080d 00000000 beb39bf8 8223ba4e
+[    0.930903]  824afcbc be815000 be84d27c be84d264 beb39c08 8223bb10 00000009 00000000
+[    0.930908]  beb39c6c 824afcbc beb39c3c 17c841c0 bd81e618 00000000 00000001 be84d27c
+[    0.930909] Call Trace:
+[    0.930913]  [<827e080d>] dump_stack+0x41/0x52
+[    0.930916]  [<8223ba4e>] warn_slowpath_common+0x66/0x7d
+[    0.930920]  [<824afcbc>] ? __intel_set_mode+0x938/0xfc0
+[    0.930923]  [<8223bb10>] warn_slowpath_null+0x14/0x18
+[    0.930926]  [<824afcbc>] __intel_set_mode+0x938/0xfc0
+[    0.930930]  [<824b206b>] intel_set_mode+0x17/0x2f
+[    0.930934]  [<824b290f>] intel_crtc_set_config+0x7b8/0x85a
+[    0.930938]  [<82474122>] drm_mode_set_config_internal+0x44/0xaa
+[    0.930941]  [<824a8ea0>] ? drm_gem_object_unreference_unlocked+0x4d/0x4d
+[    0.930945]  [<824670ca>] restore_fbdev_mode+0x152/0x171
+[    0.930948]  [<824670f8>] drm_fb_helper_restore_fbdev_mode_unlocked+0xf/0x11
+[    0.930951]  [<82468348>] drm_fb_helper_set_par+0x3a/0x54
+[    0.930955]  [<824011e7>] fbcon_init+0x2e0/0x3c0
+[    0.930959]  [<8244adea>] visual_init+0x9f/0xf2
+[    0.930962]  [<8244c601>] do_bind_con_driver+0x15f/0x24a
+[    0.930966]  [<8244cb3e>] do_take_over_console+0x11a/0x13b
+[    0.930970]  [<823fdf84>] do_fbcon_takeover+0x51/0x94
+[    0.930973]  [<82401952>] fbcon_event_notify+0x35b/0x63f
+[    0.930977]  [<8233598c>] ? sysfs_add_file_mode_ns+0xb8/0x103
+[    0.930981]  [<82257509>] notifier_call_chain+0x32/0x4b
+[    0.930985]  [<8225771b>] __blocking_notifier_call_chain+0x33/0x48
+[    0.930988]  [<82257741>] blocking_notifier_call_chain+0x11/0x13
+[    0.930992]  [<823f633e>] fb_notifier_call_chain+0x16/0x18
+[    0.930995]  [<823f7833>] register_framebuffer+0x298/0x2c3
+[    0.930999]  [<824686d7>] drm_fb_helper_initial_config+0x375/0x412
+[    0.931012]  [<824dfcfc>] intel_fbdev_initial_config+0x18/0x1a
+[    0.931015]  [<82258d7b>] async_run_entry_fn+0x5e/0x107
+[    0.931019]  [<8224f194>] process_one_work+0x13d/0x245
+[    0.931022]  [<8224fc38>] worker_thread+0x124/0x1cd
+[    0.931025]  [<8224fb14>] ? rescuer_thread+0x246/0x246
+[    0.931028]  [<82253e68>] kthread+0xbc/0xc1
+[    0.931031]  [<827e5c3b>] ret_from_kernel_thread+0x1b/0x30
+[    0.931034]  [<82253dac>] ? kthread_stop+0x9e/0x9e
+[    0.931036] ---[ end trace 18628cde9bfc4b78 ]---
+[    1.592339] input: ALPS PS/2 Device as /devices/platform/i8042/serio4/input/input13
+[    1.620527] Console: switching to colour frame buffer device 160x50
+[    1.620612] input: AlpsPS/2 ALPS GlidePoint as /devices/platform/i8042/serio4/input/input12
+[    1.692965] scsi 0:0:0:0: Direct-Access     SanDisk  Extreme          0001 PQ: 0 ANSI: 6
+[    1.693311] sd 0:0:0:0: Attached scsi generic sg0 type 0
+[    1.705668] sd 0:0:0:0: [sda] 31277232 512-byte logical blocks: (16.0 GB/14.9 GiB)
+[    1.726130] sd 0:0:0:0: [sda] Write Protect is off
+[    1.726134] sd 0:0:0:0: [sda] Mode Sense: 33 00 00 08
+[    1.739510] i915 0000:00:02.0: fb0: inteldrmfb frame buffer device
+[    1.742118] i915 0000:00:02.0: registered panic notifier
+[    1.745037] sd 0:0:0:0: [sda] Write cache: enabled, read cache: enabled, doesn't support DPO or FUA
+[    1.752350] random: nonblocking pool is initialized
+[    1.752361]  sda: sda1 sda2 sda3
+[    1.760766] sd 0:0:0:0: [sda] Attached SCSI disk
+[    1.763568] md: Waiting for all devices to be available before autodetect
+[    1.766147] md: If you don't use raid, use raid=noautodetect
+[    1.768971] md: Autodetecting RAID arrays.
+[    1.771514] md: Scanned 0 and added 0 devices.
+[    1.774056] md: autorun ...
+[    1.776563] md: ... autorun DONE.
+[    1.780039] EXT4-fs (sda3): couldn't mount as ext3 due to feature incompatibilities
+[    1.783377] EXT4-fs (sda3): mounting ext2 file system using the ext4 subsystem
+[    1.789261] EXT4-fs (sda3): warning: mounting unchecked fs, running e2fsck is recommended
+[    1.793509] EXT4-fs (sda3): mounted filesystem without journal. Opts: (null)
+[    1.796186] VFS: Mounted root (ext2 filesystem) on device 8:3.
+[    1.801540] devtmpfs: mounted
+[    1.804649] Freeing unused kernel memory: 660K (82af4000 - 82b99000)
+[    1.807624] Write protecting the kernel text: 6044k
+[    1.810386] Write protecting the kernel read-only data: 2476k
+[    2.468625] ------------[ cut here ]------------
+[    2.471342] WARNING: CPU: 0 PID: 87 at /tmp/v3.14/drivers/gpu/drm/drm_modeset_lock.c:123 modeset_lock.part.2+0x36/0x162()
+[    2.474180] Modules linked in:
+[    2.477019] CPU: 0 PID: 87 Comm: ply-image Tainted: G        W    3.14.0-test6 #1
+[    2.479907] Hardware name: FUJITSU A6020/FJNB1C2, BIOS Version 1.13  04/26/2007
+[    2.482826]  00000000 053022e6 00000000 bd8f3ba8 827e080d 00000000 bd8f3bc0 8223ba4e
+[    2.485838]  8247f3e5 be84d194 bd8f3cb8 be84f000 bd8f3bd0 8223bb10 00000009 00000000
+[    2.488879]  bd8f3c04 8247f3e5 c0000000 00000000 824d0000 beb64610 053022e6 beb31000
+[    2.491961] Call Trace:
+[    2.494948]  [<827e080d>] dump_stack+0x41/0x52
+[    2.497948]  [<8223ba4e>] warn_slowpath_common+0x66/0x7d
+[    2.500951]  [<8247f3e5>] ? modeset_lock.part.2+0x36/0x162
+[    2.503950]  [<8223bb10>] warn_slowpath_null+0x14/0x18
+[    2.506942]  [<8247f3e5>] modeset_lock.part.2+0x36/0x162
+[    2.509932]  [<824d0000>] ? intel_gen6_powersave_work+0xaba/0xad3
+[    2.512947]  [<8247f5d5>] drm_modeset_lock+0x1b/0x2b
+[    2.515986]  [<824b2ee2>] intel_get_load_detect_pipe+0xa1/0x3cd
+[    2.519031]  [<8268137a>] ? __i2c_transfer+0x34/0x56
+[    2.522072]  [<82479f6f>] ? drm_do_probe_ddc_edid+0xc6/0xfe
+[    2.525117]  [<824d199b>] ? intel_tv_detect+0x70/0x485
+[    2.528164]  [<824d1a48>] intel_tv_detect+0x11d/0x485
+[    2.531204]  [<82479fd4>] ? drm_probe_ddc+0x2d/0x52
+[    2.534207]  [<824668c2>] drm_helper_probe_single_connector_modes+0xab/0x28a
+[    2.537211]  [<82477010>] drm_mode_getconnector+0xef/0x2ee
+[    2.540186]  [<827e4cb4>] ? _raw_spin_unlock_irqrestore+0x17/0x1a
+[    2.543143]  [<82476f21>] ? drm_mode_getcrtc+0xaa/0xaa
+[    2.546058]  [<8246b3e5>] drm_ioctl+0x2fb/0x3f8
+[    2.548945]  [<82476f21>] ? drm_mode_getcrtc+0xaa/0xaa
+[    2.551819]  [<8246b0ea>] ? drm_version+0x7a/0x7a
+[    2.554666]  [<822fc907>] do_vfs_ioctl+0x382/0x407
+[    2.557501]  [<822f7cd1>] ? final_putname+0x32/0x35
+[    2.560303]  [<822ef1a2>] ? do_sys_open+0xf4/0x12f
+[    2.563051]  [<822fc9d4>] SyS_ioctl+0x48/0x69
+[    2.565770]  [<827e5cdd>] sysenter_do_call+0x12/0x16
+[    2.568488] ---[ end trace 18628cde9bfc4b79 ]---
+[    2.571207] ------------[ cut here ]------------
+[    2.573885] WARNING: CPU: 0 PID: 87 at /tmp/v3.14/drivers/gpu/drm/drm_modeset_lock.c:124 modeset_lock.part.2+0x4b/0x162()
+[    2.576680] Modules linked in:
+[    2.579479] CPU: 0 PID: 87 Comm: ply-image Tainted: G        W    3.14.0-test6 #1
+[    2.582349] Hardware name: FUJITSU A6020/FJNB1C2, BIOS Version 1.13  04/26/2007
+[    2.585260]  00000000 053022e6 00000000 bd8f3ba8 827e080d 00000000 bd8f3bc0 8223ba4e
+[    2.588221]  8247f3fa be84d194 bd8f3cb8 be84f000 bd8f3bd0 8223bb10 00000009 00000000
+[    2.591208]  bd8f3c04 8247f3fa c0000000 00000000 824d0000 beb64610 053022e6 beb31000
+[    2.594203] Call Trace:
+[    2.597082]  [<827e080d>] dump_stack+0x41/0x52
+[    2.599969]  [<8223ba4e>] warn_slowpath_common+0x66/0x7d
+[    2.602875]  [<8247f3fa>] ? modeset_lock.part.2+0x4b/0x162
+[    2.605741]  [<8223bb10>] warn_slowpath_null+0x14/0x18
+[    2.608595]  [<8247f3fa>] modeset_lock.part.2+0x4b/0x162
+[    2.611468]  [<824d0000>] ? intel_gen6_powersave_work+0xaba/0xad3
+[    2.614333]  [<8247f5d5>] drm_modeset_lock+0x1b/0x2b
+[    2.617132]  [<824b2ee2>] intel_get_load_detect_pipe+0xa1/0x3cd
+[    2.619871]  [<8268137a>] ? __i2c_transfer+0x34/0x56
+[    2.622585]  [<82479f6f>] ? drm_do_probe_ddc_edid+0xc6/0xfe
+[    2.625285]  [<824d199b>] ? intel_tv_detect+0x70/0x485
+[    2.627938]  [<824d1a48>] intel_tv_detect+0x11d/0x485
+[    2.630575]  [<82479fd4>] ? drm_probe_ddc+0x2d/0x52
+[    2.633169]  [<824668c2>] drm_helper_probe_single_connector_modes+0xab/0x28a
+[    2.635766]  [<82477010>] drm_mode_getconnector+0xef/0x2ee
+[    2.638370]  [<827e4cb4>] ? _raw_spin_unlock_irqrestore+0x17/0x1a
+[    2.640994]  [<82476f21>] ? drm_mode_getcrtc+0xaa/0xaa
+[    2.643607]  [<8246b3e5>] drm_ioctl+0x2fb/0x3f8
+[    2.646204]  [<82476f21>] ? drm_mode_getcrtc+0xaa/0xaa
+[    2.648814]  [<8246b0ea>] ? drm_version+0x7a/0x7a
+[    2.648855] Chromium OS LSM: dev(8,3): writable
+[    2.648866] Chromium OS LSM: module locking can be disabled.
+[    2.648876] Chromium OS LSM: init_module locked obj="/lib/modules/3.14.0-test6/kernel/drivers/net/tun.ko" pid=82 cmdline="modprobe tun"
+[    2.659155]  [<822fc907>] do_vfs_ioctl+0x382/0x407
+[    2.661876]  [<822f7cd1>] ? final_putname+0x32/0x35
+[    2.664563]  [<822ef1a2>] ? do_sys_open+0xf4/0x12f
+[    2.667251]  [<822fc9d4>] SyS_ioctl+0x48/0x69
+[    2.669930]  [<827e5cdd>] sysenter_do_call+0x12/0x16
+[    2.672595] ---[ end trace 18628cde9bfc4b7a ]---
+[    2.675259] ------------[ cut here ]------------
+[    2.677902] WARNING: CPU: 0 PID: 87 at /tmp/v3.14/drivers/gpu/drm/drm_modeset_lock.c:123 modeset_lock.part.2+0x36/0x162()
+[    2.680667] Modules linked in:
+[    2.683433] CPU: 0 PID: 87 Comm: ply-image Tainted: G        W    3.14.0-test6 #1
+[    2.686283] Hardware name: FUJITSU A6020/FJNB1C2, BIOS Version 1.13  04/26/2007
+[    2.689139]  00000000 053022e6 00000000 bd8f3ba8 827e080d 00000000 bd8f3bc0 8223ba4e
+[    2.692101]  8247f3e5 be815014 bd8f3cb8 be84f000 bd8f3bd0 8223bb10 00000009 00000000
+[    2.695098]  bd8f3c04 8247f3e5 be84d1c8 00000000 824d0000 beb64610 053022e6 beb31000
+[    2.698130] Call Trace:
+[    2.701090]  [<827e080d>] dump_stack+0x41/0x52
+[    2.704068]  [<8223ba4e>] warn_slowpath_common+0x66/0x7d
+[    2.707069]  [<8247f3e5>] ? modeset_lock.part.2+0x36/0x162
+[    2.710066]  [<8223bb10>] warn_slowpath_null+0x14/0x18
+[    2.712988]  [<8247f3e5>] modeset_lock.part.2+0x36/0x162
+[    2.715844]  [<824d0000>] ? intel_gen6_powersave_work+0xaba/0xad3
+[    2.718701]  [<8247f5d5>] drm_modeset_lock+0x1b/0x2b
+[    2.721523]  [<824b2fa3>] intel_get_load_detect_pipe+0x162/0x3cd
+[    2.724338]  [<8268137a>] ? __i2c_transfer+0x34/0x56
+[    2.727102]  [<82479f6f>] ? drm_do_probe_ddc_edid+0xc6/0xfe
+[    2.729825] tun: Universal TUN/TAP device driver, 1.6
+[    2.729848]  [<824d199b>] ? intel_tv_detect+0x70/0x485
+[    2.729851]  [<824d1a48>] intel_tv_detect+0x11d/0x485
+[    2.729855]  [<82479fd4>] ? drm_probe_ddc+0x2d/0x52
+[    2.729861]  [<824668c2>] drm_helper_probe_single_connector_modes+0xab/0x28a
+[    2.729865]  [<82477010>] drm_mode_getconnector+0xef/0x2ee
+[    2.729869]  [<827e4cb4>] ? _raw_spin_unlock_irqrestore+0x17/0x1a
+[    2.729873]  [<82476f21>] ? drm_mode_getcrtc+0xaa/0xaa
+[    2.729876]  [<8246b3e5>] drm_ioctl+0x2fb/0x3f8
+[    2.729879]  [<82476f21>] ? drm_mode_getcrtc+0xaa/0xaa
+[    2.729883]  [<8246b0ea>] ? drm_version+0x7a/0x7a
+[    2.729887]  [<822fc907>] do_vfs_ioctl+0x382/0x407
+[    2.729891]  [<822f7cd1>] ? final_putname+0x32/0x35
+[    2.729894]  [<822ef1a2>] ? do_sys_open+0xf4/0x12f
+[    2.729897]  [<822fc9d4>] SyS_ioctl+0x48/0x69
+[    2.729901]  [<827e5cdd>] sysenter_do_call+0x12/0x16
+[    2.729903] ---[ end trace 18628cde9bfc4b7b ]---
+[    2.729904] ------------[ cut here ]------------
+[    2.729908] WARNING: CPU: 0 PID: 87 at /tmp/v3.14/drivers/gpu/drm/drm_modeset_lock.c:124 modeset_lock.part.2+0x4b/0x162()
+[    2.729910] Modules linked in: tun(+)
+[    2.729913] CPU: 0 PID: 87 Comm: ply-image Tainted: G        W    3.14.0-test6 #1
+[    2.729914] Hardware name: FUJITSU A6020/FJNB1C2, BIOS Version 1.13  04/26/2007
+[    2.729920]  00000000 053022e6 00000000 bd8f3ba8 827e080d 00000000 bd8f3bc0 8223ba4e
+[    2.729925]  8247f3fa be815014 bd8f3cb8 be84f000 bd8f3bd0 8223bb10 00000009 00000000
+[    2.729930]  bd8f3c04 8247f3fa be84d1c8 00000000 824d0000 beb64610 053022e6 beb31000
+[    2.729936] Call Trace:
+[    2.729940]  [<827e080d>] dump_stack+0x41/0x52
+[    2.729943]  [<8223ba4e>] warn_slowpath_common+0x66/0x7d
+[    2.729946]  [<8247f3fa>] ? modeset_lock.part.2+0x4b/0x162
+[    2.729950]  [<8223bb10>] warn_slowpath_null+0x14/0x18
+[    2.729953]  [<8247f3fa>] modeset_lock.part.2+0x4b/0x162
+[    2.729956]  [<824d0000>] ? intel_gen6_powersave_work+0xaba/0xad3
+[    2.729960]  [<8247f5d5>] drm_modeset_lock+0x1b/0x2b
+[    2.729964]  [<824b2fa3>] intel_get_load_detect_pipe+0x162/0x3cd
+[    2.729967]  [<8268137a>] ? __i2c_transfer+0x34/0x56
+[    2.729971]  [<82479f6f>] ? drm_do_probe_ddc_edid+0xc6/0xfe
+[    2.729974]  [<824d199b>] ? intel_tv_detect+0x70/0x485
+[    2.729978]  [<824d1a48>] intel_tv_detect+0x11d/0x485
+[    2.729982]  [<82479fd4>] ? drm_probe_ddc+0x2d/0x52
+[    2.729987]  [<824668c2>] drm_helper_probe_single_connector_modes+0xab/0x28a
+[    2.729991]  [<82477010>] drm_mode_getconnector+0xef/0x2ee
+[    2.729994]  [<827e4cb4>] ? _raw_spin_unlock_irqrestore+0x17/0x1a
+[    2.729998]  [<82476f21>] ? drm_mode_getcrtc+0xaa/0xaa
+[    2.730001]  [<8246b3e5>] drm_ioctl+0x2fb/0x3f8
+[    2.730014]  [<82476f21>] ? drm_mode_getcrtc+0xaa/0xaa
+[    2.730018]  [<8246b0ea>] ? drm_version+0x7a/0x7a
+[    2.730022]  [<822fc907>] do_vfs_ioctl+0x382/0x407
+[    2.730025]  [<822f7cd1>] ? final_putname+0x32/0x35
+[    2.730029]  [<822ef1a2>] ? do_sys_open+0xf4/0x12f
+[    2.730032]  [<822fc9d4>] SyS_ioctl+0x48/0x69
+[    2.730035]  [<827e5cdd>] sysenter_do_call+0x12/0x16
+[    2.730037] ---[ end trace 18628cde9bfc4b7c ]---
+[    2.850247] ------------[ cut here ]------------
+[    2.850257] WARNING: CPU: 0 PID: 87 at /tmp/v3.14/drivers/gpu/drm/i915/intel_display.c:9698 __intel_set_mode+0x938/0xfc0()
+[    2.850261] Modules linked in: tun(+)
+[    2.850265] CPU: 0 PID: 87 Comm: ply-image Tainted: G        W    3.14.0-test6 #1
+[    2.850266] Hardware name: FUJITSU A6020/FJNB1C2, BIOS Version 1.13  04/26/2007
+[    2.850273]  00000000 053022e6 00000000 bd8f3bc4 827e080d 00000000 bd8f3bdc 8223ba4e
+[    2.850278]  824afcbc be815000 be84d27c be84d264 bd8f3bec 8223bb10 00000009 00000000
+[    2.850283]  bd8f3c50 824afcbc bd8f3c50 827e24db bd8f3bfc 00000000 00000000 a85d23e9
+[    2.850284] Call Trace:
+[    2.850291]  [<827e080d>] dump_stack+0x41/0x52
+[    2.850295]  [<8223ba4e>] warn_slowpath_common+0x66/0x7d
+[    2.850299]  [<824afcbc>] ? __intel_set_mode+0x938/0xfc0
+[    2.850302]  [<8223bb10>] warn_slowpath_null+0x14/0x18
+[    2.850305]  [<824afcbc>] __intel_set_mode+0x938/0xfc0
+[    2.850308]  [<827e24db>] ? schedule_hrtimeout_range_clock+0xb6/0xe6
+[    2.850312]  [<824b206b>] intel_set_mode+0x17/0x2f
+[    2.850316]  [<824b2118>] intel_release_load_detect_pipe+0x95/0xd4
+[    2.850321]  [<824d1cf5>] intel_tv_detect+0x3ca/0x485
+[    2.850326]  [<82479fd4>] ? drm_probe_ddc+0x2d/0x52
+[    2.850333]  [<824668c2>] drm_helper_probe_single_connector_modes+0xab/0x28a
+[    2.850337]  [<82477010>] drm_mode_getconnector+0xef/0x2ee
+[    2.850341]  [<827e4cb4>] ? _raw_spin_unlock_irqrestore+0x17/0x1a
+[    2.850345]  [<82476f21>] ? drm_mode_getcrtc+0xaa/0xaa
+[    2.850348]  [<8246b3e5>] drm_ioctl+0x2fb/0x3f8
+[    2.850352]  [<82476f21>] ? drm_mode_getcrtc+0xaa/0xaa
+[    2.850356]  [<8246b0ea>] ? drm_version+0x7a/0x7a
+[    2.850360]  [<822fc907>] do_vfs_ioctl+0x382/0x407
+[    2.850364]  [<822f7cd1>] ? final_putname+0x32/0x35
+[    2.850368]  [<822ef1a2>] ? do_sys_open+0xf4/0x12f
+[    2.850372]  [<822fc9d4>] SyS_ioctl+0x48/0x69
+[    2.850375]  [<827e5cdd>] sysenter_do_call+0x12/0x16
+[    2.850377] ---[ end trace 18628cde9bfc4b7d ]---
+[    2.850519] ------------[ cut here ]------------
+[    2.850525] WARNING: CPU: 0 PID: 87 at /tmp/v3.14/drivers/gpu/drm/drm_modeset_lock.c:100 drm_modeset_drop_locks+0x22/0x4c()
+[    2.850527] Modules linked in: tun(+)
+[    2.850530] CPU: 0 PID: 87 Comm: ply-image Tainted: G        W    3.14.0-test6 #1
+[    2.850531] Hardware name: FUJITSU A6020/FJNB1C2, BIOS Version 1.13  04/26/2007
+[    2.850536]  00000000 053022e6 00000000 bd8f3c34 827e080d 00000000 bd8f3c4c 8223ba4e
+[    2.850541]  8247f31b bd8f3cb8 be84f000 bd8f3cac bd8f3c5c 8223bb10 00000009 00000000
+[    2.850546]  bd8f3c70 8247f31b beb31000 be84f000 bd8f3cac bd8f3c94 824b2147 bea4bd98
+[    2.850547] Call Trace:
+[    2.850550]  [<827e080d>] dump_stack+0x41/0x52
+[    2.850553]  [<8223ba4e>] warn_slowpath_common+0x66/0x7d
+[    2.850557]  [<8247f31b>] ? drm_modeset_drop_locks+0x22/0x4c
+[    2.850560]  [<8223bb10>] warn_slowpath_null+0x14/0x18
+[    2.850563]  [<8247f31b>] drm_modeset_drop_locks+0x22/0x4c
+[    2.850567]  [<824b2147>] intel_release_load_detect_pipe+0xc4/0xd4
+[    2.850571]  [<824d1cf5>] intel_tv_detect+0x3ca/0x485
+[    2.850575]  [<82479fd4>] ? drm_probe_ddc+0x2d/0x52
+[    2.850580]  [<824668c2>] drm_helper_probe_single_connector_modes+0xab/0x28a
+[    2.850584]  [<82477010>] drm_mode_getconnector+0xef/0x2ee
+[    2.850587]  [<827e4cb4>] ? _raw_spin_unlock_irqrestore+0x17/0x1a
+[    2.850591]  [<82476f21>] ? drm_mode_getcrtc+0xaa/0xaa
+[    2.850594]  [<8246b3e5>] drm_ioctl+0x2fb/0x3f8
+[    2.850597]  [<82476f21>] ? drm_mode_getcrtc+0xaa/0xaa
+[    2.850601]  [<8246b0ea>] ? drm_version+0x7a/0x7a
+[    2.850605]  [<822fc907>] do_vfs_ioctl+0x382/0x407
+[    2.850608]  [<822f7cd1>] ? final_putname+0x32/0x35
+[    2.850612]  [<822ef1a2>] ? do_sys_open+0xf4/0x12f
+[    2.850615]  [<822fc9d4>] SyS_ioctl+0x48/0x69
+[    2.850618]  [<827e5cdd>] sysenter_do_call+0x12/0x16
+[    2.850620] ---[ end trace 18628cde9bfc4b7e ]---
+[    3.024375] tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+[    3.053879] PPP generic driver version 2.4.2
+[    3.134814] systemd-udevd[94]: starting version 208
+[    3.187151] Unsafe core_pattern used with suid_dumpable=2. Pipe handler or fully qualified core dump path required.
+[    3.345765] EXT4-fs (sda2): mounting ext2 file system using the ext4 subsystem
+[    3.355355] EXT4-fs (sda2): mounted filesystem without journal. Opts: commit=600

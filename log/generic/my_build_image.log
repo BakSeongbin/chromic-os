@@ -1,0 +1,1770 @@
+ChromeOS version information:
+    CHROME_BRANCH=51
+    CHROME_VERSION=
+    CHROMEOS_VERSION_STRING=8095.0.2016_03_25_0813
+    CHROME_BASE=
+INFO    : The following images will be built  chromiumos_base_image.bin.
+INFO    : Clearing shadow utils lockfiles under /build/x86-generic
+>>> Building file list for packages cleaning...
+>>> Your packages directory was already clean.
+INFO    : Verifying that the base image does not contain a blacklisted package.
+INFO    : Generating list of packages for virtual/target-os.
+INFO    : No blacklisted packages found.
+INFO    : Using image type usb
+INFO    : Using disk layout /mnt/host/source/src/scripts/build_library/legacy_disk_layout.json
+1+0 records in
+1+0 records out
+512 bytes (512 B) copied, 0.000207976 s, 2.5 MB/s
+WARNING: Primary GPT header is invalid
+WARNING: Secondary GPT header is invalid
+0575DCE5-4ACA-BE40-A2E1-6F6A58175200
+       start        size    part  contents
+           0           1          PMBR (Boot GUID: 0575DCE5-4ACA-BE40-A2E1-6F6A58175200)
+           1           1          Pri GPT header
+           2          32          Pri GPT table
+    14095155     2490368       1  Label: "STATE"
+                                  Type: Linux data
+                                  UUID: 145138DF-25AB-514F-94F2-F571008A7B0D
+       20480       32768       2  Label: "KERN-A"
+                                  Type: ChromeOS kernel
+                                  UUID: 2624B10C-CEF8-B64D-B182-0E21365DAB2C
+                                  Attr: priority=15 tries=15 successful=0
+     4448256     9646899       3  Label: "ROOT-A"
+                                  Type: ChromeOS rootfs
+                                  UUID: 139FC504-CD6E-2D4F-B071-DCDC89CD378F
+       53248       32768       4  Label: "KERN-B"
+                                  Type: ChromeOS kernel
+                                  UUID: 6B37BFEC-1C37-5C43-98EF-57787F31E6A1
+                                  Attr: priority=0 tries=0 successful=0
+     4444160        4096       5  Label: "ROOT-B"
+                                  Type: ChromeOS rootfs
+                                  UUID: 44BFBE3E-F829-2A44-AB5D-C9D474ADB1B2
+       16448           1       6  Label: "KERN-C"
+                                  Type: ChromeOS kernel
+                                  UUID: 7FC5037F-D38C-1747-B2F6-B20ECDDD9F4C
+                                  Attr: priority=0 tries=0 successful=0
+       16449           1       7  Label: "ROOT-C"
+                                  Type: ChromeOS rootfs
+                                  UUID: 355252F4-E05A-6F48-B492-61D863EA64E0
+       86016       32768       8  Label: "OEM"
+                                  Type: Linux data
+                                  UUID: 8D169977-DCE5-554C-80F8-6360FC1395E3
+       16450           1       9  Label: "reserved"
+                                  Type: ChromeOS reserved
+                                  UUID: D41445F8-3858-B740-9262-E173E546F09C
+       16451           1      10  Label: "reserved"
+                                  Type: ChromeOS reserved
+                                  UUID: D5D47EF2-DEE0-E94D-9E8D-097D2EEF2D88
+          64       16384      11  Label: "RWFW"
+                                  Type: ChromeOS firmware
+                                  UUID: A75662F1-60E1-F944-8692-73F4F99637C6
+      249856     4194304      12  Label: "EFI-SYSTEM"
+                                  Type: EFI System Partition
+                                  UUID: 0575DCE5-4ACA-BE40-A2E1-6F6A58175200
+    16618194          32          Sec GPT table
+    16618226           1          Sec GPT header
+INFO    : Creating FS for partition 8 with format ext4.
+tune2fs 1.42.12 (29-Aug-2014)
+Setting maximal mount count to -1
+Setting error behavior to 2
+Setting interval between checks to 0 seconds
+Setting reserved blocks percentage to 0% (0 blocks)
+Setting reserved blocks count to 0
+Setting time filesystem last checked to Thu Nov 19 11:00:00 2009
+
+INFO    : Creating FS for partition 12 with format vfat.
+mkfs.fat 3.0.26 (2014-03-07)
+Loop device does not match a floppy size, using default hd params
+INFO    : Creating FS for partition 3 with format ext2.
+tune2fs 1.42.12 (29-Aug-2014)
+Setting maximal mount count to -1
+Setting error behavior to 2
+Setting interval between checks to 0 seconds
+Setting reserved blocks percentage to 0% (0 blocks)
+Setting reserved blocks count to 0
+Setting time filesystem last checked to Thu Nov 19 11:00:00 2009
+
+INFO    : Creating FS for partition 1 with format ext4.
+tune2fs 1.42.12 (29-Aug-2014)
+Setting maximal mount count to -1
+Setting error behavior to 2
+Setting interval between checks to 0 seconds
+Setting reserved blocks percentage to 0% (0 blocks)
+Setting reserved blocks count to 0
+Setting time filesystem last checked to Thu Nov 19 11:00:00 2009
+
+Setting up symlinks for /usr/local for /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/stateful/dev_image
+INFO    : Image specified by /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1 mounted at /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs successfully.
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/loop0      4.0G  8.1M  4.0G   1% /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs
+Setting up symlinks for /usr/local for /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/stateful/dev_image
+pbzip2: *WARNING: Trailing garbage after EOF ignored!
+Starting fast-emerge.
+ Building package virtual/target-os on /build/x86-generic
+Calculating deps...
+Deps calculated in 0m2.5s
+[binary  N     ] app-arch/xz-utils-5.2.0 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="static-libs threads -nls" 0 KiB
+[binary  N     ] sys-apps/coreutils-8.24 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="multicall -acl -caps -gmp -nls -selinux -static -vanilla -xattr" 0 KiB
+[binary  N     ] sys-apps/dmidecode-2.11-r2::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-selinux" 0 KiB
+[binary  N     ] sys-apps/flashrom-0.9.4-r422::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="atahpt bitbang_spi buspirate_spi drkaiser dummy fdtmap gfxnvidia internal linux_i2c linux_mtd linux_spi nic3com nicintel nicintel_spi nicnatsemi nicrealtek ogp_spi raiden_debug_spi rayer_spi satamv satasii serprog static wiki -cros_host -dediprog -ft2232_spi -profiling -use_os_timer" 0 KiB
+[binary  N     ] chromeos-base/audioconfig-0.0.1-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] chromeos-base/chromiumos-assets-0.0.1-r2::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-cros_host -profiling" 0 KiB
+[binary  N     ] virtual/assets-1-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] media-fonts/sil-abyssinica-1.0 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="(-X) -doc" 0 KiB
+[binary  N     ] dev-libs/modp_b64-0.0.1-r2::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-cros_host -profiling" 0 KiB
+[binary  N     ] sys-apps/mawk-1.3.4_p20100625 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] dev-libs/libffi-3.1-r3 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-debug -pax_kernel -static-libs {-test}" 0 KiB
+[binary  N     ] virtual/libffi-3.0.13-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] media-fonts/ml-anjalioldlipi-0.740::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="(-X)" 0 KiB
+[binary  N     ] app-arch/tar-1.28 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="minimal -acl -nls -selinux -static -xattr" 0 KiB
+[binary  N     ] sys-apps/sed-4.2.1-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-acl -nls -selinux -static" 0 KiB
+[binary  N     ] dev-util/shflags-1.0.3-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-examples" 0 KiB
+[binary  N     ] sys-libs/pam-1.2.1-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="filecaps pie -audit -berkdb -cracklib -debug -nis -nls -selinux {-test} -vim-syntax" 0 KiB
+[binary  N     ] virtual/pam-0 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] net-dialup/ppp-2.4.6-r6:0/2.4.6::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="pam -activefilter -atm -dhcp -eap-tls -gtk -ipv6 -radius" 0 KiB
+[binary  N     ] sys-auth/pambase-20150213 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-consolekit -cracklib -debug -gnome-keyring -minimal -mktemp -nullok -pam_krb5 -pam_ssh -passwdqc -securetty -selinux -sha512 -systemd" 0 KiB
+[binary  N     ] sys-apps/shadow-4.2.1-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="pam -acl -audit -cracklib -nls -selinux -skey -xattr" LINGUAS="-cs -da -de -es -fi -fr -hu -id -it -ja -ko -pl -pt_BR -ru -sv -tr -zh_CN -zh_TW" 0 KiB
+[binary  N     ] virtual/shadow-0 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] sys-apps/findutils-4.4.2-r2 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-debug -nls -selinux -static" 0 KiB
+[binary  N     ] sys-fs/fuse-2.8.6-r6::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="filecaps" 0 KiB
+[binary  N     ] sys-fs/fuse-exfat-1.1.0::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] app-i18n/chromeos-zhuyin-1.0.0.0::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] sys-apps/net-tools-1.60_p20130513023548-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-nls -old-output -selinux -static" 0 KiB
+[binary  N     ] chromeos-base/chromeos-ca-certificates-0.0.1-r4::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] chromeos-base/chromeos-ssh-testkeys-0.0.1-r2::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-generated_ssh_key" 0 KiB
+[binary  N     ] dev-libs/libtasn1-2.4 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-doc" 0 KiB
+[binary  N     ] app-i18n/chromeos-xkb-1.0.3.0-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] sys-fs/exfat-utils-1.1.0::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] net-firewall/iptables-1.4.21-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="ipv6 -netlink -static-libs" 0 KiB
+[binary  N     ] media-fonts/ko-nanumfonts-3.10.0::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="(-X)" 0 KiB
+[binary  N     ] virtual/libiconv-0-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] sys-apps/grep-2.21-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-nls -pcre -static" 0 KiB
+[binary  N     ] sys-libs/gcc-libs-4.9.2-r32::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="hardened thumb -cros_host -go -hardfp -mounted_gcc -profiling -vtable_verify" 0 KiB
+[binary  N     ] sys-libs/timezone-data-2015a to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-nls -right_timezone" 0 KiB
+[binary  N     ] media-libs/speex-1.2_rc1-r5::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="sse (-neon) -ogg" 0 KiB
+[binary  N     ] virtual/autotest-libs-1-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] chromeos-base/autotest-0.0.2-r7118::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-cros_host -profiling" 0 KiB
+[binary  N     ] media-libs/alsa-lib-1.1.0 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-alisp -debug -doc -python" PYTHON_TARGETS="python2_7" 0 KiB
+[binary  N     ] media-plugins/alsa-plugins-1.1.0 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-debug -ffmpeg -jack -libav -libsamplerate -pulseaudio -speex" 0 KiB
+[binary  N     ] media-fonts/my-padauk-2.50::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="(-X)" 0 KiB
+[binary  N     ] app-arch/snappy-1.0.4 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-static-libs" 0 KiB
+[binary  N     ] dev-libs/leveldb-1.18-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="snappy -static-libs -tcmalloc" 0 KiB
+[binary  N     ] media-fonts/notofonts-20160310-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="(-X)" 0 KiB
+[binary  N     ] sys-apps/rootdev-0.0.1-r25::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-asan -clang -cros_host -profiling" 0 KiB
+[binary  N     ] app-misc/jq-1.4-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-static-libs {-test}" 0 KiB
+[binary  N     ] chromeos-base/regions-0.0.1-r686::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-cros_host -profiling" 0 KiB
+[binary  N     ] virtual/chromeos-regions-1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] app-i18n/chromeos-hangul-1.2.0.7-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] media-fonts/croscorefonts-1.31.0-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="(-X)" 0 KiB
+[binary  N     ] sys-fs/dosfstools-3.0.26 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] app-i18n/chromeos-cangjie-1.0.0.0-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] sys-apps/mmc-utils-0.0.1-r13::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-cros_host -profiling -static" 0 KiB
+[binary  N     ] media-libs/libjpeg-turbo-1.4.0 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-java -static-libs" 0 KiB
+[binary  N     ] virtual/jpeg-0-r2 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-static-libs" 0 KiB
+[binary  N     ] x11-libs/pixman-0.32.4 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="sse2 (-altivec) (-iwmmxt) -loongson2f -mmxext (-neon) -ssse3 -static-libs" 0 KiB
+[binary  N     ] chromeos-base/libchromeos-use-flags-0.0.1-r11::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug legacy_keyboard legacy_power_button opengles ozone -X -arc -asan -cros_host -deep_memory_profiler -disable_login_animations -disable_webaudio -fade_boot_splash_screen -gpu_sandbox_allow_sysv_shm -gpu_sandbox_start_after_initialization -gpu_sandbox_start_early -has_diamond_key -has_hdd -highdpi -moblab -native_gpu_memory_buffers -natural_scroll_default (-neon) {-test} -touchview" BOARD_USE="x86-generic -acorn -amd64-corei7 -amd64-generic -amd64-generic-goofy -amd64-generic_embedded -amd64-generic_mobbuild -amd64-host -amenia -aplrvp -aries -arkham -arm-generic -arm-generic_freon -arm64-generic -arm64-llvmpipe -auron -auron_paine -auron_pearlvalley -auron_yuna -banjo -bayleybay -beaglebone -beaglebone_servo -beaglebone_vv1 -beltino -blackwall -bobcat -bolt -bruteus -buddy -butterfly -bwtm2 -candy -cardhu -cave -celes -chell -cid -clapper -cosmos -cranky -cyan -cyan-cheets -cyclone -daisy -daisy_embedded -daisy_skate -daisy_snow -daisy_spring -daisy_winter -dalmore -danger -danger_embedded -duck -edgar -elm -enguarde -envoy-jerry -expresso -falco -falco_gles -falco_li -fb1 -foster -gale -gandof -gizmo -glados -glados-cheets -glimmer -gnawty -gru -guado -guado_labstation -guado_moblab -heli -hsb -ironhide -jecht -kayle -kblrvp -kevin -kip -klang -kunimitsu -lakitu -lakitu_mobbuild -lakitu_next -lars -laser -leon -link -lulu -lumpy -mappy -mappy-envoy -mappy_flashstation -marble -mccloud -minnowboard -mipseb-n32-generic -mipseb-n64-generic -mipseb-o32-generic -mipsel-n32-generic -mipsel-n64-generic -mipsel-o32-generic -monroe -moose -ninja -nyan -nyan_big -nyan_blaze -nyan_freon -nyan_kitty -oak -oak-cheets -optimus -orco -panda -panther -panther_embedded -panther_goofy -panther_moblab -parrot -parrot32 -parrot64 -parrot_ivb -peach -peach_kirby -peach_pi -peach_pit -pedra -peppy -ppcbe-32-generic -ppcbe-64-generic -ppcle-32-generic -ppcle-64-generic -puppy -purin -quawks -rambi -raspberrypi -reef -reks -reptile -rikku -rizer -rotor -rush -rush_ryu -sama5d3 -samus -samus-cheets -sentry -setzer -shogun -sklrvp -slippy -smaug -smaug-cheets -sonic -squawks -storm -storm_nand -stout -strago -stumpy -stumpy_moblab -stumpy_pico -sumo -swanky -tails -tegra3-generic -terra -tidus -tricky -ultima -umaro -veyron -veyron_brain -veyron_caution -veyron_danger -veyron_emile -veyron_gus -veyron_jaq -veyron_jerry -veyron_mickey -veyron_mighty -veyron_minnie -veyron_minnie-cheets -veyron_nicky -veyron_pinky -veyron_remy -veyron_rialto -veyron_romy -veyron_shark -veyron_speedy -veyron_thea -whirlwind -winky -wizpig -wolf -wsb -x32-generic -x86-agz -x86-alex -x86-alex32 -x86-alex32_he -x86-alex_he -x86-alex_hubble -x86-dogfood -x86-generic_embedded -x86-mario -x86-mario64 -x86-zgb -x86-zgb32 -x86-zgb32_he -x86-zgb_he -zako" 0 KiB
+[binary  N     ] sys-apps/ethtool-3.12.1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] chromeos-base/workarounds-0.0.1-r81::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-cros_host -profiling" 0 KiB
+[binary  N     ] app-arch/gzip-1.5 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-nls -pic -static" 0 KiB
+[binary  N     ] chromeos-base/inputcontrol-0.0.1-r106::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-X -cros_host -profiling" 0 KiB
+[binary  N     ] app-misc/c_rehash-1.7-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] sys-apps/libtsm-3::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] dev-libs/expat-2.1.0-r3 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-examples -static-libs -unicode" 0 KiB
+[binary  N     ] app-i18n/chromeos-keyboards-1.1.4.0-r6::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] app-i18n/keyboard-input-1.0.0.0-r2::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-internal" 0 KiB
+[binary  N     ] sys-apps/pv-1.3.4 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-nls" LINGUAS="-de -fr -pl -pt" 0 KiB
+[binary  N     ] chromeos-base/update-policy-chromeos-0.0.1-r3::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] virtual/update-policy-1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-cros_embedded" 0 KiB
+[binary  N     ] app-admin/rsyslog-5.8.11-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-dbi -debug -doc -extras -kerberos -mysql -oracle -postgres -relp -snmp -ssl -static-libs -zeromq -zlib" 0 KiB
+[binary  N     ] virtual/logger-0 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] chromeos-base/chromeos-sshd-init-0.0.1-r6::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] dev-libs/libnl-1.1-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] net-wireless/ath3k-1-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-cros_host -profiling" 0 KiB
+[binary  N     ] net-wireless/realtek-rt2800-firmware-0.0.1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] net-libs/libmnl-1.0.3-r2::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-examples -static-libs" 0 KiB
+[binary  N     ] sys-apps/iproute2-4.2.0-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="iptables ipv6 -atm -berkdb -minimal -selinux" 0 KiB
+[binary  N     ] sys-libs/ncurses-5.9-r5:0/5 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="minimal -ada -cxx -debug -doc -gpm -profile -static-libs -tinfo -trace -unicode" 0 KiB
+[binary  N     ] sys-libs/ncurses-5.9-r99:5 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-ada -cxx -gpm -static-libs -tinfo -unicode" 0 KiB
+[binary  N     ] media-sound/alsa-utils-1.1.0-r2:0.9::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="ncurses -bat -doc -libsamplerate -nls -selinux" 0 KiB
+[binary  N     ] sys-libs/readline-6.3_p8-r2 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-static-libs -utils" 0 KiB
+[binary  N     ] app-shells/bash-4.2_p48-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="readline -afs -bashlogger -examples -mem-scramble -net -nls -plugins -vanilla" 0 KiB
+[binary  N     ] dev-db/sqlite-3.8.6:3 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="readline -debug -doc -icu -secure-delete -static-libs -tcl {-test}" 0 KiB
+[binary  N     ] sys-process/procps-3.3.9-r2 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="ncurses -nls -selinux -static-libs -systemd {-test} -unicode" 0 KiB
+[binary  N     ] media-fonts/tibt-jomolhari-0.0.3c::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-X" 0 KiB
+[binary  N     ] sys-apps/flashmap-0.3-r18::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-cros_host -profiling" 0 KiB
+[binary  N     ] sys-apps/which-2.20-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] app-eselect/eselect-vi-1.1.9 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] app-editors/vim-7.4.712 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="minimal -X -acl -cscope -debug -gpm -lua -luajit -nls -perl -python -racket -ruby -selinux -tcl -vim-pager" PYTHON_TARGETS="python2_7 -python3_3 -python3_4" 0 KiB
+[binary  N     ] virtual/editor-0 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] sys-apps/chvt-0.0.1-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] sys-apps/keyutils-1.5.9-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="{-test}" 0 KiB
+[binary  N     ] dev-libs/libevent-2.0.22::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-debug (-ssl) -static-libs {-test} -threads" 0 KiB
+[binary  N     ] sys-apps/attr-2.4.47-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-nls -static-libs" 0 KiB
+[binary  N     ] sys-libs/libcap-2.22-r2 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="(-pam)" 0 KiB
+[binary  N     ] chromeos-base/chromeos-minijail-0.0.1-r1461::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug seccomp -cros_host -profiling {-test}" 0 KiB
+[binary  N     ] sys-apps/acl-2.2.52-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-nls -static-libs" 0 KiB
+[binary  N     ] dev-libs/nspr-4.10.10 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-debug" 0 KiB
+[binary  N     ] virtual/mta-0 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] x11-proto/xproto-7.0.23-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-doc" 0 KiB
+[binary  N     ] dev-libs/libgpg-error-1.12 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-common-lisp -nls -static-libs" 0 KiB
+[binary  N     ] dev-libs/libgcrypt-1.6.3-r3:0/20 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-doc -static-libs" 0 KiB
+[binary  N     ] dev-libs/lzo-2.06:2 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-examples -static-libs" 0 KiB
+[binary  N     ] net-wireless/wireless-regdb-20131127-r5::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] net-wireless/crda-1.1.1-r5::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] sys-apps/smartmontools-5.42 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="minimal -caps -static" 0 KiB
+[binary  N     ] dev-libs/iniparser-3.1-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-doc -examples -static-libs" 0 KiB
+[binary  N     ] chromeos-base/chromeos-firmware-null-0.0.2-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] virtual/chromeos-firmware-1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] app-arch/unrar-4.2.4 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] app-shells/dash-0.5.5.1.7 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-libedit -static" 0 KiB
+[binary  N     ] dev-libs/libnl-3.2.24:3 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-python -static-libs -utils" PYTHON_TARGETS="python2_7 -python3_3 -python3_4" 0 KiB
+[binary  N     ] net-wireless/iw-3.17 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] net-wireless/marvell_sd8787-14.64.2.47-r53::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-cros_host -pcie -profiling" 0 KiB
+[binary  N     ] media-fonts/dejavu-2.33 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="(-X) -fontforge" 0 KiB
+[binary  N     ] virtual/ttf-fonts-1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] sys-libs/e2fsprogs-libs-1.42.12 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-nls -static-libs" 0 KiB
+[binary  N     ] dev-util/shunit2-2.1.6 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-doc {-test}" 0 KiB
+[binary  N     ] dev-libs/xz-embedded-20130513::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] sys-apps/hdparm-9.45 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-static" 0 KiB
+[binary  N     ] sys-apps/hwids-20150717 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="pci udev usb -net" 0 KiB
+[binary  N     ] chromeos-base/chromeos-activate-date-0.0.1-r5::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] virtual/chromeos-activate-date-1-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] chromeos-base/vpd-0.0.1-r83::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-cros_host -profiling -static" 0 KiB
+[binary  N     ] app-arch/bzip2-1.0.6-r7 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-static -static-libs" 0 KiB
+[binary  N     ] dev-util/bsdiff-4.3.1-r4::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-cros_host -profiling" 0 KiB
+[binary  N     ] dev-libs/libusb-1.0.19:1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="static-libs -debug -doc -examples {-test} -udev" 0 KiB
+[binary  N     ] virtual/libusb-1-r1:1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-udev" 0 KiB
+[binary  N     ] media-libs/libmtp-0.0.1-r21::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-asan -clang -cros_host -crypt -doc -examples -profiling -static-libs" 0 KiB
+[binary  N     ] dev-libs/libusb-compat-0.1.5-r3 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-debug -examples -static-libs" 0 KiB
+[binary  N     ] virtual/libusb-0-r2 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] media-fonts/noto-cjk-20150910-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="(-X)" 0 KiB
+[binary  N     ] net-libs/libnfnetlink-1.0.1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-static-libs" 0 KiB
+[binary  N     ] net-libs/libnetfilter_queue-1.0.1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-static-libs" 0 KiB
+[binary  N     ] chromeos-base/libevdev-0.0.1-r61::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug (-asan) -clang -cros_host -profiling" 0 KiB
+[binary  N     ] sys-kernel/chromeos-kernel-3_14-3.14-r1491::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="firmware_install mbim vlan -acpi_ac_off -android_test -binder -blkdevram -boot_dts_device_tree -builtin_fw_t124_xusb -builtin_fw_t210_bpmp -builtin_fw_t210_nouveau -builtin_fw_t210_xusb -ca0132 -cifs -cros_ec_mec -cros_host -debug -device_tree -dwc2_dual_role -dyndebug -factory_shim_ramfs -fbconsole -gdmwimax -gobi -highmem -i2cdev -iscsi -kasan -kgdb -kvm -loader_kernel_ramfs -lxc -netboot_ramfs -nfc -nfs -nowerror -pcserial -ppp -profiling -qmi -realtekpstor -recovery_ramfs -samsung_serial -socketmon -systemtap -tpm -transparent_hugepage -usb_gadget -usb_gadget_acm -usb_gadget_audio -usb_gadget_ncm -vfat -vtconsole -wifi_debug -wifi_testbed_ap -wireless316 -wireless318 -wireless34 -wireless38 -wireless42 -x32" BOARD_USE="x86-generic -acorn -amd64-corei7 -amd64-generic -amd64-generic-goofy -amd64-generic_embedded -amd64-generic_mobbuild -amd64-host -amenia -aplrvp -aries -arkham -arm-generic -arm-generic_freon -arm64-generic -arm64-llvmpipe -auron -auron_paine -auron_pearlvalley -auron_yuna -banjo -bayleybay -beaglebone -beaglebone_servo -beaglebone_vv1 -beltino -blackwall -bobcat -bolt -bruteus -buddy -butterfly -bwtm2 -candy -cardhu -cave -celes -chell -cid -clapper -cosmos -cranky -cyan -cyan-cheets -cyclone -daisy -daisy_embedded -daisy_skate -daisy_snow -daisy_spring -daisy_winter -dalmore -danger -danger_embedded -duck -edgar -elm -enguarde -envoy-jerry -expresso -falco -falco_gles -falco_li -fb1 -foster -gale -gandof -gizmo -glados -glados-cheets -glimmer -gnawty -gru -guado -guado_labstation -guado_moblab -heli -hsb -ironhide -jecht -kayle -kblrvp -kevin -kip -klang -kunimitsu -lakitu -lakitu_mobbuild -lakitu_next -lars -laser -leon -link -lulu -lumpy -mappy -mappy-envoy -mappy_flashstation -marble -mccloud -minnowboard -mipseb-n32-generic -mipseb-n64-generic -mipseb-o32-generic -mipsel-n32-generic -mipsel-n64-generic -mipsel-o32-generic -monroe -moose -ninja -nyan -nyan_big -nyan_blaze -nyan_freon -nyan_kitty -oak -oak-cheets -optimus -orco -panda -panther -panther_embedded -panther_goofy -panther_moblab -parrot -parrot32 -parrot64 -parrot_ivb -peach -peach_kirby -peach_pi -peach_pit -pedra -peppy -ppcbe-32-generic -ppcbe-64-generic -ppcle-32-generic -ppcle-64-generic -puppy -purin -quawks -rambi -raspberrypi -reef -reks -reptile -rikku -rizer -rotor -rush -rush_ryu -sama5d3 -samus -samus-cheets -sentry -setzer -shogun -sklrvp -slippy -smaug -smaug-cheets -sonic -squawks -storm -storm_nand -stout -strago -stumpy -stumpy_moblab -stumpy_pico -sumo -swanky -tails -tegra3-generic -terra -tidus -tricky -ultima -umaro -veyron -veyron_brain -veyron_caution -veyron_danger -veyron_emile -veyron_gus -veyron_jaq -veyron_jerry -veyron_mickey -veyron_mighty -veyron_minnie -veyron_minnie-cheets -veyron_nicky -veyron_pinky -veyron_remy -veyron_rialto -veyron_romy -veyron_shark -veyron_speedy -veyron_thea -whirlwind -winky -wizpig -wolf -wsb -x32-generic -x86-agz -x86-alex -x86-alex32 -x86-alex32_he -x86-alex_he -x86-alex_hubble -x86-dogfood -x86-generic_embedded -x86-mario -x86-mario64 -x86-zgb -x86-zgb32 -x86-zgb32_he -x86-zgb_he -zako" 0 KiB
+[binary  N     ] virtual/linux-sources-1-r10::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="kernel-3_14 -kernel-3_10 -kernel-3_18 -kernel-3_8 -kernel-4_4 -kernel-upstream-mainline -kernel-upstream-next" 0 KiB
+[binary  N     ] dev-libs/jsoncpp-0.6.0_rc2 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-doc" 0 KiB
+[binary  N     ] dev-libs/libdaemon-0.14-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-doc -examples -static-libs" 0 KiB
+[binary  N     ] media-fonts/droidfonts-cros-20140815-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="(-X)" 0 KiB
+[binary  N     ] chromeos-base/root-certificates-0.0.1-r3::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] media-fonts/lohitfonts-cros-2.5.0-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="(-X)" 0 KiB
+[binary  N     ] sys-process/lsof-4.85-r2 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-examples -ipv6 -rpc -selinux -static" 0 KiB
+[binary  N     ] sys-libs/zlib-1.2.8-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="static-libs -minizip" 0 KiB
+[binary  N     ] media-libs/tiff-4.0.3-r6 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cxx zlib -jbig -jpeg -lzma -static-libs {-test}" 0 KiB
+[binary  N     ] dev-libs/libpcre-8.38:3 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="bzip2 cxx jit readline recursion-limit (unicode) zlib -libedit -pcre16 -pcre32 -static-libs" 0 KiB
+[binary  N     ] dev-libs/openssl-1.0.2g::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="asm sse2 zlib (-bindist) -gmp -kerberos -rfc3779 -sctp -static-libs {-test} -tls-heartbeat -vanilla" 0 KiB
+[binary  N     ] chromeos-base/libscrypt-1.1.6-r12::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-asan -clang -cros_host -profiling -static-libs" 0 KiB
+[binary  N     ] net-misc/iputils-20121221-r2 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="arping filecaps ipv6 ssl tracepath -SECURITY_HAZARD -caps -clockdiff -doc -gnutls -idn -rarpd -rdisc -static -tftpd -traceroute" 0 KiB
+[binary  N     ] dev-libs/pkcs11-helper-1.07 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-doc -gnutls -nss" 0 KiB
+[binary  N     ] net-wireless/hostapd-2.3-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="crda filecaps ssl wps -ipv6 -logwatch -madwifi -spectrum_mgmt -weak_urandom_low_security" 0 KiB
+[binary  N     ] dev-libs/libp11-0.2.8-r3 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-doc" 0 KiB
+[binary  N     ] dev-libs/engine_pkcs11-0.1.8-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-doc" 0 KiB
+[binary  N     ] dev-libs/protobuf-2.6.1-r4:0/9::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="zlib -emacs -examples -java (-python) -source -static-libs -vim-syntax" PYTHON_TARGETS="python2_7" 0 KiB
+[binary  N     ] dev-libs/libxml2-2.9.2-r1:2 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="readline -debug -examples -icu -ipv6 -lzma -python -static-libs {-test}" PYTHON_TARGETS="python2_7 -python3_3 -python3_4" 0 KiB
+[binary  N     ] net-misc/wget-1.17.1-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="ssl zlib -debug -gnutls -idn -ipv6 -libressl -nls -ntlm -pcre -static {-test} -uuid" 0 KiB
+[binary  N     ] dev-libs/glib-2.34.3-r4:2::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-cros_host -debug -fam -mime -selinux -static-libs -systemtap {-test} -utils -xattr" 0 KiB
+[binary  N     ] dev-libs/atk-1.32.0-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-doc -introspection -nls" 0 KiB
+[binary  N     ] media-libs/libpng-1.2.51-r2:0/12::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="pnm2png -static-libs" 0 KiB
+[binary  N     ] sys-apps/usbutils-007-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="zlib -python" PYTHON_TARGETS="python2_7" 0 KiB
+[binary  N     ] app-admin/sudo-1.8.12 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="pam sendmail -ldap -nls -offensive -selinux -skey" 0 KiB
+[binary  N     ] net-misc/curl-7.47.1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="ssl -adns -http2 -idn -ipv6 -kerberos -ldap -metalink -rtmp -samba -ssh -static-libs {-test} (-threads)" CURL_SSL="openssl -axtls -gnutls -libressl -mbedtls -nss -polarssl -winssl" 0 KiB
+[binary  N     ] chromeos-base/dev-install-0.0.1-r817::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -cros_host -profiling" BOARD_USE="x86-generic -acorn -amd64-corei7 -amd64-generic -amd64-generic-goofy -amd64-generic_embedded -amd64-generic_mobbuild -amd64-host -amenia -aplrvp -aries -arkham -arm-generic -arm-generic_freon -arm64-generic -arm64-llvmpipe -auron -auron_paine -auron_pearlvalley -auron_yuna -banjo -bayleybay -beaglebone -beaglebone_servo -beaglebone_vv1 -beltino -blackwall -bobcat -bolt -bruteus -buddy -butterfly -bwtm2 -candy -cardhu -cave -celes -chell -cid -clapper -cosmos -cranky -cyan -cyan-cheets -cyclone -daisy -daisy_embedded -daisy_skate -daisy_snow -daisy_spring -daisy_winter -dalmore -danger -danger_embedded -duck -edgar -elm -enguarde -envoy-jerry -expresso -falco -falco_gles -falco_li -fb1 -foster -gale -gandof -gizmo -glados -glados-cheets -glimmer -gnawty -gru -guado -guado_labstation -guado_moblab -heli -hsb -ironhide -jecht -kayle -kblrvp -kevin -kip -klang -kunimitsu -lakitu -lakitu_mobbuild -lakitu_next -lars -laser -leon -link -lulu -lumpy -mappy -mappy-envoy -mappy_flashstation -marble -mccloud -minnowboard -mipseb-n32-generic -mipseb-n64-generic -mipseb-o32-generic -mipsel-n32-generic -mipsel-n64-generic -mipsel-o32-generic -monroe -moose -ninja -nyan -nyan_big -nyan_blaze -nyan_freon -nyan_kitty -oak -oak-cheets -optimus -orco -panda -panther -panther_embedded -panther_goofy -panther_moblab -parrot -parrot32 -parrot64 -parrot_ivb -peach -peach_kirby -peach_pi -peach_pit -pedra -peppy -ppcbe-32-generic -ppcbe-64-generic -ppcle-32-generic -ppcle-64-generic -puppy -purin -quawks -rambi -raspberrypi -reef -reks -reptile -rikku -rizer -rotor -rush -rush_ryu -sama5d3 -samus -samus-cheets -sentry -setzer -shogun -sklrvp -slippy -smaug -smaug-cheets -sonic -squawks -storm -storm_nand -stout -strago -stumpy -stumpy_moblab -stumpy_pico -sumo -swanky -tails -tegra3-generic -terra -tidus -tricky -ultima -umaro -veyron -veyron_brain -veyron_caution -veyron_danger -veyron_emile -veyron_gus -veyron_jaq -veyron_jerry -veyron_mickey -veyron_mighty -veyron_minnie -veyron_minnie-cheets -veyron_nicky -veyron_pinky -veyron_remy -veyron_rialto -veyron_romy -veyron_shark -veyron_speedy -veyron_thea -whirlwind -winky -wizpig -wolf -wsb -x32-generic -x86-agz -x86-alex -x86-alex32 -x86-alex32_he -x86-alex_he -x86-alex_hubble -x86-dogfood -x86-generic_embedded -x86-mario -x86-mario64 -x86-zgb -x86-zgb32 -x86-zgb32_he -x86-zgb_he -zako" 0 KiB
+[binary  N     ] chromeos-base/google-breakpad-2016.03.10.135120-r97::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-alltests -cros_host -profiling {-test}" 0 KiB
+[binary  N     ] media-libs/freetype-2.6.2-r1:2::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="adobe-cff png -X (-bindist) -bzip2 -debug -doc -fontforge -harfbuzz -infinality -static-libs -utils" 0 KiB
+[binary  N     ] media-libs/fontconfig-2.11.1-r15:1.0::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="subpixel_rendering -cros_host -doc -highdpi -static-libs" 0 KiB
+[binary  N     ] sys-apps/kmod-18-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="tools zlib -debug -doc -lzma (-python) -static-libs" PYTHON_TARGETS="python2_7 -python3_3 -python3_4" 0 KiB
+[binary  N     ] virtual/modutils-0 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] sys-apps/util-linux-2.25.1-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cramfs ncurses pam static-libs -caps -fdformat -nls -python -selinux -slang -suid {-test} -tty-helpers -udev -unicode" PYTHON_SINGLE_TARGET="python2_7 -python3_3 -python3_4" PYTHON_TARGETS="python2_7 -python3_3 -python3_4" 0 KiB
+[binary  N     ] chromeos-base/swap-init-0.0.1-r3::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] chromeos-base/vboot_reference-1.0-r1198::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug minimal -32bit_au -cros_host -dev_debug_force -mtd -pd_sync -profiling -tpmtests" 0 KiB
+[binary  N     ] chromeos-base/chromeos-auth-config-0.0.1-r7::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] virtual/chromeos-auth-config-1-r0::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] sys-apps/mosys-1.2.03-r398::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="static -cros_host -profiling" 0 KiB
+[binary  N     ] sys-fs/udev-208-r6::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="acl firmware-loader kmod -doc -gudev -introspection -openrc -selinux -static-libs" 0 KiB
+[binary  N     ] virtual/udev-215 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-systemd" 0 KiB
+[binary  N     ] sys-fs/lvm2-2.02.97-r4 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="device-mapper-only udev -clvm (-cman) -lvm1 -readline -selinux -static -static-libs -thin" 0 KiB
+[binary  N     ] virtual/libudev-215-r1:0/1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-static-libs -systemd" 0 KiB
+[binary  N     ] dev-libs/libgudev-230 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-debug -introspection -static-libs" 0 KiB
+[binary  N     ] virtual/libgudev-215-r3 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-introspection -static-libs -systemd" 0 KiB
+[binary  N     ] net-libs/libmbim-1.13.0-r29::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-asan -clang -cros_host -doc -profiling -static-libs" 0 KiB
+[binary  N     ] sys-fs/e2fsprogs-1.42.12 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-nls -static-libs" 0 KiB
+[binary  N     ] dev-util/imgdiff-0.0.1-r2::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-cros_host -profiling" 0 KiB
+[binary  N     ] dev-libs/nss-3.21-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="(-cacert) (-nss-pem) -utils" 0 KiB
+[binary  N     ] sys-fs/ecryptfs-utils-101 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="pam -doc -gpg -gtk -openssl -pkcs11 -python -suid -tpm" 0 KiB
+[binary  N     ] dev-libs/elfutils-0.160 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="bzip2 threads zlib -lzma -nls -static-libs {-test} -utils" 0 KiB
+[binary  N     ] dev-util/perf-3.18-r2::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-audit -demangle -doc -gtk -perl -python -slang -unwind" PYTHON_TARGETS="python2_7" 0 KiB
+[binary  N     ] x11-libs/libpciaccess-0.12.902-r2::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="zlib -minimal -static-libs" 0 KiB
+[binary  N     ] sys-apps/pciutils-3.1.10 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="static-libs zlib" 0 KiB
+[binary  N     ] sys-fs/avfs-1.0.1-r5::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="lzma -extfs -static-libs" 0 KiB
+[binary  N     ] x11-libs/cairo-1.12.12-r3 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="glib svg -X (-aqua) -debug -directfb -doc -drm -gallium -legacy-drivers -opengl -openvg -qt4 -static-libs -xcb" 0 KiB
+[binary  N     ] media-libs/harfbuzz-1.2.3-r1:0/0.9.18::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cairo glib truetype -fontconfig -graphite -icu -introspection -static-libs {-test}" 0 KiB
+[binary  N     ] x11-libs/pango-1.32.5-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-X -cros_host -debug -introspection" 0 KiB
+[binary  N     ] net-dns/c-ares-1.7.5-r1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-static-libs" 0 KiB
+[binary  N     ] app-i18n/nacl-mozc-1.14.1639.104-r4::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-internal" 0 KiB
+[binary  N     ] app-i18n/japanese-input-1.0.0.0-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-internal" 0 KiB
+[binary  N     ] x11-proto/kbproto-1.0.5 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] x11-libs/libxkbcommon-0.4.3-r2::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-static-libs" 0 KiB
+[binary  N     ] sys-apps/baselayout-2.2::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-auto_seed_etc_files" 0 KiB
+[binary  N     ] net-dns/dnsmasq-2.72-r4 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="dhcp filecaps script -auth-dns -conntrack -dbus -dhcp-options -dhcp-tools -dnssec -idn -ipv6 -lua -nls -selinux -static -tftp" LINGUAS="-de -es -fi -fr -id -it -no -pl -pt_BR -ro" 0 KiB
+[binary  N     ] sys-apps/dbus-1.6.8-r12::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-X -debug -doc -selinux -static-libs -systemd {-test}" 0 KiB
+[binary  N     ] sys-apps/frecon-0.0.1-r86::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-asan -clang -cros_host -profiling" 0 KiB
+[binary  N     ] dev-libs/dbus-glib-0.100.2 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-debug -doc -static-libs {-test}" 0 KiB
+[binary  N     ] sys-libs/libnih-1.0.3-r3 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="dbus threads -nls -static-libs {-test}" 0 KiB
+[binary  N     ] sys-apps/ureadahead-0.100.0-r5::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] chromeos-base/chromeos-machine-id-regen-0.0.1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] chromeos-base/libchrome-369476-r4:369476::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -cros_host -profiling" 0 KiB
+[binary  N     ] chromeos-base/system_api-0.0.1-r1894::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -asan -clang -cros_host -profiling" 0 KiB
+[binary  N     ] chromeos-base/quipper-0.0.1-r1060::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -asan -clang -cros_host -profiling {-test}" 0 KiB
+[binary  N     ] chromeos-base/libweave-0.0.1-r104::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -asan -clang -cros_host -profiling" 0 KiB
+[binary  N     ] chromeos-base/bootstat-0.0.2-r1514::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -asan -clang -cros_host -profiling" 0 KiB
+[binary  N     ] chromeos-base/chromeos-imageburner-0.0.1-r1531::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -asan -clang -cros_host -profiling {-test}" 0 KiB
+[binary  N     ] dev-libs/dbus-c++-0.0.2-r57:1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="glib -asan -clang -cros_host -debug -doc -profiling" 0 KiB
+[binary  N     ] chromeos-base/libbrillo-0.0.1-r16::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -asan -clang -cros_host -profiling" 0 KiB
+[binary  N     ] chromeos-base/metrics-0.0.1-r1483::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug passive_metrics -asan -clang -cros_host -metrics_uploader -profiling -systemd" 0 KiB
+[binary  N     ] chromeos-base/chromeos-installer-0.0.1-r1807::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug pam -32bit_au -cros_host -mtd -profiling {-test}" 0 KiB
+[binary  N     ] chromeos-base/firewalld-0.0.1-r853::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -asan -clang -cros_host -profiling" 0 KiB
+[binary  N     ] chromeos-base/mist-0.0.1-r1316::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -asan -clang -cros_host -profiling {-test}" 0 KiB
+[binary  N     ] chromeos-base/libchromeos-ui-0.0.1-r184::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -asan -clang -cros_host -profiling" 0 KiB
+[binary  N     ] chromeos-base/crash-reporter-0.0.1-r1440::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -arc -asan -clang -cros_embedded -cros_host -profiling -systemd {-test}" 0 KiB
+[binary  N     ] sys-apps/upstart-1.2-r11::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-debug -examples -nls -selinux" 0 KiB
+[binary  N     ] chromeos-base/tty-0.0.1-r7::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ TTY_CONSOLE="-tty0 -tty1 -tty2 -tty3 -tty4 -tty5 -ttyAMA0 -ttyAMA1 -ttyAMA2 -ttyAMA3 -ttyAMA4 -ttyAMA5 -ttyHSL0 -ttyHSL1 -ttyHSL2 -ttyHSL3 -ttyHSL4 -ttyHSL5 -ttyMSM0 -ttyMSM1 -ttyMSM2 -ttyMSM3 -ttyMSM4 -ttyMSM5 -ttyO0 -ttyO1 -ttyO2 -ttyO3 -ttyO4 -ttyO5 -ttyS0 -ttyS1 -ttyS2 -ttyS3 -ttyS4 -ttyS5 -ttySAC0 -ttySAC1 -ttySAC2 -ttySAC3 -ttySAC4 -ttySAC5 -ttyUSB0 -ttyUSB1 -ttyUSB2 -ttyUSB3 -ttyUSB4 -ttyUSB5 -ttymxc0 -ttymxc1 -ttymxc2 -ttymxc3 -ttymxc4 -ttymxc5" 0 KiB
+[binary  N     ] chromeos-base/modem-utilities-0.0.1-r1479::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-cros_host -profiling" 0 KiB
+[binary  N     ] media-gfx/sane-backends-1.0.25 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="usb -avahi -doc -gphoto2 -ipv6 -nls -snmp -systemd -threads -v4l -xinetd" SANE_BACKENDS="abaton agfafocus apple artec artec_eplus48u as6e avision bh canon canon630u canon_dr cardscan coolscan coolscan2 coolscan3 dc210 dc240 dc25 dell1600n_net dmc epjitsu epson epson2 fujitsu genesys gt68xx hp hp3500 hp3900 hp4200 hp5400 hp5590 hpljm1005 hs2p ibm kodak kodakaio kvs1025 kvs20xx leo lexmark ma1509 magicolor matsushita microtek microtek2 mustek mustek_usb nec net niash p5 pie pixma plustek plustek_pp qcam ricoh rts8891 s9036 sceptre sharp sm3600 sm3840 snapscan sp15c st400 stv680 tamarack teco1 teco2 teco3 {test} u12 umax umax1220u umax_pp xerox_mfp -canon_pp -hpsj5s -kvs40xx -mustek_pp -mustek_usb2 -pnm" 0 KiB
+[binary  N     ] chromeos-base/lorgnette-0.0.1-r1180::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -asan -clang -cros_host -profiling {-test}" 0 KiB
+[binary  N     ] net-misc/tlsdate-0.0.5-r42::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug dbus seccomp -asan -clang -cros_host -profiling" 0 KiB
+[binary  N     ] app-crypt/trousers-0.3.3-r59::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -cros_host -doc -profiling -tss_trace" 0 KiB
+[binary  N     ] net-misc/openvpn-2.3.2-r2::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="lzo pam pkcs11 ssl -down-root -eurephia -examples -iproute2 -ipv6 -minimal -passwordsave -selinux -static" 0 KiB
+[binary  N     ] net-misc/openssh-6.6.1_p1-r2 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="hpn pam -X -X509 (-bindist) -kerberos -ldap -ldns -libedit -selinux -skey -static -tcpd" 0 KiB
+[binary  N     ] chromeos-base/crosh-0.0.1-r1592::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-X -cros_host -cups -profiling" 0 KiB
+[binary  N     ] net-misc/modemmanager-next-1.5.0-r263::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="mbim -asan -clang -cros_host -doc -gobi -profiling -qmi" 0 KiB
+[binary  N     ] net-wireless/wpa_supplicant-0.0.1-r4::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="dbus debug hs2-0 smartcard ssl -ap -cros_host -eap-sim -fasteap -gnutls -libressl -madwifi -p2p -profiling -ps3 -qt4 -qt5 -readline -selinux -tdls -uncommon-eap-types -wimax -wps" 0 KiB
+[binary  N     ] chromeos-base/mtpd-0.0.1-r116::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug seccomp -asan -clang -cros_host -profiling {-test}" 0 KiB
+[binary  N     ] chromeos-base/gestures-conf-0.0.1-r55::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="ozone -alex -butterfly -cros_host -elan -mario -profiling -stout" BOARD_USE="x86-generic -acorn -amd64-corei7 -amd64-generic -amd64-generic-goofy -amd64-generic_embedded -amd64-generic_mobbuild -amd64-host -amenia -aplrvp -aries -arkham -arm-generic -arm-generic_freon -arm64-generic -arm64-llvmpipe -auron -auron_paine -auron_pearlvalley -auron_yuna -banjo -bayleybay -beaglebone -beaglebone_servo -beaglebone_vv1 -beltino -blackwall -bobcat -bolt -bruteus -buddy -butterfly -bwtm2 -candy -cardhu -cave -celes -chell -cid -clapper -cosmos -cranky -cyan -cyan-cheets -cyclone -daisy -daisy_embedded -daisy_skate -daisy_snow -daisy_spring -daisy_winter -dalmore -danger -danger_embedded -duck -edgar -elm -enguarde -envoy-jerry -expresso -falco -falco_gles -falco_li -fb1 -foster -gale -gandof -gizmo -glados -glados-cheets -glimmer -gnawty -gru -guado -guado_labstation -guado_moblab -heli -hsb -ironhide -jecht -kayle -kblrvp -kevin -kip -klang -kunimitsu -lakitu -lakitu_mobbuild -lakitu_next -lars -laser -leon -link -lulu -lumpy -mappy -mappy-envoy -mappy_flashstation -marble -mccloud -minnowboard -mipseb-n32-generic -mipseb-n64-generic -mipseb-o32-generic -mipsel-n32-generic -mipsel-n64-generic -mipsel-o32-generic -monroe -moose -ninja -nyan -nyan_big -nyan_blaze -nyan_freon -nyan_kitty -oak -oak-cheets -optimus -orco -panda -panther -panther_embedded -panther_goofy -panther_moblab -parrot -parrot32 -parrot64 -parrot_ivb -peach -peach_kirby -peach_pi -peach_pit -pedra -peppy -ppcbe-32-generic -ppcbe-64-generic -ppcle-32-generic -ppcle-64-generic -puppy -purin -quawks -rambi -raspberrypi -reef -reks -reptile -rikku -rizer -rotor -rush -rush_ryu -sama5d3 -samus -samus-cheets -sentry -setzer -shogun -sklrvp -slippy -smaug -smaug-cheets -sonic -squawks -storm -storm_nand -stout -strago -stumpy -stumpy_moblab -stumpy_pico -sumo -swanky -tails -tegra3-generic -terra -tidus -tricky -ultima -umaro -veyron -veyron_brain -veyron_caution -veyron_danger -veyron_emile -veyron_gus -veyron_jaq -veyron_jerry -veyron_mickey -veyron_mighty -veyron_minnie -veyron_minnie-cheets -veyron_nicky -veyron_pinky -veyron_remy -veyron_rialto -veyron_romy -veyron_shark -veyron_speedy -veyron_thea -whirlwind -winky -wizpig -wolf -wsb -x32-generic -x86-agz -x86-alex -x86-alex32 -x86-alex32_he -x86-alex_he -x86-alex_hubble -x86-dogfood -x86-generic_embedded -x86-mario -x86-mario64 -x86-zgb -x86-zgb32 -x86-zgb32_he -x86-zgb_he -zako" 0 KiB
+[binary  N     ] chromeos-base/gestures-0.0.1-r526::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -X (-asan) -clang -cros_host -profiling" 0 KiB
+[binary  N     ] chromeos-base/chaps-0.0.1-r1370::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -asan -clang -cros_host -profiling -tpm2" 0 KiB
+[binary  N     ] chromeos-base/cryptohome-0.0.1-r1153::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -asan -clang -cros_host -profiling {-test} -tpm2" 0 KiB
+[binary  N     ] chromeos-base/chromeos-login-0.0.2-r2261::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -arc -asan -clang -cros_host -profiling {-test}" 0 KiB
+[binary  N     ] chromeos-base/bootcomplete-login-0.0.1-r3::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] virtual/chromeos-bootcomplete-1-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-cros_embedded" 0 KiB
+[binary  N     ] chromeos-base/permission_broker-0.0.1-r1467::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -asan -clang -cros_host -profiling" 0 KiB
+[binary  N     ] chromeos-base/apmanager-0.0.1-r1064::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -asan -clang -cros_host -profiling {-test}" 0 KiB
+[binary  N     ] sys-fs/ntfs3g-2012.1.15-r4::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="ntfsprogs suid udev -acl -crypt -debug -external-fuse -extras -static-libs -xattr" 0 KiB
+[binary  N     ] chromeos-base/cros-disks-0.0.1-r1188::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug seccomp -asan -clang -cros_host -profiling {-test}" 0 KiB
+[binary  N     ] net-dns/avahi-0.6.31-r4 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="dbus -autoipd -bookmarks -doc -gdbm -gtk -gtk3 -howl-compat -introspection -ipv6 -mdnsresponder-compat -mono -nls -python -qt4 {-test} -utils" PYTHON_TARGETS="python2_7" 0 KiB
+[binary  N     ] sys-auth/nss-mdns-0.10-r2 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-search-domains" 0 KiB
+[binary  N     ] chromeos-base/nsswitch-0.0.1-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="zeroconf" 0 KiB
+[binary  N     ] net-dns/avahi-daemon-0.0.1-r4::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="wifi_bootstrapping zeroconf -brillo-debug" 0 KiB
+[binary  N     ] chromeos-base/p2p-0.0.1-r1527::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -asan -clang -cros_host -profiling" 0 KiB
+[binary  N     ] chromeos-base/peerd-0.0.1-r1398::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -asan -clang -cros_host -profiling" 0 KiB
+[binary  N     ] chromeos-base/chromeos-base-0-r132::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="pam -ac_only -chromeless_tty -cros_embedded -cros_host -vtconsole" 0 KiB
+[binary  N     ] virtual/implicit-system-1-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] net-misc/dhcpcd-6.8.2-r15::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="dbus embedded udev -ipv6" 0 KiB
+[binary  N     ] net-wireless/bluez-5.37-r51::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="readline -cros_host -cups -debug -profiling -test-programs" 0 KiB
+[binary  N     ] app-laptop/laptop-mode-tools-1.59-r31::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="bluetooth (-acpi) -apm -hal -pmu -scsi -wifi_force_powersave" 0 KiB
+[binary  N     ] app-accessibility/brltty-4.5-r10::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="api bluetooth iconv usb -X -beeper -contracted-braille -doc -fm -gpm -icu -java -learn-mode -midi -ncurses -nls -ocaml -pcm -python -speech -tcl" 0 KiB
+[binary  N     ] net-libs/libpcap-1.5.3 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="bluetooth ipv6 -canusb -dbus -netlink -static-libs" 0 KiB
+[binary  N     ] net-dialup/xl2tpd-1.3.0-r3::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-dnsretry" 0 KiB
+[binary  N     ] x11-misc/xkeyboard-config-2.15-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-cros_host -parrot" 0 KiB
+[binary  N     ] media-libs/sbc-1.3 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-static-libs" 0 KiB
+[binary  N     ] dev-libs/gmp-6.1.0:0/10.4 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="asm -cxx -doc -pgo -static-libs" 0 KiB
+[binary  N     ] dev-libs/nettle-2.7.1:0/4 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="gmp -doc (-neon) -static-libs {-test}" 0 KiB
+[binary  N     ] net-libs/gnutls-2.12.23-r6 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="bindist nettle zlib -cxx -doc -examples -guile -lzo -nls -pkcs11 -static-libs {-test}" 0 KiB
+[binary  N     ] net-libs/libmicrohttpd-0.9.42 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="messages ssl -epoll -static-libs {-test}" 0 KiB
+[binary  N     ] chromeos-base/webserver-0.0.1-r674::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -asan -clang -cros_host -profiling" 0 KiB
+[binary  N     ] chromeos-base/buffet-0.0.1-r1311::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug wifi_bootstrapping -asan -clang -cros_host -profiling" 0 KiB
+[binary  N     ] net-misc/strongswan-5.0.2-r17::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="caps non-root openssl pam -curl -debug -dhcp -eap -farp -gcrypt -ldap -mysql -sqlite" 0 KiB
+[binary  N     ] chromeos-base/vpn-manager-0.0.1-r1181::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -asan -clang -cros_host -profiling {-test}" 0 KiB
+[binary  N     ] media-fonts/robotofonts-20150625-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="(-X)" 0 KiB
+[binary  N     ] sys-auth/pam_pwdfile-0.99-r2::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] media-fonts/crosextrafonts-carlito-20130920::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="(-X)" 0 KiB
+[binary  N     ] sys-kernel/linux-firmware-0.0.1-r90::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-cros_host -profiling" LINUX_FIRMWARE="iwlwifi-all -adsp_skl -ath3k-all -ath3k-ar3011 -ath3k-ar3012 -ath9k_htc -bcm4354-bt -brcmfmac-all -brcmfmac4354-sdio -brcmfmac4356-pcie -brcmfmac4371-pcie -cros-pd -fw_sst -fw_sst2 -i915_skl -ibt-hw -iwlwifi-100 -iwlwifi-1000 -iwlwifi-105 -iwlwifi-135 -iwlwifi-2000 -iwlwifi-2030 -iwlwifi-3160 -iwlwifi-3945 -iwlwifi-4965 -iwlwifi-5000 -iwlwifi-5150 -iwlwifi-6000 -iwlwifi-6005 -iwlwifi-6030 -iwlwifi-6050 -iwlwifi-7260 -iwlwifi-7265 -iwlwifi-7265D -marvell-mwlwifi -marvell-pcie8897 -nvidia-xusb -rt2870" VIDEO_CARDS="radeon" 0 KiB
+[binary  N     ] virtual/chromeos-bsp-1-r2::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] dev-libs/libpthread-stubs-0.1 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-debug" 0 KiB
+[binary  N     ] media-sound/adhd-0.0.1-r1244::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-cros_host -profiling" BOARD_USE="x86-generic -acorn -amd64-corei7 -amd64-generic -amd64-generic-goofy -amd64-generic_embedded -amd64-generic_mobbuild -amd64-host -amenia -aplrvp -aries -arkham -arm-generic -arm-generic_freon -arm64-generic -arm64-llvmpipe -auron -auron_paine -auron_pearlvalley -auron_yuna -banjo -bayleybay -beaglebone -beaglebone_servo -beaglebone_vv1 -beltino -blackwall -bobcat -bolt -bruteus -buddy -butterfly -bwtm2 -candy -cardhu -cave -celes -chell -cid -clapper -cosmos -cranky -cyan -cyan-cheets -cyclone -daisy -daisy_embedded -daisy_skate -daisy_snow -daisy_spring -daisy_winter -dalmore -danger -danger_embedded -duck -edgar -elm -enguarde -envoy-jerry -expresso -falco -falco_gles -falco_li -fb1 -foster -gale -gandof -gizmo -glados -glados-cheets -glimmer -gnawty -gru -guado -guado_labstation -guado_moblab -heli -hsb -ironhide -jecht -kayle -kblrvp -kevin -kip -klang -kunimitsu -lakitu -lakitu_mobbuild -lakitu_next -lars -laser -leon -link -lulu -lumpy -mappy -mappy-envoy -mappy_flashstation -marble -mccloud -minnowboard -mipseb-n32-generic -mipseb-n64-generic -mipseb-o32-generic -mipsel-n32-generic -mipsel-n64-generic -mipsel-o32-generic -monroe -moose -ninja -nyan -nyan_big -nyan_blaze -nyan_freon -nyan_kitty -oak -oak-cheets -optimus -orco -panda -panther -panther_embedded -panther_goofy -panther_moblab -parrot -parrot32 -parrot64 -parrot_ivb -peach -peach_kirby -peach_pi -peach_pit -pedra -peppy -ppcbe-32-generic -ppcbe-64-generic -ppcle-32-generic -ppcle-64-generic -puppy -purin -quawks -rambi -raspberrypi -reef -reks -reptile -rikku -rizer -rotor -rush -rush_ryu -sama5d3 -samus -samus-cheets -sentry -setzer -shogun -sklrvp -slippy -smaug -smaug-cheets -sonic -squawks -storm -storm_nand -stout -strago -stumpy -stumpy_moblab -stumpy_pico -sumo -swanky -tails -tegra3-generic -terra -tidus -tricky -ultima -umaro -veyron -veyron_brain -veyron_caution -veyron_danger -veyron_emile -veyron_gus -veyron_jaq -veyron_jerry -veyron_mickey -veyron_mighty -veyron_minnie -veyron_minnie-cheets -veyron_nicky -veyron_pinky -veyron_remy -veyron_rialto -veyron_romy -veyron_shark -veyron_speedy -veyron_thea -whirlwind -winky -wizpig -wolf -wsb -x32-generic -x86-agz -x86-alex -x86-alex32 -x86-alex32_he -x86-alex_he -x86-alex_hubble -x86-dogfood -x86-generic_embedded -x86-mario -x86-mario64 -x86-zgb -x86-zgb32 -x86-zgb32_he -x86-zgb_he -zako" 0 KiB
+[binary  N     ] chromeos-base/power_manager-0.0.2-r1330::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="buffet cras cros-debug display_backlight legacy_power_button ozone -als -asan -clang -cros_host -has_keyboard_backlight (-lockvt) -mosys_eventlog -profiling {-test}" 0 KiB
+[binary  N     ] chromeos-base/update_engine-0.0.3-r1892::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug cros_p2p power_management -asan -clang -cros_host -delta_generator -hwid_override -mtd -profiling -systemd" 0 KiB
+[binary  N     ] x11-libs/libdrm-2.4.66-r9::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="libkms udev -cros_host -manpages -profiling -static-libs" VIDEO_CARDS="intel nouveau radeon -amdgpu -exynos -freedreno -mediatek -omap -rockchip -vmware" 0 KiB
+[binary  N     ] media-libs/minigbm-0.0.1-r31::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-asan -clang -cros_host -profiling" VIDEO_CARDS="intel -exynos -marvell -mediatek -rockchip -tegra" 0 KiB
+[binary  N     ] media-gfx/ply-image-0.0.1-r49::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-cros_host -profiling" 0 KiB
+[binary  N     ] media-libs/mesa-11.3.0-r2::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="classic dri egl gallium gles2 llvm nptl shared-glapi -X -cros_host -debug -gbm -gles1 -pic -profiling -selinux -xlib-glx" VIDEO_CARDS="intel nouveau radeon -freedreno -mach64 -mga -r128 -savage -sis -tdfx -via -vmware" 0 KiB
+[binary  N     ] virtual/opengles-1-r2::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] x11-libs/libva-1.6.1-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="drm egl -X -opengl -vdpau -wayland" VIDEO_CARDS="intel -dummy -fglrx -nvidia" 0 KiB
+[binary  N     ] x11-libs/libva-intel-driver-1.6.1-r3::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="drm -X -hybrid_codec -wayland" 0 KiB
+[binary  N     ] media-fonts/ja-ipafonts-003.03-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="(-X)" 0 KiB
+[binary  N     ] net-misc/modemmanager-classic-interfaces-0.0.1-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] virtual/modemmanager-1-r4::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] chromeos-base/shill-0.0.3-r5::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cellular cros-debug seccomp tpm vpn wifi wired_8021x -asan -clang -cros_host -dhcpv6 -json_store -pppoe -profiling {-test} -wake_on_wifi -wimax" 0 KiB
+[binary  N     ] app-i18n/chromeos-pinyin-1.0.0.0::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] app-i18n/chinese-input-1.1.0.0-r2::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-internal" 0 KiB
+[binary  N     ] media-fonts/crosextrafonts-20130214::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="(-X)" 0 KiB
+[binary  N     ] chromeos-base/chromeos-fonts-0.0.1-r23::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-cros_host -internal" 0 KiB
+[binary  N     ] chromeos-base/common-assets-0.0.1-r35::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-alex -cros_host -lumpy -lumpy64 -mario -profiling -tegra2-ldk" 0 KiB
+[binary  N     ] chromeos-base/chromeos-init-0.0.25-r2267::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug encrypted_stateful frecon syslog udev -asan -clang -cros_embedded -cros_host -profiling -s3halt -systemd -vtconsole" 0 KiB
+[binary  N     ] chromeos-base/userfeedback-0.0.1-r1571::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="mmc -X -cros_host -profiling" 0 KiB
+[binary  N     ] chromeos-base/chromeos-firewall-init-0.0.1-r4::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] virtual/chromeos-firewall-1-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] virtual/service-manager-1-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] chromeos-base/chromeos-trim-0.0.1-r61::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -asan -clang -cros_host -profiling" 0 KiB
+[binary  N     ] chromeos-base/chromeos-chrome-51.0.2686.0_rc-r1::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="accessibility autotest build_tests buildcheck chrome_debug chrome_remoting evdev_gestures gold highdpi nacl opengles ozone runhooks v4l2_codec vaapi xkbcommon -X -afdo_use -app_shell -asan -chrome_debug_tests -chrome_internal -chrome_media -clang -component_build -deep_memory_profiler -envoy -hardfp -internal_gles_conform -internal_khronos_glcts -mojo (-neon) -opengl -v4lplugin -verbose -vtable_verify" OZONE_PLATFORM="gbm -caca -cast -egltest {-test}" OZONE_PLATFORM_DEFAULT="gbm -caca -cast -egltest {-test}" 0 KiB
+[binary  N     ] virtual/chromeos-interface-1-r5::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="-chromeless_tty" 0 KiB
+[binary  N     ] sys-apps/memtester-4.2.2 to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+[binary  N     ] chromeos-base/debugd-0.0.1-r1181::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="cros-debug -asan -cellular -clang -cros_host -profiling {-test} -wimax" 0 KiB
+[binary  N     ] virtual/target-chromium-os-1-r49::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ USE="bluetooth buffet cellular cras crash_reporting cros_disks debugd fonts network_time pam peerd power_management profile readahead scanner shill syslog tpm trim_supported vpn wifi_bootstrapping -X -bootchart -bootimage -coreboot -cros_ec -cros_embedded -cups -dptf -feedback -gobi -intel_lpe -mtd -nfc -touchview -watchdog -wimax" 0 KiB
+[binary  N     ] virtual/target-os-1-r3::chromiumos to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/ 0 KiB
+
+Total: 308 packages (308 new, 308 binaries), Size of downloads: 0 KiB
+Pending 304/308, Fetching 4/308, [Time 08:14:18 | Elapsed 0m4.8s | Load 2.0 4.69 5.26]
+Fetched sys-libs/zlib-1.2.8-r1 in 0.27s
+Started sys-libs/zlib-1.2.8-r1 (logged in /tmp/zlib-1.2.8-r1-cxUOFb)
+Fetched sys-libs/ncurses-5.9-r99 in 0.29s
+Fetched sys-apps/baselayout-2.2 in 0.34s
+Started sys-apps/baselayout-2.2 (logged in /tmp/baselayout-2.2-v1CIUM)
+Fetched sys-libs/ncurses-5.9-r5 in 0.35s
+Started sys-libs/ncurses-5.9-r5 (logged in /tmp/ncurses-5.9-r5-XCR1xL)
+Fetched dev-libs/expat-2.1.0-r3 in 0.35s
+Started dev-libs/expat-2.1.0-r3 (logged in /tmp/expat-2.1.0-r3-BhUTvD)
+Fetched sys-libs/pam-1.2.1-r1 in 0.38s
+Fetched sys-apps/dbus-1.6.8-r12 in 0.46s
+Fetched sys-apps/attr-2.4.47-r1 in 0.52s
+Fetched dev-libs/libffi-3.1-r3 in 0.34s
+Fetched virtual/libiconv-0-r1 in 0.54s
+Fetched virtual/libffi-3.0.13-r1 in 0.38s
+Fetched app-misc/c_rehash-1.7-r1 in 0.43s
+Fetched dev-libs/openssl-1.0.2g in 0.51s
+Fetched dev-libs/glib-2.34.3-r4 in 0.48s
+Fetched sys-libs/readline-6.3_p8-r2 in 0.46s
+Fetched sys-apps/util-linux-2.25.1-r1 in 0.49s
+Fetched sys-apps/kmod-18-r1 in 0.51s
+Fetched sys-fs/udev-208-r6 in 0.33s
+Fetched sys-apps/acl-2.2.52-r1 in 0.46s
+Fetched dev-libs/nspr-4.10.10 in 0.48s
+Fetched dev-db/sqlite-3.8.6 in 0.42s
+Fetched virtual/udev-215 in 0.41s
+Fetched dev-libs/nss-3.21-r1 in 0.43s
+Fetched dev-libs/libevent-2.0.22 in 0.43s
+Fetched dev-libs/modp_b64-0.0.1-r2 in 0.35s
+Fetched sys-libs/libcap-2.22-r2 in 0.43s
+Fetched dev-libs/protobuf-2.6.1-r4 in 0.35s
+Fetched chromeos-base/libchrome-369476-r4 in 0.41s
+Fetched dev-libs/dbus-glib-0.100.2 in 0.32s
+Fetched sys-apps/rootdev-0.0.1-r25 in 0.32s
+Fetched net-misc/curl-7.47.1 in 0.34s
+Fetched chromeos-base/chromeos-ca-certificates-0.0.1-r4 in 0.31s
+Fetched chromeos-base/chromeos-minijail-0.0.1-r1461 in 0.36s
+Fetched chromeos-base/libchromeos-use-flags-0.0.1-r11 in 0.41s
+Fetched chromeos-base/bootstat-0.0.2-r1514 in 0.39s
+Fetched dev-libs/dbus-c++-0.0.2-r57 in 0.39s
+Fetched chromeos-base/libbrillo-0.0.1-r16 in 0.47s
+Fetched dev-libs/libgpg-error-1.12 in 0.36s
+Fetched dev-libs/libgcrypt-1.6.3-r3 in 0.38s
+Fetched chromeos-base/system_api-0.0.1-r1894 in 0.35s
+Fetched chromeos-base/metrics-0.0.1-r1483 in 0.32s
+Fetched dev-libs/libpthread-stubs-0.1 in 0.39s
+Fetched virtual/pam-0 in 0.44s
+Fetched media-libs/libpng-1.2.51-r2 in 0.49s
+Fetched app-arch/snappy-1.0.4 in 0.38s
+Fetched x11-libs/libpciaccess-0.12.902-r2 in 0.52s
+Fetched x11-libs/libdrm-2.4.66-r9 in 0.54s
+Fetched dev-libs/leveldb-1.18-r1 in 0.42s
+Fetched media-libs/freetype-2.6.2-r1 in 0.39s
+Fetched app-crypt/trousers-0.3.3-r59 in 0.48s
+Fetched sys-apps/keyutils-1.5.9-r1 in 0.41s
+Fetched app-arch/bzip2-1.0.6-r7 in 0.45s
+Fetched dev-libs/libusb-1.0.19 in 0.36s
+Fetched media-libs/fontconfig-2.11.1-r15 in 0.38s
+Fetched chromeos-base/chaps-0.0.1-r1370 in 0.37s
+Fetched virtual/libusb-1-r1 in 0.38s
+Fetched sys-auth/pambase-20150213 in 0.40s
+Fetched chromeos-base/libscrypt-1.1.6-r12 in 0.42s
+Fetched chromeos-base/vboot_reference-1.0-r1198 in 0.44s
+Fetched sys-fs/ecryptfs-utils-101 in 0.41s
+Fetched sys-fs/lvm2-2.02.97-r4 in 0.56s
+Fetched sys-libs/gcc-libs-4.9.2-r32 in 0.60s
+Fetched media-fonts/dejavu-2.33 in 0.46s
+Fetched chromeos-base/cryptohome-0.0.1-r1153 in 0.42s
+Fetched chromeos-base/libchromeos-ui-0.0.1-r184 in 0.51s
+Fetched media-fonts/robotofonts-20150625-r1 in 0.35s
+Fetched media-fonts/crosextrafonts-20130214 in 0.40s
+Fetched dev-libs/libdaemon-0.14-r1 in 0.58s
+Fetched media-fonts/croscorefonts-1.31.0-r1 in 0.72s
+Fetched media-fonts/ko-nanumfonts-3.10.0 in 0.53s
+Completed sys-apps/baselayout-2.2 (in 0m7.3s)
+Pending 299/308, Fetching 4/238, Building 4/27, [Time 08:14:26 | Elapsed 0m12.5s | Load 3.01 4.82 5.3]
+Started sys-libs/pam-1.2.1-r1 (logged in /tmp/pam-1.2.1-r1-Ynkw58)
+Fetched media-fonts/my-padauk-2.50 in 0.48s
+Fetched media-fonts/ja-ipafonts-003.03-r1 in 0.61s
+Fetched media-fonts/crosextrafonts-carlito-20130920 in 0.46s
+Fetched media-fonts/ml-anjalioldlipi-0.740 in 0.51s
+Completed sys-libs/zlib-1.2.8-r1 (in 0m7.9s)
+Pending 298/308, Fetching 4/234, Building 4/34, [Time 08:14:26 | Elapsed 0m13.0s | Load 3.01 4.82 5.3]
+Fetched media-fonts/droidfonts-cros-20140815-r1 in 0.46s
+Started sys-apps/attr-2.4.47-r1 (logged in /tmp/attr-2.4.47-r1-DQViTM)
+Fetched media-fonts/lohitfonts-cros-2.5.0-r1 in 0.42s
+Fetched media-fonts/notofonts-20160310-r1 in 0.69s
+Completed dev-libs/expat-2.1.0-r3 (in 0m8.1s)
+Pending 297/308, Fetching 4/231, Building 4/37, [Time 08:14:27 | Elapsed 0m13.5s | Load 3.01 4.82 5.3]
+Started sys-apps/dbus-1.6.8-r12 (logged in /tmp/dbus-1.6.8-r12-plLHCm)
+Fetched media-fonts/tibt-jomolhari-0.0.3c in 0.63s
+Fetched media-fonts/sil-abyssinica-1.0 in 0.36s
+Completed sys-libs/ncurses-5.9-r5 (in 0m8.5s)
+Pending 296/308, Fetching 4/229, Building 4/39, [Time 08:14:27 | Elapsed 0m13.7s | Load 3.01 4.82 5.3]
+Started sys-libs/ncurses-5.9-r99 (logged in /tmp/ncurses-5.9-r99-z05nqJ)
+Fetched media-fonts/noto-cjk-20150910-r1 in 0.88s
+Fetched chromeos-base/chromeos-login-0.0.2-r2261 in 0.78s
+Fetched sys-libs/libnih-1.0.3-r3 in 0.48s
+Fetched dev-libs/libnl-3.2.24 in 0.59s
+Fetched net-dns/avahi-0.6.31-r4 in 0.45s
+Fetched dev-libs/lzo-2.06 in 0.34s
+Fetched media-libs/alsa-lib-1.1.0 in 0.43s
+Fetched chromeos-base/chromeos-fonts-0.0.1-r23 in 0.51s
+Fetched app-eselect/eselect-vi-1.1.9 in 0.45s
+Fetched net-wireless/bluez-5.37-r51 in 0.46s
+Fetched net-firewall/iptables-1.4.21-r1 in 0.41s
+Fetched app-arch/tar-1.28 in 0.44s
+Fetched sys-apps/smartmontools-5.42 in 0.43s
+Fetched sys-apps/libtsm-3 in 0.38s
+Fetched dev-libs/gmp-6.1.0 in 0.49s
+Fetched dev-libs/libnl-1.1-r1 in 0.43s
+Fetched net-dialup/ppp-2.4.6-r6 in 0.38s
+Fetched net-wireless/wireless-regdb-20131127-r5 in 0.51s
+Fetched virtual/libudev-215-r1 in 0.41s
+Fetched chromeos-base/bootcomplete-login-0.0.1-r3 in 0.39s
+Fetched app-editors/vim-7.4.712 in 0.42s
+Fetched sys-apps/upstart-1.2-r11 in 0.49s
+Fetched sys-apps/net-tools-1.60_p20130513023548-r1 in 0.34s
+Fetched media-gfx/ply-image-0.0.1-r49 in 0.56s
+Fetched sys-apps/chvt-0.0.1-r1 in 0.50s
+Fetched sys-process/lsof-4.85-r2 in 0.56s
+Fetched dev-util/shunit2-2.1.6 in 0.61s
+Fetched sys-libs/e2fsprogs-libs-1.42.12 in 0.61s
+Fetched virtual/mta-0 in 0.44s
+Fetched chromeos-base/tty-0.0.1-r7 in 0.39s
+Fetched virtual/editor-0 in 0.53s
+Fetched chromeos-base/swap-init-0.0.1-r3 in 0.50s
+Fetched virtual/chromeos-bootcomplete-1-r1 in 0.57s
+Fetched media-sound/alsa-utils-1.1.0-r2 in 0.56s
+Fetched dev-libs/libgudev-230 in 0.50s
+Fetched net-wireless/crda-1.1.1-r5 in 0.38s
+Fetched sys-apps/frecon-0.0.1-r86 in 0.39s
+Fetched sys-apps/hwids-20150717 in 0.58s
+Fetched sys-apps/which-2.20-r1 in 0.64s
+Fetched dev-util/shflags-1.0.3-r1 in 0.59s
+Fetched media-libs/speex-1.2_rc1-r5 in 0.36s
+Fetched x11-libs/pixman-0.32.4 in 0.65s
+Fetched chromeos-base/common-assets-0.0.1-r35 in 2.01s
+Fetched media-libs/sbc-1.3 in 0.69s
+Fetched dev-libs/iniparser-3.1-r1 in 0.49s
+Fetched media-plugins/alsa-plugins-1.1.0 in 0.55s
+Fetched virtual/libgudev-215-r3 in 0.70s
+Fetched sys-fs/e2fsprogs-1.42.12 in 0.65s
+Fetched app-admin/sudo-1.8.12 in 0.52s
+Fetched dev-libs/libtasn1-2.4 in 0.36s
+Fetched chromeos-base/chromeos-init-0.0.25-r2267 in 0.45s
+Completed sys-apps/attr-2.4.47-r1 (in 0m7.4s)
+Pending 295/308, Fetching 4/178, Building 4/66, [Time 08:14:34 | Elapsed 0m20.4s | Load 3.41 4.87 5.31]
+Started virtual/libiconv-0-r1 (logged in /tmp/libiconv-0-r1-0Up9TM)
+Fetched net-dns/avahi-daemon-0.0.1-r4 in 0.37s
+Fetched dev-libs/nettle-2.7.1 in 0.33s
+Fetched dev-libs/libp11-0.2.8-r3 in 0.37s
+Fetched media-libs/mesa-11.3.0-r2 in 1.33s
+Completed sys-libs/ncurses-5.9-r99 (in 0m7.3s)
+Pending 294/308, Fetching 4/174, Building 4/66, [Time 08:14:34 | Elapsed 0m21.0s | Load 3.77 4.92 5.33]
+Started dev-libs/libffi-3.1-r3 (logged in /tmp/libffi-3.1-r3-8hw7VZ)
+Fetched dev-libs/libusb-compat-0.1.5-r3 in 0.38s
+Fetched sys-apps/shadow-4.2.1-r1 in 0.37s
+Fetched net-libs/libmbim-1.13.0-r29 in 0.43s
+Fetched chromeos-base/firewalld-0.0.1-r853 in 0.52s
+Fetched x11-libs/cairo-1.12.12-r3 in 0.53s
+Fetched media-sound/adhd-0.0.1-r1244 in 0.47s
+Fetched app-admin/rsyslog-5.8.11-r1 in 0.43s
+Fetched net-libs/libnfnetlink-1.0.1 in 0.32s
+Fetched chromeos-base/libevdev-0.0.1-r61 in 0.53s
+Fetched sys-fs/fuse-2.8.6-r6 in 0.42s
+Fetched x11-proto/xproto-7.0.23-r1 in 0.63s
+Fetched x11-proto/kbproto-1.0.5 in 0.59s
+Fetched dev-libs/jsoncpp-0.6.0_rc2 in 0.62s
+Fetched media-libs/libjpeg-turbo-1.4.0 in 0.60s
+Fetched net-misc/modemmanager-classic-interfaces-0.0.1-r1 in 0.45s
+Fetched virtual/autotest-libs-1-r1 in 0.43s
+Fetched chromeos-base/gestures-conf-0.0.1-r55 in 0.40s
+Fetched sys-apps/pciutils-3.1.10 in 0.42s
+Fetched net-libs/libpcap-1.5.3 in 0.42s
+Fetched dev-libs/pkcs11-helper-1.07 in 0.36s
+Completed sys-libs/pam-1.2.1-r1 (in 0m10.8s)
+Pending 293/308, Fetching 4/154, Building 4/79, [Time 08:14:37 | Elapsed 0m23.3s | Load 3.77 4.92 5.33]
+Started app-misc/c_rehash-1.7-r1 (logged in /tmp/c_rehash-1.7-r1-ispfgK)
+Fetched virtual/libusb-0-r2 in 0.38s
+Fetched sys-auth/nss-mdns-0.10-r2 in 0.35s
+Fetched x11-libs/libva-1.6.1-r1 in 0.47s
+Fetched net-libs/gnutls-2.12.23-r6 in 0.45s
+Fetched media-libs/harfbuzz-1.2.3-r1 in 0.39s
+Fetched dev-libs/engine_pkcs11-0.1.8-r1 in 0.47s
+Fetched chromeos-base/permission_broker-0.0.1-r1467 in 0.37s
+Fetched chromeos-base/chromeos-installer-0.0.1-r1807 in 0.37s
+Fetched net-misc/modemmanager-next-1.5.0-r263 in 0.52s
+Fetched sys-apps/coreutils-8.24 in 0.37s
+Fetched sys-apps/hdparm-9.45 in 0.36s
+Fetched app-misc/jq-1.4-r1 in 0.35s
+Fetched sys-libs/timezone-data-2015a in 0.49s
+Fetched x11-misc/xkeyboard-config-2.15-r1 in 0.50s
+Fetched sys-apps/flashmap-0.3-r18 in 0.36s
+Fetched app-arch/xz-utils-5.2.0 in 0.48s
+Fetched sys-apps/dmidecode-2.11-r2 in 0.56s
+Fetched net-dns/c-ares-1.7.5-r1 in 0.42s
+Fetched chromeos-base/chromeos-activate-date-0.0.1-r5 in 0.40s
+Fetched chromeos-base/update-policy-chromeos-0.0.1-r3 in 0.53s
+Fetched media-libs/tiff-4.0.3-r6 in 0.44s
+Fetched net-dns/dnsmasq-2.72-r4 in 0.55s
+Fetched net-wireless/iw-3.17 in 0.42s
+Fetched app-shells/bash-4.2_p48-r1 in 0.38s
+Fetched virtual/jpeg-0-r2 in 0.34s
+Fetched dev-libs/elfutils-0.160 in 0.45s
+Fetched net-libs/libnetfilter_queue-1.0.1 in 0.66s
+Fetched chromeos-base/autotest-0.0.2-r7118 in 0.81s
+Fetched dev-libs/atk-1.32.0-r1 in 0.44s
+Fetched net-misc/wget-1.17.1-r1 in 0.50s
+Fetched virtual/logger-0 in 0.54s
+Fetched dev-libs/libxml2-2.9.2-r1 in 0.47s
+Fetched media-libs/minigbm-0.0.1-r31 in 0.41s
+Fetched virtual/shadow-0 in 0.48s
+Fetched chromeos-base/nsswitch-0.0.1-r1 in 0.54s
+Fetched virtual/opengles-1-r2 in 0.50s
+Fetched dev-libs/libpcre-8.38 in 0.44s
+Fetched x11-libs/libxkbcommon-0.4.3-r2 in 0.47s
+Fetched net-libs/libmicrohttpd-0.9.42 in 0.58s
+Fetched net-misc/dhcpcd-6.8.2-r15 in 0.64s
+Fetched virtual/modemmanager-1-r4 in 0.52s
+Fetched net-wireless/hostapd-2.3-r1 in 0.59s
+Fetched app-accessibility/brltty-4.5-r10 in 0.54s
+Completed virtual/libiconv-0-r1 (in 0m8.0s)
+Pending 292/308, Fetching 4/111, Building 4/91, [Time 08:14:42 | Elapsed 0m28.4s | Load 4.35 5.02 5.36]
+Started sys-apps/util-linux-2.25.1-r1 (logged in /tmp/util-linux-2.25.1-r1-96Aiwz)
+Fetched chromeos-base/gestures-0.0.1-r526 in 0.44s
+Fetched x11-libs/pango-1.32.5-r1 in 0.43s
+Fetched net-misc/openvpn-2.3.2-r2 in 0.45s
+Fetched net-wireless/wpa_supplicant-0.0.1-r4 in 0.58s
+Fetched chromeos-base/chromiumos-assets-0.0.1-r2 in 0.44s
+Fetched sys-kernel/linux-firmware-0.0.1-r90 in 0.59s
+Completed dev-libs/libffi-3.1-r3 (in 0m8.4s)
+Pending 291/308, Fetching 4/105, Building 4/93, [Time 08:14:43 | Elapsed 0m29.3s | Load 4.35 5.02 5.36]
+Started virtual/libffi-3.0.13-r1 (logged in /tmp/libffi-3.0.13-r1-i3wOBo)
+Fetched app-shells/dash-0.5.5.1.7 in 0.38s
+Fetched chromeos-base/chromeos-firmware-null-0.0.2-r1 in 0.46s
+Fetched sys-apps/sed-4.2.1-r1 in 0.58s
+Fetched sys-kernel/chromeos-kernel-3_14-3.14-r1491 in 0.87s
+Fetched chromeos-base/root-certificates-0.0.1-r3 in 0.61s
+Fetched sys-apps/findutils-4.4.2-r2 in 0.63s
+Fetched sys-apps/mawk-1.3.4_p20100625 in 0.46s
+Fetched sys-apps/mmc-utils-0.0.1-r13 in 0.51s
+Completed sys-apps/dbus-1.6.8-r12 (in 0m16.8s)
+Pending 290/308, Fetching 4/97, Building 4/101, [Time 08:14:44 | Elapsed 0m30.3s | Load 4.35 5.02 5.36]
+Started sys-libs/readline-6.3_p8-r2 (logged in /tmp/readline-6.3_p8-r2-n5aNqg)
+Fetched sys-fs/exfat-utils-1.1.0 in 0.51s
+Fetched sys-fs/dosfstools-3.0.26 in 0.51s
+Fetched app-arch/gzip-1.5 in 0.47s
+Fetched app-arch/unrar-4.2.4 in 0.55s
+Fetched chromeos-base/workarounds-0.0.1-r81 in 0.58s
+Fetched sys-apps/memtester-4.2.2 in 0.62s
+Fetched net-libs/libmnl-1.0.3-r2 in 0.64s
+Completed app-misc/c_rehash-1.7-r1 (in 0m7.9s)
+Pending 289/308, Fetching 4/90, Building 4/108, [Time 08:14:45 | Elapsed 0m31.3s | Load 4.88 5.12 5.39]
+Started dev-libs/openssl-1.0.2g (logged in /tmp/openssl-1.0.2g-VSBugX)
+Fetched app-i18n/nacl-mozc-1.14.1639.104-r4 in 0.83s
+Fetched chromeos-base/chromeos-sshd-init-0.0.1-r6 in 0.41s
+Fetched app-i18n/chromeos-xkb-1.0.3.0-r1 in 0.45s
+Fetched chromeos-base/chromeos-ssh-testkeys-0.0.1-r2 in 0.62s
+Fetched sys-apps/ethtool-3.12.1 in 0.67s
+Fetched app-i18n/chromeos-pinyin-1.0.0.0 in 0.35s
+Fetched app-i18n/chromeos-cangjie-1.0.0.0-r1 in 0.39s
+Fetched app-i18n/chromeos-keyboards-1.1.4.0-r6 in 0.67s
+Fetched app-i18n/chromeos-zhuyin-1.0.0.0 in 0.58s
+Fetched sys-apps/grep-2.21-r1 in 0.45s
+Fetched dev-libs/xz-embedded-20130513 in 0.55s
+Fetched sys-fs/ntfs3g-2012.1.15-r4 in 0.56s
+Fetched sys-process/procps-3.3.9-r2 in 0.54s
+Fetched chromeos-base/modem-utilities-0.0.1-r1479 in 0.39s
+Fetched chromeos-base/regions-0.0.1-r686 in 0.40s
+Fetched sys-apps/flashrom-0.9.4-r422 in 0.44s
+Fetched sys-fs/fuse-exfat-1.1.0 in 0.43s
+Fetched virtual/update-policy-1 in 0.49s
+Fetched dev-util/bsdiff-4.3.1-r4 in 0.66s
+Fetched virtual/chromeos-activate-date-1-r1 in 0.54s
+Fetched media-libs/libmtp-0.0.1-r21 in 0.68s
+Fetched net-misc/iputils-20121221-r2 in 0.47s
+Fetched dev-util/perf-3.18-r2 in 0.43s
+Fetched chromeos-base/google-breakpad-2016.03.10.135120-r97 in 0.81s
+Fetched sys-apps/usbutils-007-r1 in 0.50s
+Fetched sys-apps/mosys-1.2.03-r398 in 0.57s
+Fetched chromeos-base/libweave-0.0.1-r104 in 0.65s
+Fetched chromeos-base/chromeos-base-0-r132 in 0.47s
+Fetched dev-util/imgdiff-0.0.1-r2 in 0.60s
+Fetched chromeos-base/chromeos-auth-config-0.0.1-r7 in 0.46s
+Fetched net-dialup/xl2tpd-1.3.0-r3 in 0.48s
+Fetched chromeos-base/peerd-0.0.1-r1398 in 0.41s
+Fetched chromeos-base/chromeos-firewall-init-0.0.1-r4 in 0.48s
+Fetched sys-fs/avfs-1.0.1-r5 in 0.43s
+Fetched media-gfx/sane-backends-1.0.25 in 0.50s
+Fetched chromeos-base/webserver-0.0.1-r674 in 0.35s
+Fetched net-misc/strongswan-5.0.2-r17 in 0.52s
+Fetched net-misc/openssh-6.6.1_p1-r2 in 0.70s
+Fetched chromeos-base/p2p-0.0.1-r1527 in 0.36s
+Fetched chromeos-base/power_manager-0.0.2-r1330 in 0.53s
+Fetched chromeos-base/apmanager-0.0.1-r1064 in 0.56s
+Fetched app-i18n/chromeos-hangul-1.2.0.7-r1 in 0.46s
+Fetched chromeos-base/shill-0.0.3-r5 in 0.53s
+Completed virtual/libffi-3.0.13-r1 (in 0m7.6s)
+Pending 288/308, Fetching 4/47, Building 4/123, [Time 08:14:50 | Elapsed 0m36.9s | Load 5.05 5.15 5.4]
+Started dev-libs/glib-2.34.3-r4 (logged in /tmp/glib-2.34.3-r4-_Yn7yI)
+Fetched sys-auth/pam_pwdfile-0.99-r2 in 0.46s
+Fetched chromeos-base/audioconfig-0.0.1-r1 in 0.45s
+Fetched net-wireless/marvell_sd8787-14.64.2.47-r53 in 0.40s
+Fetched net-wireless/ath3k-1-r1 in 0.43s
+Fetched sys-apps/pv-1.3.4 in 0.52s
+Fetched net-wireless/realtek-rt2800-firmware-0.0.1 in 0.55s
+Fetched chromeos-base/chromeos-machine-id-regen-0.0.1 in 0.62s
+Fetched virtual/linux-sources-1-r10 in 0.50s
+Fetched virtual/chromeos-bsp-1-r2 in 0.63s
+Fetched virtual/assets-1-r1 in 0.46s
+Fetched app-i18n/japanese-input-1.0.0.0-r1 in 0.44s
+Completed sys-apps/util-linux-2.25.1-r1 (in 0m10.4s)
+Pending 287/308, Fetching 4/36, Building 4/130, [Time 08:14:52 | Elapsed 0m38.8s | Load 5.05 5.15 5.4]
+Started sys-apps/kmod-18-r1 (logged in /tmp/kmod-18-r1-maaqBM)
+Fetched virtual/chromeos-firmware-1 in 0.53s
+Fetched chromeos-base/inputcontrol-0.0.1-r106 in 0.42s
+Fetched virtual/modutils-0 in 0.36s
+Completed sys-libs/readline-6.3_p8-r2 (in 0m8.9s)
+Pending 286/308, Fetching 4/33, Building 4/132, [Time 08:14:53 | Elapsed 0m39.2s | Load 5.05 5.15 5.4]
+Started sys-apps/acl-2.2.52-r1 (logged in /tmp/acl-2.2.52-r1-__79TF)
+Fetched virtual/chromeos-regions-1 in 0.63s
+Fetched virtual/chromeos-auth-config-1-r0 in 0.65s
+Fetched virtual/service-manager-1-r1 in 0.75s
+Fetched sys-apps/iproute2-4.2.0-r1 in 0.52s
+Fetched virtual/chromeos-firewall-1-r1 in 0.75s
+Fetched app-i18n/keyboard-input-1.0.0.0-r2 in 0.68s
+Fetched chromeos-base/chromeos-chrome-51.0.2686.0_rc-r1 in 4.47s
+Fetched app-i18n/chinese-input-1.1.0.0-r2 in 0.43s
+Fetched sys-apps/ureadahead-0.100.0-r5 in 0.49s
+Fetched virtual/chromeos-interface-1-r5 in 0.58s
+Fetched chromeos-base/vpd-0.0.1-r83 in 0.55s
+Fetched chromeos-base/quipper-0.0.1-r1060 in 0.45s
+Fetched chromeos-base/dev-install-0.0.1-r817 in 0.58s
+Fetched net-misc/tlsdate-0.0.5-r42 in 0.62s
+Fetched chromeos-base/chromeos-trim-0.0.1-r61 in 0.37s
+Fetched chromeos-base/vpn-manager-0.0.1-r1181 in 0.49s
+Fetched chromeos-base/chromeos-imageburner-0.0.1-r1531 in 0.54s
+Fetched app-laptop/laptop-mode-tools-1.59-r31 in 0.60s
+Fetched chromeos-base/lorgnette-0.0.1-r1180 in 0.39s
+Fetched chromeos-base/buffet-0.0.1-r1311 in 0.40s
+Fetched chromeos-base/crash-reporter-0.0.1-r1440 in 0.43s
+Fetched chromeos-base/crosh-0.0.1-r1592 in 0.42s
+Fetched chromeos-base/mist-0.0.1-r1316 in 0.41s
+Fetched chromeos-base/mtpd-0.0.1-r116 in 0.43s
+Fetched chromeos-base/userfeedback-0.0.1-r1571 in 0.45s
+Fetched virtual/implicit-system-1-r1 in 0.40s
+Fetched chromeos-base/cros-disks-0.0.1-r1188 in 0.43s
+Fetched chromeos-base/update_engine-0.0.3-r1892 in 0.39s
+Fetched virtual/target-chromium-os-1-r49 in 0.53s
+Fetched virtual/ttf-fonts-1 in 0.49s
+Fetched chromeos-base/debugd-0.0.1-r1181 in 0.68s
+Fetched virtual/target-os-1-r3 in 0.42s
+Fetched x11-libs/libva-intel-driver-1.6.1-r3 in 0.34s
+Completed dev-libs/openssl-1.0.2g (in 0m12.9s)
+Pending 289/308, Building 4/138, [Time 08:14:58 | Elapsed 0m44.2s | Load 5.45 5.23 5.42]
+Started dev-libs/nspr-4.10.10 (logged in /tmp/nspr-4.10.10-DiGVxk)
+Completed sys-apps/acl-2.2.52-r1 (in 0m6.9s)
+Pending 288/308, Building 4/137, [Time 08:14:59 | Elapsed 0m46.0s | Load 5.25 5.2 5.41]
+Started dev-db/sqlite-3.8.6 (logged in /tmp/sqlite-3.8.6-9QO44o)
+Completed sys-apps/kmod-18-r1 (in 0m7.2s)
+Pending 287/308, Building 4/138, [Time 08:14:59 | Elapsed 0m46.0s | Load 5.25 5.2 5.41]
+Started sys-fs/udev-208-r6 (logged in /tmp/udev-208-r6-ow9b7l)
+Completed dev-libs/glib-2.34.3-r4 (in 0m10.2s)
+Pending 286/308, Building 4/139, [Time 08:15:00 | Elapsed 0m47.1s | Load 5.25 5.2 5.41]
+Started sys-libs/libcap-2.22-r2 (logged in /tmp/libcap-2.22-r2-Sa0M0U)
+Completed dev-libs/nspr-4.10.10 (in 0m4.4s)
+Pending 285/308, Building 4/138, [Time 08:15:02 | Elapsed 0m48.6s | Load 5.25 5.2 5.41]
+Started dev-libs/libevent-2.0.22 (logged in /tmp/libevent-2.0.22-O6zKug)
+Completed dev-db/sqlite-3.8.6 (in 0m4.4s)
+Pending 284/308, Building 4/138, [Time 08:15:04 | Elapsed 0m50.4s | Load 5.25 5.2 5.41]
+Started dev-libs/nss-3.21-r1 (logged in /tmp/nss-3.21-r1-fVUYvd)
+Completed sys-fs/udev-208-r6 (in 0m4.9s)
+Pending 283/308, Building 4/139, [Time 08:15:04 | Elapsed 0m50.9s | Load 5.15 5.18 5.4]
+Started virtual/udev-215 (logged in /tmp/udev-215-XwEpq1)
+Completed sys-libs/libcap-2.22-r2 (in 0m4.0s)
+Pending 282/308, Building 4/139, [Time 08:15:04 | Elapsed 0m51.1s | Load 5.15 5.18 5.4]
+Started dev-libs/protobuf-2.6.1-r4 (logged in /tmp/protobuf-2.6.1-r4-lc4YHt)
+Completed dev-libs/libevent-2.0.22 (in 0m4.4s)
+Pending 281/308, Building 4/138, [Time 08:15:06 | Elapsed 0m52.9s | Load 5.15 5.18 5.4]
+Started dev-libs/modp_b64-0.0.1-r2 (logged in /tmp/modp_b64-0.0.1-r2-yuBMMb)
+Completed virtual/udev-215 (in 0m4.1s)
+Pending 280/308, Building 4/140, [Time 08:15:08 | Elapsed 0m55.0s | Load 5.15 5.18 5.4]
+Started dev-libs/dbus-glib-0.100.2 (logged in /tmp/dbus-glib-0.100.2-20RuyJ)
+Completed dev-libs/nss-3.21-r1 (in 0m5.0s)
+Pending 279/308, Building 4/139, [Time 08:15:09 | Elapsed 0m55.4s | Load 5.15 5.18 5.4]
+Started sys-apps/rootdev-0.0.1-r25 (logged in /tmp/rootdev-0.0.1-r25-en_8cn)
+Completed dev-libs/protobuf-2.6.1-r4 (in 0m5.4s)
+Pending 278/308, Building 4/138, [Time 08:15:10 | Elapsed 0m56.5s | Load 5.22 5.19 5.4]
+Started net-misc/curl-7.47.1 (logged in /tmp/curl-7.47.1-d4QKj8)
+Completed dev-libs/modp_b64-0.0.1-r2 (in 0m4.0s)
+Pending 277/308, Building 4/138, [Time 08:15:10 | Elapsed 0m57.0s | Load 5.22 5.19 5.4]
+Started chromeos-base/libchrome-369476-r4 (logged in /tmp/libchrome-369476-r4-1fyFke)
+Completed dev-libs/dbus-glib-0.100.2 (in 0m4.2s)
+Pending 276/308, Building 4/138, [Time 08:15:13 | Elapsed 0m59.2s | Load 5.22 5.19 5.4]
+Started chromeos-base/chromeos-minijail-0.0.1-r1461 (logged in /tmp/chromeos-minijail-0.0.1-r1461-jQbsO_)
+Completed sys-apps/rootdev-0.0.1-r25 (in 0m4.3s)
+Pending 275/308, Building 4/137, [Time 08:15:13 | Elapsed 0m59.7s | Load 5.22 5.19 5.4]
+Started chromeos-base/chromeos-ca-certificates-0.0.1-r4 (logged in /tmp/chromeos-ca-certificates-0.0.1-r4-9rnzxQ)
+Completed net-misc/curl-7.47.1 (in 0m4.5s)
+Pending 274/308, Building 4/137, [Time 08:15:14 | Elapsed 1m1.0s | Load 5.2 5.19 5.4]
+Started dev-libs/dbus-c++-0.0.2-r57 (logged in /tmp/dbus-c++-0.0.2-r57-u2IoOu)
+Completed chromeos-base/libchrome-369476-r4 (in 0m5.5s)
+Pending 273/308, Building 4/141, [Time 08:15:16 | Elapsed 1m2.4s | Load 5.2 5.19 5.4]
+Started chromeos-base/bootstat-0.0.2-r1514 (logged in /tmp/bootstat-0.0.2-r1514-MxIX3i)
+Completed chromeos-base/chromeos-minijail-0.0.1-r1461 (in 0m4.0s)
+Pending 272/308, Building 4/140, [Time 08:15:17 | Elapsed 1m3.2s | Load 5.2 5.19 5.4]
+Started chromeos-base/libchromeos-use-flags-0.0.1-r11 (logged in /tmp/libchromeos-use-flags-0.0.1-r11-hPuq1b)
+Completed chromeos-base/chromeos-ca-certificates-0.0.1-r4 (in 0m3.7s)
+Pending 271/308, Building 4/140, [Time 08:15:17 | Elapsed 1m3.5s | Load 5.2 5.19 5.4]
+Started dev-libs/libgpg-error-1.12 (logged in /tmp/libgpg-error-1.12-WmgMTG)
+Completed dev-libs/dbus-c++-0.0.2-r57 (in 0m4.4s)
+Pending 270/308, Building 4/139, [Time 08:15:19 | Elapsed 1m5.4s | Load 5.2 5.19 5.4]
+Started chromeos-base/system_api-0.0.1-r1894 (logged in /tmp/system_api-0.0.1-r1894-XMllMC)
+Completed chromeos-base/bootstat-0.0.2-r1514 (in 0m4.6s)
+Pending 269/308, Building 4/138, [Time 08:15:20 | Elapsed 1m7.0s | Load 5.03 5.15 5.39]
+Started virtual/pam-0 (logged in /tmp/pam-0-DjN0gV)
+Completed chromeos-base/libchromeos-use-flags-0.0.1-r11 (in 0m4.0s)
+Pending 268/308, Building 4/138, [Time 08:15:21 | Elapsed 1m7.2s | Load 5.03 5.15 5.39]
+Started chromeos-base/libbrillo-0.0.1-r16 (logged in /tmp/libbrillo-0.0.1-r16-Pz4ybH)
+Completed dev-libs/libgpg-error-1.12 (in 0m4.9s)
+Pending 267/308, Building 4/138, [Time 08:15:22 | Elapsed 1m8.3s | Load 5.03 5.15 5.39]
+Started dev-libs/libgcrypt-1.6.3-r3 (logged in /tmp/libgcrypt-1.6.3-r3-Lu76Cm)
+Completed chromeos-base/system_api-0.0.1-r1894 (in 0m4.4s)
+Pending 266/308, Building 4/137, [Time 08:15:23 | Elapsed 1m9.8s | Load 5.03 5.15 5.39]
+Started dev-libs/libpthread-stubs-0.1 (logged in /tmp/libpthread-stubs-0.1-DDAzl6)
+Completed virtual/pam-0 (in 0m4.0s)
+Pending 265/308, Building 4/137, [Time 08:15:24 | Elapsed 1m11.0s | Load 5.02 5.15 5.39]
+Started media-libs/libpng-1.2.51-r2 (logged in /tmp/libpng-1.2.51-r2-ajz5W6)
+Completed chromeos-base/libbrillo-0.0.1-r16 (in 0m4.4s)
+Pending 264/308, Building 4/139, [Time 08:15:25 | Elapsed 1m11.6s | Load 5.02 5.15 5.39]
+Started chromeos-base/metrics-0.0.1-r1483 (logged in /tmp/metrics-0.0.1-r1483-Wt9ndl)
+Completed dev-libs/libgcrypt-1.6.3-r3 (in 0m4.3s)
+Pending 263/308, Building 4/138, [Time 08:15:26 | Elapsed 1m12.7s | Load 5.02 5.15 5.39]
+Started x11-libs/libpciaccess-0.12.902-r2 (logged in /tmp/libpciaccess-0.12.902-r2-gNzYeh)
+Completed dev-libs/libpthread-stubs-0.1 (in 0m4.5s)
+Pending 262/308, Building 4/137, [Time 08:15:28 | Elapsed 1m14.3s | Load 5.02 5.15 5.39]
+Started app-arch/snappy-1.0.4 (logged in /tmp/snappy-1.0.4-PK0ncI)
+Completed media-libs/libpng-1.2.51-r2 (in 0m3.9s)
+Pending 261/308, Building 4/137, [Time 08:15:28 | Elapsed 1m14.9s | Load 5.02 5.15 5.39]
+Started media-libs/freetype-2.6.2-r1 (logged in /tmp/freetype-2.6.2-r1-CPtzF5)
+Completed chromeos-base/metrics-0.0.1-r1483 (in 0m4.5s)
+Pending 260/308, Building 4/136, [Time 08:15:29 | Elapsed 1m16.0s | Load 4.94 5.13 5.38]
+Started app-crypt/trousers-0.3.3-r59 (logged in /tmp/trousers-0.3.3-r59-Y_rMoF)
+Completed x11-libs/libpciaccess-0.12.902-r2 (in 0m3.9s)
+Pending 259/308, Building 4/136, [Time 08:15:30 | Elapsed 1m16.6s | Load 4.94 5.13 5.38]
+Started x11-libs/libdrm-2.4.66-r9 (logged in /tmp/libdrm-2.4.66-r9-PtbbNb)
+Completed app-arch/snappy-1.0.4 (in 0m4.2s)
+Pending 258/308, Building 4/136, [Time 08:15:32 | Elapsed 1m18.5s | Load 4.94 5.13 5.38]
+Started dev-libs/leveldb-1.18-r1 (logged in /tmp/leveldb-1.18-r1-OUavM_)
+Completed media-libs/freetype-2.6.2-r1 (in 0m4.6s)
+Pending 257/308, Building 4/136, [Time 08:15:33 | Elapsed 1m19.6s | Load 4.94 5.13 5.38]
+Started app-arch/bzip2-1.0.6-r7 (logged in /tmp/bzip2-1.0.6-r7-pMJ4LA)
+Completed x11-libs/libdrm-2.4.66-r9 (in 0m5.0s)
+Pending 256/308, Building 4/138, [Time 08:15:35 | Elapsed 1m21.5s | Load 4.87 5.11 5.37]
+Started media-libs/fontconfig-2.11.1-r15 (logged in /tmp/fontconfig-2.11.1-r15-M10boR)
+Completed dev-libs/leveldb-1.18-r1 (in 0m4.3s)
+Pending 255/308, Building 4/137, [Time 08:15:36 | Elapsed 1m22.8s | Load 4.87 5.11 5.37]
+Started sys-apps/keyutils-1.5.9-r1 (logged in /tmp/keyutils-1.5.9-r1-jJYV6P)
+Completed app-arch/bzip2-1.0.6-r7 (in 0m4.3s)
+Pending 254/308, Building 4/140, [Time 08:15:37 | Elapsed 1m23.9s | Load 4.87 5.11 5.37]
+Started dev-libs/libusb-1.0.19 (logged in /tmp/libusb-1.0.19-G2oC1Q)
+Completed app-crypt/trousers-0.3.3-r59 (in 0m9.3s)
+Pending 253/308, Building 4/140, [Time 08:15:39 | Elapsed 1m25.4s | Load 4.87 5.11 5.37]
+Started chromeos-base/chaps-0.0.1-r1370 (logged in /tmp/chaps-0.0.1-r1370-slBkUL)
+Completed media-libs/fontconfig-2.11.1-r15 (in 0m4.6s)
+Pending 252/308, Building 4/139, [Time 08:15:39 | Elapsed 1m26.1s | Load 4.8 5.09 5.37]
+Started chromeos-base/vboot_reference-1.0-r1198 (logged in /tmp/vboot_reference-1.0-r1198-BCig9D)
+Completed sys-apps/keyutils-1.5.9-r1 (in 0m4.3s)
+Pending 251/308, Building 4/139, [Time 08:15:40 | Elapsed 1m27.1s | Load 4.8 5.09 5.37]
+Started sys-auth/pambase-20150213 (logged in /tmp/pambase-20150213-6oSYMT)
+Completed dev-libs/libusb-1.0.19 (in 0m4.2s)
+Pending 250/308, Building 4/139, [Time 08:15:41 | Elapsed 1m28.1s | Load 4.8 5.09 5.37]
+Started virtual/libusb-1-r1 (logged in /tmp/libusb-1-r1-UPZqfX)
+Completed chromeos-base/vboot_reference-1.0-r1198 (in 0m4.7s)
+Pending 249/308, Building 4/138, [Time 08:15:44 | Elapsed 1m30.8s | Load 4.73 5.07 5.36]
+Started chromeos-base/libscrypt-1.1.6-r12 (logged in /tmp/libscrypt-1.1.6-r12-acCPR1)
+Completed sys-auth/pambase-20150213 (in 0m3.9s)
+Pending 248/308, Building 4/139, [Time 08:15:44 | Elapsed 1m31.0s | Load 4.73 5.07 5.36]
+Started sys-fs/ecryptfs-utils-101 (logged in /tmp/ecryptfs-utils-101-bAb609)
+Completed virtual/libusb-1-r1 (in 0m4.0s)
+Pending 247/308, Building 4/140, [Time 08:15:45 | Elapsed 1m32.1s | Load 4.73 5.07 5.36]
+Started sys-fs/lvm2-2.02.97-r4 (logged in /tmp/lvm2-2.02.97-r4-DtI9Ae)
+Completed chromeos-base/chaps-0.0.1-r1370 (in 0m9.4s)
+Pending 246/308, Building 4/139, [Time 08:15:48 | Elapsed 1m34.8s | Load 4.73 5.07 5.36]
+Started sys-libs/gcc-libs-4.9.2-r32 (logged in /tmp/gcc-libs-4.9.2-r32-RhOCTw)
+Completed chromeos-base/libscrypt-1.1.6-r12 (in 0m4.6s)
+Pending 245/308, Building 4/138, [Time 08:15:49 | Elapsed 1m35.4s | Load 4.73 5.07 5.36]
+Started media-fonts/dejavu-2.33 (logged in /tmp/dejavu-2.33-BpkAgk)
+Completed sys-fs/ecryptfs-utils-101 (in 0m4.9s)
+Pending 244/308, Building 4/137, [Time 08:15:49 | Elapsed 1m35.8s | Load 4.76 5.07 5.36]
+Started chromeos-base/libchromeos-ui-0.0.1-r184 (logged in /tmp/libchromeos-ui-0.0.1-r184-ZpAuWY)
+Completed sys-fs/lvm2-2.02.97-r4 (in 0m4.5s)
+Pending 243/308, Building 4/137, [Time 08:15:50 | Elapsed 1m36.6s | Load 4.76 5.07 5.36]
+Started chromeos-base/cryptohome-0.0.1-r1153 (logged in /tmp/cryptohome-0.0.1-r1153-wAXZfv)
+Completed sys-libs/gcc-libs-4.9.2-r32 (in 0m5.4s)
+Pending 242/308, Building 4/136, [Time 08:15:54 | Elapsed 1m40.2s | Load 4.76 5.07 5.36]
+Started dev-libs/libdaemon-0.14-r1 (logged in /tmp/libdaemon-0.14-r1-6YQbpU)
+Completed media-fonts/dejavu-2.33 (in 0m4.9s)
+Pending 241/308, Building 4/136, [Time 08:15:54 | Elapsed 1m40.3s | Load 4.76 5.07 5.36]
+Started media-fonts/robotofonts-20150625-r1 (logged in /tmp/robotofonts-20150625-r1-j1fr5w)
+Completed chromeos-base/libchromeos-ui-0.0.1-r184 (in 0m4.9s)
+Pending 240/308, Building 4/135, [Time 08:15:54 | Elapsed 1m40.7s | Load 4.61 5.04 5.34]
+Started media-fonts/crosextrafonts-20130214 (logged in /tmp/crosextrafonts-20130214-rmyI7L)
+Completed chromeos-base/cryptohome-0.0.1-r1153 (in 0m4.4s)
+Pending 239/308, Building 4/135, [Time 08:15:54 | Elapsed 1m41.0s | Load 4.61 5.04 5.34]
+Started chromeos-base/chromeos-login-0.0.2-r2261 (logged in /tmp/chromeos-login-0.0.2-r2261-r_myZT)
+Completed media-fonts/robotofonts-20150625-r1 (in 0m4.2s)
+Pending 238/308, Building 4/134, [Time 08:15:58 | Elapsed 1m44.5s | Load 4.61 5.04 5.34]
+Started media-fonts/croscorefonts-1.31.0-r1 (logged in /tmp/croscorefonts-1.31.0-r1-SW_jCs)
+Completed media-fonts/crosextrafonts-20130214 (in 0m4.0s)
+Pending 237/308, Building 4/133, [Time 08:15:58 | Elapsed 1m44.7s | Load 4.61 5.04 5.34]
+Started media-fonts/ko-nanumfonts-3.10.0 (logged in /tmp/ko-nanumfonts-3.10.0-R4qeB4)
+Completed dev-libs/libdaemon-0.14-r1 (in 0m4.6s)
+Pending 236/308, Building 4/133, [Time 08:15:58 | Elapsed 1m44.8s | Load 4.61 5.04 5.34]
+Started media-fonts/ja-ipafonts-003.03-r1 (logged in /tmp/ja-ipafonts-003.03-r1-m0X_go)
+Completed chromeos-base/chromeos-login-0.0.2-r2261 (in 0m4.5s)
+Pending 235/308, Building 4/133, [Time 08:15:59 | Elapsed 1m45.5s | Load 4.61 5.04 5.34]
+Started media-fonts/my-padauk-2.50 (logged in /tmp/my-padauk-2.50-Zsxp5f)
+Completed media-fonts/my-padauk-2.50 (in 0m4.4s)
+Pending 234/308, Building 4/132, [Time 08:16:03 | Elapsed 1m49.9s | Load 4.81 5.07 5.35]
+Started media-fonts/crosextrafonts-carlito-20130920 (logged in /tmp/crosextrafonts-carlito-20130920-85LSEM)
+Completed media-fonts/croscorefonts-1.31.0-r1 (in 0m5.6s)
+Pending 233/308, Building 4/131, [Time 08:16:03 | Elapsed 1m50.1s | Load 4.81 5.07 5.35]
+Started media-fonts/ml-anjalioldlipi-0.740 (logged in /tmp/ml-anjalioldlipi-0.740-SMpXe1)
+Completed media-fonts/ko-nanumfonts-3.10.0 (in 0m5.6s)
+Pending 232/308, Building 4/130, [Time 08:16:04 | Elapsed 1m50.3s | Load 4.81 5.07 5.35]
+Started media-fonts/droidfonts-cros-20140815-r1 (logged in /tmp/droidfonts-cros-20140815-r1-Lx7NGt)
+Completed media-fonts/ja-ipafonts-003.03-r1 (in 0m5.8s)
+Pending 231/308, Building 4/129, [Time 08:16:04 | Elapsed 1m50.6s | Load 4.81 5.07 5.35]
+Started media-fonts/notofonts-20160310-r1 (logged in /tmp/notofonts-20160310-r1-fsQnJZ)
+Completed media-fonts/crosextrafonts-carlito-20130920 (in 0m4.7s)
+Pending 230/308, Building 4/128, [Time 08:16:08 | Elapsed 1m54.7s | Load 4.82 5.07 5.35]
+Started media-fonts/lohitfonts-cros-2.5.0-r1 (logged in /tmp/lohitfonts-cros-2.5.0-r1-NToeyB)
+Completed media-fonts/droidfonts-cros-20140815-r1 (in 0m4.4s)
+Pending 229/308, Building 4/127, [Time 08:16:08 | Elapsed 1m54.7s | Load 4.82 5.07 5.35]
+Started media-fonts/tibt-jomolhari-0.0.3c (logged in /tmp/tibt-jomolhari-0.0.3c-vJveCc)
+Completed media-fonts/ml-anjalioldlipi-0.740 (in 0m5.1s)
+Pending 228/308, Building 4/126, [Time 08:16:09 | Elapsed 1m55.2s | Load 4.82 5.07 5.35]
+Started media-fonts/noto-cjk-20150910-r1 (logged in /tmp/noto-cjk-20150910-r1-ODd4xG)
+Completed media-fonts/notofonts-20160310-r1 (in 0m6.0s)
+Pending 227/308, Building 4/125, [Time 08:16:10 | Elapsed 1m56.6s | Load 4.76 5.05 5.34]
+Started media-fonts/sil-abyssinica-1.0 (logged in /tmp/sil-abyssinica-1.0-DfoVEd)
+Completed media-fonts/lohitfonts-cros-2.5.0-r1 (in 0m5.5s)
+Pending 226/308, Building 4/124, [Time 08:16:13 | Elapsed 2m0.1s | Load 4.76 5.05 5.34]
+Started dev-libs/libnl-3.2.24 (logged in /tmp/libnl-3.2.24-jbDZkD)
+Completed media-fonts/tibt-jomolhari-0.0.3c (in 0m5.5s)
+Pending 225/308, Building 4/123, [Time 08:16:14 | Elapsed 2m0.2s | Load 4.76 5.05 5.34]
+Started sys-libs/libnih-1.0.3-r3 (logged in /tmp/libnih-1.0.3-r3-rEoK7O)
+Completed media-fonts/noto-cjk-20150910-r1 (in 0m6.3s)
+Pending 224/308, Building 4/122, [Time 08:16:15 | Elapsed 2m1.5s | Load 4.69 5.03 5.34]
+Started net-dns/avahi-0.6.31-r4 (logged in /tmp/avahi-0.6.31-r4-LO491O)
+Completed media-fonts/sil-abyssinica-1.0 (in 0m5.3s)
+Pending 223/308, Building 4/122, [Time 08:16:15 | Elapsed 2m1.9s | Load 4.69 5.03 5.34]
+Started chromeos-base/chromeos-fonts-0.0.1-r23 (logged in /tmp/chromeos-fonts-0.0.1-r23-9HPHk0)
+Completed sys-libs/libnih-1.0.3-r3 (in 0m4.8s)
+Pending 222/308, Building 4/122, [Time 08:16:18 | Elapsed 2m5.1s | Load 4.69 5.03 5.34]
+Started media-libs/alsa-lib-1.1.0 (logged in /tmp/alsa-lib-1.1.0-WEMkj6)
+Completed dev-libs/libnl-3.2.24 (in 0m5.9s)
+Pending 221/308, Building 4/122, [Time 08:16:19 | Elapsed 2m6.1s | Load 4.88 5.07 5.34]
+Started net-wireless/bluez-5.37-r51 (logged in /tmp/bluez-5.37-r51-APgiW7)
+Completed media-libs/alsa-lib-1.1.0 (in 0m5.7s)
+Pending 220/308, Building 4/123, [Time 08:16:24 | Elapsed 2m10.8s | Load 4.73 5.03 5.33]
+Started dev-libs/lzo-2.06 (logged in /tmp/lzo-2.06-B23kPo)
+Completed net-dns/avahi-0.6.31-r4 (in 0m9.4s)
+Pending 219/308, Building 4/124, [Time 08:16:24 | Elapsed 2m10.9s | Load 4.73 5.03 5.33]
+Started app-eselect/eselect-vi-1.1.9 (logged in /tmp/eselect-vi-1.1.9-mvIgSu)
+Completed app-eselect/eselect-vi-1.1.9 (in 0m4.1s)
+Pending 218/308, Building 4/124, [Time 08:16:28 | Elapsed 2m15.0s | Load 4.73 5.03 5.33]
+Completed dev-libs/lzo-2.06 (in 0m4.2s)
+Pending 217/308, Building 4/123, [Time 08:16:28 | Elapsed 2m15.0s | Load 4.73 5.03 5.33]
+Started net-dialup/ppp-2.4.6-r6 (logged in /tmp/ppp-2.4.6-r6-xAo51W)
+Started net-firewall/iptables-1.4.21-r1 (logged in /tmp/iptables-1.4.21-r1-_IEEQ8)
+Completed net-wireless/bluez-5.37-r51 (in 0m10.5s)
+Pending 216/308, Building 4/123, [Time 08:16:30 | Elapsed 2m16.6s | Load 4.67 5.02 5.32]
+Started app-arch/tar-1.28 (logged in /tmp/tar-1.28-on9wgB)
+Completed net-firewall/iptables-1.4.21-r1 (in 0m4.6s)
+Pending 215/308, Building 4/122, [Time 08:16:33 | Elapsed 2m19.6s | Load 4.67 5.02 5.32]
+Started sys-apps/smartmontools-5.42 (logged in /tmp/smartmontools-5.42-p4h3ex)
+Completed net-dialup/ppp-2.4.6-r6 (in 0m5.2s)
+Pending 214/308, Building 4/122, [Time 08:16:34 | Elapsed 2m20.2s | Load 4.67 5.02 5.32]
+Started sys-apps/upstart-1.2-r11 (logged in /tmp/upstart-1.2-r11-D6ELAc)
+Completed app-arch/tar-1.28 (in 0m4.8s)
+Pending 213/308, Building 4/121, [Time 08:16:35 | Elapsed 2m21.4s | Load 4.62 5.0 5.32]
+Started dev-libs/gmp-6.1.0 (logged in /tmp/gmp-6.1.0-YglwSm)
+Completed sys-apps/smartmontools-5.42 (in 0m4.2s)
+Pending 212/308, Building 4/120, [Time 08:16:37 | Elapsed 2m23.8s | Load 4.62 5.0 5.32]
+Started app-editors/vim-7.4.712 (logged in /tmp/vim-7.4.712-5wJk34)
+Completed sys-apps/upstart-1.2-r11 (in 0m4.8s)
+Pending 211/308, Building 4/120, [Time 08:16:38 | Elapsed 2m25.0s | Load 4.62 5.0 5.32]
+Started media-gfx/ply-image-0.0.1-r49 (logged in /tmp/ply-image-0.0.1-r49-u_Kdti)
+Completed dev-libs/gmp-6.1.0 (in 0m5.1s)
+Pending 210/308, Building 4/120, [Time 08:16:40 | Elapsed 2m26.4s | Load 4.57 4.98 5.31]
+Started sys-apps/libtsm-3 (logged in /tmp/libtsm-3-RsMLzd)
+Completed app-editors/vim-7.4.712 (in 0m4.8s)
+Pending 209/308, Building 4/120, [Time 08:16:42 | Elapsed 2m28.6s | Load 4.57 4.98 5.31]
+Started dev-libs/libnl-1.1-r1 (logged in /tmp/libnl-1.1-r1-DxfBPN)
+Completed media-gfx/ply-image-0.0.1-r49 (in 0m4.8s)
+Pending 208/308, Building 4/119, [Time 08:16:43 | Elapsed 2m29.7s | Load 4.57 4.98 5.31]
+Started net-wireless/wireless-regdb-20131127-r5 (logged in /tmp/wireless-regdb-20131127-r5-o7KYzG)
+Completed sys-apps/libtsm-3 (in 0m4.4s)
+Pending 207/308, Building 4/119, [Time 08:16:44 | Elapsed 2m30.8s | Load 4.44 4.95 5.3]
+Started virtual/libudev-215-r1 (logged in /tmp/libudev-215-r1-qrN37y)
+Completed dev-libs/libnl-1.1-r1 (in 0m5.0s)
+Pending 206/308, Building 4/118, [Time 08:16:47 | Elapsed 2m33.6s | Load 4.44 4.95 5.3]
+Started chromeos-base/bootcomplete-login-0.0.1-r3 (logged in /tmp/bootcomplete-login-0.0.1-r3-9s7xaT)
+Completed net-wireless/wireless-regdb-20131127-r5 (in 0m4.1s)
+Pending 205/308, Building 4/118, [Time 08:16:47 | Elapsed 2m33.9s | Load 4.44 4.95 5.3]
+Started sys-apps/net-tools-1.60_p20130513023548-r1 (logged in /tmp/net-tools-1.60_p20130513023548-r1-fC7Q8o)
+Completed virtual/libudev-215-r1 (in 0m4.6s)
+Pending 204/308, Building 4/118, [Time 08:16:49 | Elapsed 2m35.4s | Load 4.44 4.95 5.3]
+Started net-wireless/crda-1.1.1-r5 (logged in /tmp/crda-1.1.1-r5-1IEotf)
+Completed chromeos-base/bootcomplete-login-0.0.1-r3 (in 0m4.3s)
+Pending 203/308, Building 4/118, [Time 08:16:51 | Elapsed 2m37.9s | Load 4.49 4.95 5.3]
+Started media-sound/alsa-utils-1.1.0-r2 (logged in /tmp/alsa-utils-1.1.0-r2-_ofa3W)
+Completed sys-apps/net-tools-1.60_p20130513023548-r1 (in 0m4.7s)
+Pending 202/308, Building 4/117, [Time 08:16:52 | Elapsed 2m38.6s | Load 4.49 4.95 5.3]
+Started sys-process/lsof-4.85-r2 (logged in /tmp/lsof-4.85-r2-tNsFwA)
+Completed net-wireless/crda-1.1.1-r5 (in 0m4.5s)
+Pending 201/308, Building 4/117, [Time 08:16:53 | Elapsed 2m39.8s | Load 4.49 4.95 5.3]
+Started dev-util/shunit2-2.1.6 (logged in /tmp/shunit2-2.1.6-B7AjUm)
+Completed media-sound/alsa-utils-1.1.0-r2 (in 0m4.8s)
+Pending 200/308, Building 4/116, [Time 08:16:56 | Elapsed 2m42.7s | Load 4.45 4.93 5.29]
+Started sys-apps/chvt-0.0.1-r1 (logged in /tmp/chvt-0.0.1-r1-yAzxke)
+Completed sys-process/lsof-4.85-r2 (in 0m4.8s)
+Pending 199/308, Building 4/115, [Time 08:16:57 | Elapsed 2m43.4s | Load 4.45 4.93 5.29]
+Started sys-libs/e2fsprogs-libs-1.42.12 (logged in /tmp/e2fsprogs-libs-1.42.12-P2SX6D)
+Completed dev-util/shunit2-2.1.6 (in 0m4.6s)
+Pending 198/308, Building 4/114, [Time 08:16:58 | Elapsed 2m44.5s | Load 4.45 4.93 5.29]
+Started virtual/mta-0 (logged in /tmp/mta-0-gCHS_i)
+Completed sys-apps/chvt-0.0.1-r1 (in 0m4.5s)
+Pending 197/308, Building 4/113, [Time 08:17:01 | Elapsed 2m47.2s | Load 4.41 4.92 5.28]
+Started virtual/editor-0 (logged in /tmp/editor-0-nWPTnM)
+Completed sys-libs/e2fsprogs-libs-1.42.12 (in 0m4.6s)
+Pending 196/308, Building 4/113, [Time 08:17:01 | Elapsed 2m48.0s | Load 4.41 4.92 5.28]
+Started chromeos-base/tty-0.0.1-r7 (logged in /tmp/tty-0.0.1-r7-e0KLUv)
+Completed virtual/mta-0 (in 0m4.0s)
+Pending 195/308, Building 4/112, [Time 08:17:02 | Elapsed 2m48.5s | Load 4.41 4.92 5.28]
+Started chromeos-base/swap-init-0.0.1-r3 (logged in /tmp/swap-init-0.0.1-r3-U5z22I)
+Completed virtual/editor-0 (in 0m4.0s)
+Pending 194/308, Building 4/112, [Time 08:17:05 | Elapsed 2m51.2s | Load 4.38 4.9 5.28]
+Started sys-apps/frecon-0.0.1-r86 (logged in /tmp/frecon-0.0.1-r86-j54jdY)
+Completed chromeos-base/tty-0.0.1-r7 (in 0m4.3s)
+Pending 193/308, Building 4/111, [Time 08:17:06 | Elapsed 2m52.3s | Load 4.38 4.9 5.28]
+Started dev-libs/libgudev-230 (logged in /tmp/libgudev-230-o4f_tD)
+Completed chromeos-base/swap-init-0.0.1-r3 (in 0m4.5s)
+Pending 192/308, Building 4/110, [Time 08:17:06 | Elapsed 2m53.0s | Load 4.38 4.9 5.28]
+Started virtual/chromeos-bootcomplete-1-r1 (logged in /tmp/chromeos-bootcomplete-1-r1-M9KA16)
+Completed sys-apps/frecon-0.0.1-r86 (in 0m4.7s)
+Pending 191/308, Building 4/109, [Time 08:17:09 | Elapsed 2m55.9s | Load 4.19 4.86 5.26]
+Started sys-fs/e2fsprogs-1.42.12 (logged in /tmp/e2fsprogs-1.42.12-YcMW8_)
+Completed virtual/chromeos-bootcomplete-1-r1 (in 0m4.2s)
+Pending 190/308, Building 4/108, [Time 08:17:11 | Elapsed 2m57.2s | Load 4.19 4.86 5.26]
+Started sys-apps/hwids-20150717 (logged in /tmp/hwids-20150717-mu5ab7)
+Completed dev-libs/libgudev-230 (in 0m5.2s)
+Pending 189/308, Building 4/108, [Time 08:17:11 | Elapsed 2m57.5s | Load 4.19 4.86 5.26]
+Started sys-apps/which-2.20-r1 (logged in /tmp/which-2.20-r1-NzsJlD)
+Completed sys-fs/e2fsprogs-1.42.12 (in 0m4.5s)
+Pending 188/308, Building 4/108, [Time 08:17:14 | Elapsed 3m0.3s | Load 4.19 4.86 5.26]
+Started dev-util/shflags-1.0.3-r1 (logged in /tmp/shflags-1.0.3-r1-eNPNzz)
+Completed sys-apps/which-2.20-r1 (in 0m4.3s)
+Pending 187/308, Building 4/107, [Time 08:17:15 | Elapsed 3m1.8s | Load 4.17 4.84 5.25]
+Started app-admin/sudo-1.8.12 (logged in /tmp/sudo-1.8.12-9aW_pt)
+Completed sys-apps/hwids-20150717 (in 0m5.1s)
+Pending 186/308, Building 4/108, [Time 08:17:16 | Elapsed 3m2.3s | Load 4.17 4.84 5.25]
+Started media-libs/mesa-11.3.0-r2 (logged in /tmp/mesa-11.3.0-r2-cFir7a)
+Completed dev-util/shflags-1.0.3-r1 (in 0m5.2s)
+Pending 185/308, Building 4/107, [Time 08:17:19 | Elapsed 3m5.5s | Load 4.17 4.84 5.25]
+Started x11-libs/pixman-0.32.4 (logged in /tmp/pixman-0.32.4-Q5FnVZ)
+Completed app-admin/sudo-1.8.12 (in 0m7.7s)
+Pending 184/308, Building 4/107, [Time 08:17:23 | Elapsed 3m9.5s | Load 4.4 4.88 5.26]
+Started media-libs/sbc-1.3 (logged in /tmp/sbc-1.3-HBZKxl)
+Completed x11-libs/pixman-0.32.4 (in 0m6.9s)
+Pending 183/308, Building 4/107, [Time 08:17:26 | Elapsed 3m12.5s | Load 4.29 4.85 5.25]
+Started media-libs/speex-1.2_rc1-r5 (logged in /tmp/speex-1.2_rc1-r5-o0y7cY)
+Completed media-libs/sbc-1.3 (in 0m4.7s)
+Pending 182/308, Building 4/106, [Time 08:17:28 | Elapsed 3m14.2s | Load 4.29 4.85 5.25]
+Started dev-libs/iniparser-3.1-r1 (logged in /tmp/iniparser-3.1-r1-s6cW_C)
+Completed media-libs/mesa-11.3.0-r2 (in 0m12.3s)
+Pending 181/308, Building 4/107, [Time 08:17:28 | Elapsed 3m14.6s | Load 4.29 4.85 5.25]
+Started media-plugins/alsa-plugins-1.1.0 (logged in /tmp/alsa-plugins-1.1.0-BeR__A)
+Completed media-libs/speex-1.2_rc1-r5 (in 0m4.9s)
+Pending 180/308, Building 4/106, [Time 08:17:31 | Elapsed 3m17.4s | Load 4.18 4.82 5.24]
+Started virtual/libgudev-215-r3 (logged in /tmp/libgudev-215-r3-H2Bt8b)
+Completed chromeos-base/chromeos-fonts-0.0.1-r23 (in 1m16.0s)
+Pending 179/308, Building 4/106, [Time 08:17:31 | Elapsed 3m17.9s | Load 4.18 4.82 5.24]
+Started chromeos-base/common-assets-0.0.1-r35 (logged in /tmp/common-assets-0.0.1-r35-J7KKid)
+Completed dev-libs/iniparser-3.1-r1 (in 0m4.1s)
+Pending 178/308, Building 4/105, [Time 08:17:32 | Elapsed 3m18.3s | Load 4.18 4.82 5.24]
+Started x11-libs/cairo-1.12.12-r3 (logged in /tmp/cairo-1.12.12-r3-OoT_o_)
+Completed media-plugins/alsa-plugins-1.1.0 (in 0m4.5s)
+Pending 177/308, Building 4/105, [Time 08:17:32 | Elapsed 3m19.1s | Load 4.18 4.82 5.24]
+Started media-sound/adhd-0.0.1-r1244 (logged in /tmp/adhd-0.0.1-r1244-K8LgVX)
+Completed virtual/libgudev-215-r3 (in 0m8.1s)
+Pending 176/308, Building 4/105, [Time 08:17:39 | Elapsed 3m25.5s | Load 4.57 4.88 5.26]
+Started net-dns/avahi-daemon-0.0.1-r4 (logged in /tmp/avahi-daemon-0.0.1-r4-pXZEU0)
+Completed x11-libs/cairo-1.12.12-r3 (in 0m8.4s)
+Pending 175/308, Building 4/105, [Time 08:17:40 | Elapsed 3m26.7s | Load 4.44 4.85 5.24]
+Started sys-apps/shadow-4.2.1-r1 (logged in /tmp/shadow-4.2.1-r1-uY5xGU)
+Completed net-dns/avahi-daemon-0.0.1-r4 (in 0m3.8s)
+Pending 174/308, Building 4/106, [Time 08:17:43 | Elapsed 3m29.3s | Load 4.44 4.85 5.24]
+Started dev-libs/libtasn1-2.4 (logged in /tmp/libtasn1-2.4-idTztr)
+Completed sys-apps/shadow-4.2.1-r1 (in 0m4.4s)
+Pending 173/308, Building 4/106, [Time 08:17:44 | Elapsed 3m31.1s | Load 4.41 4.84 5.24]
+Started dev-libs/nettle-2.7.1 (logged in /tmp/nettle-2.7.1-58Qk7K)
+Completed chromeos-base/common-assets-0.0.1-r35 (in 0m13.4s)
+Pending 172/308, Building 4/106, [Time 08:17:45 | Elapsed 3m31.3s | Load 4.41 4.84 5.24]
+Started chromeos-base/chromeos-init-0.0.25-r2267 (logged in /tmp/chromeos-init-0.0.25-r2267-2LiTFf)
+Completed media-sound/adhd-0.0.1-r1244 (in 0m13.3s)
+Pending 171/308, Building 4/106, [Time 08:17:46 | Elapsed 3m32.4s | Load 4.41 4.84 5.24]
+Started dev-libs/libp11-0.2.8-r3 (logged in /tmp/libp11-0.2.8-r3-N0FOGx)
+Completed dev-libs/libtasn1-2.4 (in 0m5.0s)
+Pending 170/308, Building 4/105, [Time 08:17:48 | Elapsed 3m34.3s | Load 4.41 4.84 5.24]
+Started dev-libs/libusb-compat-0.1.5-r3 (logged in /tmp/libusb-compat-0.1.5-r3-StMxsf)
+Completed dev-libs/nettle-2.7.1 (in 0m4.7s)
+Pending 169/308, Building 4/105, [Time 08:17:49 | Elapsed 3m35.8s | Load 4.38 4.83 5.23]
+Started chromeos-base/firewalld-0.0.1-r853 (logged in /tmp/firewalld-0.0.1-r853-HthQF9)
+Completed dev-libs/libp11-0.2.8-r3 (in 0m4.6s)
+Pending 168/308, Building 4/105, [Time 08:17:50 | Elapsed 3m37.1s | Load 4.38 4.83 5.23]
+Started net-libs/libmbim-1.13.0-r29 (logged in /tmp/libmbim-1.13.0-r29-GAn4iB)
+Completed dev-libs/libusb-compat-0.1.5-r3 (in 0m5.8s)
+Pending 167/308, Building 4/105, [Time 08:17:53 | Elapsed 3m40.1s | Load 4.38 4.83 5.23]
+Started chromeos-base/chromeos-installer-0.0.1-r1807 (logged in /tmp/chromeos-installer-0.0.1-r1807-ax5hVF)
+Completed chromeos-base/firewalld-0.0.1-r853 (in 0m4.6s)
+Pending 166/308, Building 4/105, [Time 08:17:54 | Elapsed 3m40.5s | Load 4.38 4.83 5.23]
+Started chromeos-base/permission_broker-0.0.1-r1467 (logged in /tmp/permission_broker-0.0.1-r1467-GjgREz)
+Completed chromeos-base/chromeos-init-0.0.25-r2267 (in 0m9.6s)
+Pending 165/308, Building 4/106, [Time 08:17:54 | Elapsed 3m40.9s | Load 4.27 4.79 5.22]
+Started app-admin/rsyslog-5.8.11-r1 (logged in /tmp/rsyslog-5.8.11-r1-gM0mIy)
+Completed net-libs/libmbim-1.13.0-r29 (in 0m5.0s)
+Pending 164/308, Building 4/106, [Time 08:17:55 | Elapsed 3m42.1s | Load 4.27 4.79 5.22]
+Started chromeos-base/libevdev-0.0.1-r61 (logged in /tmp/libevdev-0.0.1-r61-W597Y1)
+Completed chromeos-base/chromeos-installer-0.0.1-r1807 (in 0m4.9s)
+Pending 163/308, Building 4/106, [Time 08:17:58 | Elapsed 3m44.9s | Load 4.27 4.79 5.22]
+Started sys-fs/fuse-2.8.6-r6 (logged in /tmp/fuse-2.8.6-r6-GZPzXD)
+Completed app-admin/rsyslog-5.8.11-r1 (in 0m4.9s)
+Pending 162/308, Building 4/106, [Time 08:17:59 | Elapsed 3m45.9s | Load 4.24 4.78 5.21]
+Started net-libs/libnfnetlink-1.0.1 (logged in /tmp/libnfnetlink-1.0.1-9XqjH9)
+Completed chromeos-base/libevdev-0.0.1-r61 (in 0m4.5s)
+Pending 161/308, Building 4/105, [Time 08:18:00 | Elapsed 3m46.5s | Load 4.24 4.78 5.21]
+Started sys-apps/pciutils-3.1.10 (logged in /tmp/pciutils-3.1.10-v3bu3F)
+Completed chromeos-base/permission_broker-0.0.1-r1467 (in 0m9.1s)
+Pending 160/308, Building 4/104, [Time 08:18:03 | Elapsed 3m49.5s | Load 4.24 4.78 5.21]
+Started net-libs/libpcap-1.5.3 (logged in /tmp/libpcap-1.5.3-7s6CTM)
+Completed sys-fs/fuse-2.8.6-r6 (in 0m5.1s)
+Pending 159/308, Building 4/104, [Time 08:18:03 | Elapsed 3m50.1s | Load 4.24 4.78 5.21]
+Started x11-libs/libva-1.6.1-r1 (logged in /tmp/libva-1.6.1-r1-ofKui4)
+Completed net-libs/libnfnetlink-1.0.1 (in 0m4.7s)
+Pending 158/308, Building 4/104, [Time 08:18:04 | Elapsed 3m50.5s | Load 4.24 4.78 5.21]
+Started x11-proto/xproto-7.0.23-r1 (logged in /tmp/xproto-7.0.23-r1-n7ySTx)
+Completed sys-apps/pciutils-3.1.10 (in 0m5.3s)
+Pending 157/308, Building 4/103, [Time 08:18:05 | Elapsed 3m51.9s | Load 4.22 4.77 5.21]
+Started x11-proto/kbproto-1.0.5 (logged in /tmp/kbproto-1.0.5-o3pgyQ)
+Completed net-libs/libpcap-1.5.3 (in 0m4.3s)
+Pending 156/308, Building 4/103, [Time 08:18:07 | Elapsed 3m53.8s | Load 4.22 4.77 5.21]
+Started dev-libs/jsoncpp-0.6.0_rc2 (logged in /tmp/jsoncpp-0.6.0_rc2-5wrE7c)
+Completed x11-libs/libva-1.6.1-r1 (in 0m5.3s)
+Pending 155/308, Building 4/103, [Time 08:18:09 | Elapsed 3m55.4s | Load 4.22 4.77 5.21]
+Started media-libs/libjpeg-turbo-1.4.0 (logged in /tmp/libjpeg-turbo-1.4.0-S4aMGP)
+Completed x11-proto/xproto-7.0.23-r1 (in 0m5.0s)
+Pending 154/308, Building 4/102, [Time 08:18:09 | Elapsed 3m55.5s | Load 4.22 4.77 5.21]
+Started net-misc/modemmanager-classic-interfaces-0.0.1-r1 (logged in /tmp/modemmanager-classic-interfaces-0.0.1-r1-YprFk6)
+Completed x11-proto/kbproto-1.0.5 (in 0m4.3s)
+Pending 153/308, Building 4/102, [Time 08:18:10 | Elapsed 3m56.2s | Load 4.21 4.76 5.2]
+Started virtual/autotest-libs-1-r1 (logged in /tmp/autotest-libs-1-r1-bIbr_B)
+Completed dev-libs/jsoncpp-0.6.0_rc2 (in 0m5.0s)
+Pending 152/308, Building 4/101, [Time 08:18:12 | Elapsed 3m58.8s | Load 4.21 4.76 5.2]
+Started chromeos-base/gestures-conf-0.0.1-r55 (logged in /tmp/gestures-conf-0.0.1-r55-L3CzH9)
+Completed net-misc/modemmanager-classic-interfaces-0.0.1-r1 (in 0m4.2s)
+Pending 151/308, Building 4/100, [Time 08:18:13 | Elapsed 3m59.8s | Load 4.21 4.76 5.2]
+Started net-libs/gnutls-2.12.23-r6 (logged in /tmp/gnutls-2.12.23-r6-M_FD9N)
+Completed virtual/autotest-libs-1-r1 (in 0m4.1s)
+Pending 150/308, Building 4/100, [Time 08:18:14 | Elapsed 4m0.3s | Load 4.21 4.76 5.2]
+Started dev-libs/pkcs11-helper-1.07 (logged in /tmp/pkcs11-helper-1.07-hdA_ow)
+Completed media-libs/libjpeg-turbo-1.4.0 (in 0m5.0s)
+Pending 149/308, Building 4/100, [Time 08:18:14 | Elapsed 4m0.4s | Load 4.21 4.76 5.2]
+Started dev-libs/engine_pkcs11-0.1.8-r1 (logged in /tmp/engine_pkcs11-0.1.8-r1-PO_2Kg)
+Completed chromeos-base/gestures-conf-0.0.1-r55 (in 0m4.7s)
+Pending 148/308, Building 4/100, [Time 08:18:17 | Elapsed 4m3.5s | Load 4.27 4.76 5.2]
+Started virtual/libusb-0-r2 (logged in /tmp/libusb-0-r2-rSdQoF)
+Completed dev-libs/pkcs11-helper-1.07 (in 0m4.3s)
+Pending 147/308, Building 4/100, [Time 08:18:18 | Elapsed 4m4.6s | Load 4.27 4.76 5.2]
+Started sys-auth/nss-mdns-0.10-r2 (logged in /tmp/nss-mdns-0.10-r2-HLHivi)
+Completed dev-libs/engine_pkcs11-0.1.8-r1 (in 0m4.4s)
+Pending 146/308, Building 4/100, [Time 08:18:18 | Elapsed 4m4.8s | Load 4.27 4.76 5.2]
+Started media-libs/harfbuzz-1.2.3-r1 (logged in /tmp/harfbuzz-1.2.3-r1-rImEn0)
+Completed net-libs/gnutls-2.12.23-r6 (in 0m5.3s)
+Pending 145/308, Building 4/100, [Time 08:18:18 | Elapsed 4m5.1s | Load 4.27 4.76 5.2]
+Started net-misc/modemmanager-next-1.5.0-r263 (logged in /tmp/modemmanager-next-1.5.0-r263-_P735i)
+Completed virtual/libusb-0-r2 (in 0m4.6s)
+Pending 144/308, Building 4/100, [Time 08:18:21 | Elapsed 4m8.1s | Load 4.25 4.75 5.19]
+Started sys-apps/coreutils-8.24 (logged in /tmp/coreutils-8.24-xInUmM)
+Completed sys-auth/nss-mdns-0.10-r2 (in 0m5.0s)
+Pending 143/308, Building 4/100, [Time 08:18:23 | Elapsed 4m9.7s | Load 4.25 4.75 5.19]
+Started sys-libs/timezone-data-2015a (logged in /tmp/timezone-data-2015a-PAr5mt)
+Completed media-libs/harfbuzz-1.2.3-r1 (in 0m4.9s)
+Pending 142/308, Building 4/100, [Time 08:18:23 | Elapsed 4m9.7s | Load 4.25 4.75 5.19]
+Started sys-apps/hdparm-9.45 (logged in /tmp/hdparm-9.45-9fLnkM)
+Completed sys-apps/coreutils-8.24 (in 0m4.9s)
+Pending 141/308, Building 4/100, [Time 08:18:26 | Elapsed 4m13.0s | Load 4.47 4.78 5.2]
+Started net-wireless/iw-3.17 (logged in /tmp/iw-3.17-KMs9LN)
+Completed sys-apps/hdparm-9.45 (in 0m4.9s)
+Pending 140/308, Building 4/99, [Time 08:18:28 | Elapsed 4m14.5s | Load 4.47 4.78 5.2]
+Started app-shells/bash-4.2_p48-r1 (logged in /tmp/bash-4.2_p48-r1-wWcoAK)
+Completed net-misc/modemmanager-next-1.5.0-r263 (in 0m9.8s)
+Pending 139/308, Building 4/99, [Time 08:18:28 | Elapsed 4m14.9s | Load 4.47 4.78 5.2]
+Started dev-libs/libpcre-8.38 (logged in /tmp/libpcre-8.38-rpELTe)
+Completed sys-libs/timezone-data-2015a (in 0m5.9s)
+Pending 138/308, Building 4/98, [Time 08:18:29 | Elapsed 4m15.6s | Load 4.47 4.78 5.2]
+Started app-misc/jq-1.4-r1 (logged in /tmp/jq-1.4-r1-o3q8wF)
+Completed net-wireless/iw-3.17 (in 0m4.6s)
+Pending 137/308, Building 4/97, [Time 08:18:31 | Elapsed 4m17.6s | Load 4.51 4.79 5.2]
+Started x11-misc/xkeyboard-config-2.15-r1 (logged in /tmp/xkeyboard-config-2.15-r1-RihccG)
+Completed app-shells/bash-4.2_p48-r1 (in 0m4.5s)
+Pending 136/308, Building 4/97, [Time 08:18:32 | Elapsed 4m19.0s | Load 4.51 4.79 5.2]
+Started app-arch/xz-utils-5.2.0 (logged in /tmp/xz-utils-5.2.0-luB4Lt)
+Completed dev-libs/libpcre-8.38 (in 0m5.4s)
+Pending 135/308, Building 4/96, [Time 08:18:34 | Elapsed 4m20.3s | Load 4.51 4.79 5.2]
+Started sys-apps/dmidecode-2.11-r2 (logged in /tmp/dmidecode-2.11-r2-itgBd9)
+Completed app-misc/jq-1.4-r1 (in 0m4.8s)
+Pending 134/308, Building 4/96, [Time 08:18:34 | Elapsed 4m20.4s | Load 4.51 4.79 5.2]
+Started sys-apps/flashmap-0.3-r18 (logged in /tmp/flashmap-0.3-r18-GTq13B)
+Completed x11-misc/xkeyboard-config-2.15-r1 (in 0m5.3s)
+Pending 133/308, Building 4/95, [Time 08:18:36 | Elapsed 4m22.9s | Load 4.63 4.81 5.21]
+Started net-dns/c-ares-1.7.5-r1 (logged in /tmp/c-ares-1.7.5-r1-3NabAG)
+Completed app-arch/xz-utils-5.2.0 (in 0m5.0s)
+Pending 132/308, Building 4/95, [Time 08:18:37 | Elapsed 4m24.0s | Load 4.63 4.81 5.21]
+Started chromeos-base/update-policy-chromeos-0.0.1-r3 (logged in /tmp/update-policy-chromeos-0.0.1-r3-nR4x1P)
+Completed sys-apps/dmidecode-2.11-r2 (in 0m4.7s)
+Pending 131/308, Building 4/95, [Time 08:18:38 | Elapsed 4m25.0s | Load 4.63 4.81 5.21]
+Started chromeos-base/chromeos-activate-date-0.0.1-r5 (logged in /tmp/chromeos-activate-date-0.0.1-r5-nq4RMI)
+Completed sys-apps/flashmap-0.3-r18 (in 0m4.9s)
+Pending 130/308, Building 4/95, [Time 08:18:39 | Elapsed 4m25.3s | Load 4.63 4.81 5.21]
+Started chromeos-base/autotest-0.0.2-r7118 (logged in /tmp/autotest-0.0.2-r7118-qPxvzd)
+Completed net-dns/c-ares-1.7.5-r1 (in 0m4.9s)
+Pending 129/308, Building 4/94, [Time 08:18:41 | Elapsed 4m27.7s | Load 4.58 4.79 5.2]
+Started x11-libs/libxkbcommon-0.4.3-r2 (logged in /tmp/libxkbcommon-0.4.3-r2-dnMWla)
+Completed chromeos-base/update-policy-chromeos-0.0.1-r3 (in 0m4.8s)
+Pending 128/308, Building 4/94, [Time 08:18:42 | Elapsed 4m28.8s | Load 4.58 4.79 5.2]
+Started net-dns/dnsmasq-2.72-r4 (logged in /tmp/dnsmasq-2.72-r4-icn2r4)
+Completed chromeos-base/chromeos-activate-date-0.0.1-r5 (in 0m4.7s)
+Pending 127/308, Building 4/94, [Time 08:18:43 | Elapsed 4m29.7s | Load 4.58 4.79 5.2]
+Started net-libs/libnetfilter_queue-1.0.1 (logged in /tmp/libnetfilter_queue-1.0.1-swki8K)
+Completed chromeos-base/autotest-0.0.2-r7118 (in 0m7.3s)
+Pending 126/308, Building 4/93, [Time 08:18:46 | Elapsed 4m32.7s | Load 4.53 4.78 5.19]
+Started dev-libs/elfutils-0.160 (logged in /tmp/elfutils-0.160-zIEFrW)
+Completed x11-libs/libxkbcommon-0.4.3-r2 (in 0m5.0s)
+Pending 125/308, Building 4/92, [Time 08:18:46 | Elapsed 4m32.7s | Load 4.53 4.78 5.19]
+Started media-libs/tiff-4.0.3-r6 (logged in /tmp/tiff-4.0.3-r6-vmeoFi)
+Completed net-libs/libnetfilter_queue-1.0.1 (in 0m5.0s)
+Pending 124/308, Building 4/91, [Time 08:18:48 | Elapsed 4m34.7s | Load 4.53 4.78 5.19]
+Started virtual/jpeg-0-r2 (logged in /tmp/jpeg-0-r2-KHQ7_2)
+Completed dev-libs/elfutils-0.160 (in 0m5.1s)
+Pending 123/308, Building 4/91, [Time 08:18:51 | Elapsed 4m37.8s | Load 4.41 4.75 5.18]
+Started virtual/logger-0 (logged in /tmp/logger-0-IMOrQS)
+Completed media-libs/tiff-4.0.3-r6 (in 0m5.2s)
+Pending 122/308, Building 4/90, [Time 08:18:51 | Elapsed 4m37.9s | Load 4.41 4.75 5.18]
+Started net-misc/wget-1.17.1-r1 (logged in /tmp/wget-1.17.1-r1-cIkQGL)
+Completed net-dns/dnsmasq-2.72-r4 (in 0m10.5s)
+Pending 121/308, Building 4/89, [Time 08:18:53 | Elapsed 4m39.3s | Load 4.41 4.75 5.18]
+Started dev-libs/atk-1.32.0-r1 (logged in /tmp/atk-1.32.0-r1-6Hz85p)
+Completed virtual/jpeg-0-r2 (in 0m5.4s)
+Pending 120/308, Building 4/89, [Time 08:18:53 | Elapsed 4m40.1s | Load 4.41 4.75 5.18]
+Started dev-libs/libxml2-2.9.2-r1 (logged in /tmp/libxml2-2.9.2-r1-HCet22)
+Completed virtual/logger-0 (in 0m4.2s)
+Pending 119/308, Building 4/89, [Time 08:18:55 | Elapsed 4m42.0s | Load 4.3 4.72 5.17]
+Started net-libs/libmicrohttpd-0.9.42 (logged in /tmp/libmicrohttpd-0.9.42-GQybkZ)
+Completed net-misc/wget-1.17.1-r1 (in 0m5.1s)
+Pending 118/308, Building 4/88, [Time 08:18:56 | Elapsed 4m43.0s | Load 4.3 4.72 5.17]
+Started net-wireless/hostapd-2.3-r1 (logged in /tmp/hostapd-2.3-r1-9jVI1w)
+Completed dev-libs/atk-1.32.0-r1 (in 0m5.0s)
+Pending 117/308, Building 4/87, [Time 08:18:58 | Elapsed 4m44.3s | Load 4.3 4.72 5.17]
+Started net-wireless/wpa_supplicant-0.0.1-r4 (logged in /tmp/wpa_supplicant-0.0.1-r4-hJmb43)
+Completed net-libs/libmicrohttpd-0.9.42 (in 0m4.0s)
+Pending 116/308, Building 4/87, [Time 08:18:59 | Elapsed 4m46.1s | Load 4.27 4.71 5.16]
+Started chromeos-base/nsswitch-0.0.1-r1 (logged in /tmp/nsswitch-0.0.1-r1-FLMsAV)
+Completed dev-libs/libxml2-2.9.2-r1 (in 0m6.0s)
+Pending 115/308, Building 4/86, [Time 08:18:59 | Elapsed 4m46.1s | Load 4.27 4.71 5.16]
+Started x11-libs/pango-1.32.5-r1 (logged in /tmp/pango-1.32.5-r1-zIb0Ow)
+Completed net-wireless/hostapd-2.3-r1 (in 0m5.0s)
+Pending 114/308, Building 4/86, [Time 08:19:01 | Elapsed 4m48.0s | Load 4.27 4.71 5.16]
+Started net-misc/openvpn-2.3.2-r2 (logged in /tmp/openvpn-2.3.2-r2-KNjGIL)
+Completed chromeos-base/nsswitch-0.0.1-r1 (in 0m4.3s)
+Pending 113/308, Building 4/85, [Time 08:19:04 | Elapsed 4m50.4s | Load 4.27 4.71 5.16]
+Started virtual/shadow-0 (logged in /tmp/shadow-0-RKdK7U)
+Completed x11-libs/pango-1.32.5-r1 (in 0m5.8s)
+Pending 112/308, Building 4/84, [Time 08:19:05 | Elapsed 4m52.0s | Load 4.33 4.72 5.16]
+Started chromeos-base/gestures-0.0.1-r526 (logged in /tmp/gestures-0.0.1-r526-j6ZoCX)
+Completed net-wireless/wpa_supplicant-0.0.1-r4 (in 0m9.8s)
+Pending 111/308, Building 4/83, [Time 08:19:07 | Elapsed 4m54.0s | Load 4.33 4.72 5.16]
+Started net-misc/dhcpcd-6.8.2-r15 (logged in /tmp/dhcpcd-6.8.2-r15-YnMBIi)
+Completed virtual/shadow-0 (in 0m4.5s)
+Pending 110/308, Building 4/83, [Time 08:19:08 | Elapsed 4m54.9s | Load 4.33 4.72 5.16]
+Started media-libs/minigbm-0.0.1-r31 (logged in /tmp/minigbm-0.0.1-r31-NCBXaS)
+Completed chromeos-base/gestures-0.0.1-r526 (in 0m4.7s)
+Pending 109/308, Building 4/82, [Time 08:19:10 | Elapsed 4m56.7s | Load 4.31 4.7 5.16]
+Started app-accessibility/brltty-4.5-r10 (logged in /tmp/brltty-4.5-r10-755NGI)
+Completed net-misc/openvpn-2.3.2-r2 (in 0m9.6s)
+Pending 108/308, Building 4/81, [Time 08:19:11 | Elapsed 4m57.6s | Load 4.31 4.7 5.16]
+Started virtual/opengles-1-r2 (logged in /tmp/opengles-1-r2-_evtQy)
+Completed media-libs/minigbm-0.0.1-r31 (in 0m5.1s)
+Pending 107/308, Building 4/80, [Time 08:19:13 | Elapsed 4m60.0s | Load 4.31 4.7 5.16]
+Started virtual/modemmanager-1-r4 (logged in /tmp/modemmanager-1-r4-UYQOyT)
+Completed virtual/opengles-1-r2 (in 0m4.5s)
+Pending 106/308, Building 4/79, [Time 08:19:15 | Elapsed 5m2.1s | Load 4.2 4.68 5.14]
+Started sys-kernel/linux-firmware-0.0.1-r90 (logged in /tmp/linux-firmware-0.0.1-r90-ltyBsW)
+Completed net-misc/dhcpcd-6.8.2-r15 (in 0m10.4s)
+Pending 105/308, Building 4/78, [Time 08:19:18 | Elapsed 5m4.5s | Load 4.2 4.68 5.14]
+Started sys-apps/flashrom-0.9.4-r422 (logged in /tmp/flashrom-0.9.4-r422-tDASwR)
+Completed virtual/modemmanager-1-r4 (in 0m4.7s)
+Pending 104/308, Building 4/78, [Time 08:19:18 | Elapsed 5m4.7s | Load 4.2 4.68 5.14]
+Started chromeos-base/peerd-0.0.1-r1398 (logged in /tmp/peerd-0.0.1-r1398-oCPNUn)
+Completed app-accessibility/brltty-4.5-r10 (in 0m10.7s)
+Pending 103/308, Building 4/78, [Time 08:19:21 | Elapsed 5m7.4s | Load 4.18 4.66 5.14]
+Started sys-apps/mosys-1.2.03-r398 (logged in /tmp/mosys-1.2.03-r398-YJPSed)
+Completed sys-kernel/linux-firmware-0.0.1-r90 (in 0m7.4s)
+Pending 102/308, Building 4/78, [Time 08:19:23 | Elapsed 5m9.5s | Load 4.18 4.66 5.14]
+Started chromeos-base/power_manager-0.0.2-r1330 (logged in /tmp/power_manager-0.0.2-r1330-QC4hDu)
+Completed sys-apps/flashrom-0.9.4-r422 (in 0m5.1s)
+Pending 101/308, Building 4/77, [Time 08:19:23 | Elapsed 5m9.6s | Load 4.18 4.66 5.14]
+Started chromeos-base/shill-0.0.3-r5 (logged in /tmp/shill-0.0.3-r5-fAxWDB)
+Completed sys-apps/mosys-1.2.03-r398 (in 0m4.7s)
+Pending 100/308, Building 4/76, [Time 08:19:25 | Elapsed 5m12.1s | Load 4.41 4.7 5.15]
+Started chromeos-base/chromiumos-assets-0.0.1-r2 (logged in /tmp/chromiumos-assets-0.0.1-r2-XjFAHP)
+Completed chromeos-base/peerd-0.0.1-r1398 (in 0m9.5s)
+Pending 99/308, Building 4/75, [Time 08:19:28 | Elapsed 5m14.2s | Load 4.41 4.7 5.15]
+Started sys-kernel/chromeos-kernel-3_14-3.14-r1491 (logged in /tmp/chromeos-kernel-3_14-3.14-r1491-qqPcpx)
+Completed chromeos-base/chromiumos-assets-0.0.1-r2 (in 0m5.2s)
+Pending 98/308, Building 4/75, [Time 08:19:31 | Elapsed 5m17.3s | Load 4.62 4.74 5.16]
+Started chromeos-base/chromeos-firmware-null-0.0.2-r1 (logged in /tmp/chromeos-firmware-null-0.0.2-r1-qzf5nJ)
+Completed chromeos-base/power_manager-0.0.2-r1330 (in 0m10.5s)
+Pending 97/308, Building 4/74, [Time 08:19:33 | Elapsed 5m19.9s | Load 4.62 4.74 5.16]
+Started sys-apps/sed-4.2.1-r1 (logged in /tmp/sed-4.2.1-r1-V11jsm)
+Completed chromeos-base/shill-0.0.3-r5 (in 0m10.5s)
+Pending 96/308, Building 4/73, [Time 08:19:33 | Elapsed 5m20.0s | Load 4.62 4.74 5.16]
+Started app-shells/dash-0.5.5.1.7 (logged in /tmp/dash-0.5.5.1.7-8I7Xg_)
+Completed chromeos-base/chromeos-firmware-null-0.0.2-r1 (in 0m4.2s)
+Pending 95/308, Building 4/73, [Time 08:19:35 | Elapsed 5m21.5s | Load 4.65 4.75 5.16]
+Started chromeos-base/root-certificates-0.0.1-r3 (logged in /tmp/root-certificates-0.0.1-r3-_fL9ca)
+Completed sys-kernel/chromeos-kernel-3_14-3.14-r1491 (in 0m8.7s)
+Pending 94/308, Building 4/73, [Time 08:19:36 | Elapsed 5m22.9s | Load 4.65 4.75 5.16]
+Started sys-apps/findutils-4.4.2-r2 (logged in /tmp/findutils-4.4.2-r2-UwYR8N)
+Completed app-shells/dash-0.5.5.1.7 (in 0m5.0s)
+Pending 93/308, Building 4/72, [Time 08:19:38 | Elapsed 5m25.0s | Load 4.65 4.75 5.16]
+Started sys-apps/mawk-1.3.4_p20100625 (logged in /tmp/mawk-1.3.4_p20100625-keFuQy)
+Completed sys-apps/sed-4.2.1-r1 (in 0m5.1s)
+Pending 92/308, Building 4/71, [Time 08:19:38 | Elapsed 5m25.1s | Load 4.65 4.75 5.16]
+Started sys-apps/mmc-utils-0.0.1-r13 (logged in /tmp/mmc-utils-0.0.1-r13-13FZB9)
+Completed chromeos-base/root-certificates-0.0.1-r3 (in 0m5.1s)
+Pending 91/308, Building 4/70, [Time 08:19:40 | Elapsed 5m26.6s | Load 4.6 4.73 5.15]
+Started sys-fs/exfat-utils-1.1.0 (logged in /tmp/exfat-utils-1.1.0-P8jfac)
+Completed sys-apps/findutils-4.4.2-r2 (in 0m4.9s)
+Pending 90/308, Building 4/69, [Time 08:19:41 | Elapsed 5m27.8s | Load 4.6 4.73 5.15]
+Started sys-fs/dosfstools-3.0.26 (logged in /tmp/dosfstools-3.0.26-M_Y0H6)
+Completed sys-apps/mawk-1.3.4_p20100625 (in 0m4.5s)
+Pending 89/308, Building 4/68, [Time 08:19:43 | Elapsed 5m29.5s | Load 4.6 4.73 5.15]
+Started app-arch/unrar-4.2.4 (logged in /tmp/unrar-4.2.4-rNEfs0)
+Completed sys-apps/mmc-utils-0.0.1-r13 (in 0m5.5s)
+Pending 88/308, Building 4/67, [Time 08:19:44 | Elapsed 5m30.5s | Load 4.6 4.73 5.15]
+Started app-arch/gzip-1.5 (logged in /tmp/gzip-1.5-MGoLWt)
+Completed sys-fs/exfat-utils-1.1.0 (in 0m4.1s)
+Pending 87/308, Building 4/66, [Time 08:19:44 | Elapsed 5m30.8s | Load 4.6 4.73 5.15]
+Started app-i18n/nacl-mozc-1.14.1639.104-r4 (logged in /tmp/nacl-mozc-1.14.1639.104-r4-tEuPD3)
+Completed sys-fs/dosfstools-3.0.26 (in 0m5.2s)
+Pending 86/308, Building 4/65, [Time 08:19:46 | Elapsed 5m33.0s | Load 4.47 4.7 5.14]
+Started chromeos-base/workarounds-0.0.1-r81 (logged in /tmp/workarounds-0.0.1-r81-c7d7KS)
+Completed app-arch/unrar-4.2.4 (in 0m5.4s)
+Pending 85/308, Building 4/64, [Time 08:19:48 | Elapsed 5m34.9s | Load 4.47 4.7 5.14]
+Started net-libs/libmnl-1.0.3-r2 (logged in /tmp/libmnl-1.0.3-r2-LynFKX)
+Completed app-arch/gzip-1.5 (in 0m5.8s)
+Pending 84/308, Building 4/64, [Time 08:19:50 | Elapsed 5m36.3s | Load 4.43 4.69 5.13]
+Started sys-apps/memtester-4.2.2 (logged in /tmp/memtester-4.2.2-jlS9Rg)
+Completed app-i18n/nacl-mozc-1.14.1639.104-r4 (in 0m5.9s)
+Pending 83/308, Building 4/64, [Time 08:19:50 | Elapsed 5m36.6s | Load 4.43 4.69 5.13]
+Started chromeos-base/chromeos-sshd-init-0.0.1-r6 (logged in /tmp/chromeos-sshd-init-0.0.1-r6-RyWtfx)
+Completed chromeos-base/workarounds-0.0.1-r81 (in 0m5.1s)
+Pending 82/308, Building 4/63, [Time 08:19:51 | Elapsed 5m38.1s | Load 4.43 4.69 5.13]
+Started chromeos-base/chromeos-ssh-testkeys-0.0.1-r2 (logged in /tmp/chromeos-ssh-testkeys-0.0.1-r2-LTqJuL)
+Completed net-libs/libmnl-1.0.3-r2 (in 0m4.5s)
+Pending 81/308, Building 4/63, [Time 08:19:53 | Elapsed 5m39.5s | Load 4.43 4.69 5.13]
+Started sys-apps/ethtool-3.12.1 (logged in /tmp/ethtool-3.12.1-OJmpoo)
+Completed chromeos-base/chromeos-sshd-init-0.0.1-r6 (in 0m4.4s)
+Pending 80/308, Building 4/62, [Time 08:19:54 | Elapsed 5m41.0s | Load 4.32 4.66 5.12]
+Started app-i18n/chromeos-xkb-1.0.3.0-r1 (logged in /tmp/chromeos-xkb-1.0.3.0-r1-8B0S4L)
+Completed sys-apps/memtester-4.2.2 (in 0m4.7s)
+Pending 79/308, Building 4/61, [Time 08:19:54 | Elapsed 5m41.1s | Load 4.32 4.66 5.12]
+Started app-i18n/chromeos-keyboards-1.1.4.0-r6 (logged in /tmp/chromeos-keyboards-1.1.4.0-r6-KoF9jY)
+Completed chromeos-base/chromeos-ssh-testkeys-0.0.1-r2 (in 0m4.3s)
+Pending 78/308, Building 4/61, [Time 08:19:56 | Elapsed 5m42.4s | Load 4.32 4.66 5.12]
+Started app-i18n/chromeos-cangjie-1.0.0.0-r1 (logged in /tmp/chromeos-cangjie-1.0.0.0-r1-as9JMr)
+Completed sys-apps/ethtool-3.12.1 (in 0m5.4s)
+Pending 77/308, Building 4/61, [Time 08:19:58 | Elapsed 5m44.9s | Load 4.32 4.66 5.12]
+Started app-i18n/chromeos-pinyin-1.0.0.0 (logged in /tmp/chromeos-pinyin-1.0.0.0-4Tx8H6)
+Completed app-i18n/chromeos-xkb-1.0.3.0-r1 (in 0m5.5s)
+Pending 76/308, Building 4/60, [Time 08:20:00 | Elapsed 5m46.6s | Load 4.29 4.65 5.11]
+Started app-i18n/chromeos-zhuyin-1.0.0.0 (logged in /tmp/chromeos-zhuyin-1.0.0.0-OffcpM)
+Completed app-i18n/chromeos-keyboards-1.1.4.0-r6 (in 0m5.6s)
+Pending 75/308, Building 4/60, [Time 08:20:00 | Elapsed 5m46.7s | Load 4.29 4.65 5.11]
+Started dev-libs/xz-embedded-20130513 (logged in /tmp/xz-embedded-20130513-tB4fEF)
+Completed app-i18n/chromeos-cangjie-1.0.0.0-r1 (in 0m4.7s)
+Pending 74/308, Building 4/59, [Time 08:20:00 | Elapsed 5m47.1s | Load 4.29 4.65 5.11]
+Started chromeos-base/regions-0.0.1-r686 (logged in /tmp/regions-0.0.1-r686-ST8zvk)
+Completed app-i18n/chromeos-pinyin-1.0.0.0 (in 0m5.4s)
+Pending 73/308, Building 4/58, [Time 08:20:04 | Elapsed 5m50.3s | Load 4.29 4.65 5.11]
+Started sys-apps/grep-2.21-r1 (logged in /tmp/grep-2.21-r1-FO3BoG)
+Completed dev-libs/xz-embedded-20130513 (in 0m4.3s)
+Pending 72/308, Building 4/57, [Time 08:20:04 | Elapsed 5m51.0s | Load 4.27 4.64 5.11]
+Started sys-fs/ntfs3g-2012.1.15-r4 (logged in /tmp/ntfs3g-2012.1.15-r4-bGmSFn)
+Completed app-i18n/chromeos-zhuyin-1.0.0.0 (in 0m5.3s)
+Pending 71/308, Building 4/57, [Time 08:20:05 | Elapsed 5m51.8s | Load 4.27 4.64 5.11]
+Started sys-fs/avfs-1.0.1-r5 (logged in /tmp/avfs-1.0.1-r5-zis4oB)
+Completed chromeos-base/regions-0.0.1-r686 (in 0m5.1s)
+Pending 70/308, Building 4/57, [Time 08:20:06 | Elapsed 5m52.2s | Load 4.27 4.64 5.11]
+Started sys-fs/fuse-exfat-1.1.0 (logged in /tmp/fuse-exfat-1.1.0-4rT96c)
+Completed sys-apps/grep-2.21-r1 (in 0m4.9s)
+Pending 69/308, Building 4/56, [Time 08:20:09 | Elapsed 5m55.2s | Load 4.27 4.64 5.11]
+Started dev-util/bsdiff-4.3.1-r4 (logged in /tmp/bsdiff-4.3.1-r4-FkFV1b)
+Completed sys-fs/fuse-exfat-1.1.0 (in 0m5.0s)
+Pending 68/308, Building 4/55, [Time 08:20:10 | Elapsed 5m57.1s | Load 4.25 4.63 5.1]
+Started virtual/update-policy-1 (logged in /tmp/update-policy-1-zM0pbe)
+Completed sys-fs/avfs-1.0.1-r5 (in 0m5.4s)
+Pending 67/308, Building 4/54, [Time 08:20:11 | Elapsed 5m57.3s | Load 4.25 4.63 5.1]
+Started virtual/chromeos-activate-date-1-r1 (logged in /tmp/chromeos-activate-date-1-r1-YMX5bT)
+Completed dev-util/bsdiff-4.3.1-r4 (in 0m4.9s)
+Pending 66/308, Building 4/53, [Time 08:20:13 | Elapsed 6m0.1s | Load 4.25 4.63 5.1]
+Started sys-process/procps-3.3.9-r2 (logged in /tmp/procps-3.3.9-r2-dBX7_O)
+Completed sys-fs/ntfs3g-2012.1.15-r4 (in 0m10.2s)
+Pending 65/308, Building 4/53, [Time 08:20:15 | Elapsed 6m1.2s | Load 4.23 4.62 5.1]
+Started sys-apps/usbutils-007-r1 (logged in /tmp/usbutils-007-r1-R9YXIo)
+Completed virtual/update-policy-1 (in 0m4.3s)
+Pending 64/308, Building 4/52, [Time 08:20:15 | Elapsed 6m1.4s | Load 4.23 4.62 5.1]
+Started chromeos-base/modem-utilities-0.0.1-r1479 (logged in /tmp/modem-utilities-0.0.1-r1479-stqIik)
+Completed virtual/chromeos-activate-date-1-r1 (in 0m4.5s)
+Pending 63/308, Building 4/52, [Time 08:20:15 | Elapsed 6m1.8s | Load 4.23 4.62 5.1]
+Started media-libs/libmtp-0.0.1-r21 (logged in /tmp/libmtp-0.0.1-r21-GLBAm5)
+Completed sys-process/procps-3.3.9-r2 (in 0m5.0s)
+Pending 62/308, Building 4/51, [Time 08:20:18 | Elapsed 6m5.1s | Load 4.23 4.62 5.1]
+Started net-misc/iputils-20121221-r2 (logged in /tmp/iputils-20121221-r2-mEk785)
+Completed chromeos-base/modem-utilities-0.0.1-r1479 (in 0m4.6s)
+Pending 61/308, Building 4/50, [Time 08:20:19 | Elapsed 6m6.0s | Load 4.13 4.59 5.09]
+Started dev-util/perf-3.18-r2 (logged in /tmp/perf-3.18-r2-t8uIZk)
+Completed sys-apps/usbutils-007-r1 (in 0m4.9s)
+Pending 60/308, Building 4/50, [Time 08:20:19 | Elapsed 6m6.1s | Load 4.13 4.59 5.09]
+Started dev-util/imgdiff-0.0.1-r2 (logged in /tmp/imgdiff-0.0.1-r2-7i_yK7)
+Completed media-libs/libmtp-0.0.1-r21 (in 0m5.2s)
+Pending 59/308, Building 4/50, [Time 08:20:20 | Elapsed 6m7.1s | Load 4.13 4.59 5.09]
+Started media-gfx/sane-backends-1.0.25 (logged in /tmp/sane-backends-1.0.25-k7CLH9)
+Completed net-misc/iputils-20121221-r2 (in 0m5.3s)
+Pending 58/308, Building 4/49, [Time 08:20:24 | Elapsed 6m10.4s | Load 4.13 4.59 5.09]
+Started chromeos-base/google-breakpad-2016.03.10.135120-r97 (logged in /tmp/google-breakpad-2016.03.10.135120-r97-diitui)
+Completed dev-util/imgdiff-0.0.1-r2 (in 0m5.2s)
+Pending 57/308, Building 4/48, [Time 08:20:25 | Elapsed 6m11.2s | Load 4.12 4.58 5.08]
+Started chromeos-base/chromeos-base-0-r132 (logged in /tmp/chromeos-base-0-r132-Jpl4Hz)
+Completed dev-util/perf-3.18-r2 (in 0m5.5s)
+Pending 56/308, Building 4/48, [Time 08:20:25 | Elapsed 6m11.5s | Load 4.12 4.58 5.08]
+Started chromeos-base/libweave-0.0.1-r104 (logged in /tmp/libweave-0.0.1-r104-LyJSRk)
+Completed chromeos-base/google-breakpad-2016.03.10.135120-r97 (in 0m6.6s)
+Pending 55/308, Building 4/48, [Time 08:20:30 | Elapsed 6m17.0s | Load 4.11 4.57 5.07]
+Started chromeos-base/p2p-0.0.1-r1527 (logged in /tmp/p2p-0.0.1-r1527-A3t0gT)
+Completed chromeos-base/libweave-0.0.1-r104 (in 0m6.0s)
+Pending 54/308, Building 4/47, [Time 08:20:31 | Elapsed 6m17.6s | Load 4.11 4.57 5.07]
+Started net-misc/strongswan-5.0.2-r17 (logged in /tmp/strongswan-5.0.2-r17-XVzmwB)
+Completed media-gfx/sane-backends-1.0.25 (in 0m11.5s)
+Pending 53/308, Building 4/47, [Time 08:20:32 | Elapsed 6m18.6s | Load 4.11 4.57 5.07]
+Started chromeos-base/chromeos-auth-config-0.0.1-r7 (logged in /tmp/chromeos-auth-config-0.0.1-r7-y0YDb1)
+Completed chromeos-base/chromeos-auth-config-0.0.1-r7 (in 0m5.0s)
+Pending 52/308, Building 4/47, [Time 08:20:37 | Elapsed 6m23.6s | Load 4.26 4.6 5.08]
+Started net-misc/openssh-6.6.1_p1-r2 (logged in /tmp/openssh-6.6.1_p1-r2-SjklAM)
+Completed chromeos-base/chromeos-base-0-r132 (in 0m16.4s)
+Pending 51/308, Building 4/47, [Time 08:20:41 | Elapsed 6m27.6s | Load 4.32 4.6 5.08]
+Started chromeos-base/apmanager-0.0.1-r1064 (logged in /tmp/apmanager-0.0.1-r1064-J3qUSy)
+Completed chromeos-base/p2p-0.0.1-r1527 (in 0m10.7s)
+Pending 50/308, Building 4/47, [Time 08:20:41 | Elapsed 6m27.7s | Load 4.32 4.6 5.08]
+Started chromeos-base/webserver-0.0.1-r674 (logged in /tmp/webserver-0.0.1-r674-xiOKR6)
+Completed net-misc/strongswan-5.0.2-r17 (in 0m10.8s)
+Pending 49/308, Building 4/46, [Time 08:20:42 | Elapsed 6m28.4s | Load 4.32 4.6 5.08]
+Started net-dialup/xl2tpd-1.3.0-r3 (logged in /tmp/xl2tpd-1.3.0-r3-bKCWSl)
+Completed net-dialup/xl2tpd-1.3.0-r3 (in 0m5.2s)
+Pending 48/308, Building 4/46, [Time 08:20:47 | Elapsed 6m33.6s | Load 4.29 4.59 5.07]
+Started chromeos-base/chromeos-firewall-init-0.0.1-r4 (logged in /tmp/chromeos-firewall-init-0.0.1-r4-A6Fb3R)
+Completed net-misc/openssh-6.6.1_p1-r2 (in 0m10.8s)
+Pending 47/308, Building 4/46, [Time 08:20:48 | Elapsed 6m34.4s | Load 4.29 4.59 5.07]
+Started chromeos-base/chromeos-chrome-51.0.2686.0_rc-r1 (logged in /tmp/chromeos-chrome-51.0.2686.0_rc-r1-EnSgTy)
+Completed chromeos-base/apmanager-0.0.1-r1064 (in 0m9.5s)
+Pending 46/308, Building 4/45, [Time 08:20:51 | Elapsed 6m37.2s | Load 4.19 4.57 5.06]
+Started app-i18n/chromeos-hangul-1.2.0.7-r1 (logged in /tmp/chromeos-hangul-1.2.0.7-r1-qNJ78i)
+Completed chromeos-base/chromeos-firewall-init-0.0.1-r4 (in 0m4.4s)
+Pending 45/308, Building 4/45, [Time 08:20:51 | Elapsed 6m38.0s | Load 4.19 4.57 5.06]
+Started sys-auth/pam_pwdfile-0.99-r2 (logged in /tmp/pam_pwdfile-0.99-r2-2KcFud)
+Completed chromeos-base/webserver-0.0.1-r674 (in 0m11.3s)
+Pending 44/308, Building 4/45, [Time 08:20:52 | Elapsed 6m39.0s | Load 4.19 4.57 5.06]
+Started chromeos-base/audioconfig-0.0.1-r1 (logged in /tmp/audioconfig-0.0.1-r1-5kZz_g)
+Completed app-i18n/chromeos-hangul-1.2.0.7-r1 (in 0m10.6s)
+Pending 43/308, Building 4/44, [Time 08:21:01 | Elapsed 6m47.8s | Load 4.62 4.65 5.08]
+Started net-wireless/marvell_sd8787-14.64.2.47-r53 (logged in /tmp/marvell_sd8787-14.64.2.47-r53-Jmy2ph)
+Completed sys-auth/pam_pwdfile-0.99-r2 (in 0m10.5s)
+Pending 42/308, Building 4/43, [Time 08:21:02 | Elapsed 6m48.4s | Load 4.62 4.65 5.08]
+Started net-wireless/ath3k-1-r1 (logged in /tmp/ath3k-1-r1-rhoEYt)
+Completed chromeos-base/audioconfig-0.0.1-r1 (in 0m10.9s)
+Pending 41/308, Building 4/42, [Time 08:21:03 | Elapsed 6m49.8s | Load 4.62 4.65 5.08]
+Started sys-apps/pv-1.3.4 (logged in /tmp/pv-1.3.4-m57Eyn)
+Completed net-wireless/marvell_sd8787-14.64.2.47-r53 (in 0m12.4s)
+Pending 40/308, Building 4/41, [Time 08:21:14 | Elapsed 7m0.2s | Load 5.22 4.77 5.12]
+Started net-wireless/realtek-rt2800-firmware-0.0.1 (logged in /tmp/realtek-rt2800-firmware-0.0.1-yJ6Fnv)
+Completed sys-apps/pv-1.3.4 (in 0m10.8s)
+Pending 39/308, Building 4/40, [Time 08:21:14 | Elapsed 7m0.6s | Load 5.22 4.77 5.12]
+Started app-i18n/chinese-input-1.1.0.0-r2 (logged in /tmp/chinese-input-1.1.0.0-r2-wFUdFL)
+Completed net-wireless/ath3k-1-r1 (in 0m12.4s)
+Pending 38/308, Building 4/39, [Time 08:21:14 | Elapsed 7m0.9s | Load 5.22 4.77 5.12]
+Started virtual/linux-sources-1-r10 (logged in /tmp/linux-sources-1-r10-f2enbl)
+Completed net-wireless/realtek-rt2800-firmware-0.0.1 (in 0m5.7s)
+Pending 37/308, Building 4/38, [Time 08:21:19 | Elapsed 7m5.8s | Load 5.36 4.81 5.13]
+Started app-i18n/keyboard-input-1.0.0.0-r2 (logged in /tmp/keyboard-input-1.0.0.0-r2-BJDYFl)
+Completed virtual/linux-sources-1-r10 (in 0m5.6s)
+Pending 36/308, Building 4/37, [Time 08:21:20 | Elapsed 7m6.5s | Load 5.25 4.8 5.12]
+Started sys-apps/iproute2-4.2.0-r1 (logged in /tmp/iproute2-4.2.0-r1-QRW4oa)
+Completed app-i18n/chinese-input-1.1.0.0-r2 (in 0m6.0s)
+Pending 35/308, Building 4/36, [Time 08:21:20 | Elapsed 7m6.6s | Load 5.25 4.8 5.12]
+Started virtual/chromeos-bsp-1-r2 (logged in /tmp/chromeos-bsp-1-r2-JfVaDM)
+Completed app-i18n/keyboard-input-1.0.0.0-r2 (in 0m4.4s)
+Pending 34/308, Building 4/35, [Time 08:21:24 | Elapsed 7m10.2s | Load 5.25 4.8 5.12]
+Started virtual/assets-1-r1 (logged in /tmp/assets-1-r1-Oka3S9)
+Completed virtual/chromeos-bsp-1-r2 (in 0m4.8s)
+Pending 33/308, Building 4/34, [Time 08:21:25 | Elapsed 7m11.4s | Load 5.23 4.8 5.12]
+Started app-i18n/japanese-input-1.0.0.0-r1 (logged in /tmp/japanese-input-1.0.0.0-r1-KsRFsl)
+Completed sys-apps/iproute2-4.2.0-r1 (in 0m5.1s)
+Pending 32/308, Building 4/33, [Time 08:21:25 | Elapsed 7m11.6s | Load 5.23 4.8 5.12]
+Started virtual/chromeos-firmware-1 (logged in /tmp/chromeos-firmware-1-QW10RX)
+Completed virtual/assets-1-r1 (in 0m4.8s)
+Pending 31/308, Building 4/32, [Time 08:21:28 | Elapsed 7m15.0s | Load 5.23 4.8 5.12]
+Started chromeos-base/inputcontrol-0.0.1-r106 (logged in /tmp/inputcontrol-0.0.1-r106-zABibm)
+Completed app-i18n/japanese-input-1.0.0.0-r1 (in 0m4.3s)
+Pending 30/308, Building 4/31, [Time 08:21:29 | Elapsed 7m15.7s | Load 5.23 4.8 5.12]
+Started net-misc/tlsdate-0.0.5-r42 (logged in /tmp/tlsdate-0.0.5-r42-BWNAhu)
+Completed virtual/chromeos-firmware-1 (in 0m4.9s)
+Pending 29/308, Building 4/30, [Time 08:21:30 | Elapsed 7m16.5s | Load 5.29 4.82 5.13]
+Started virtual/modutils-0 (logged in /tmp/modutils-0-7xMmdl)
+Completed chromeos-base/inputcontrol-0.0.1-r106 (in 0m4.8s)
+Pending 28/308, Building 4/29, [Time 08:21:33 | Elapsed 7m19.8s | Load 5.29 4.82 5.13]
+Started chromeos-base/vpd-0.0.1-r83 (logged in /tmp/vpd-0.0.1-r83-6B7HvR)
+Completed virtual/modutils-0 (in 0m4.8s)
+Pending 27/308, Building 4/28, [Time 08:21:35 | Elapsed 7m21.3s | Load 5.19 4.81 5.12]
+Started virtual/chromeos-regions-1 (logged in /tmp/chromeos-regions-1-QD2AVv)
+Completed chromeos-base/chromeos-chrome-51.0.2686.0_rc-r1 (in 0m48.3s)
+Pending 26/308, Building 4/28, [Time 08:21:36 | Elapsed 7m22.7s | Load 5.19 4.81 5.12]
+Started chromeos-base/chromeos-machine-id-regen-0.0.1 (logged in /tmp/chromeos-machine-id-regen-0.0.1-WqVrFg)
+Completed chromeos-base/vpd-0.0.1-r83 (in 0m4.9s)
+Pending 25/308, Building 4/27, [Time 08:21:38 | Elapsed 7m24.7s | Load 5.19 4.81 5.12]
+Started chromeos-base/dev-install-0.0.1-r817 (logged in /tmp/dev-install-0.0.1-r817-4RL1MD)
+Completed virtual/chromeos-regions-1 (in 0m6.1s)
+Pending 24/308, Building 4/26, [Time 08:21:41 | Elapsed 7m27.4s | Load 5.25 4.83 5.13]
+Completed net-misc/tlsdate-0.0.5-r42 (in 0m11.6s)
+Pending 23/308, Building 4/25, [Time 08:21:41 | Elapsed 7m27.4s | Load 5.25 4.83 5.13]
+Started chromeos-base/quipper-0.0.1-r1060 (logged in /tmp/quipper-0.0.1-r1060-dxLlXz)
+Started chromeos-base/chromeos-imageburner-0.0.1-r1531 (logged in /tmp/chromeos-imageburner-0.0.1-r1531-hEHYzs)
+Completed chromeos-base/chromeos-machine-id-regen-0.0.1 (in 0m7.6s)
+Pending 22/308, Building 4/24, [Time 08:21:44 | Elapsed 7m30.3s | Load 5.25 4.83 5.13]
+Started chromeos-base/lorgnette-0.0.1-r1180 (logged in /tmp/lorgnette-0.0.1-r1180-UxymtN)
+Completed chromeos-base/dev-install-0.0.1-r817 (in 0m7.6s)
+Pending 21/308, Building 4/23, [Time 08:21:46 | Elapsed 7m32.3s | Load 5.15 4.81 5.12]
+Completed chromeos-base/chromeos-imageburner-0.0.1-r1531 (in 0m4.9s)
+Pending 20/308, Building 4/22, [Time 08:21:46 | Elapsed 7m32.3s | Load 5.15 4.81 5.12]
+Started chromeos-base/crash-reporter-0.0.1-r1440 (logged in /tmp/crash-reporter-0.0.1-r1440-rB1V7n)
+Started virtual/implicit-system-1-r1 (logged in /tmp/implicit-system-1-r1-UDX3kk)
+Completed chromeos-base/quipper-0.0.1-r1060 (in 0m5.1s)
+Pending 19/308, Building 4/21, [Time 08:21:46 | Elapsed 7m32.4s | Load 5.15 4.81 5.12]
+Started sys-apps/ureadahead-0.100.0-r5 (logged in /tmp/ureadahead-0.100.0-r5-CBuDGE)
+Completed chromeos-base/lorgnette-0.0.1-r1180 (in 0m5.4s)
+Pending 18/308, Building 4/20, [Time 08:21:49 | Elapsed 7m35.7s | Load 5.15 4.81 5.12]
+Started virtual/chromeos-auth-config-1-r0 (logged in /tmp/chromeos-auth-config-1-r0-LFWi7I)
+Completed virtual/implicit-system-1-r1 (in 0m4.2s)
+Pending 17/308, Building 4/19, [Time 08:21:50 | Elapsed 7m36.5s | Load 5.06 4.8 5.11]
+Started chromeos-base/crosh-0.0.1-r1592 (logged in /tmp/crosh-0.0.1-r1592-KdP0_R)
+Completed sys-apps/ureadahead-0.100.0-r5 (in 0m5.4s)
+Pending 16/308, Building 4/18, [Time 08:21:51 | Elapsed 7m37.8s | Load 5.06 4.8 5.11]
+Started chromeos-base/mist-0.0.1-r1316 (logged in /tmp/mist-0.0.1-r1316-4NAlvr)
+Completed chromeos-base/crash-reporter-0.0.1-r1440 (in 0m5.7s)
+Pending 15/308, Building 4/17, [Time 08:21:51 | Elapsed 7m38.0s | Load 5.06 4.8 5.11]
+Started chromeos-base/mtpd-0.0.1-r116 (logged in /tmp/mtpd-0.0.1-r116-mD70hj)
+Completed virtual/chromeos-auth-config-1-r0 (in 0m4.7s)
+Pending 14/308, Building 4/16, [Time 08:21:54 | Elapsed 7m40.4s | Load 5.06 4.8 5.11]
+Started chromeos-base/cros-disks-0.0.1-r1188 (logged in /tmp/cros-disks-0.0.1-r1188-MzeF60)
+Completed chromeos-base/crosh-0.0.1-r1592 (in 0m5.1s)
+Pending 13/308, Building 4/15, [Time 08:21:55 | Elapsed 7m41.6s | Load 4.98 4.79 5.11]
+Started app-laptop/laptop-mode-tools-1.59-r31 (logged in /tmp/laptop-mode-tools-1.59-r31-Bgnd50)
+Completed chromeos-base/mist-0.0.1-r1316 (in 0m5.0s)
+Pending 12/308, Building 4/14, [Time 08:21:56 | Elapsed 7m42.8s | Load 4.98 4.79 5.11]
+Started chromeos-base/update_engine-0.0.3-r1892 (logged in /tmp/update_engine-0.0.3-r1892-Edl42u)
+Completed app-laptop/laptop-mode-tools-1.59-r31 (in 0m5.2s)
+Pending 11/308, Building 4/13, [Time 08:22:00 | Elapsed 7m46.8s | Load 4.82 4.76 5.1]
+Started chromeos-base/buffet-0.0.1-r1311 (logged in /tmp/buffet-0.0.1-r1311-MaF3HR)
+Completed chromeos-base/mtpd-0.0.1-r116 (in 0m10.0s)
+Pending 10/308, Building 4/12, [Time 08:22:01 | Elapsed 7m47.9s | Load 4.82 4.76 5.1]
+Started chromeos-base/vpn-manager-0.0.1-r1181 (logged in /tmp/vpn-manager-0.0.1-r1181-5TOrVU)
+Completed chromeos-base/update_engine-0.0.3-r1892 (in 0m5.2s)
+Pending 9/308, Building 4/11, [Time 08:22:01 | Elapsed 7m48.0s | Load 4.82 4.76 5.1]
+Started chromeos-base/chromeos-trim-0.0.1-r61 (logged in /tmp/chromeos-trim-0.0.1-r61-rItct6)
+Completed chromeos-base/cros-disks-0.0.1-r1188 (in 0m10.5s)
+Pending 8/308, Building 4/10, [Time 08:22:04 | Elapsed 7m50.9s | Load 4.82 4.76 5.1]
+Started virtual/service-manager-1-r1 (logged in /tmp/service-manager-1-r1-UGZhlC)
+Completed chromeos-base/vpn-manager-0.0.1-r1181 (in 0m5.0s)
+Pending 7/308, Building 4/9, [Time 08:22:06 | Elapsed 7m52.9s | Load 4.83 4.76 5.1]
+Started chromeos-base/userfeedback-0.0.1-r1571 (logged in /tmp/userfeedback-0.0.1-r1571-ttRuTf)
+Completed chromeos-base/chromeos-trim-0.0.1-r61 (in 0m5.4s)
+Pending 6/308, Building 4/8, [Time 08:22:07 | Elapsed 7m53.5s | Load 4.83 4.76 5.1]
+Started chromeos-base/debugd-0.0.1-r1181 (logged in /tmp/debugd-0.0.1-r1181-BD6XB0)
+Completed virtual/service-manager-1-r1 (in 0m5.0s)
+Pending 5/308, Building 4/7, [Time 08:22:09 | Elapsed 7m55.8s | Load 4.83 4.76 5.1]
+Started virtual/chromeos-firewall-1-r1 (logged in /tmp/chromeos-firewall-1-r1-_5ainv)
+Completed chromeos-base/buffet-0.0.1-r1311 (in 0m10.1s)
+Pending 4/308, Building 4/6, [Time 08:22:10 | Elapsed 7m56.9s | Load 4.77 4.75 5.09]
+Started virtual/chromeos-interface-1-r5 (logged in /tmp/chromeos-interface-1-r5-hkHhB4)
+Completed chromeos-base/userfeedback-0.0.1-r1571 (in 0m4.9s)
+Pending 3/308, Building 4/5, [Time 08:22:11 | Elapsed 7m57.8s | Load 4.77 4.75 5.09]
+Started virtual/ttf-fonts-1 (logged in /tmp/ttf-fonts-1-0CL1__)
+Completed virtual/chromeos-firewall-1-r1 (in 0m5.1s)
+Pending 2/308, Building 4/4, [Time 08:22:14 | Elapsed 8m0.9s | Load 4.77 4.75 5.09]
+Started x11-libs/libva-intel-driver-1.6.1-r3 (logged in /tmp/libva-intel-driver-1.6.1-r3-2aryu3)
+Completed virtual/chromeos-interface-1-r5 (in 0m4.5s)
+Pending 2/308, Building 3/3, [Time 08:22:15 | Elapsed 8m1.4s | Load 4.86 4.77 5.1]
+Completed virtual/ttf-fonts-1 (in 0m4.3s)
+Pending 2/308, Building 2/2, [Time 08:22:15 | Elapsed 8m2.1s | Load 4.86 4.77 5.1]
+Completed chromeos-base/debugd-0.0.1-r1181 (in 0m10.6s)
+Pending 1/308, Building 2/2, [Time 08:22:17 | Elapsed 8m4.0s | Load 4.86 4.77 5.1]
+Started virtual/target-chromium-os-1-r49 (logged in /tmp/target-chromium-os-1-r49-XElhCV)
+Completed x11-libs/libva-intel-driver-1.6.1-r3 (in 0m4.2s)
+Pending 1/308, Building 1/1, [Time 08:22:18 | Elapsed 8m5.1s | Load 4.86 4.77 5.1]
+Completed virtual/target-chromium-os-1-r49 (in 0m3.5s)
+Pending 0/308, Building 1/1, [Time 08:22:21 | Elapsed 8m7.5s | Load 4.55 4.71 5.07]
+Started virtual/target-os-1-r3 (logged in /tmp/target-os-1-r3-eYyJ6o)
+Completed virtual/target-os-1-r3 (in 0m3.1s)
+Pending 0/308, [Time 08:22:24 | Elapsed 8m10.7s | Load 4.55 4.71 5.07]
+Merge complete
+Done
+INFO    : Generating license credits page. Time:
+
+real	0m20.870s
+user	0m15.812s
+sys	0m0.356s
+08:22:48: INFO: Searching for unused gconv files defined in /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/usr/lib/gconv/gconv-modules
+08:22:49: INFO: Will search for 1131 strings in 26 files
+08:22:51: INFO: Done. Using 32 gconv modules. Removed 214 unused modules (4407.5 KiB) and 3 unused dependencies (627.6 KiB)
+INFO    : Emitted /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/boot/syslinux/syslinux.cfg
+INFO    : Emitted /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/boot/syslinux/default.cfg
+INFO    : Emitted /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/boot/syslinux/usb.A.cfg
+INFO    : Emitted /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/boot/syslinux/root.A.cfg
+INFO    : Emitted /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/boot/syslinux/root.B.cfg
+INFO    : Emitted /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/boot/syslinux/README
+INFO    : Emitted /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/boot/efi/boot/grub.cfg
+Cleaning up /usr/local symlinks for /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/stateful/dev_image
+INFO    : Building dev-install package lists
+INFO    : Zeroing freespace in /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs
+INFO    : /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs/filler
+798019+0 records in
+798018+0 records out
+INFO    : Unmounting image from /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/stateful and /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs
+Cleaning up /usr/local symlinks for /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/stateful/dev_image
+INFO    : Boot-time configuration for /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1:
+INFO    :   --board=x86-generic
+INFO    :   --image_type=usb
+INFO    :   --arch=x86
+INFO    :   --keys_dir=/usr/share/vboot/devkeys
+INFO    :   --boot_args=noinitrd
+INFO    :   --nocleanup_dirs
+INFO    :   --verity_algorithm=sha1
+INFO    :   --enable_serial=
+INFO    :   --loglevel=7
+Setting up symlinks for /usr/local for /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/stateful_dir/dev_image
+INFO    : Image specified by /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1 mounted at /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs_dir successfully.
+INFO    : DEBUG: use recovery keyblock
+INFO    : rootfs is 1048576 blocks of 4096 bytes.
+INFO    : Generating root fs hash tree (salt 'c5c089a4957a666ad46804f89dde691effdb80d7ed2137da4fb297d18c627eb2').
+dm:dm bht[DEBUG] Setting block_count 1048576
+dm:dm bht[DEBUG] Setting depth to 3.
+dm:dm bht[DEBUG] depth: 0 entries: 1
+dm:dm bht[DEBUG] depth: 1 entries: 64
+dm:dm bht[DEBUG] depth: 2 entries: 8192
+INFO    : device mapper configuration: dm="1 vroot none ro 1,0 0 verity payload=ROOT_DEV hashtree=HASH_DEV hashstart=0 alg=sha1 root_hexdigest=371e95353e016eddf9ebe7b420e1ca09b2e3b123 salt=c5c089a4957a666ad46804f89dde691effdb80d7ed2137da4fb297d18c627eb2"
+INFO    : Emitted cross-platform boot params to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/boot.config
+INFO    : Saving kernel as /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/vmlinuz.bin
+Key block:
+  Signature:           valid
+  Size:                0xcb8
+  Flags:               11  !DEV DEV REC
+  Data key algorithm:  11 RSA8192 SHA512
+  Data key version:    1
+  Data key sha1sum:    e78ce746a037837155388a1096212ded04fb86eb
+Preamble:
+  Size:                0xf348
+  Header version:      2.2
+  Kernel version:      1
+  Body load address:   0x100000
+  Body size:           0x47b400
+  Bootloader address:  0x574000
+  Bootloader size:     0x4000
+  Vmlinuz header address: 0x578000
+  Vmlinuz header size:    0x3400
+  Flags          :       0x0
+Body verification succeeded.
+Config:
+console= loglevel=7 init=/sbin/init cros_secure oops=panic panic=-1 root=PARTUUID=%U/PARTNROFF=1 rootwait ro dm_verity.error_behavior=3 dm_verity.max_bios=-1 dm_verity.dev_wait=0 dm="1 vroot none ro 1,0 0 verity payload=ROOT_DEV hashtree=HASH_DEV hashstart=0 alg=sha1 root_hexdigest=371e95353e016eddf9ebe7b420e1ca09b2e3b123 salt=c5c089a4957a666ad46804f89dde691effdb80d7ed2137da4fb297d18c627eb2" noinitrd vt.global_cursor_default=0 kern_guid=%U add_efi_memmap boot=local noresume noswap i915.modeset=1 tpm_tis.force=1 tpm_tis.interrupts=0 nmi_watchdog=panic,lapic 
+INFO    : Kernel partition image emitted: /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/vmlinuz.image
+INFO    : Root filesystem hash emitted: /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs.hash
+INFO    : rootfs is 1048576 blocks of 4096 bytes.
+INFO    : Generating root fs hash tree (salt 'c5c089a4957a666ad46804f89dde691effdb80d7ed2137da4fb297d18c627eb2').
+dm:dm bht[DEBUG] Setting block_count 1048576
+dm:dm bht[DEBUG] Setting depth to 3.
+dm:dm bht[DEBUG] depth: 0 entries: 1
+dm:dm bht[DEBUG] depth: 1 entries: 64
+dm:dm bht[DEBUG] depth: 2 entries: 8192
+INFO    : device mapper configuration: dm="1 vroot none ro 1,0 0 verity payload=ROOT_DEV hashtree=HASH_DEV hashstart=0 alg=sha1 root_hexdigest=371e95353e016eddf9ebe7b420e1ca09b2e3b123 salt=c5c089a4957a666ad46804f89dde691effdb80d7ed2137da4fb297d18c627eb2"
+INFO    : Emitted cross-platform boot params to /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/boot.config
+INFO    : Saving kernel as /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/vmlinuz.bin
+Key block:
+  Signature:           valid
+  Size:                0x4b8
+  Flags:               7  !DEV DEV !REC
+  Data key algorithm:  4 RSA2048 SHA256
+  Data key version:    1
+  Data key sha1sum:    d6170aa480136f1f29cf339a5ab1b960585fa444
+Preamble:
+  Size:                0xfb48
+  Header version:      2.2
+  Kernel version:      1
+  Body load address:   0x100000
+  Body size:           0x47b400
+  Bootloader address:  0x574000
+  Bootloader size:     0x4000
+  Vmlinuz header address: 0x578000
+  Vmlinuz header size:    0x3400
+  Flags          :       0x0
+Body verification succeeded.
+Config:
+console= loglevel=7 init=/sbin/init cros_secure oops=panic panic=-1 root=PARTUUID=%U/PARTNROFF=1 rootwait ro dm_verity.error_behavior=3 dm_verity.max_bios=-1 dm_verity.dev_wait=0 dm="1 vroot none ro 1,0 0 verity payload=ROOT_DEV hashtree=HASH_DEV hashstart=0 alg=sha1 root_hexdigest=371e95353e016eddf9ebe7b420e1ca09b2e3b123 salt=c5c089a4957a666ad46804f89dde691effdb80d7ed2137da4fb297d18c627eb2" noinitrd vt.global_cursor_default=0 kern_guid=%U add_efi_memmap boot=local noresume noswap i915.modeset=1 tpm_tis.force=1 tpm_tis.interrupts=0 nmi_watchdog=panic,lapic 
+1+0 records in
+1+0 records out
+65536 bytes (66 kB) copied, 0.000187396 s, 350 MB/s
+INFO    : Kernel partition image emitted: /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/hd_vmlinuz.image
+INFO    : Root filesystem hash emitted: /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs.hash
+INFO    : Kernel image A   size is 4764672 bytes.
+INFO    : Kernel image B   size is 4764672 bytes.
+INFO    : Kernel partition A size is 16777216 bytes.
+INFO    : Kernel partition B size is 16777216 bytes.
+INFO    : Appending rootfs.hash (33820672 bytes) to the root fs
+INFO    : Extracting the kernel command line from /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/vmlinuz.image
+INFO    : Unmounting image from /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/stateful_dir and /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/rootfs_dir
+Cleaning up /usr/local symlinks for /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/stateful_dir/dev_image
+INFO    : Done. Image(s) created in /mnt/host/source/src/build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1
+
+INFO    : Non-developer Chromium OS image created as chromiumos_base_image.bin
+INFO    : To copy the image to a USB key, use:
+INFO    :   cros flash usb:// ../build/images/x86-generic/R51-8095.0.2016_03_25_0813-a1/chromiumos_base_image.bin
+
+INFO    : Elapsed time (build_image): 12m40s

@@ -1,0 +1,21 @@
+[pid:419] Starting.
+[pid:419] VFS mount state sanity check ok.
+[pid:419] Using UUID as system key.
+[pid:419] /mnt/stateful_partition/encrypted.key does not exist.
+[pid:419] /mnt/stateful_partition/encrypted.needs-finalization does not exist.
+[pid:419] Generating new encryption key.
+[pid:419] Creating sparse backing file with size 370143232.
+[pid:419] Loopback attaching /mnt/stateful_partition/encrypted.block (named encstateful).
+[pid:419] Setting up dm-crypt /dev/loop0 as /dev/mapper/encstateful.
+[pid:419] Building filesystem on /dev/mapper/encstateful (blocksize:4096, min:4096, max:90367).
+[pid:419] Mounting /dev/mapper/encstateful onto /mnt/stateful_partition/encrypted.
+[pid:419] Started filesystem resizing process 1558.
+[pid:419] Bind mounting /mnt/stateful_partition/encrypted/var onto /var.
+[pid:419] Bind mounting /mnt/stateful_partition/encrypted/chronos onto /home/chronos.
+[pid:419] Writing keyfile /mnt/stateful_partition/encrypted.key.
+[pid:1558] Resizer spawned.
+[pid:1560] Resizing started in 2 second steps.
+[pid:419] Done.
+[pid:1560] Resizing filesystem on /dev/mapper/encstateful to 90367.
+[pid:1560] Resizing finished.
+[pid:1560] Done.
